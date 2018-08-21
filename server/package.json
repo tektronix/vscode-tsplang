@@ -1,0 +1,25 @@
+{
+    "name": "tsplang",
+    "displayName": "Keithley TSP",
+    "description": "Keithley Instruments TSP Command Autocomplete.",
+    "version": "0.3.0",
+    "publisher": "Keithley",
+    "license": "MIT",
+    "engines": {
+        "node": "*"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tektronixofficial/tsp-language-extension"
+    },
+    "dependencies": {
+        "@types/luaparse": "file:types/luaparse",
+        "luaparse": "^0.2.1",
+        "vscode-languageserver": "^4.4.2"
+    },
+    "scripts": {
+        "installServer": "installServerIntoExtension ../out ./package.json ./tsconfig.json",
+        "compile": "installServerIntoExtension ../out ./package.json ./tsconfig.json && tsc -p .",
+        "watch": "installServerIntoExtension ../out ./package.json ./tsconfig.json && tsc -w -p ."
+    }
+}

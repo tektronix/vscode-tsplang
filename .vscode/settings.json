@@ -1,0 +1,30 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "files.exclude": {
+        "out": false // set this to true to hide the "out" folder with the compiled JS files
+    },
+    "json.format.enable": true,
+    "search.exclude": {
+        "out": true // set this to false to include "out" folder in search results
+    },
+    "typescript.format.enable": true,
+    "[json]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4
+    },
+    "[typescript]": {
+        "editor.insertSpaces": true,
+        "editor.tabSize": 4
+    },
+    "editor.rulers": [
+        119
+    ],
+    "mocha.files.glob": "test/**/*.ts",
+    "mocha.options": {
+        "recursive": true
+    },
+    "mocha.requires": [
+        "ts-node/register",
+        "source-map-support/register"
+    ],
+}

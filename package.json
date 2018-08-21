@@ -1,0 +1,98 @@
+{
+    "name": "tsplang",
+    "displayName": "Keithley TSP",
+    "description": "Keithley Instruments TSP Command Autocomplete.",
+    "version": "0.3.0",
+    "preview": true,
+    "publisher": "Keithley",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tektronixofficial/tsp-language-extension"
+    },
+    "engines": {
+        "vscode": "^1.23.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "activationEvents": [
+        "onLanguage:tsp"
+    ],
+    "main": "./out/src/extension",
+    "contributes": {
+        "languages": [
+            {
+                "id": "tsp",
+                "aliases": [
+                    "TSP",
+                    "tsp"
+                ],
+                "extensions": [
+                    ".tsp",
+                    ".tspa"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "tsp",
+                "scopeName": "source.lua",
+                "path": "./syntaxes/Lua.plist"
+            }
+        ]
+    },
+    "dependencies": {
+        "vscode": "^1.1.21",
+        "vscode-languageclient": "^4.4.2"
+    },
+    "devDependencies": {
+        "@types/chai": "^4.1.4",
+        "@types/mocha": "^2.2.42",
+        "@types/node": "^7.0.69",
+        "chai": "^4.1.2",
+        "istanbul": "^0.4.5",
+        "mocha-typescript": "^1.1.17",
+        "nyc": "^12.0.2",
+        "source-map-support": "^0.5.6",
+        "ts-node": "^7.0.0",
+        "tslint": "^5.11.0",
+        "typescript": "^2.9.2"
+    },
+    "scripts": {
+        "postinstall": "cd server && npm install && cd .. && node  ./node_modules/vscode/bin/install",
+        "compile": "tsc -p ./tsconfig.json && cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
+        "package": "vsce package",
+        "compile:client": "tsc -p ./tsconfig.json",
+        "watch:client": "tsc -w -p ./tsconfig.json",
+        "compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
+        "watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json",
+        "update-vscode": "node ./node_modules/vscode/bin/install",
+        "test": "mocha",
+        "test:coverage": "nyc mocha"
+    },
+    "nyc": {
+        "extension": [
+            ".ts",
+            ".tsx"
+        ],
+        "include": [
+            "server/src/**/*.ts"
+        ],
+        "exclude": [
+            "**/*.d.ts",
+            "**/*.spec.ts",
+            "./coverage/**",
+            "./out/**",
+            "./client/**",
+            "./src/extension.ts"
+        ],
+        "reporter": [
+            "html",
+            "text",
+            "mocha"
+        ],
+        "all": true
+    }
+}

@@ -1,0 +1,10 @@
+**/*.ts
+.github/**
+.vscode/**
+server/**
+utils/**
+.gitattributes
+.gitignore
+tsconfig.json
+coverage/**
+.nyc_output/**
