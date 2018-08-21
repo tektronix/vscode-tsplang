@@ -18,6 +18,8 @@ You can use the beeper of the instrument to provide an audible signal at a speci
 Using this function from a remote interface does not affect audible errors or key click settings that were made from \
 the front panel.'
         },
+        kind: CompletionItemKind.Function,
+        label: 'beep'
     },
 ]
 

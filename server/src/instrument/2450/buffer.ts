@@ -9,17 +9,14 @@ const bufferCompletions: Array<CompletionItem> = [
     },
     {
         data: ['buffer'],
-        kind: CompletionItemKind.Module,
-        label: 'write'
-    },
-    {
-        data: ['buffer'],
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clearstats(bufferVar)\n```\n\nbuffer.clearstats([bufferVar])\n\
 \n\
 Clear the statistical information associated with the specified buffer without clearing the readings.'
         },
+        kind: CompletionItemKind.Function,
+        label: 'clearstats'
     },
     {
         data: ['buffer'],
@@ -31,6 +28,8 @@ Delete the specified, user-defined reading buffer.\n\
 \n\
 You cannot delete the default reading buffers, defbuffer1 and defbuffer2.'
         },
+        kind: CompletionItemKind.Function,
+        label: 'delete'
     },
     {
         data: ['buffer'],
@@ -76,6 +75,8 @@ overwritten by the new buffer. Any data in the existing buffer is lost.\n\
 \n\
 You cannot assign user-defined reading buffers the name defbuffer1 and defbuffer2.'
         },
+        kind: CompletionItemKind.Function,
+        label: 'make'
     },
     {
         data: ['buffer'],
@@ -92,6 +93,8 @@ no file extension is specified, .csv is added).\n\
 \n\
 Verify that you are using a unique name to avoid overwriting any existing .csv files on the flash drive.'
         },
+        kind: CompletionItemKind.Function,
+        label: 'save'
     },
     {
         data: ['buffer'],
@@ -106,6 +109,8 @@ exist.\n\
 \n\
 The index column entry in the .csv file starts at 1 for each append operation.'
         },
+        kind: CompletionItemKind.Function,
+        label: 'saveappend'
     },
 ]
 
