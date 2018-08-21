@@ -5,7 +5,7 @@
     "version": "0.3.0",
     "preview": true,
     "publisher": "Keithley",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/tektronixofficial/tsp-language-extension"
