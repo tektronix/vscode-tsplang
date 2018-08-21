@@ -1,0 +1,9 @@
+.DS_Store
+out
+node_modules
+client/server
+*.vsix
+server/src/instrument/raw-tsb-help/*/
+npm-debug.log
+coverage/
+.nyc_output/
