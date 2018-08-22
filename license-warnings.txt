@@ -1,9 +1,0 @@
-amdefine@1.0.1      "BSD-3-Clause OR MIT"       COMPATIBLE
-estraverse@1.9.3    "BSD"                       Actually BSD-2-Clause
-esutils@2.0.2       "BSD"                       Actually BSD-2-Clause
-json-schema@0.2.3   "AFLv2.1"                   OR "New" BSD License (BSD-3-Clause)
-jsonify@0.0.0       "Public Domain"             COMPATIBLE (no dependencies)
-map-stream@0.1.0    "No license"                Actually MIT - COMPATIBLE
-node-extend@1.1.6   "MIT OR GPL-2.0"            COMPATIBLE
-pause-stream@0.0.11 "No license"                Actually MIT & Apache-2.0 - COMPATIBLE
-optimist@0.6.1      "MIT/X11"
