@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 # TODO: Grab arguments from beginning of usage and check for those when
 #+      populating the arguments list.  Currently we're blindly grabbing
