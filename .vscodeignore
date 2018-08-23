@@ -1,6 +1,7 @@
 **/*.ts
 .github/**
 .vscode/**
+out/test/**
 server/**
 test/**
 utils/**
