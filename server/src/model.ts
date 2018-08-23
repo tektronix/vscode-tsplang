@@ -21,7 +21,7 @@ export namespace Model {
     export const KI2461 = '2461'
     export const KI2461SYS = '2461-sys'
     export const KI6500 = '6500'
-    export function fromString(value: string): Model | undefined {
+    export function fromString(value: string): Model {
         if (value === KI2450
                 || value === KI2460
                 || value === KI2461
