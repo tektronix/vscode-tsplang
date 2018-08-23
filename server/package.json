@@ -1,10 +1,10 @@
 {
     "name": "tsplang",
-    "displayName": "Keithley TSP",
-    "description": "Keithley Instruments TSP Command Autocomplete.",
+    "displayName": "TSPLang",
+    "description": "Keithley Instruments TSP® language extension for Visual Studio Code",
     "version": "0.3.0",
     "publisher": "Keithley",
-    "license": "MIT",
+    "license": "Apache-2.0",
     "engines": {
         "node": "*"
     },
