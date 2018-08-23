@@ -1,22 +1,42 @@
 # TSPLang README
 
-> TSP language support for VSCode
-
-The TSP language extension for Visual Studio Code provides command completions for your TSP-enabled Keithley Instruments.
+The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supportedinstruments) TSP-enabled Keithley Instruments.
 
 ## Requirements
 
-To enable TSP command completions for [supported instruments](#supportedinstruments), a shebang line is required. TSP shebangs take the form of
+To enable TSP command completions for supported instruments, a shebang line is required. TSP shebangs take the form of
 ```
 --#!<model>
 ```
-where `<model>` is a supported instrument model.
+where `<model>` is a supported instrument model. Shebangs __must__ be placed on the first line of a file with a `.tsp` extension.
+
+After installation, if you have not restarted VSCode, you may have to manually select the TSP language for your `.tsp` files. By default, this can be done by pressing <kbd>Ctrl</kbd>+<kbd>K</kbd>, <kbd>M</kbd> on Windows or <kbd>&#8984;</kbd>+<kbd>K</kbd>, <kbd>M</kbd> on Mac then searching for "TSP" and pressing <kbd>Enter</kbd> or <kbd>Return</kbd>.
 
 ## Supported Instruments
 
-The following instruments are currently supported:
+Release builds are available as VSIX files in the [Releases](/releases) section and currently support these instrument models:
 * 2450
+
+Developer builds include all instruments supported in Release builds in addition to these instrument models:
 * 2460
 * 2461
 * 2461-SYS
 * 6500
+
+## Contribute
+
+See a typo? Know how to fix an issue? Implement a requested feature?
+
+We'd love to accept your patches and contributions! The [Contributing](CONTRIBUTING.md) document guides you through checkout, unit testing, and building.
+
+## Disclaimer
+
+This is not an officially supported Tektronix product. It is maintained by a small group of employees in their spare time. We lack the resources typical of most Tektronix products, so please bear with us! We will do our best to address your issues and answer any questions directly related to this extension in a timely manner.
+
+## License
+
+Licensed under Apache 2.0
+<br/>
+<br/>
+<br/>
+Made with :heart: at Keithley Instruments
