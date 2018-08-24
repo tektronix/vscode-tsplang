@@ -10,7 +10,7 @@ To enable TSP command completions for supported instruments, a shebang line is r
 ```
 where `<model>` is a supported instrument model. Shebangs __must__ be placed on the first line of a file with a `.tsp` extension.
 
-After installation, if you have not restarted VSCode, you may have to manually select the TSP language for your `.tsp` files. By default, this can be done by pressing <kbd>Ctrl</kbd>+<kbd>K</kbd>, <kbd>M</kbd> on Windows or <kbd>&#8984;</kbd>+<kbd>K</kbd>, <kbd>M</kbd> on Mac then searching for "TSP" and pressing <kbd>Enter</kbd> or <kbd>Return</kbd>.
+After installation, if you have not restarted VSCode, you may have to manually select the TSP language for your files. By default, this can be done by pressing <kbd>Ctrl</kbd>+<kbd>K</kbd>, <kbd>M</kbd> on Windows or <kbd>&#8984;</kbd>+<kbd>K</kbd>, <kbd>M</kbd> on Mac and selecting "TSP" while editing your file.
 
 ## Supported Instruments
 
