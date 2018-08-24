@@ -11,4 +11,4 @@ Ask your question here
 
 
 <!-- Template modified by Tektronix. Original Content developed by the following authors. -->
-<!-- Microsoft Corporation and their question template available at https://github.com/Microsoft/vscode -->
+<!-- Microsoft Corporation and their Question Template available at https://github.com/Microsoft/vscode -->

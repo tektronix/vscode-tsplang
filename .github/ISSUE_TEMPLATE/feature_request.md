@@ -11,4 +11,4 @@ Describe your feature here
 
 
 <!-- Template modified by Tektronix. Original Content developed by the following authors. -->
-<!-- Microsoft Corporation and their feature request template available at https://github.com/Microsoft/vscode -->
+<!-- Microsoft Corporation and their Feature Request Template available at https://github.com/Microsoft/vscode -->

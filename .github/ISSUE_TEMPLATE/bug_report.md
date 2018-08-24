@@ -25,5 +25,5 @@ Tell us what happens instead
 
 
 <!-- Template modified by Tektronix. Original Content developed by the following authors. -->
-<!-- Microsoft Corporation and their bug report template available at https://github.com/Microsoft/vscode -->
-<!-- The angular-translate team and Pascal Precht and their bug report template available at https://github.com/angular-translate/angular-translate -->
+<!-- Microsoft Corporation and their Bug Report Template available at https://github.com/Microsoft/vscode -->
+<!-- The angular-translate team and Pascal Precht and their Bug Report Template available at https://github.com/angular-translate/angular-translate -->
