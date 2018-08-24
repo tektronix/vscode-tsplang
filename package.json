@@ -69,7 +69,7 @@
         "prepackage": "npm run compile && npm run lint && npm run test",
         "package": "vsce package",
         "postinstall": "cd server && npm install && cd .. && npm run update-vscode",
-        "test": "npm run lint & mocha",
+        "test": "npm run lint -s & mocha",
         "test:coverage": "nyc mocha",
         "update-vscode": "node ./node_modules/vscode/bin/install",
         "watch:client": "tsc -w -p ./tsconfig.json",
