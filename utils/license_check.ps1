@@ -24,7 +24,7 @@ $ErrorActionPreference = "Stop"
 Set-Location "$PSScriptRoot/.."
 
 # Create a new VSIX file
-npm run package | Out-Null
+vsce package | Out-Null
 
 # Move the resulting VSIX file, renaming it in the process
 Move-Item .\*.vsix .\utils\target.zip -Force
