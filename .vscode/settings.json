@@ -14,11 +14,11 @@
     },
     "[typescript]": {
         "editor.insertSpaces": true,
+        "editor.rulers": [
+            119
+        ],
         "editor.tabSize": 4
     },
-    "editor.rulers": [
-        119
-    ],
     "mocha.files.glob": "test/**/*.ts",
     "mocha.options": {
         "recursive": true
