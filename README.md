@@ -1,4 +1,4 @@
-# TSPLang README
+# TSPLang
 
 The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supportedinstruments) TSP-enabled Keithley Instruments.
 
