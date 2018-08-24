@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method no-magic-numbers
+// tslint:disable:no-implicit-dependencies prefer-function-over-method
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
@@ -23,11 +23,11 @@ import { Model } from '../../../server/src/model'
     @test('Model.fromString returns Model')
     modelFromStringReturnsModelType(): void {
         try {
-            let typeCompatibilityCheck: Model = Model.fromString('2450')
-            typeCompatibilityCheck = Model.fromString('2460')
-            typeCompatibilityCheck = Model.fromString('2461')
-            typeCompatibilityCheck = Model.fromString('2461-sys')
-            typeCompatibilityCheck = Model.fromString('6500')
+            let _typeCompatibilityCheck: Model = Model.fromString('2450')
+            _typeCompatibilityCheck = Model.fromString('2460')
+            _typeCompatibilityCheck = Model.fromString('2461')
+            _typeCompatibilityCheck = Model.fromString('2461-sys')
+            _typeCompatibilityCheck = Model.fromString('6500')
         }
         catch {
             assert(false, 'Model.fromString failed to return a Model type')
@@ -45,7 +45,7 @@ import { Model } from '../../../server/src/model'
     @test('Model.KI2450 is a Model type')
     modelKI2450IsAModelType(): void {
         try {
-            const typeCompatibilityCheck: Model = Model.KI2450
+            const _typeCompatibilityCheck: Model = Model.KI2450
         }
         catch {
             assert(false, 'Model.KI2450 incompatible with type Model')
@@ -55,7 +55,7 @@ import { Model } from '../../../server/src/model'
     @test('Model.KI2460 is a Model type')
     modelKI2460IsAModelType(): void {
         try {
-            const typeCompatibilityCheck: Model = Model.KI2460
+            const _typeCompatibilityCheck: Model = Model.KI2460
         }
         catch {
             assert(false, 'Model.KI2460 incompatible with type Model')
@@ -65,7 +65,7 @@ import { Model } from '../../../server/src/model'
     @test('Model.KI2461 is a Model type')
     modelKI2461IsAModelType(): void {
         try {
-            const typeCompatibilityCheck: Model = Model.KI2461
+            const _typeCompatibilityCheck: Model = Model.KI2461
         }
         catch {
             assert(false, 'Model.KI2461 incompatible with type Model')
@@ -75,7 +75,7 @@ import { Model } from '../../../server/src/model'
     @test('Model.KI2461SYS is a Model type')
     modelKI2461SYSIsAModelType(): void {
         try {
-            const typeCompatibilityCheck: Model = Model.KI2461SYS
+            const _typeCompatibilityCheck: Model = Model.KI2461SYS
         }
         catch {
             assert(false, 'Model.KI2461SYS incompatible with type Model')
@@ -85,7 +85,7 @@ import { Model } from '../../../server/src/model'
     @test('Model.KI6500 is a Model type')
     modelKI6500IsAModelType(): void {
         try {
-            const typeCompatibilityCheck: Model = Model.KI6500
+            const _typeCompatibilityCheck: Model = Model.KI6500
         }
         catch {
             assert(false, 'Model.KI6500 incompatible with type Model')

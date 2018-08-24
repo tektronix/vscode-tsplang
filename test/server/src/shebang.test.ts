@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method no-magic-numbers
+// tslint:disable:no-implicit-dependencies no-magic-numbers prefer-function-over-method promise-function-async
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
