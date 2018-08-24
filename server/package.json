@@ -18,8 +18,8 @@
         "vscode-languageserver": "^4.4.2"
     },
     "scripts": {
-        "installServer": "installServerIntoExtension ../out ./package.json ./tsconfig.json",
         "compile": "installServerIntoExtension ../out ./package.json ./tsconfig.json && tsc -p .",
+        "install-server": "installServerIntoExtension ../out ./package.json ./tsconfig.json",
         "watch": "installServerIntoExtension ../out ./package.json ./tsconfig.json && tsc -w -p ."
     }
 }

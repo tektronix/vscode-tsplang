@@ -62,16 +62,18 @@
         "typescript": "^2.9.2"
     },
     "scripts": {
-        "postinstall": "cd server && npm install && cd .. && node  ./node_modules/vscode/bin/install",
-        "compile": "tsc -p ./tsconfig.json && cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
-        "package": "vsce package",
+        "compile": "tsc -p ./tsconfig.json && cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json",
         "compile:client": "tsc -p ./tsconfig.json",
-        "watch:client": "tsc -w -p ./tsconfig.json",
-        "compile:server": "cd server && npm run installServer && cd .. && tsc -p server/tsconfig.json",
-        "watch:server": "cd server && npm run installServer && cd .. && tsc -w -p server/tsconfig.json",
-        "update-vscode": "node ./node_modules/vscode/bin/install",
+        "compile:server": "cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json",
+        "lint": "node ./node_modules/tslint/bin/tslint --project .",
+        "prepackage": "npm run compile && npm run lint && npm run test",
+        "package": "vsce package",
+        "postinstall": "cd server && npm install && cd .. && npm run update-vscode",
         "test": "mocha",
-        "test:coverage": "nyc mocha"
+        "test:coverage": "nyc mocha",
+        "update-vscode": "node ./node_modules/vscode/bin/install",
+        "watch:client": "tsc -w -p ./tsconfig.json",
+        "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json"
     },
     "nyc": {
         "extension": [
