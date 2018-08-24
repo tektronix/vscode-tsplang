@@ -102,7 +102,6 @@
         "no-unsafe-any": true,
         "no-unsafe-finally": true,
         "no-unused-expression": true,
-        "no-unused-variable": true,
         "no-use-before-declare": true,
         "no-var-keyword": true,
         "no-void-expression": [true, "ignore-arrow-function-shorthand"],
@@ -234,7 +233,8 @@
         "variable-name": [
             true,
             "ban-keywords",
-            "check-format"
+            "check-format",
+            "allow-leading-underscore"
         ],
         "whitespace": [
             true,
