@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerBlenderCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -33,7 +31,9 @@ const triggerBlenderCompletions: Array<CompletionItem> = [
         data: ['blender', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function clears the blender event detector and resets the overrun indicator of blender N.\n\nThis command sets the blender event detector to the undetected state and resets the overrun indicator of the event detector.'
+            value: '```lua\nfunction clear()\n```\n\
+\n\
+Clear the event detector and reset the overrun indicator of the currently indexed blender.'
         },
         kind: CompletionItemKind.Function,
         label: 'clear',
@@ -42,7 +42,14 @@ const triggerBlenderCompletions: Array<CompletionItem> = [
         data: ['blender', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command selects whether the blender waits for any one event (OR) or waits for all selected events (AND) before signaling an output event.'
+            value: '```lua\ntrigger.blender[N].orenable\n```\n\
+\n\
+Get or set whether the currently indexed blender performs OR operations (true) or AND operations (false). Defaults to \
+AND operations (false).\n\
+\n\
+When set to OR operations (true), the blender waits for a single stimulus before signaling an output event.\n\
+\n\
+When set to AND operations (false), the blender waits for all stimulus before signaling an output event.'
         },
         kind: CompletionItemKind.Property,
         label: 'orenable',
@@ -51,7 +58,9 @@ const triggerBlenderCompletions: Array<CompletionItem> = [
         data: ['blender', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'Indicates if an event was ignored because the event detector was already in the detected state when the event occurred. This is an indication of the state of the event detector that is built into the event blender itself.\n\nThis command does not indicate if an overrun occurred in any other part of the trigger model or in any other trigger object that is monitoring the event. It also is not an indication of an action overrun.'
+            value: '```lua\ntrigger.blender[N].overrun\n```\n\ntrigger.blender[N].overrun -> boolean\n\
+\n\
+Returns true if an event was ignored because the event detector was already in the detected state and false otherwise.'
         },
         kind: CompletionItemKind.Constant,
         label: 'overrun',
@@ -60,7 +69,13 @@ const triggerBlenderCompletions: Array<CompletionItem> = [
         data: ['blender', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function resets some of the trigger blender settings to their factory defaults.\n\nThe trigger.blender[N].reset() function resets the following attributes to their factory defaults:\n\nIt also clears trigger.blender[N].overrun.'
+            value: '```lua\nfunction reset()\n\
+\n\
+This function resets the following attributes of the currently indexed blender N to its default values: \
+"trigger.blender[N].orenable" \
+and "trigger.blender[N].stimulus".\n\
+\n\
+It also clears "trigger.blender[N].overrun".'
         },
         kind: CompletionItemKind.Function,
         label: 'reset',
@@ -69,7 +84,11 @@ const triggerBlenderCompletions: Array<CompletionItem> = [
         data: ['blender', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute is an array indexed from 1 to 4 that specifies the events that trigger the blender.\n\nThere are four stimulus inputs that can each select a different event.\n\nUse zero to disable the blender input.\n\nThe event parameter may be any of the trigger events shown in the following table.'
+            value: '```lua\ntrigger.blender[N].stimulus[M]\n```\n\
+\n\
+Get or set stimulus[M] to some blender-triggering event trigger.EVENT_\\* or 0, where M is an index from 1 to 4. \
+If set to 0, input for the currently indexed blender is disabled. Each element of the stimulus array defaults to \
+trigger.EVENT_NONE.'
         },
         kind: CompletionItemKind.Property,
         label: 'stimulus',
@@ -78,7 +97,14 @@ const triggerBlenderCompletions: Array<CompletionItem> = [
         data: ['blender', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function waits for a blender trigger event to occur.\n\nReturns `true` on trigger detection; `false` otherwise.\n\n\nThis function waits for an event blender trigger event. If one or more trigger events were detected since the last time trigger.blender[N].wait() or trigger.blender[N].clear() was called, this function returns immediately.\n\nAfter detecting a trigger with this function, the event detector automatically resets and rearms. This is true regardless of the number of events detected.'
+            value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.blender[N].wait(timeout) -> boolean\n\
+\n\
+Returns a boolean value indicating whether a blender trigger event occurred since the last time this or the clear \
+function was called. If no event is detected after timeout seconds, then false is returned. If an event is detected \
+or has occurred previously, then true is returned immediately.\n\
+\n\
+After detecting a trigger with this function, the event detector automatically resets and rearms regardless of the \
+number of events detected.'
         },
         kind: CompletionItemKind.Function,
         label: 'wait',
