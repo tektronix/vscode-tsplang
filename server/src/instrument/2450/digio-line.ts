@@ -44,7 +44,7 @@ Get or set the digital I/O line to digio.MODE_\\*. Defaults to digio.MODE_IN.'
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\
 \n\
-This function resets the following attributes to their default values: \
+Reset the following attributes of the currently indexed digital I/O line N to their default values: \
 "digio.line[N].mode", \
 "trigger.digin[N].edge", \
 "trigger.digout[N].logic", \
