@@ -582,11 +582,19 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Assert a transistor-transistor logic high pulse.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'LOGIC_NEGATIVE'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Assert a transistor-transistor logic low pulse.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'LOGIC_POSITIVE'
     },
