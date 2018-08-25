@@ -44,7 +44,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.tsplinkin[N].edge\n```\n\
 \n\
-Get or set the trigger edge logic for the currently indexed TSP-Link trigger to trigger.EDGE_*. Defaults to \
+Get or set the trigger edge logic for the currently indexed TSP-Link trigger to trigger.EDGE_\\*. Defaults to \
 trigger.EDGE_FALLING.\n\
 \n\
 When the configured edge is detected, the instrument asserts a transistor-transistor logic low‑pulse for the output.\n\

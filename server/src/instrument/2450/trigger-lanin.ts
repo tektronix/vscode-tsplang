@@ -44,7 +44,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanin[N].edge\n```\n\
 \n\
-Get or set the trigger edge logic for the currently indexed LAN trigger to trigger.EDGE_*. Defaults to \
+Get or set the trigger edge logic for the currently indexed LAN trigger to trigger.EDGE_\\*. Defaults to \
 trigger.EDGE_EITHER.\n\
 \n\
 LAN trigger edge logic is meant to simulate that of digital I/O lines. Because communition over LAN cannot express an \

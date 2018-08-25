@@ -44,7 +44,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digin[N].edge\n```\n\
 \n\
-Get or set the trigger edge logic for the currently indexed digital input line to trigger.EDGE_*. Defaults to \
+Get or set the trigger edge logic for the currently indexed digital input line to trigger.EDGE_\\*. Defaults to \
 trigger.EDGE_FALLING.\n\
 \n\
 To directly control the line state, set the mode of the line to digital and use the write command. When the digital \
