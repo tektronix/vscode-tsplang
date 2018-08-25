@@ -18,9 +18,9 @@
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
 import { get2450Completions, get2450Signatures } from './instrument/2450'
-import { get2460Completions, get2460Signatures } from './instrument/2460'
-import { get2461Completions, get2461Signatures } from './instrument/2461'
-import { get6500Completions, get6500Signatures } from './instrument/6500'
+// import { get2460Completions, get2460Signatures } from './instrument/2460'
+// import { get2461Completions, get2461Signatures } from './instrument/2461'
+// import { get6500Completions, get6500Signatures } from './instrument/6500'
 import { Model } from './model'
 
 export interface PoolEntry {
@@ -116,80 +116,80 @@ export class TspPool {
                         signatures: signa2450
                     })
                     break
-                case Model.KI2460:
-                    let compl2460: Array<CompletionItem> = new Array()
-                    let signa2460: Array<SignatureInformation> = new Array()
+                // case Model.KI2460:
+                //     let compl2460: Array<CompletionItem> = new Array()
+                //     let signa2460: Array<SignatureInformation> = new Array()
 
-                    try {
-                        compl2460 = await get2460Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2460 completions'))
-                    }
+                //     try {
+                //         compl2460 = await get2460Completions()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2460 completions'))
+                //     }
 
-                    try {
-                        signa2460 = await get2460Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2460 signatures'))
-                    }
+                //     try {
+                //         signa2460 = await get2460Signatures()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2460 signatures'))
+                //     }
 
-                    resolve({
-                        completions: compl2460,
-                        references: 1,
-                        signatures: signa2460
-                    })
-                    break
-                case Model.KI2461:
-                    /* fall through */
-                case Model.KI2461SYS:
-                    let compl2461: Array<CompletionItem> = new Array()
-                    let signa2461: Array<SignatureInformation> = new Array()
+                //     resolve({
+                //         completions: compl2460,
+                //         references: 1,
+                //         signatures: signa2460
+                //     })
+                //     break
+                // case Model.KI2461:
+                //     /* fall through */
+                // case Model.KI2461SYS:
+                //     let compl2461: Array<CompletionItem> = new Array()
+                //     let signa2461: Array<SignatureInformation> = new Array()
 
-                    try {
-                        compl2461 = await get2461Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2461 completions'))
-                    }
+                //     try {
+                //         compl2461 = await get2461Completions()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2461 completions'))
+                //     }
 
-                    try {
-                        signa2461 = await get2461Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2461 signatures'))
-                    }
+                //     try {
+                //         signa2461 = await get2461Signatures()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2461 signatures'))
+                //     }
 
-                    resolve({
-                        completions: compl2461,
-                        references: 1,
-                        signatures: signa2461
-                    })
-                    break
-                case Model.KI6500:
-                    let compl6500: Array<CompletionItem> = new Array()
-                    let signa6500: Array<SignatureInformation> = new Array()
+                //     resolve({
+                //         completions: compl2461,
+                //         references: 1,
+                //         signatures: signa2461
+                //     })
+                //     break
+                // case Model.KI6500:
+                //     let compl6500: Array<CompletionItem> = new Array()
+                //     let signa6500: Array<SignatureInformation> = new Array()
 
-                    try {
-                        compl6500 = await get6500Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 6500 completions'))
-                    }
+                //     try {
+                //         compl6500 = await get6500Completions()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 6500 completions'))
+                //     }
 
-                    try {
-                        signa6500 = await get6500Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 6500 signatures'))
-                    }
+                //     try {
+                //         signa6500 = await get6500Signatures()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 6500 signatures'))
+                //     }
 
-                    resolve({
-                        completions: compl6500,
-                        references: 1,
-                        signatures: signa6500
-                    })
-                    break
+                //     resolve({
+                //         completions: compl6500,
+                //         references: 1,
+                //         signatures: signa6500
+                //     })
+                //     break
                 default:
                     reject(new Error(`Model ${model} not supported`))
             }
