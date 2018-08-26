@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerLanoutCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -33,7 +31,9 @@ const triggerLanoutCompletions: Array<CompletionItem> = [
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function simulates the occurrence of the trigger and generates the corresponding event.\n\nGenerates and sends a LAN trigger packet for the LAN event number specified.\n\nSets the pseudo line state to the appropriate state.\n\nThe following indexes provide the listed LXI events:'
+            value: '```lua\nfunction assert()\n```\n\
+\n\
+Assert a trigger event on the currently indexed LAN trigger, returning before it has completed.'
         },
         kind: CompletionItemKind.Function,
         label: 'assert',
@@ -42,7 +42,13 @@ const triggerLanoutCompletions: Array<CompletionItem> = [
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command prepares the event generator to send event messages. For TCP connections, this opens the TCP connection.\n\nThe event generator automatically disconnects when either the protocol or IP address for this event is changed.'
+            value: '```lua\nfunction connect()\n```\n\
+\n\
+Prepare the event generator to send event messages on the currently indexed LAN trigger. For TCP connections, this \
+initiates a TCP session.\n\
+\n\
+The event generator automatically disconnects when either the LAN trigger protocol or ipaddress attributes are \
+changed.'
         },
         kind: CompletionItemKind.Function,
         label: 'connect',
@@ -51,7 +57,13 @@ const triggerLanoutCompletions: Array<CompletionItem> = [
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute contains the LAN event connection state.\n\nThis is set to true when the LAN trigger is connected and ready to send trigger events after a successful trigger.lanout[N].connect()  command. If the LAN trigger is not ready to send trigger events, this value is false.\n\nThis attribute is also false when the trigger.lanout[N].protocol or trigger.lanout[N].ipaddress attribute is changed or when the remote connection closes the connection.'
+            value: '```lua\ntrigger.lanout[N].connected\n```\n\ntrigger.lanout[N].connected -> boolean\n\
+\n\
+Returns true when the currently indexed LAN trigger is connected and ready to send trigger events and false \
+otherwise.\n\
+\n\
+Automatically set to false when either the LAN trigger protocol or ipaddress attributes are changed or when that IP \
+address closes the connection.'
         },
         kind: CompletionItemKind.Constant,
         label: 'connected',
@@ -60,7 +72,13 @@ const triggerLanoutCompletions: Array<CompletionItem> = [
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function disconnects the LAN trigger event generator.\n\nWhen this command is set for TCP connections, this closes the TCP connection.\n\nThe LAN trigger automatically disconnects when either the trigger.lanout[N].protocol or trigger.lanout[N].ipaddress attributes for this event are changed.'
+            value: '```lua\nfunction disconnect()\n```\n\
+\n\
+Disconnects the event generator for the currently indexed LAN trigger. For TCP connections, this closes the TCP \
+session.\n\
+\n\
+The event generator automatically disconnects when either the LAN trigger protocol or ipaddress attributes are \
+changed.'
         },
         kind: CompletionItemKind.Function,
         label: 'disconnect',
@@ -69,7 +87,13 @@ const triggerLanoutCompletions: Array<CompletionItem> = [
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute specifies the address (in dotted‑decimal format) of UDP or TCP listeners.\n\nSets the IP address for outgoing trigger events.\n\nAfter you change this setting, you must send the connect command before outgoing messages can be sent.'
+            value: '```lua\ntrigger.lanout[N].ipaddress\n```\n\
+\n\
+Get or set a TCP or UDP listener for the currently indexed LAN trigger to an IPv4 address string. Defaults to \
+0.0.0.0\n\
+\n\
+Any previously established connection on the currently indexed LAN trigger must be reestablished after updating this \
+attribute.'
         },
         kind: CompletionItemKind.Property,
         label: 'ipaddress',
@@ -80,8 +104,8 @@ const triggerLanoutCompletions: Array<CompletionItem> = [
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanout[N].logic\n```\n\
 \n\
-Get or set the trigger logic for the event detector and output generator to trigger.LOGIC_\\*. Defaults to \
-trigger.LOGIC_NEGATIVE.'
+Get or set the logic used by the output trigger generator for the currently indexed LAN trigger to trigger.LOGIC_\\*. \
+Defaults to trigger.LOGIC_NEGATIVE.'
         },
         kind: CompletionItemKind.Property,
         label: 'logic',
@@ -90,7 +114,19 @@ trigger.LOGIC_NEGATIVE.'
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute sets the LAN protocol to use for sending trigger messages.\n\nThe LAN trigger listens for trigger messages on all the supported protocols. However, it uses the designated protocol for sending outgoing messages.\n\nAfter you change this setting, you must re-connect the LAN trigger event generator before you can send outgoing event messages.\n\nWhen multicast is selected, the trigger IP address is ignored and event messages are sent to the multicast address 224.0.23.159.'
+            value: '```lua\ntrigger.lanout[N].protocol\n```\n\
+\n\
+Get or set the trigger protocol used by the currently indexed LAN trigger to trigger.PROTOCOL_\\*. Defaults to \
+trigger.PROTOCOL_TCP.\n\
+\n\
+When set to trigger.PROTOCOL_MULTICAST, the LAN trigger ipaddress attribute is ignored and trigger messages are sent \
+to multicast address 224.0.23.159.\n\
+\n\
+The LAN trigger listens for trigger messages on all supported protocols. The designated protocol is only used for \
+sending outgoing trigger messages.\n\
+\n\
+Any previously established connection on the currently indexed LAN trigger must be reestablished after updating this \
+attribute.'
         },
         kind: CompletionItemKind.Property,
         label: 'protocol',
@@ -99,7 +135,10 @@ trigger.LOGIC_NEGATIVE.'
         data: ['lanout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute specifies which event causes a LAN trigger packet to be sent for this trigger. Set the event to one of the existing trigger events, which are shown in the following table.\n\nSetting this attribute to none disables automatic trigger generation.\n\nIf any events are detected before the trigger LAN connection is sent, the event is ignored and the action overrun is set.'
+            value: '```lua\ntrigger.lanout[N].stimulus\n```\n\
+\n\
+Get or set the trigger event for the currently indexed LAN trigger to trigger.EVENT_\\*. Defaults to \
+trigger.EVENT_NONE.'
         },
         kind: CompletionItemKind.Property,
         label: 'stimulus',
