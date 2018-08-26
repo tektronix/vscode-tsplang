@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerTimerStartCompletions: Array<CompletionItem> = [
     {
         data: ['timer', 'trigger'],
@@ -29,7 +27,12 @@ const triggerTimerStartCompletions: Array<CompletionItem> = [
         data: ['start', 'timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute configures the fractional seconds of an alarm or a time in the future when the timer will start.\n\nThis command configures the alarm of the timer.\n\nWhen the timer is enabled, the timer starts immediately if the timer is configured for a start time that has passed.'
+            value: '```lua\ntrigger.timer[N].start.fractionalseconds\n```\n\
+\n\
+Get or set the fractional seconds in an alarm or some future time when the currently indexed timer will start to a \
+number between 0 and 1 (exclusive). Defaults to 0.\n\
+\n\
+When enabled, the timer will start immediately if it is configured for a start time that has passed.'
         },
         kind: CompletionItemKind.Property,
         label: 'fractionalseconds',
@@ -38,7 +41,15 @@ const triggerTimerStartCompletions: Array<CompletionItem> = [
         data: ['start', 'timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute specifies when timer events are generated.\n\nWhen this is set to on, a trigger event is generated immediately when the timer is triggered.\n\nWhen it is set to off, a trigger event is generated when the timer elapses. This generates the event trigger.EVENT_TIMERN.'
+            value: '```lua\ntrigger.timer[N].start.generate\n```\n\
+\n\
+Get or set whether to use the configured start time for the currently indexed timer to trigger.ON or OFF. Defaults to \
+trigger.OFF.\n\
+\n\
+When set to trigger.ON, a trigger event is generated after the configured delay has elapsed.\n\
+\n\
+When set to trigger.OFF, a trigger event is generated after delay seconds have past since the configured start time. \
+This generates a trigger.EVENT_TIMER<N>, where <N> is the currently indexed timer.'
         },
         kind: CompletionItemKind.Property,
         label: 'generate',
@@ -47,7 +58,9 @@ const triggerTimerStartCompletions: Array<CompletionItem> = [
         data: ['start', 'timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command indicates if an event was ignored because the event detector was already in the detected state when the event occurred.\n\nThis is an indication of the state of the event detector built into the timer itself. It does not indicate if an overrun occurred in any other part of the trigger model or in any other construct that is monitoring the delay completion event. It also is not an indication of a delay overrun.'
+            value: '```lua\ntrigger.timer[N].start.overrun\n```\n\ntrigger.timer[N].start.overrun -> boolean\n\
+\n\
+Returns true if an event was ignored because the event detector was already in the detected state and false otherwise.'
         },
         kind: CompletionItemKind.Constant,
         label: 'overrun',
@@ -56,7 +69,12 @@ const triggerTimerStartCompletions: Array<CompletionItem> = [
         data: ['start', 'timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute configures the seconds of an alarm or a time in the future when the timer will start.\n\nThis command configures the alarm of the timer.\n\nWhen the timer is enabled, the timer starts immediately if the timer is configured for a start time that has passed.'
+            value: '```lua\ntrigger.timer[N].start.seconds\n```\n\
+\n\
+Get or set the seconds in an alarm or some future time when the currently indexed timer will start to a number from 0 \
+to 2 147 483 647. Defaults to 0.\n\
+\n\
+When enabled, the timer will start immediately if it is configured for a start time that has passed.'
         },
         kind: CompletionItemKind.Property,
         label: 'seconds',
@@ -65,7 +83,12 @@ const triggerTimerStartCompletions: Array<CompletionItem> = [
         data: ['start', 'timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute describes the event that starts the trigger timer.\n\nSet this attribute any trigger event to start the timer when that event occurs.\n\nSet this attribute to zero (0) to disable event processing and use the timer as a timer or alarm based on the start time.\n\nTrigger events are described in the table below.'
+            value: '```lua\ntrigger.timer[N].start.stimulus\n```\n\
+\n\
+Get or set the trigger event that starts the currently indexed timer to trigger.EVENT_\\*. Defaults to \
+trigger.EVENT_NONE.\n\
+\n\
+When set to 0, event processing is disabled and the timer triggers based on its configured start time.'
         },
         kind: CompletionItemKind.Property,
         label: 'stimulus',
