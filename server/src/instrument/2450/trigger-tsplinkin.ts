@@ -33,7 +33,7 @@ const triggerTsplinkinCompletions: Array<CompletionItem> = [
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
 \n\
-Clear the event detector and reset the overrun indicator of the currently indexed digital input line.'
+Clear the event detector and reset the overrun indicator of the currently indexed TSP-Link trigger.'
         },
         kind: CompletionItemKind.Function,
         label: 'clear',
