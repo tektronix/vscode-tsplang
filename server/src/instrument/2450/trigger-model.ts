@@ -234,7 +234,7 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         undefined,
         ParameterInformation.create(
             'blockNumber',
-            'The sequence of the `BRANCH_COUNTER` block in the trigger model.'
+            'The sequence of the BRANCH_COUNTER block in the trigger model.'
         ),
     ),
     SignatureInformation.create(
@@ -258,7 +258,8 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
@@ -278,7 +279,8 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
@@ -290,7 +292,12 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.load("GradeBinning", components, startInLine, startDelay, endDelay, limit1High, limit1Low[, limit1Pattern][, limit2High][, limit2Low][, limit2Pattern][, limit3High][, limit3Low][, limit3Pattern][, limit4High][, limit4Low][, limit4Pattern][, allPattern][, bufferName])',
+        'trigger.model.load("GradeBinning", components, startInLine, startDelay, endDelay, \
+limit1High, limit1Low[, limit1Pattern]\
+[, limit2High][, limit2Low][, limit2Pattern]\
+[, limit3High][, limit3Low][, limit3Pattern]\
+[, limit4High][, limit4Low][, limit4Pattern]\
+[, allPattern][, bufferName])',
         'Load a basic grade binning trigger model.',
         ParameterInformation.create(
             '"GradeBinning"',
@@ -314,59 +321,73 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'limit1High',
-            'The first upper limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value lower than `limit1Low`.'
+            'The first upper limit that the measurement is compared against. \
+To mark this limit as unused, set this value lower than limit1Low.'
         ),
         ParameterInformation.create(
             'limit1Low',
-            'The first lower limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value higher than `limit1High`.'
+            'The first lower limit that the measurement is compared against. \
+To mark this limit as unused, set this value higher than limit1High.'
         ),
         ParameterInformation.create(
             'limit1Pattern',
-            'The bit pattern (1 to 15) that is sent when the measurement fails limit 1; defaults to 1.\n\nSent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
+            'The bit pattern (1 to 15) that is sent when the measurement fails limit 1; defaults to 1. \
+Sent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
         ),
         ParameterInformation.create(
             'limit2High',
-            'The second upper limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value lower than `limit2Low`.'
+            'The second upper limit that the measurement is compared against. \
+To mark this limit as unused, set this value lower than limit2Low.'
         ),
         ParameterInformation.create(
             'limit2Low',
-            'The second lower limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value higher than `limit2High`.'
+            'The second lower limit that the measurement is compared against. \
+To mark this limit as unused, set this value higher than limit2High.'
         ),
         ParameterInformation.create(
             'limit2Pattern',
-            'The bit pattern (1 to 15) that is sent when the measurement fails limit 2; defaults to 2.\n\nSent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
+            'The bit pattern (1 to 15) that is sent when the measurement fails limit 2; defaults to 2. \
+Sent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
         ),
         ParameterInformation.create(
             'limit3High',
-            'The third upper limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value lower than `limit3Low`.'
+            'The third upper limit that the measurement is compared against. \
+To mark this limit as unused, set this value lower than limit3Low.'
         ),
         ParameterInformation.create(
             'limit3Low',
-            'The third lower limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value higher than `limit3High`.'
+            'The third lower limit that the measurement is compared against. \
+To mark this limit as unused, set this value higher than limit3High.'
         ),
         ParameterInformation.create(
             'limit3Pattern',
-            'The bit pattern (1 to 15) that is sent when the measurement fails limit 3; defaults to 4.\n\nSent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
+            'The bit pattern (1 to 15) that is sent when the measurement fails limit 3; defaults to 4. \
+Sent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
         ),
         ParameterInformation.create(
             'limit4High',
-            'The fourth upper limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value lower than `limit4Low`.'
+            'The fourth upper limit that the measurement is compared against. \
+To mark this limit as unused, set this value lower than limit4Low.'
         ),
         ParameterInformation.create(
             'limit4Low',
-            'The fourth lower limit that the measurement is compared against.\n\nTo mark this limit as unused, set this value higher than `limit4High`.'
+            'The fourth lower limit that the measurement is compared against. \
+To mark this limit as unused, set this value higher than limit4High.'
         ),
         ParameterInformation.create(
             'limit4Pattern',
-            'The bit pattern (1 to 15) that is sent when the measurement fails limit 4; defaults to 8.\n\nSent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
+            'The bit pattern (1 to 15) that is sent when the measurement fails limit 4; defaults to 8. \
+Sent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
         ),
         ParameterInformation.create(
             'allPattern',
-            'The bit pattern (1 to 15) that is sent when all limits have passed; defaults to 15.\n\nSent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
+            'The bit pattern (1 to 15) that is sent when all limits have passed; defaults to 15. \
+Sent on digital I/O lines 1 to 4, where 1 is the least significant bit.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
@@ -390,7 +411,8 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'clear',
-            '`trigger.CLEAR_NEVER` to immediately act on any previously detected triggers and not clear them (default) or `trigger.CLEAR_ENTER` to clear previously detected trigger events when entering the wait block.'
+            'Use trigger.CLEAR_NEVER to immediately act on any previously detected triggers and not clear them \
+(default) or trigger.CLEAR_ENTER to clear previously detected trigger events when entering the wait block.'
         ),
         ParameterInformation.create(
             'delay',
@@ -398,7 +420,8 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
@@ -410,28 +433,23 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'triggerEvent',
-            'The event that ends infinite triggering or readings set to occur before the trigger; value is one of:\n\
-`trigger.EVENT_DISPLAY` — Front-panel TRIGGER key pressed.\n\
-`trigger.EVENT_NOTIFY<n>` — `NOTIFY` block `<n>` (1 to 8) generates an event on execution.\n\
-`trigger.EVENT_COMMAND` — `*TRG` or GPIB `GET` command or VXI-11 `device_trigger` command.\n\
-`trigger.EVENT_DIGIO<n>` — Edge state (based on configuration) detected on digital input line `<n>` (1 to 6).\n\
-`trigger.EVENT_TSPLINK<n>` — Edge detected on TSP-Link synchronization line `<n>` (1 to 3).\n\
-`trigger.EVENT_LAN<n>` — LXI trigger packet received on LAN trigger object `<n>` (1 to 8).\n\
-`trigger.EVENT_BLENDER<n>` — Event blender `<n>` (1 or 2).\n\
-`trigger.EVENT_TIMER<n>` — Timer `<n>` (1 to 4) expires.\n\
-`trigger.EVENT_SOURCE_LIMIT` — Source limit condition.'
+            'The event that ends infinite triggering or readings set to occur before the trigger; value is some \
+trigger.EVENT_* enumeration besides trigger.EVENT_NONE.'
         ),
         ParameterInformation.create(
             'position',
-            'The number of readings to make in relation to the size of the reading buffer; enter as percentage out of 100.'
+            'The number of readings to make in relation to the size of the reading buffer; enter as percentage out of \
+100.'
         ),
         ParameterInformation.create(
             'clear',
-            '`trigger.CLEAR_NEVER` to immediately act on any previously detected triggers and not clear them (default) or `trigger.CLEAR_ENTER` to clear previously detected trigger events when entering the wait block.'
+            'Use trigger.CLEAR_NEVER to immediately act on any previously detected triggers and not clear them \
+(default) or trigger.CLEAR_ENTER to clear previously detected trigger events when entering the wait block.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
@@ -451,11 +469,17 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.load("SortBinning", components, startInLine, startDelay, endDelay, limit1High, limit1Low[, limit1Pattern][, limit2High][, limit2Low][, limit2Pattern][, limit3High][, limit3Low][, limit3Pattern][, limit4High][, limit4Low][, limit4Pattern][, allPattern][, bufferName])',
+        'trigger.model.load("SortBinning", components, startInLine, startDelay, endDelay, \
+limit1High, limit1Low[, limit1Pattern]\
+[, limit2High][, limit2Low][, limit2Pattern]\
+[, limit3High][, limit3Low][, limit3Pattern]\
+[, limit4High][, limit4Low][, limit4Pattern]\
+[, allPattern][, bufferName])',
         'Load a basic sort binning trigger model.',
         ParameterInformation.create(
             '"SortBinning"',
@@ -531,10 +555,10 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the reading buffer, which may be a default buffer (`defbuffer1` or `defbuffer2`) or a user‑defined buffer; defaults to `defbuffer1`.'
+            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
+user‑defined buffer; defaults to defbuffer1.'
         ),
     ),
-    /* vvv TODO vvv */
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ALWAYS, branchToBlock)',
         undefined,
@@ -544,19 +568,23 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'trigger.BLOCK_BRANCH_ALWAYS',
-            'The sequence of the block in the trigger model.'
+            'The "trigger.BLOCK_BRANCH_ALWAYS" enumeration.'
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number to execute when the trigger model reaches the Always block.'
+            'The block number to execute when the trigger model reaches this block.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_COUNTER(blockNumber, targetCount, branchToBlock, targetCount)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_COUNTER, targetCount, branchToBlock)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_COUNTER',
+            'The "trigger.BLOCK_BRANCH_COUNTER" enumeration.'
         ),
         ParameterInformation.create(
             'targetCount',
@@ -564,19 +592,20 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the counter is less than the targetCount value.'
-        ),
-        ParameterInformation.create(
-            'targetCount',
-            'branchToBlock.'
+            'The block number to execute when the counter is less than the targetCount value.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_DELTA(blockNumber, targetDifference, branchToBlock, targetDifference, measureBlock)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_DELTA, targetDifference, branchToBlock\
+[, measureBlock])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_DELTA',
+            'The "trigger.BLOCK_BRANCH_DELTA" enumeration.'
         ),
         ParameterInformation.create(
             'targetDifference',
@@ -584,131 +613,163 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the difference between the measurements is less than or equal to the targetDifference.'
-        ),
-        ParameterInformation.create(
-            'targetDifference',
-            'branchToBlock.'
+            'The block number to execute when the difference between the measurements is less than or equal to the \
+targetDifference.'
         ),
         ParameterInformation.create(
             'measureBlock',
-            'The block number of the measure block that makes the measurements to be compared; if this is 0 or undefined, the trigger model uses the previous measure block.'
+            'The block number that makes the measurements to be compared; if this is 0 or undefined, the trigger \
+model uses a previous measure block.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_LIMIT_CONSTANT(blockNumber, limitType, limitA, limitType, limitB, limitType, branchToBlock, measureBlock)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_CONSTANT, limitType, limitA, limitB, \
+branchToBlock[, measureBlock])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
         ),
         ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_LIMIT_CONSTANT',
+            'The "trigger.BLOCK_BRANCH_LIMIT_CONSTANT" enumeration.'
+        ),
+        ParameterInformation.create(
             'limitType',
-            'The type of limit, which can be one of the following types:\ntrigger.LIMIT_ABOVE\ntrigger.LIMIT_BELOW\ntrigger.LIMIT_INSIDE\ntrigger.LIMIT_OUTSIDE.'
+            'The type of limit, which can be some trigger.LIMIT_*.'
         ),
         ParameterInformation.create(
             'limitA',
-            'The lower limit that the measurement is tested against; if  limitType is set to:\ntrigger.LIMIT_ABOVE: This value is ignored\ntrigger.LIMIT_BELOW: The measurement must be below this value\ntrigger.LIMIT_INSIDE: The low limit that the measurement is compared against\ntrigger.LIMIT_OUTSIDE: The low limit that the measurement is compared against.'
-        ),
-        ParameterInformation.create(
-            'limitType',
-            'limitA.'
+            'The lower limit that the measurement is tested against as a number. Limit is ignored if limitType is set \
+to trigger.LIMIT_ABOVE. If limitType is set to trigger.LIMIT_INSIDE or LIMIT_OUTSIDE, then this is the low limit that \
+the measurement is compared against. If limitType is set to trigger.LIMIT_BELOW, then the measurement must be below \
+this value.'
         ),
         ParameterInformation.create(
             'limitB',
-            'The upper limit that the measurement is tested against; if  limitType is set to:\ntrigger.LIMIT_ABOVE: The measurement must be above this value\ntrigger.LIMIT_BELOW: This value is ignored\ntrigger.LIMIT_INSIDE: The high limit that the measurement is compared against\ntrigger.LIMIT_OUTSIDE: The high limit that the measurement is compared against.'
-        ),
-        ParameterInformation.create(
-            'limitType',
-            'limitB.'
+            'The upper limit that the measurement is tested against as a number. Limit is ignored if limitType is set \
+to trigger.LIMIT_BELOW. If limitType is set to trigger.LIMIT_INSIDE or LIMIT_OUTSIDE, then this is the low limit that \
+the measurement is compared against. If limitType is set to trigger.LIMIT_ABOVE, then the measurement must be above \
+this value.'
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the measurement meets the defined criteria.'
+            'The block number to execute when the measurement meets the defined criteria.'
         ),
         ParameterInformation.create(
             'measureBlock',
-            'The block number of the measure block that makes the measurements to be compared; if this is 0 or undefined, the trigger model uses the previous measure block.'
+            'The block number that makes the measurements to be compared; if this is 0 or undefined, the trigger \
+model uses the previous measure block.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_LIMIT_DYNAMIC(blockNumber, limitType, branchToBlock, measureBlock)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_DYNAMIC, limitType, limitNumber, branchToBlock\
+[, measureBlock])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_LIMIT_DYNAMIC',
+            'The "trigger.BLOCK_BRANCH_LIMIT_DYNAMIC" enumeration.'
         ),
         ParameterInformation.create(
             'limitType',
-            'The type of limit, which can be one of the following types:\ntrigger.LIMIT_ABOVE\ntrigger.LIMIT_BELOW\ntrigger.LIMIT_INSIDE\ntrigger.LIMIT_OUTSIDE.'
+            'The type of limit, which can be some trigger.LIMIT_*.'
+        ),
+        ParameterInformation.create(
+            'limitNumber',
+            'The limit number (1 or 2).'
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the measurement meets the criteria set in the configuration list.'
+            'The block number to execute when the measurement meets the criteria set in the configuration list.'
         ),
         ParameterInformation.create(
             'measureBlock',
-            'The block number of the measure block that makes the measurements to be compared; if this is 0 or undefined, the trigger model uses the previous measure block.'
+            'The block number that makes the measurements to be compared; if this is 0 or undefined, the trigger \
+model uses the previous measure block.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_ONCE(blockNumber, branchToBlock)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE, branchToBlock)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_ONCE',
+            'The "trigger.BLOCK_BRANCH_ONCE" enumeration.'
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the trigger model first encounters this block.'
+            'The block number to execute when the trigger model first encounters this block.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_ONCE_EXCLUDED(blockNumber, branchToBlock)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE_EXCLUDED, branchToBlock)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_ONCE_EXCLUDED',
+            'The "trigger.BLOCK_BRANCH_ONCE_EXCLUDED" enumeration.'
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the trigger model encounters this block after the first encounter.'
+            'The block number to execute when the trigger model encounters this block after the first encounter.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BRANCH_ON_EVENT(blockNumber, event, branchToBlock)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ON_EVENT, event, branchToBlock)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BRANCH_ON_EVENT',
+            'The "trigger.BLOCK_BRANCH_ON_EVENT" enumeration.'
         ),
         ParameterInformation.create(
             'event',
-            'The event that must occur before the trigger model branches the specified block.'
+            'Some trigger.EVENT_* that must occur before the trigger model branches to the specified block.'
         ),
         ParameterInformation.create(
             'branchToBlock',
-            'The block number of the trigger model block to execute when the specified event occurs.'
+            'The block number to execute when the specified event occurs.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_BUFFER_CLEAR(blockNumber, bufferName)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_BUFFER_CLEAR[, bufferName])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_BUFFER_CLEAR',
+            'The "trigger.BLOCK_BUFFER_CLEAR" enumeration.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the buffer, which must be an existing buffer; if no buffer is defined, defbuffer1 is used.'
+            'The name of an existing buffer; if no buffer is defined, defbuffer1 is used.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_CONFIG_NEXT(blockNumber, configurationList)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_NEXT, configurationList)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_CONFIG_NEXT',
+            'The "trigger.BLOCK_CONFIG_NEXT" enumeration.'
         ),
         ParameterInformation.create(
             'configurationList',
@@ -716,11 +777,15 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_CONFIG_PREV(blockNumber, configurationList)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_PREV, configurationList)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_CONFIG_PREV',
+            'The "trigger.BLOCK_CONFIG_PREV" enumeration.'
         ),
         ParameterInformation.create(
             'configurationList',
@@ -728,11 +793,15 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_CONFIG_RECALL(blockNumber, configurationList, index)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_RECALL, configurationList[, index])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_CONFIG_RECALL',
+            'The "trigger.BLOCK_CONFIG_RECALL" enumeration.'
         ),
         ParameterInformation.create(
             'configurationList',
@@ -744,87 +813,48 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_DELAY_CONSTANT(blockNumber, time)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_CONSTANT, time)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_DELAY_CONSTANT',
+            'The "trigger.BLOCK_DELAY_CONSTANT" enumeration.'
         ),
         ParameterInformation.create(
             'time',
-            'The amount of time to delay in seconds (167 ns to 10 ks, or 0 for no delay).'
+            'The amount of time to delay in seconds (+167e-9 to 10 000, or 0 for no delay).'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_DELAY_DYNAMIC(blockNumber, blockNumber, userDelay, userDelay, n, n, n, n, N, n, n, n, n, N, N)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_DYNAMIC, trigger.USER_DELAY_*)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
         ),
         ParameterInformation.create(
-            'blockNumber',
-            'blockNumber.'
+            'trigger.BLOCK_DELAY_DYNAMIC',
+            'The "trigger.BLOCK_DELAY_DYNAMIC" enumeration.'
         ),
         ParameterInformation.create(
-            'userDelay',
-            'The number of the user delay:\ntrigger.USER_DELAY_Mn, where n is the number of the user delay (1 to 5) set by smu.measure.userdelay[N]\ntrigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'userDelay',
-            'userDelay.'
-        ),
-        ParameterInformation.create(
-            'n',
-            'trigger.USER_DELAY_Mn, where n is the number of the user delay (1 to 5) set by smu.measure.userdelay[N]trigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'n',
-            'trigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'n',
-            'The number of the user delay:.'
-        ),
-        ParameterInformation.create(
-            'n',
-            'trigger.USER_DELAY_Mn, where n is the number of the user delay (1 to 5) set by smu.measure.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'N',
-            'trigger.USER_DELAY_Mn, where n is the number of the user delay (1 to 5) set by smu.measure.userdelay[N]trigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'n',
-            'The number of the user delay:.'
-        ),
-        ParameterInformation.create(
-            'n',
-            'trigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'n',
-            'trigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N]trigger.USER_DELAY_Mn, where n is the number of the user delay (1 to 5) set by smu.measure.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'n',
-            'trigger.USER_DELAY_Mn, where n is the number of the user delay (1 to 5) set by smu.measure.userdelay[N].'
-        ),
-        ParameterInformation.create(
-            'N',
-            'The number of the user delay:.'
-        ),
-        ParameterInformation.create(
-            'N',
-            'trigger.USER_DELAY_Sn, where n is the number of the user delay (1 to 5) set by smu.source.userdelay[N].'
+            'trigger.USER_DELAY_*',
+            'Either USER_DELAY_M<n> or USER_DELAY_S<n> depending on whether you want to use the measure or source \
+user delays, respectively. Where <n> is the index of the userdelay array attribute to use.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_DIGITAL_IO(blockNumber, bitPattern, bitMask)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_DIGITAL_IO, bitPattern, bitMask)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_DIGITAL_IO',
+            'The "trigger.BLOCK_DIGITAL_IO" enumeration.'
         ),
         ParameterInformation.create(
             'bitPattern',
@@ -836,31 +866,20 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_LOG_EVENT(blockNumber, eventNumber, N, N, N, N, message)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_LOG_EVENT, eventNumber, message)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
         ),
         ParameterInformation.create(
+            'trigger.BLOCK_LOG_EVENT',
+            'The "trigger.BLOCK_LOG_EVENT" enumeration.'
+        ),
+        ParameterInformation.create(
             'eventNumber',
-            'The event number:\ntrigger.LOG_INFON\ntrigger.LOG_WARNN\ntrigger.LOG_ERRORN\nWhere N is 1 to 4; you can define up to four of each type\nYou can also set trigger.LOG_WARN_ABORT, which aborts the trigger model immediately and posts a warning event log message.'
-        ),
-        ParameterInformation.create(
-            'N',
-            'You can also set trigger.LOG_WARN_ABORT, which aborts the trigger model immediately and posts a warning event log message.'
-        ),
-        ParameterInformation.create(
-            'N',
-            'The event number:.'
-        ),
-        ParameterInformation.create(
-            'N',
-            'You can also set trigger.LOG_WARN_ABORT, which aborts the trigger model immediately and posts a warning event log message.'
-        ),
-        ParameterInformation.create(
-            'N',
-            'eventNumber.'
+            'Some trigger.LOG_*. You can also set trigger.LOG_WARN_ABORT, which aborts the trigger model immediately \
+and posts a warning message to the event log.'
         ),
         ParameterInformation.create(
             'message',
@@ -868,95 +887,119 @@ const triggerModelSignatures: Array<SignatureInformation> = [
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_MEASURE(blockNumber, bufferName, count)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_MEASURE[, bufferName][, count])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_MEASURE',
+            'The "trigger.BLOCK_MEASURE" enumeration.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of the buffer, which must be an existing buffer; if no buffer is defined, defbuffer1 is used.'
+            'The name of an existing buffer; if no buffer is defined, defbuffer1 is used.'
         ),
         ParameterInformation.create(
             'count',
-            'The number of readings to make before moving to the next block in the trigger model; set to a specific value or infinite (trigger.COUNT_INFINITE) or stop infinite (trigger.COUNT_STOP).'
+            'The number of readings to make before moving to the next block in the trigger model; set to a specific \
+number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurements.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_NOP(blockNumber)',
-        undefined,
-        ParameterInformation.create(
-            'blockNumber',
-            'The sequence of the block in the trigger model.'
-        ),
-    ),
-    SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_NOTIFY(blockNumber, N)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_NOP)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
         ),
         ParameterInformation.create(
-            'N',
-            'The identification number of the notification; 1 to 8.'
+            'trigger.BLOCK_NOP',
+            'The "trigger.BLOCK_NOP" enumeration.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_RESET_BRANCH_COUNT(blockNumber, counter)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_NOTIFY, trigger.EVENT_NOTIFY*)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_NOTIFY',
+            'The "trigger.BLOCK_NOTIFY" enumeration.'
+        ),
+        ParameterInformation.create(
+            'trigger.EVENT_NOTIFY*',
+            'Some trigger.EVENT_NOTIFY*.'
+        ),
+    ),
+    SignatureInformation.create(
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_RESET_BRANCH_COUNT, counter)',
+        undefined,
+        ParameterInformation.create(
+            'blockNumber',
+            'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_RESET_BRANCH_COUNT',
+            'The "trigger.BLOCK_RESET_BRANCH_COUNT" enumeration.'
         ),
         ParameterInformation.create(
             'counter',
-            'The block number of the counter that is to be reset.'
+            'The block number of the counter to be reset.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_SOURCE_OUTPUT(blockNumber, state)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_SOURCE_OUTPUT, state)',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
+        ),
+        ParameterInformation.create(
+            'trigger.BLOCK_SOURCE_OUTPUT',
+            'The "trigger.BLOCK_SOURCE_OUTPUT" enumeration.'
         ),
         ParameterInformation.create(
             'state',
-            'Turn the source off: smu.OFF\nTurn the source on: smu.ON.'
+            'Either smu.OFF to turn off the output source or smu.ON to turn it on.'
         ),
     ),
     SignatureInformation.create(
-        'trigger.model.setblock() — trigger.BLOCK_WAIT(blockNumber, event, clear, logic)',
+        'trigger.model.setblock(blockNumber, trigger.BLOCK_WAIT, event[, clear][, logic][, event][, event])',
         undefined,
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
         ),
         ParameterInformation.create(
+            'trigger.BLOCK_WAIT',
+            'The "trigger.BLOCK_WAIT" enumeration.'
+        ),
+        ParameterInformation.create(
             'event',
-            'The event that must occur before the trigger block allows trigger execution to continue (see Details).'
+            'Some trigger.EVENT_* that must occur before the trigger block allows trigger execution to continue.'
         ),
         ParameterInformation.create(
             'clear',
-            'To clear previously detected trigger events when entering the wait block: trigger.CLEAR_ENTER\nTo immediately act on any previously detected triggers and not clear them (default): trigger.CLEAR_NEVER.'
+            'To clear previously detected trigger events when entering the wait block use trigger.CLEAR_ENTER. To \
+immediately act on any previously detected triggers and not clear them use trigger.CLEAR_NEVER. Defaults to \
+trigger.CLEAR_NEVER.'
         ),
         ParameterInformation.create(
             'logic',
-            'If each event must occur before the trigger model continues: trigger.WAIT_AND\nIf at least one of the events must occur before the trigger model continues: trigger.WAIT_OR.'
-        ),
-    ),
-    SignatureInformation.create(
-        'trigger.model.state(status, n)',
-        undefined,
-        ParameterInformation.create(
-            'status',
-            'The status of the trigger model:\ntrigger.STATE_IDLE\ntrigger.STATE_RUNNING\ntrigger.STATE_WAITING\ntrigger.STATE_EMPTY\ntrigger.STATE_BUILDING\ntrigger.STATE_FAILED\ntrigger.STATE_ABORTING\ntrigger.STATE_ABORTED.'
+            'To force each event to occur before the trigger model continues use trigger.WAIT_AND. To continue \
+trigger model execution if at least one event occurs use trigger.WAIT_OR.'
         ),
         ParameterInformation.create(
-            'n',
-            'The last trigger model block that was executed.'
+            'event',
+            'Some trigger.EVENT_* that must occur before the trigger block allows trigger execution to continue.'
+        ),
+        ParameterInformation.create(
+            'event',
+            'Some trigger.EVENT_* that must occur before the trigger block allows trigger execution to continue.'
         ),
     ),
 ]
