@@ -85,7 +85,8 @@ in response to receiving a synchronous mode trigger. Only the currently indexed 
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digout[N].stimulus\n```\n\
 \n\
-Get or set the trigger event for the currently indexed digital I/O line to trigger.EVENT_\\*.'
+Get or set the trigger event for the currently indexed digital I/O line to trigger.EVENT_\\*. Defaults to \
+trigger.EVENT_NONE.'
         },
         kind: CompletionItemKind.Property,
         label: 'stimulus',
