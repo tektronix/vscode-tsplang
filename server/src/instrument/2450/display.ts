@@ -110,7 +110,7 @@ This setting persists through reset() and power cycles.'
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction settext(position, userDisplayText)\n```\n\
 \n\
-display.settext(display.TEXT*, userDisplayText)\n\
+display.settext(display.TEXT\\*, userDisplayText)\n\
 \n\
 Set USER_SWIPE screen messages.\n\
 \n\
