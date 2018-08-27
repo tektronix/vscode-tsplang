@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-// starts on 15785.htm
-
 const triggerEnumCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
