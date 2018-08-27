@@ -117,7 +117,7 @@ timer start time in seconds and fractional seconds for the desired alarm time.'
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n\
 \n\
-This function resets the following attributes of the currently indexed timer N to its default values: \
+Reset the following attributes of the currently indexed timer N to their default values: \
 "trigger.timer[N].count", \
 "trigger.timer[N].delay", \
 "trigger.timer[N].delaylist", \
