@@ -92,6 +92,15 @@ const tsplinkCompletions: Array<CompletionItem> = [
         label: 'tsplink.readport',
     },
     {
+        detail: 'This function reads the TSP-Link synchronization lines as a digital I/O port.',
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '*deprecated* — use tsplink.initialize()'
+        },
+        kind: CompletionItemKind.Function,
+        label: 'tsplink.reset',
+    },
+    {
         detail: 'This attribute describes the TSP-Link online state.',
         documentation: {
             kind: MarkupKind.Markdown,
