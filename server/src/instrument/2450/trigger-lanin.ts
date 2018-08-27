@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerLaninCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -33,7 +31,9 @@ const triggerLaninCompletions: Array<CompletionItem> = [
         data: ['lanin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function clears the event detector for a LAN trigger.\n\nThe trigger event detector enters the detected state when an event is detected. This function clears a trigger event detector and discards the previous of the trigger packet.\n\nThis function clears all overruns associated with this LAN trigger.'
+            value: '```lua\nfunction clear()\n```\n\
+\n\
+Clear the event detector and reset the overrun indicator of the currently indexed LAN trigger.'
         },
         kind: CompletionItemKind.Function,
         label: 'clear',
@@ -42,7 +42,14 @@ const triggerLaninCompletions: Array<CompletionItem> = [
         data: ['lanin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute sets the trigger operation and detection mode of the specified LAN event.\n\nThis command controls how the trigger event detector and the output trigger generator operate on the given trigger. These settings are intended to provide behavior similar to the digital I/O triggers.'
+            value: '```lua\ntrigger.lanin[N].edge\n```\n\
+\n\
+Get or set the trigger edge logic for the currently indexed LAN trigger to trigger.EDGE_\\*. Defaults to \
+trigger.EDGE_EITHER.\n\
+\n\
+LAN trigger edge logic is meant to simulate that of digital I/O lines. Because communition over LAN cannot express an \
+edge state in the traditional sense, LAN trigger packets with a falling edge have a negative state while those with a \
+rising edge have a positive state.'
         },
         kind: CompletionItemKind.Property,
         label: 'edge',
@@ -51,7 +58,9 @@ const triggerLaninCompletions: Array<CompletionItem> = [
         data: ['lanin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute contains the overrun status of the LAN event detector.\n\nThis command indicates whether an event has been ignored because the event detector was already in the detected state when the event occurred.\n\nThis is an indication of the state of the event detector built into the synchronization line itself. It does not indicate if an overrun occurred in any other part of the trigger model, or in any other construct that is monitoring the event.\n\nIt also is not an indication of an output trigger overrun.'
+            value: '```lua\ntrigger.lanin[N].overrun\n```\n\ntrigger.lanin[N].overrun -> boolean\n\
+\n\
+Returns true if an event was ignored because the event detector was already in the detected state and false otherwise.'
         },
         kind: CompletionItemKind.Constant,
         label: 'overrun',
@@ -60,7 +69,14 @@ const triggerLaninCompletions: Array<CompletionItem> = [
         data: ['lanin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function waits for an input trigger.\n\nReturns `true` on trigger detection; `false` otherwise.\n\n\nIf one or more trigger events have been detected since the last time trigger.lanin[N].wait() or trigger.lanin[N].clear() was called, this function returns immediately.\n\nAfter waiting for a LAN trigger event with this function, the event detector is automatically reset and rearmed regardless of the number of events detected.'
+            value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.lanin[N].wait(timeout) -> boolean\n\
+\n\
+Returns a boolean value indicating whether a LAN trigger event occurred since the last time this or the clear \
+function was called. If no event is detected after timeout seconds, then false is returned. If an event is detected \
+or has occurred previously, then true is returned immediately.\n\
+\n\
+After detecting a trigger with this function, the event detector automatically resets and rearms regardless of the \
+number of events detected.'
         },
         kind: CompletionItemKind.Function,
         label: 'wait',

@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerTsplinkoutCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -33,7 +31,9 @@ const triggerTsplinkoutCompletions: Array<CompletionItem> = [
         data: ['tsplinkout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function simulates the occurrence of the trigger and generates the corresponding trigger event.\n\nInitiates a trigger event and does not wait for completion. The set pulse width determines how long the trigger is asserted.'
+            value: '```lua\nfunction assert()\n```\n\
+\n\
+Assert a trigger event on the currently indexed TSP-Link trigger, returning before it has completed.'
         },
         kind: CompletionItemKind.Function,
         label: 'assert',
@@ -42,7 +42,13 @@ const triggerTsplinkoutCompletions: Array<CompletionItem> = [
         data: ['tsplinkout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute controls the logic that the output trigger generator uses on the given trigger line.\n\nThe output state of the digital I/O line is controlled by the trigger logic, and the user-specified output state of the line is ignored.'
+            value: '```lua\ntrigger.tsplinkout[N].logic\n```\n\
+\n\
+Get or set the logic used by the output trigger generator for the currently indexed TSP-Link trigger to \
+trigger.LOGIC_\\*. Defaults to trigger.LOGIC_NEGATIVE.\n\
+\n\
+The output state of the TSP-Link trigger is controlled by the trigger logic. Any user-specified output state is \
+ignored.'
         },
         kind: CompletionItemKind.Property,
         label: 'logic',
@@ -51,7 +57,12 @@ const triggerTsplinkoutCompletions: Array<CompletionItem> = [
         data: ['tsplinkout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute sets the length of time that the trigger line is asserted for output triggers.\n\nSetting the pulse width to 0 asserts the trigger indefinitely.'
+            value: '```lua\ntrigger.tsplinkout[N].pulsewidth\n```\n\
+\n\
+Get or set the time in seconds the currently indexed TSP-Link trigger is asserted as a number from 0 to 100 000. \
+Defaults to +10e-6.\n\
+\n\
+When set to 0, the line is asserted until the release function is called.'
         },
         kind: CompletionItemKind.Property,
         label: 'pulsewidth',
@@ -60,7 +71,10 @@ const triggerTsplinkoutCompletions: Array<CompletionItem> = [
         data: ['tsplinkout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'Releases a trigger that was asserted with an indefinite pulse width. It also releases a trigger that was latched in response to receiving a synchronous mode trigger.'
+            value: '```lua\nfunction release()\n```\n\
+\n\
+Release a trigger that was asserted with an indefinite pulsewidth time. It also releases a trigger that was latched \
+in response to receiving a synchronous mode trigger. Only the currently indexed TSP-Link trigger is affected.'
         },
         kind: CompletionItemKind.Function,
         label: 'release',
@@ -69,7 +83,10 @@ const triggerTsplinkoutCompletions: Array<CompletionItem> = [
         data: ['tsplinkout', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute specifies the event that causes the synchronization line to assert a trigger.\n\nTo disable automatic trigger assertion on the synchronization line, set this attribute to trigger.EVENT_NONE.\n\nDo not use this attribute when triggering under script control. Use trigger.tsplinkout[N].assert() instead.\n\nThe event parameters that you can use are described in the table below.'
+            value: '```lua\ntrigger.tsplinkout[N].stimulus\n```\n\
+\n\
+Get or set the trigger event for the currently indexed TSP-Link trigger to trigger.EVENT_\\*. Defaults to \
+trigger.EVENT_NONE.'
         },
         kind: CompletionItemKind.Property,
         label: 'stimulus',

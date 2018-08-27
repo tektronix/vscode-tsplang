@@ -15,9 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
-
-// starts on 15785.htm
+import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 const triggerEnumCompletions: Array<CompletionItem> = [
     {
@@ -152,191 +150,346 @@ const triggerEnumCompletions: Array<CompletionItem> = [
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Detects rising- or falling-edge triggers as input when the line is configured as an input or open \
+drain.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EDGE_EITHER'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Detects falling-edge triggers as input when the line is configured as an input or open drain.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EDGE_FALLING'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Detects rising-edge triggers as input when the line is configured as an open drain.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EDGE_RISING'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger event blender 1.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_BLENDER1'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger event blender 2.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_BLENDER2'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'If the active interface is GPIB, then trigger upon receiving a GET command. On VXI-11, trigger \
+when the device_trigger method is invoked. If neither of those interfaces are active, then trigger upon receiving a \
+\\*TRG message.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_COMMAND'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on digital input line 1.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DIGIO1'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on digital input line 2.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DIGIO2'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on digital input line 3.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DIGIO3'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on digital input line 4.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DIGIO4'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on digital input line 5.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DIGIO5'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on digital input line 6.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DIGIO6'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Front-panel TRIGGER key press.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_DISPLAY'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 1.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN1'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 2.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN2'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 3.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN3'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 4.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN4'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 5.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN5'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 6.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN6'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 7.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN7'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 8.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_LAN8'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'No trigger event.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NONE'
     },
     {
         data: ['trigger'],
-        kind: CompletionItemKind.EnumMember,
-        label: 'EVENT_SOURCE_LIMIT'
-    },
-    {
-        data: ['trigger'],
-        kind: CompletionItemKind.EnumMember,
-        label: 'EVENT_TIMER1'
-    },
-    {
-        data: ['trigger'],
-        kind: CompletionItemKind.EnumMember,
-        label: 'EVENT_TIMER2'
-    },
-    {
-        data: ['trigger'],
-        kind: CompletionItemKind.EnumMember,
-        label: 'EVENT_TIMER3'
-    },
-    {
-        data: ['trigger'],
-        kind: CompletionItemKind.EnumMember,
-        label: 'EVENT_TIMER4'
-    },
-    {
-        data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 1 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY1'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 2 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY2'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 3 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY3'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 4 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY4'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 5 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY5'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 6 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY6'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 7 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY7'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when Notify Block 8 is executed by the trigger model.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_NOTIFY8'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when a source limit condition occurs.'
+        },
+        kind: CompletionItemKind.EnumMember,
+        label: 'EVENT_SOURCE_LIMIT'
+    },
+    {
+        data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when timer 1 expires.'
+        },
+        kind: CompletionItemKind.EnumMember,
+        label: 'EVENT_TIMER1'
+    },
+    {
+        data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when timer 2 expires.'
+        },
+        kind: CompletionItemKind.EnumMember,
+        label: 'EVENT_TIMER2'
+    },
+    {
+        data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when timer 3 expires.'
+        },
+        kind: CompletionItemKind.EnumMember,
+        label: 'EVENT_TIMER3'
+    },
+    {
+        data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when timer 4 expires.'
+        },
+        kind: CompletionItemKind.EnumMember,
+        label: 'EVENT_TIMER4'
+    },
+    {
+        data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on TSP-Link synchronization line 1.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_TSPLINK1'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on TSP-Link synchronization line 2.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_TSPLINK2'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Trigger when the configured edge is detected on TSP-Link synchronization line 3.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_TSPLINK3'
     },
@@ -427,11 +580,19 @@ const triggerEnumCompletions: Array<CompletionItem> = [
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Assert a transistor-transistor logic high pulse.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'LOGIC_NEGATIVE'
     },
     {
         data: ['trigger'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Assert a transistor-transistor logic low pulse.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'LOGIC_POSITIVE'
     },
