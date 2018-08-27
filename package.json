@@ -39,7 +39,7 @@
             {
                 "language": "tsp",
                 "scopeName": "source.lua",
-                "path": "./syntaxes/Lua.plist"
+                "path": "./third_party/syntaxes/Lua.plist"
             }
         ]
     },
