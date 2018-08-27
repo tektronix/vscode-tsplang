@@ -71,7 +71,7 @@ Returns true if an event was ignored because the event detector was already in t
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n\
 \n\
-This function resets the following attributes of the currently indexed blender N to its default values: \
+Reset the following attributes of the currently indexed blender N to their default values: \
 "trigger.blender[N].orenable" \
 and "trigger.blender[N].stimulus".\n\
 \n\
