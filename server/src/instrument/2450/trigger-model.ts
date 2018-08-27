@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerModelCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -29,7 +27,9 @@ const triggerModelCompletions: Array<CompletionItem> = [
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When this command is received, the instrument stops the trigger model.'
+            value: '```lua\nfunction abort()\n```\n\
+\n\
+Stop all trigger model commands.'
         },
         kind: CompletionItemKind.Function,
         label: 'abort',
@@ -38,7 +38,9 @@ const triggerModelCompletions: Array<CompletionItem> = [
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This returns the settings for the trigger model.'
+            value: '```lua\nfunction getblocklist()\n```\n\ntrigger.model.getblocklist() -> string\n\
+\n\
+Returns the present blocks in the trigger model as a string.'
         },
         kind: CompletionItemKind.Function,
         label: 'getblocklist',
@@ -47,7 +49,12 @@ const triggerModelCompletions: Array<CompletionItem> = [
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command returns the counter value of a `BRANCH_COUNTER` block. When the counter is active, this returns the present count. If the trigger model has started or is running but has not yet reached the counter block, this value is 0.'
+            value: '```lua\nfunction getbranchcount(blockNumber)\n```\n\
+\n\
+trigger.model.getbranchcount(blockNumber) -> number\n\
+\n\
+Returns the counter value of the specified BRANCH_COUNTER block as a number. If execution has not yet reached the \
+block, then a 0 is returned.'
         },
         kind: CompletionItemKind.Function,
         label: 'getbranchcount',
@@ -56,7 +63,9 @@ const triggerModelCompletions: Array<CompletionItem> = [
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function starts the trigger model.'
+            value: '```lua\nfunction initiate()\n```\n\
+\n\
+Start the trigger model.'
         },
         kind: CompletionItemKind.Function,
         label: 'initiate',
@@ -65,45 +74,9 @@ const triggerModelCompletions: Array<CompletionItem> = [
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'Load a predefined trigger model configuration.\n\
+            value: '```lua\nfunction load(typeString, typeParam, ...)\n```\n\
 \n\
-### Config List\n\
-\n\
-This trigger model template incorporates a source configuration list and measure configuration list. You must set up the configuration lists before loading the trigger model.\n\
-\n\
-### Duration Loop\n\
-\n\
-When you load this predefined trigger model, you can specify amount of time to make a measurement and the length of the delay before the measurement.\n\
-\n\
-### Empty\n\
-\n\
-When you load this predefined trigger model, any blocks that have been defined in the trigger model are cleared so the trigger model has no blocks defined.\n\
-\n\
-### Grade Binning\n\
-\n\
-This trigger model template allows you to grade components and place them into up to four bins, based on the comparison to limits.\n\
-\n\
-### Logic Trigger\n\
-\n\
-This trigger model waits for a digital input event to occur, makes a measurement, and issues a notify event. The notify event asserts a digital output line.\n\
-\n\
-### Loop Until Event\n\
-\n\
-The event constant is the event that ends infinite triggering or ends readings set to occur before the trigger and start post-trigger readings. The trigger model makes readings until it detects the event constant. After the event, it makes a finite number of readings, based on the setting of the trigger position.\n\
-\n\
-The position marks the location in the reading buffer where the trigger will occur. The position is set as a percentage of the active buffer capacity. The buffer captures measurements until a trigger occurs. When the trigger occurs, the buffer retains the percentage of readings specified by the position, then captures remaining readings until 100 percent of the buffer is filled. For example, if this is set to 75 for a reading buffer that holds 10,000 readings, the trigger model makes 2500 readings after it detects the source event. There will be 7500 pre-trigger readings and 2500 post‑trigger readings.\n\
-\n\
-The instrument makes two sets of readings. The first set is made until the trigger event occurs. The second set is made after the trigger event occurs, up to the number of readings calculated by the position parameter.\n\
-\n\
-You cannot have the event constant set at none when you run this predefined trigger model.\n\
-\n\
-### Simple Loop\n\
-\n\
-This command sets up a loop that sets a delay, makes a measurement, and then repeats the loop the number of times you define in the count parameter.\n\
-\n\
-### Sort Binning\n\
-\n\
-This trigger model template allows you to sort components and place them into up to four bins, based on the comparison to limits.\n'
+Load a predefined trigger model configuration.'
         },
         kind: CompletionItemKind.Function,
         label: 'load',
@@ -112,107 +85,9 @@ This trigger model template allows you to sort components and place them into up
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'Add a block to the trigger model.\n\
+            value: '```lua\nfunction setblock(blockNumber, trigger.BLOCK_\\*, blockParams, ...)\n```\n\
 \n\
-### Branch: Always\n\
-\n\
-Transfer execution to the specified block number.\n\
-\n\
-### Branch: Counter\n\
-\n\
-Transfer execution if the total number of branches is less than the specified counter; otherwise continue.\n\
-\n\
-### Branch: Delta\n\
-\n\
-Transfer execution if the delta between the last two measurements (ultimate - penultimate) is less than the specified value; otherwise continue.\n\
-\n\
-### Branch: Limit — Constant\n\
-\n\
-Transfer execution if a measurement meets the specified criteria.\n\
-\n\
-### Branch: Limit — Dynamic\n\
-\n\
-Transfer execution if a measurement meets the criteria specified by a loaded measurement configuration list.\n\
-\n\
-### Branch: On Event\n\
-\n\
-Transfer execution if the specified event has occurred; otherwise continue.\n\
-\n\
-### Branch: Once\n\
-\n\
-Transfer execution if this block has not been executed; otherwise continue.\n\
-\n\
-### Branch: Once — Excluded\n\
-\n\
-Transfer execution if this block has been executed; otherwise continue.\n\
-\n\
-### Buffer: Clear\n\
-\n\
-Clear the specified reading buffer.\n\
-\n\
-### Config: Next\n\
-\n\
-Recall the settings at the next index of the specified source/measurement configuration list.\n\
-\n\
-### Config: Previous\n\
-\n\
-Recall the settings at the previous index of the specified source/measurement configuration list.\n\
-\n\
-### Config: Recall\n\
-\n\
-Recall the settings stored in the specified source/measurement configuration list.\n\
-\n\
-### Delay — Constant\n\
-\n\
-Halt measurement and trigger model execution for the specified amount of time.\n\
-\n\
-Background measurements will continue, as will any infinite measurements set by a previous block.\n\
-\n\
-### Delay — Dynamic\n\
-\n\
-Halt measurement and trigger model execution for a remotely programmable amount of time.\n\
-\n\
-Delay can be one of `trigger.USER_DELAY_M<n>` or `trigger.USER_DELAY_S<n>` where `<n>` is 1 to 5. User values can be set with the `smu.measure.userdelay[<n>]` or `smu.source.userdelay[<n>]` and affect their respective function.\n\
-\n\
-Background measurements will continue, as will any infinite measurements set by a previous block.\n\
-\n\
-### Digital I/O\n\
-\n\
-Send a given bit pattern (0 to 63) on the specified digital I/O line.\n\
-\n\
-The least significant bit maps to digital I/O line 1 and the most significant bit to line 6.\n\
-\n\
-Ensure the trigger type and state of the target I/O line is properly configured prior to use.\n\
-\n\
-### Log Event\n\
-\n\
-Post the specified event to the event log.\n\
-\n\
-Note that using this block too often in a trigger model could overflow the event log. It may also take away from the time needed to process more critical trigger model blocks.\n\
-\n\
-### Measure\n\
-\n\
-Take the specified number of measurements. If an infinite measure count is given, then execution continues until the next `MEASURE` block.\n\
-\n\
-### No Operation\n\
-\n\
-Placeholder block to prevent trigger model renumbering.\n\
-\n\
-### Notify\n\
-\n\
-Generate the specified trigger event and continue.\n\
-\n\
-### Reset Branch Count\n\
-\n\
-Resets the total branch count of the specified `COUNTER` block.\n\
-\n\
-### Source Output\n\
-\n\
-Sets the source to the specified output state.\n\
-\n\
-### Wait\n\
-\n\
-Halts execution until the specified event occurs.\n'
+Add a block to the trigger model.'
         },
         kind: CompletionItemKind.Function,
         label: 'setblock',
@@ -221,7 +96,16 @@ Halts execution until the specified event occurs.\n'
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command returns the state of the trigger model. The instrument checks the state of a started trigger model every 100ms.\n\nThis command returns the trigger state and the block that the trigger model last executed.\n\nThe trigger model states are:'
+            value: '```lua\nfunction state()\n```\n\
+\n\
+trigger.model.state() -> trigger.STATE_\\*, trigger.STATE_\\*, number\n\
+\n\
+Returns `overallStatus, engineStatus, blockNumber` where \
+*overallStatus* is the overall trigger model status, \
+*engineStatus* is the present status of the trigger engine, \
+and *blockNumber* is the last executed block number.\n\
+\n\
+Trigger state is updated every 100 ms.'
         },
         kind: CompletionItemKind.Function,
         label: 'state',
@@ -561,7 +445,7 @@ user‑defined buffer; defaults to defbuffer1.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ALWAYS, branchToBlock)',
-        undefined,
+        'Transfer execution to the specified block number.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -577,7 +461,7 @@ user‑defined buffer; defaults to defbuffer1.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_COUNTER, targetCount, branchToBlock)',
-        undefined,
+        'Transfer execution if the total number of branches is less than the specified counter; otherwise continue.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -598,7 +482,8 @@ user‑defined buffer; defaults to defbuffer1.'
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_DELTA, targetDifference, branchToBlock\
 [, measureBlock])',
-        undefined,
+        'Transfer execution if the delta between the last two measurements (ultimate - penultimate) is less than the \
+specified value; otherwise continue.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -625,7 +510,7 @@ model uses a previous measure block.'
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_CONSTANT, limitType, limitA, limitB, \
 branchToBlock[, measureBlock])',
-        undefined,
+        'Transfer execution if a measurement meets the specified criteria.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -665,7 +550,7 @@ model uses the previous measure block.'
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_DYNAMIC, limitType, limitNumber, branchToBlock\
 [, measureBlock])',
-        undefined,
+        'Transfer execution if a measurement meets the criteria specified by a loaded measurement configuration list.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -694,7 +579,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE, branchToBlock)',
-        undefined,
+        'Transfer execution if this block has not been executed; otherwise continue.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -710,7 +595,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE_EXCLUDED, branchToBlock)',
-        undefined,
+        'Transfer execution if this block has been executed; otherwise continue.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -726,7 +611,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ON_EVENT, event, branchToBlock)',
-        undefined,
+        'Transfer execution if the specified event has occurred; otherwise continue.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -746,7 +631,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_BUFFER_CLEAR[, bufferName])',
-        undefined,
+        'Clear the specified reading buffer.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -762,7 +647,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_NEXT, configurationList)',
-        undefined,
+        'Recall the settings at the next index of the specified source/measurement configuration list.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -778,7 +663,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_PREV, configurationList)',
-        undefined,
+        'Recall the settings at the previous index of the specified source/measurement configuration list.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -794,7 +679,7 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_RECALL, configurationList[, index])',
-        undefined,
+        'Recall the settings stored in the specified source/measurement configuration list.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -814,7 +699,8 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_CONSTANT, time)',
-        undefined,
+        'Halt measurement and trigger model execution for the specified amount of time. Background measurements will \
+continue, as will any infinite measurements set by a previous block.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -830,7 +716,8 @@ model uses the previous measure block.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_DYNAMIC, trigger.USER_DELAY_*)',
-        undefined,
+        'Halt measurement and trigger model execution for a remotely programmable amount of time. Background \
+measurements will continue, as will any infinite measurements set by a previous block.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -847,7 +734,8 @@ user delays, respectively. Where <n> is the index of the userdelay array attribu
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_DIGITAL_IO, bitPattern, bitMask)',
-        undefined,
+        'Send a given bit pattern (0 to 63) on the specified digital I/O line. The least significant bit maps to \
+digital I/O line 1 and the most significant bit to line 6.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -867,7 +755,8 @@ user delays, respectively. Where <n> is the index of the userdelay array attribu
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_LOG_EVENT, eventNumber, message)',
-        undefined,
+        'Post the specified event to the event log. Using this block too often in a trigger model could overflow the \
+event log. It may also take away from the time needed to process more critical trigger model blocks.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -888,7 +777,8 @@ and posts a warning message to the event log.'
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_MEASURE[, bufferName][, count])',
-        undefined,
+        'Take the specified number of measurements. If an infinite measure count is given, then execution continues \
+until the next MEASURE block.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -909,7 +799,7 @@ number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurem
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_NOP)',
-        undefined,
+        'Placeholder block to prevent trigger model renumbering.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -921,7 +811,7 @@ number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurem
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_NOTIFY, trigger.EVENT_NOTIFY*)',
-        undefined,
+        'Generate the specified trigger event and continue.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -937,7 +827,7 @@ number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurem
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_RESET_BRANCH_COUNT, counter)',
-        undefined,
+        'Resets the total branch count of the specified COUNTER block.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -953,7 +843,7 @@ number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurem
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_SOURCE_OUTPUT, state)',
-        undefined,
+        'Sets the source to the specified output state.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
@@ -969,7 +859,7 @@ number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurem
     ),
     SignatureInformation.create(
         'trigger.model.setblock(blockNumber, trigger.BLOCK_WAIT, event[, clear][, logic][, event][, event])',
-        undefined,
+        'Halts execution until the specified event occurs.',
         ParameterInformation.create(
             'blockNumber',
             'The sequence of the block in the trigger model.'
