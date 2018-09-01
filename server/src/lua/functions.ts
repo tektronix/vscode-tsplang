@@ -196,6 +196,20 @@ those returned by function f.'
     {
         documentation: {
             kind: MarkupKind.Markdown,
+            value: '```lua\nfunction print(...)\n```\n\
+\n\
+Generate a response message.\n\
+\n\
+The output of each parameter is separated by a tab character.\n\
+\n\
+Numbers are printed using the format.asciiprecision attribute.'
+        },
+        kind: CompletionItemKind.Function,
+        label: 'print',
+    },
+    {
+        documentation: {
+            kind: MarkupKind.Markdown,
             value: '```lua\nfunction rawequal(x, y)\n```\n\nrawequal(x, y) -> boolean\n\
 \n\
 Checks whether x is equal to y without invoking any metamethod. Returns true is x equals y and false otherwise.'
@@ -447,6 +461,14 @@ const functionSignatures: Array<SignatureInformation> = [
         ParameterInformation.create(
             '...',
             'Zero or more arguments that will be passed to function f.'
+        ),
+    ),
+    SignatureInformation.create(
+        'print(...)',
+        undefined,
+        ParameterInformation.create(
+            '...',
+            'One or more values separated with commas.'
         ),
     ),
     SignatureInformation.create(

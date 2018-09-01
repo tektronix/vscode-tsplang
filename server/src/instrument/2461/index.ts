@@ -33,7 +33,6 @@ import { getLanCompletions, getLanSignatures } from './lan'
 import { getLocalnodeCompletions, getLocalnodeSignatures } from './localnode'
 import { getNodeCompletions, getNodeSignatures } from './node'
 import { getOpcCompletions, getOpcSignatures } from './opc'
-import { getPrintCompletions, getPrintSignatures } from './print'
 import { getPrintbufferCompletions, getPrintbufferSignatures } from './printbuffer'
 import { getPrintnumberCompletions, getPrintnumberSignatures } from './printnumber'
 import { getResetCompletions, getResetSignatures } from './reset'
@@ -72,7 +71,6 @@ export async function get2461Completions(): Promise<Array<CompletionItem>> {
         .concat(await getLocalnodeCompletions())
         // .concat(await getNodeCompletions())
         .concat(await getOpcCompletions())
-        .concat(await getPrintCompletions())
         .concat(await getPrintbufferCompletions())
         .concat(await getPrintnumberCompletions())
         .concat(await getResetCompletions())
@@ -109,7 +107,6 @@ export async function get2461Signatures(): Promise<Array<SignatureInformation>> 
         .concat(await getLocalnodeSignatures())
         // .concat(await getNodeSignatures())
         .concat(await getOpcSignatures())
-        .concat(await getPrintSignatures())
         .concat(await getPrintbufferSignatures())
         .concat(await getPrintnumberSignatures())
         .concat(await getResetSignatures())
