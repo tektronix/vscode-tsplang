@@ -201,6 +201,8 @@ export class TspManager {
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
+            const luaCompletions: Array<CompletionItem> = new Array()
+            const luaSignatures: Array<SignatureInformation> = new Array()
             let shebangTokens: Array<Shebang.ShebangToken>
             try {
                 // get native Lua completions
