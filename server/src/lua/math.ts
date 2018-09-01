@@ -118,7 +118,7 @@ Convert from radians to degrees and return the result.'
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction exp(x)\n```\n\nmath.exp(x) -> number\n\
 \n\
-Returns the base-e exponential function of x (e<sup>x</sup>).'
+Returns the base-e exponential function of x (e^x).'
         },
         kind: CompletionItemKind.Function,
         label: 'exp'
@@ -144,7 +144,9 @@ Breaks x into its binary significand and exponent, returning `significand, expon
 *significand* is an absolute value that lays in the interval [0.5, 1) \
 and *exponent* is the integer exponent of 2.\n\
 \n\
-The significand and exponent are calculated from the expression: <code>x = significand * 2<sup> exponent</sup></code>'
+The significand and exponent are calculated from the expression:\n\
+\n\
+`x = significand * 2^exponent`'
         },
         kind: CompletionItemKind.Function,
         label: 'frexp'
@@ -155,7 +157,9 @@ The significand and exponent are calculated from the expression: <code>x = signi
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction ldexp(x, exp)\n```\n\nmath.ldexp(x, exp) -> number\n\
 \n\
-Returns the result of the following expression: <code>x * 2<sup> exp</sup></code>'
+Returns the result of the following expression:\n\
+\n\
+`x * 2 ^ exp`'
         },
         kind: CompletionItemKind.Function,
         label: 'ldexp'
