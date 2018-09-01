@@ -97,7 +97,7 @@ const coroutineSignatures: Array<SignatureInformation> = [
         undefined,
         ParameterInformation.create(
             'f',
-            'A function to use the coroutine body.'
+            'A function to use as the coroutine body.'
         ),
     ),
     SignatureInformation.create(
@@ -125,7 +125,7 @@ const coroutineSignatures: Array<SignatureInformation> = [
         undefined,
         ParameterInformation.create(
             'f',
-            'A function to use the coroutine body.'
+            'A function to use as the coroutine body.'
         ),
     ),
     SignatureInformation.create(
