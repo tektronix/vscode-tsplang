@@ -19,6 +19,7 @@ import { getCoroutineCompletions, getCoroutineSignatures } from './coroutine'
 import { getFunctionCompletions, getFunctionSignatures } from './functions'
 import { getKeywordCompletions } from './keywords'
 import { getMathCompletions, getMathSignatures } from './math'
+import { getOSCompletions, getOSSignatures } from './os'
 import { getStringCompletions, getStringSignatures } from './string'
 import { getTableCompletions, getTableSignatures } from './table'
 
@@ -31,6 +32,7 @@ export async function getLuaCompletions(): Promise<Array<CompletionItem>> {
         .concat(await getFunctionCompletions())
         .concat(await getKeywordCompletions())
         .concat(await getMathCompletions())
+        .concat(await getOSCompletions())
         .concat(await getStringCompletions())
         .concat(await getTableCompletions())
 }
@@ -40,6 +42,7 @@ export async function getLuaSignatures(): Promise<Array<CompletionItem>> {
         .concat(await getCoroutineSignatures())
         .concat(await getFunctionSignatures())
         .concat(await getMathSignatures())
+        .concat(await getOSSignatures())
         .concat(await getStringSignatures())
         .concat(await getTableSignatures())
 }
