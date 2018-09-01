@@ -41,7 +41,6 @@ import { getLocalnodeCompletions, getLocalnodeSignatures } from './localnode'
 import { getLocalnodeEnumCompletions } from './localnode-enums'
 import { getNodeCompletions, getNodeSignatures } from './node'
 import { getOpcCompletions } from './opc'
-import { getPrintCompletions, getPrintSignatures } from './print'
 import { getPrintbufferCompletions, getPrintbufferSignatures } from './printbuffer'
 import { getPrintnumberCompletions, getPrintnumberSignatures } from './printnumber'
 import { getResetCompletions, getResetSignatures } from './reset'
@@ -125,7 +124,6 @@ export async function get2450Completions(): Promise<Array<CompletionItem>> {
         .concat(await getLocalnodeEnumCompletions())
         .concat(await getNodeCompletions())
         .concat(await getOpcCompletions())
-        .concat(await getPrintCompletions())
         .concat(await getPrintbufferCompletions())
         .concat(await getPrintnumberCompletions())
         .concat(await getResetCompletions())
@@ -193,7 +191,6 @@ export async function get2450Signatures(): Promise<Array<SignatureInformation>> 
         .concat(await getLanSignatures())
         .concat(await getLocalnodeSignatures())
         .concat(await getNodeSignatures())
-        .concat(await getPrintSignatures())
         .concat(await getPrintbufferSignatures())
         .concat(await getPrintnumberSignatures())
         .concat(await getResetSignatures())
