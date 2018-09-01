@@ -18,6 +18,7 @@ import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 import { getCoroutineCompletions, getCoroutineSignatures } from './coroutine'
 import { getFunctionCompletions, getFunctionSignatures } from './functions'
 import { getKeywordCompletions } from './keywords'
+import { getMathCompletions, getMathSignatures } from './math'
 
 const completionsLua: Array<CompletionItem> = new Array()
 const signaturesLua: Array<SignatureInformation> = new Array()
@@ -27,10 +28,12 @@ export async function getLuaCompletions(): Promise<Array<CompletionItem>> {
         .concat(await getCoroutineCompletions())
         .concat(await getFunctionCompletions())
         .concat(await getKeywordCompletions())
+        .concat(await getMathCompletions())
 }
 
 export async function getLuaSignatures(): Promise<Array<CompletionItem>> {
     return signaturesLua
         .concat(await getCoroutineSignatures())
         .concat(await getFunctionSignatures())
+        .concat(await getMathSignatures())
 }
