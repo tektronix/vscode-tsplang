@@ -19,6 +19,7 @@ import { getCoroutineCompletions, getCoroutineSignatures } from './coroutine'
 import { getFunctionCompletions, getFunctionSignatures } from './functions'
 import { getKeywordCompletions } from './keywords'
 import { getMathCompletions, getMathSignatures } from './math'
+import { getStringCompletions, getStringSignatures } from './string'
 
 const completionsLua: Array<CompletionItem> = new Array()
 const signaturesLua: Array<SignatureInformation> = new Array()
@@ -29,6 +30,7 @@ export async function getLuaCompletions(): Promise<Array<CompletionItem>> {
         .concat(await getFunctionCompletions())
         .concat(await getKeywordCompletions())
         .concat(await getMathCompletions())
+        .concat(await getStringCompletions())
 }
 
 export async function getLuaSignatures(): Promise<Array<CompletionItem>> {
@@ -36,4 +38,5 @@ export async function getLuaSignatures(): Promise<Array<CompletionItem>> {
         .concat(await getCoroutineSignatures())
         .concat(await getFunctionSignatures())
         .concat(await getMathSignatures())
+        .concat(await getStringSignatures())
 }
