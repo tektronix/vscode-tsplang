@@ -245,7 +245,9 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
 
     // add all matching signatures to the results array
     for (const signa of tspItem.signatures) {
-        if (signa.label.indexOf(unreversed) !== -1) {
+        const signaBeforeParams = signa.label.slice(0, signa.label.indexOf('('))
+
+        if (signaBeforeParams.localeCompare(unreversed) === 0) {
             results.push(signa)
         }
     }
