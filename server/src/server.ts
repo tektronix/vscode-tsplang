@@ -242,12 +242,17 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
     }
 
     const results: Array<SignatureInformation> = new Array()
+
+    // add all matching signatures to the results array
     for (const signa of tspItem.signatures) {
-        if (signa.label.indexOf(unreversed) !== -1) {
+        const signaBeforeParams = signa.label.slice(0, signa.label.indexOf('('))
+
+        if (signaBeforeParams.localeCompare(unreversed) === 0) {
             results.push(signa)
         }
     }
 
+    // get the index of each comma between our surrounding parenthesis
     for (let i = openParenOffset + 1; i < closeParenOffset;) {
         const commaIndex = content.getText().indexOf(',', i)
         if (commaIndex >= i) {
@@ -259,6 +264,7 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
         }
     }
 
+    // compare the current offset to the index of the last comma to get the active parameter
     let activeParam = 0
     commaIndices.forEach((element: number) => {
         if (offset > element) {
