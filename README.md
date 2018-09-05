@@ -29,6 +29,10 @@ See a typo? Know how to fix an issue? Implement a requested feature?
 
 We'd love to accept your patches and contributions! The [Contributing](CONTRIBUTING.md) document guides you through checkout, unit testing, and building.
 
+## Maintainer
+
+* [Evan Hall](https://github.com/ethall)
+
 ## Disclaimer
 
 This is not an officially supported Tektronix product. It is maintained by a small group of employees in their spare time. We lack the resources typical of most Tektronix products, so please bear with us! We will do our best to address your issues and answer any questions directly related to this extension in a timely manner.
