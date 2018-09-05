@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const smuSourceCompletions: Array<CompletionItem> = [
     {
         data: ['smu'],
@@ -64,7 +62,14 @@ This attribute is saved with the active function and retained until the next ins
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command sets a delay for the selected source function. This delay is in addition to normal settling times.\n\nAfter the programmed source is turned on, this delay allows the source level to settle before a measurement is made.\n\nIf you set a specific source delay (smu.source.delay), source autodelay is turned off.\n\nWhen source autodelay is turned on, the manual source delay setting is overwritten with the autodelay setting.\n\nWhen either a source delay or autodelay is set, the delay is applied to the first source output and then only when the magnitude of the source changes.'
+            value: '```lua\nsmu.source.delay\n```\n\
+\n\
+Get or set a source delay for the active source function to a number from 0 to 10 000 seconds.\n\
+\n\
+Setting this attribute automatically sets the source autodelay to smu.OFF. This attribute is overwritten if autodelay \
+is re-enabled.\n\
+\n\
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
         },
         kind: CompletionItemKind.Property,
         label: 'delay',
@@ -86,7 +91,12 @@ When the active source function is changed, settings that are retained on a per-
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When the instrument is measuring low current and is driving a capacitive load, you may see overshoot, ringing, and instability. You can enable the high capacitance mode to minimize these problems.\n\nThe settings for high‑capacitance mode apply when you operate the instrument using the 1µA and above current ranges. When operating using the 1 A range, the high-capacitance setting will not affect the instrument rise time or current measure settling time.\n\nUse this command with limited autorange (low) with the low range set to 1 µA.'
+            value: '```lua\nsmu.source.highc\n```\n\
+\n\
+Get or set the present high-capacitance mode setting to smu.ON or OFF. Defaults to smu.OFF.\n\
+\n\
+When measuring a current in the 1 µA range or above and driving a capacitive load, enable this attribute to prevent \
+any overshoot, ringing, or instability.'
         },
         kind: CompletionItemKind.Property,
         label: 'highc',
@@ -95,7 +105,15 @@ When the active source function is changed, settings that are retained on a per-
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command sets the output level of the voltage or current source. If the output is on, the new level is sourced immediately.\n\nThe sign of the source level dictates the polarity of the source. Positive values generate positive voltage or current from the high terminal of the source relative to the low terminal. Negative values generate negative voltage or current from the high terminal of the source relative to the low terminal.\n\nIf a manual source range is selected, the level cannot exceed the specified range. For example, if the voltage source is on the 2V range (auto range is disabled), you cannot set the voltage source amplitude to 3V. When auto range is selected, the amplitude can be set to any level.'
+            value: '```lua\nsmu.source.level\n```\n\
+\n\
+Get or set the output level of the active source function as a number. Defaults to 0 for all source functions.\n\
+\n\
+When the source function is set to Current, the valid range of this attribute is -1.05 to +1.05.\n\
+\n\
+When the source function is set to Voltage, the valid range of this attribute is -210 to +210.\n\
+\n\
+If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.'
         },
         kind: CompletionItemKind.Property,
         label: 'level',
@@ -115,7 +133,9 @@ Get or set the instrument state when output is turned off to smu.OFFMODE_\\*. De
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When the output is switched on, the instrument sources either voltage or current, as set by smu.source.func.'
+            value: '```lua\nsmu.source.output\n```\n\
+\n\
+Get or set the present source output state to smu.ON or OFF. Defaults to smu.OFF.'
         },
         kind: CompletionItemKind.Property,
         label: 'output',
@@ -144,7 +164,15 @@ This attribute is saved with the active function and retained until the next ins
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When source readback is off, the instrument records and displays the source value you set. When you use the actual source value (source readback on), the instrument measures the actual source value immediately before making the device under test measurement.\n\nUsing source readback results in more accurate measurements, but also a reduction in measurement speed.\n\nWhen source readback is on, the front-panel display shows the measured source value and the buffer records the measured source value immediately before the device‑under‑test measurement. When source readback is off, the front-panel display shows the configured source value and the buffer records the configured source value immediately before the device‑under‑test measurement.'
+            value: '```lua\nsmu.source.readback\n```\n\
+\n\
+Get or set the present source readback setting to smu.OFF or ON. Defaults to smu.ON.\n\
+\n\
+When source readback is set to smu.OFF, the front-panel displays the present value of the source level attribute in \
+addition to recording it in the buffer alongside each measurement.\n\
+\n\
+When source readback is set to smu.ON, the actual source level is measured, displayed on the front-panel, and \
+recorded in the buffer alongside each measurement.'
         },
         kind: CompletionItemKind.Property,
         label: 'readback',
@@ -153,7 +181,16 @@ This attribute is saved with the active function and retained until the next ins
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When the sweep is started, the instrument sources a specific voltage or current value to the device under test (DUT). A measurement is made for each point of the sweep.\n\nWhen the sweep command is sent, it clears any existing trigger models, creates a source configuration list, and populates the trigger model. To run the sweep, initiate the trigger model.\n\nThe sweep continues until the source outputs the specified stop level. At this level, the instrument performs another measurement and then stops the sweep.\n\nWhen you specify a delay, a delay block is added to the sweep trigger model. This delay is added to any source delay you may have set. For example, if you set 10 ms for the source delay and 25 ms for the sweep delay, the actual delay is 35 ms.\n\nThe range type specifies the source range that is used for the sweep. You can select the following options:'
+            value: '```lua\nfunction sweeplinear(configListName, start, stop, points, delay, count, rangeType, \
+failAbort, dual, bufferName)\n```\n\
+\n\
+smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort][, dual]\
+[, bufferName])\n\
+\n\
+Configure a linear sweep for a fixed number of measurement points.\n\
+\n\
+Clears any existing trigger models, creates a source configuration list, and populates the trigger model. Initiate \
+the trigger model to start the sweep.'
         },
         kind: CompletionItemKind.Function,
         label: 'sweeplinear',
@@ -162,7 +199,16 @@ This attribute is saved with the active function and retained until the next ins
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When the sweep is started, the instrument sources a specific voltage or current voltage to the device under test (DUT). A measurement is made for each point of the sweep.\n\nWhen the sweep command is sent, it deletes the existing trigger model and creates a trigger model with a uniform series of ascending or descending voltage or current changes, called steps. To run the sweep, initiate the trigger model.\n\nThe sweep continues until the source outputs the stop level, which is calculated from the number of steps. A measurement is performed at each source step (including the start and stop levels). At this level, the instrument performs another measurement and then stops the sweep.\n\nThe instrument uses the step size parameter to determine the number of source level changes. The source level changes in equal steps from the start level to the stop level. To avoid a setting conflicts error, make sure the step size is greater than the start value and less than the stop value. To calculate the number of source-measure points in a sweep, use the following formula:\n\nWhen you specify a delay, a delay block is added to the sweep trigger model. This delay is added to any source delay you may have set. For example, if you set 10 ms for the source delay and 25 ms for the delay in the for the log sweep command, the actual delay is 35 ms.\n\nThe range type specifies the source range that is used for the sweep. You can select the following options:'
+            value: '```lua\nfunction sweeplinearstep(configListName, start, stop, step, delay, count, rangeType, \
+failAbort, dual, bufferName)\n```\n\
+\n\
+smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType][, failAbort][, dual]\
+[, bufferName])\n\
+\n\
+Configure a stepped linear sweep for a fixed number of measurement points.\n\
+\n\
+Clears any existing trigger models, creates a source configuration list, and populates the trigger model to perform a \
+uniform series of ascending or descending output steps. Initiate the trigger model to start the sweep.'
         },
         kind: CompletionItemKind.Function,
         label: 'sweeplinearstep',
@@ -171,7 +217,14 @@ This attribute is saved with the active function and retained until the next ins
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command allows you to set up a custom sweep, using a configuration list to specify the source levels.\n\nWhen you specify a delay, a delay block is added to the sweep trigger model. This delay is added to any source delay you may have set. For example, if you set 10 ms for the source delay and 25 ms for the delay in the for the log sweep command, the actual delay is 35 ms.\n\nTo run the sweep, initiate the trigger model.'
+            value: '```lua\nfunction sweeplist(configListName, index, delay, count, failAbort, bufferName)\n```\n\
+\n\
+smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])\n\
+\n\
+Configure a custom sweep using the given configListName to specify each source level.\n\
+\n\
+Clears any existing trigger models, loads from the specified source configuration list, and populates the trigger \
+model. Initiate the trigger model to start the sweep.'
         },
         kind: CompletionItemKind.Function,
         label: 'sweeplist',
@@ -180,7 +233,16 @@ This attribute is saved with the active function and retained until the next ins
         data: ['source', 'smu'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'When the sweep is started, the instrument sources a specific voltage or current value to the device under test (DUT). A measurement is made for each point of the sweep.\n\nWhen the sweep command is sent, it clears the existing trigger model and creates a new trigger model. To run the sweep, initiate the trigger model.\n\nThe sweep continues until the source outputs the specified stop level. At this level, the instrument performs another measurement and then stops the sweep.\n\nWhen you specify a delay, a delay block is added to the sweep trigger model. This delay is added to any source delay you may have set. For example, if you set 10 ms for the source delay and 25 ms for the delay in the for the log sweep command, the actual delay is 35 ms.\n\nThe range type specifies the source range that is used for the sweep. You can select the following options:\n\nThe asymptote changes the inflection of the sweep curve and allows it to sweep through zero. You can use the asymptote parameter to customize the inflection and offset of the source value curve. Setting this parameter to zero provides a conventional logarithmic sweep. The asymptote value is the value that the curve has at either positive or negative infinity, depending on the direction of the sweep. The asymptote value must not be equal to or between the starting and ending values. It must be outside the range defined by the starting and ending values.'
+            value: '```lua\nfunction sweeplog(configListName, start, stop, points, delay, count, rangeType, \
+failAbort, dual, bufferName, asymptote)\n```\n\
+\n\
+smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort][, dual]\
+[, bufferName][, asymptote])\n\
+\n\
+Configure a logarithmic sweep for a fixed number of measurement points.\n\
+\n\
+Clears any existing trigger models, creates a source configuration list, and populates the trigger model. Initiate \
+the trigger model to start the sweep.'
         },
         kind: CompletionItemKind.Function,
         label: 'sweeplog',
@@ -203,91 +265,110 @@ This attribute is saved with the active function and retained until the next ins
 
 const smuSourceSignatures: Array<SignatureInformation> = [
     SignatureInformation.create(
-        'smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort][, dual][, bufferName])',
+        'smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
+[, dual][, bufferName])',
         undefined,
         ParameterInformation.create(
             'configListName',
-            'A string that contains the name of the configuration list that the instrument will create for this sweep.'
+            'The name of the source configuration list to create as a string.'
         ),
         ParameterInformation.create(
             'start',
-            'The voltage or current source level at which the sweep starts:\nCurrent: -1.05 A to 1.05 A\nVoltage: -210 V to 210 V.'
+            'The source level at which to start sweeping as a number.\n\
+Current range: -1.05 to +1.05\n\
+Voltage range: -210 to +210.'
         ),
         ParameterInformation.create(
             'stop',
-            'The voltage or current at which the sweep stops:\nCurrent: -1.05 A to 1.05 A\nVoltage: -210 V to 210 V.'
+            'The source level at which to stop sweeping as a number.\n\
+Current range: -1.05 to +1.05\n\
+Voltage range: -210 to +210.'
         ),
         ParameterInformation.create(
             'points',
-            'The number of source-measure points between the start and stop values of the sweep (2 to 1e6); to calculate the number of source-measure points in a sweep, use the following formula:\nPoints = [(Stop - Start) / Step] + 1'
+            'The number of source-measure points between the start and stop values of the sweep as a number from +2.0 \
+to +1e+6.'
         ),
         ParameterInformation.create(
             'delay',
-            'The delay between measurement points; default is `smu.DELAY_AUTO`, which enables autodelay, or a specific delay value from 50 μs to 10 ks, or 0 for no delay.'
+            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for no delay, or \
+smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.'
         ),
         ParameterInformation.create(
             'count',
-            'The number of times to run the sweep; default is 1:\nInfinite loop: `smu.INFINITE`\nFinite loop: 1 to 268,435,455'
+            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
         ),
         ParameterInformation.create(
             'rangeType',
-            'One of:\n`smu.RANGE_AUTO`\n`smu.RANGE_BEST` (default)\n`smu.RANGE_FIXED`'
+            'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.'
         ),
         ParameterInformation.create(
             'failAbort',
-            '`smu.ON` to abort the sweep if the source limit is exceeded (default) or `smu.OFF` to complete if exceeded.'
+            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
+to smu.ON.'
         ),
         ParameterInformation.create(
             'dual',
-            '`smu.OFF` to sweep from start to stop only (default) or `smu.ON` to sweep from start to stop, then stop to start.'
+            'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then back to start. \
+Defaults to smu.OFF.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of a reading buffer; the default buffers (`defbuffer1` or `defbuffer2`) or the name of a user‑defined buffer; if no buffer is specified, this parameter defaults to `defbuffer1`.'
+            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
+user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
-        'smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType][, failAbort][, dual][, bufferName])',
+        'smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType][, failAbort]\
+[, dual][, bufferName])',
         undefined,
         ParameterInformation.create(
             'configListName',
-            'A string that contains the name of the configuration list that the instrument will create for this sweep.'
+            'The name of the source configuration list to create as a string.'
         ),
         ParameterInformation.create(
             'start',
-            'The voltage or current source level at which the sweep starts:\nCurrent: -1.05 A to 1.05 A\nVoltage: -210 V to 210 V.'
+            'The source level at which to start sweeping as a number.\n\
+Current range: -1.05 to +1.05\n\
+Voltage range: -210 to +210.'
         ),
         ParameterInformation.create(
             'stop',
-            'The voltage or current at which the sweep stops:\nCurrent: -1.05 A to 1.05 A\nVoltage: -210 V to 210 V.'
+            'The source level at which to stop sweeping as a number.\n\
+Current range: -1.05 to +1.05\n\
+Voltage range: -210 to +210.'
         ),
         ParameterInformation.create(
             'step',
-            'A step size > 0 at which the source level will change.'
+            'The magnitude by which the output level will change for each step as a number greater than 0.'
         ),
         ParameterInformation.create(
             'delay',
-            'The delay between measurement points; default is `smu.DELAY_AUTO`, which enables autodelay, or a specific delay value from 50 μs to 10 ks, or 0 for no delay.'
+            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for no delay, or \
+smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.'
         ),
         ParameterInformation.create(
             'count',
-            'The number of times to run the sweep; default is 1:\nInfinite loop: `smu.INFINITE`\nFinite loop: 1 to 268,435,455'
+            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
         ),
         ParameterInformation.create(
             'rangeType',
-            'One of:\n`smu.RANGE_AUTO`\n`smu.RANGE_BEST` (default)\n`smu.RANGE_FIXED`'
+            'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.'
         ),
         ParameterInformation.create(
             'failAbort',
-            '`smu.ON` to abort the sweep if the source limit is exceeded (default) or `smu.OFF` to complete if exceeded.'
+            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
+to smu.ON.'
         ),
         ParameterInformation.create(
             'dual',
-            '`smu.OFF` to sweep from start to stop only (default) or `smu.ON` to sweep from start to stop, then stop to start.'
+            'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then back to start. \
+Defaults to smu.OFF.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of a reading buffer; the default buffers (`defbuffer1` or `defbuffer2`) or the name of a user‑defined buffer; if no buffer is specified, this parameter defaults to `defbuffer1`.'
+            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
+user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
@@ -295,75 +376,90 @@ const smuSourceSignatures: Array<SignatureInformation> = [
         undefined,
         ParameterInformation.create(
             'configListName',
-            'The name of the source configuration list that the sweep uses; this must be defined before sending this command.'
+            'The name of the source configuration list to load as a string.'
         ),
         ParameterInformation.create(
             'index',
-            'The index in the configuration list where the sweep starts; default is 1.'
+            'A number that defines a specific configuration index in the configuration list. \
+Defaults to the first configuration index.'
         ),
         ParameterInformation.create(
             'delay',
-            'The delay between measurement points from 50 μs to 10 ks; default is 0 for no delay.'
+            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds or 0 for no delay.'
         ),
         ParameterInformation.create(
             'count',
-            'The number of times to run the sweep; default is 1:\nInfinite loop: `smu.INFINITE`\nFinite loop: 1 to 268,435,455'
+            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
         ),
         ParameterInformation.create(
             'failAbort',
-            '`smu.ON` to abort the sweep if the source limit is exceeded (default) or `smu.OFF` to complete if exceeded.'
+            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
+to smu.ON.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'The name of a reading buffer; the default buffers (`defbuffer1` or `defbuffer2`) or the name of a user‑defined buffer; if no buffer is specified, this parameter defaults to `defbuffer1`.'
+            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
+user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
         ),
     ),
     SignatureInformation.create(
-        'smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort][, dual][, bufferName][, asymptote])',
+        'smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort][, dual]\
+[, bufferName][, asymptote])',
         undefined,
         ParameterInformation.create(
             'configListName',
-            'A string that contains the name of the configuration list that the instrument will create for this sweep.'
+            'The name of the source configuration list to create as a string.'
         ),
         ParameterInformation.create(
             'start',
-            'The voltage or current source level at which the sweep starts:\nCurrent: 1 pA to 1.05 A\nVoltage: 1 pV to 210 V.'
+            'The source level at which to start sweeping as a number.\n\
+Current range: +1e-12 to +1.05\n\
+Voltage range: +1e-12 to +210.'
         ),
         ParameterInformation.create(
             'stop',
-            'The voltage or current at which the sweep stops:\nCurrent: 1 pA to 1.05 A\nVoltage: 1 pV to 210 V.'
+            'The source level at which to stop sweeping as a number.\n\
+Current range: +1e-12 to +1.05\n\
+Voltage range: +1e-12 to +210.'
         ),
         ParameterInformation.create(
             'points',
-            'The number of source-measure points between the start and stop values of the sweep (2 to 1e6); to calculate the number of source-measure points in a sweep, use the following formula:\nPoints = [(Stop - Start) / Step] + 1'
+            'The number of source-measure points between the start and stop values of the sweep as a number from +2.0 \
+to +1e+6.'
         ),
         ParameterInformation.create(
             'delay',
-            'The delay between measurement points; default is `smu.DELAY_AUTO`, which enables autodelay, or a specific delay value from 50 μs to 10 ks, or 0 for no delay.'
+            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for no delay, or \
+smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.'
         ),
         ParameterInformation.create(
             'count',
-            'The number of times to run the sweep; default is 1:\nInfinite loop: `smu.INFINITE`\nFinite loop: 1 to 268,435,455'
+            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
         ),
         ParameterInformation.create(
             'rangeType',
-            'One of:\n`smu.RANGE_AUTO`\n`smu.RANGE_BEST` (default)\n`smu.RANGE_FIXED`'
+            'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.'
         ),
         ParameterInformation.create(
             'failAbort',
-            '`smu.ON` to abort the sweep if the source limit is exceeded (default) or `smu.OFF` to complete if exceeded.'
+            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
+to smu.ON.'
         ),
         ParameterInformation.create(
             'dual',
-            '`smu.OFF` to sweep from start to stop only (default) or `smu.ON` to sweep from start to stop, then stop to start.'
+            'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then back to start. \
+Defaults to smu.OFF.'
         ),
         ParameterInformation.create(
             'bufferName',
-            'A string that indicates the reading buffer; the default buffers (`defbuffer1` or `defbuffer2`) or the name of a user‑defined buffer; if no buffer is specified, `defbuffer1` is used.'
+            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
+user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
         ),
         ParameterInformation.create(
             'asymptote',
-            'The value of the asymtotic curve at either positive or negative infinity, depending on the direction of the sweep.\nDefaults to 0, providing a logarithmic sweep.\n\nAsymtotic value cannot be equal to or within the sweep bounds as defined by `start` and `stop`.'
+            'The value of the asymtotic curve at either positive or negative infinity, depending on the direction of \
+the sweep. Defaults to 0.\n\
+Asymtotic value cannot be less than or equal to the sweep bounds.'
         ),
     ),
 ]
