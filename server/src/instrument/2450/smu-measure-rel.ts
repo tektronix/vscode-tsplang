@@ -17,6 +17,37 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
+import { CommandDocumentation, InstrumentSpec } from '..'
+
+const smuMeasureRelDocs: Map<string, CommandDocumentation> = new Map([
+    [
+        'smu.measure.rel.level',
+        {
+            kind: MarkupKind.Markdown,
+            toString: (spec: InstrumentSpec): string => {
+                return '```lua\nsmu.measure.rel.level\n```\n\
+\n\
+Get or set the value used by the relative offset calculation to some number. Defaults to 0 for all measurement \
+functions.\n\
+\n\
+When the measurement function is set to Current, the valid range of this attribute is %{0} to %{1}.\n\
+\n\
+When the measurement function is set to Resistance, the valid range of this attribute is %{2} to %{3}.\n\
+\n\
+When the measurement function is set to Voltage, the valid range of this attribute is %{4} to %{5}.\n\
+\n\
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
+                    .replace('%{0}', spec.currentLevel.low.toString())
+                    .replace('%{1}', spec.currentLevel.high.toString())
+                    .replace('%{2}', spec.resistanceLevel.low.toString())
+                    .replace('%{3}', spec.resistanceLevel.high.toString())
+                    .replace('%{4}', spec.voltageLevel.low.toString())
+                    .replace('%{5}', spec.voltageLevel.high.toString())
+            }
+        }
+    ],
+])
+
 const smuMeasureRelCompletions: Array<CompletionItem> = [
     {
         data: ['measure', 'smu'],
@@ -58,20 +89,6 @@ This attribute is saved with the active function and retained until the next ins
     },
     {
         data: ['rel', 'measure', 'smu'],
-        documentation: {
-            kind: MarkupKind.Markdown,
-            value: '```lua\nsmu.measure.rel.level\n```\n\
-\n\
-Get or set the value used by the relative offset calculation to some number. Defaults to 0.\n\
-\n\
-When the measurement function is set to Current, the valid range of this attribute is -1.05 to +1.05.\n\
-\n\
-When the measurement function is set to Resistance, the valid range of this attribute is -2.10e+6 to +2.10e+6.\n\
-\n\
-When the measurement function is set to Voltage, the valid range of this attribute is -210 to +210.\n\
-\n\
-This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-        },
         kind: CompletionItemKind.Property,
         label: 'level',
     },
@@ -84,6 +101,19 @@ export async function getSmuMeasureRelCompletions(): Promise<Array<CompletionIte
     ): void => {
         try {
             resolve(smuMeasureRelCompletions)
+        } catch (e) {
+            reject(new Error(e.toString()))
+        }
+    })
+}
+
+export async function getSmuMeasureRelDocs(): Promise<Map<string, CommandDocumentation>> {
+    return new Promise<Map<string, CommandDocumentation>>((
+        resolve: (value?: Map<string, CommandDocumentation>) => void,
+        reject: (reason?: Error) => void
+    ): void => {
+        try {
+            resolve(smuMeasureRelDocs)
         } catch (e) {
             reject(new Error(e.toString()))
         }

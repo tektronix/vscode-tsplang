@@ -17,6 +17,28 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
+import { CommandDocumentation, InstrumentSpec } from '..'
+
+const smuInterlockDocs: Map<string, CommandDocumentation> = new Map([
+    [
+        'smu.interlock.tripped',
+        {
+            kind: MarkupKind.Markdown,
+            toString: (spec: SmuInterlockSpec): string => {
+                return '```lua\nsmu.interlock.tripped\n```\n\nsmu.interlock.tripped -> smu.OFF | smu.ON\n\
+\n\
+Get the status of the interlock.\n\
+\n\
+If smu.OFF is returned the %{0} range is disabled, nominal output is limited to ±%{1}V, and attempting to source more \
+than ±%{2}V will generate an error message; otherwise all voltage ranges are available.'
+                    .replace('%{1}', spec.voltageRange.high.toString())
+                    .replace('%{1}', spec.maxNominalVoltageTripped.toString())
+                    .replace('%{2}', spec.maxSourceVoltageTripped.toString())
+            },
+        }
+    ],
+])
+
 const smuInterlockCompletions: Array<CompletionItem> = [
     {
         data: ['smu'],
@@ -25,19 +47,15 @@ const smuInterlockCompletions: Array<CompletionItem> = [
     },
     {
         data: ['interlock', 'smu'],
-        documentation: {
-            kind: MarkupKind.Markdown,
-            value: '```lua\nsmu.interlock.tripped\n```\n\nsmu.interlock.tripped -> smu.OFF | smu.ON\n\
-\n\
-Get the status of the interlock.\n\
-\n\
-If smu.OFF is returned the 200V range is disabled, nominal output is limited to ±42V, and attempting to source more \
-than ±21V will generate an error message; otherwise all voltage ranges are available.'
-        },
         kind: CompletionItemKind.Constant,
         label: 'tripped',
     },
 ]
+
+export interface SmuInterlockSpec extends InstrumentSpec {
+    maxNominalVoltageTripped: number
+    maxSourceVoltageTripped: number
+}
 
 export async function getSmuInterlockCompletions(): Promise<Array<CompletionItem>> {
     return new Promise<Array<CompletionItem>>((
@@ -46,6 +64,19 @@ export async function getSmuInterlockCompletions(): Promise<Array<CompletionItem
     ): void => {
         try {
             resolve(smuInterlockCompletions)
+        } catch (e) {
+            reject(new Error(e.toString()))
+        }
+    })
+}
+
+export async function getSmuInterlockDocs(): Promise<Map<string, CommandDocumentation>> {
+    return new Promise<Map<string, CommandDocumentation>>((
+        resolve: (value?: Map<string, CommandDocumentation>) => void,
+        reject: (reason?: Error) => void
+    ): void => {
+        try {
+            resolve(smuInterlockDocs)
         } catch (e) {
             reject(new Error(e.toString()))
         }

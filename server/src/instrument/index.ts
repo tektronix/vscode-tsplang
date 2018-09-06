@@ -15,28 +15,32 @@
 */
 'use strict'
 
-import { CompletionItemKind } from 'vscode-languageserver'
+import { MarkupKind } from 'vscode-languageserver'
 
-export interface CommandSpec {
-    children?: Array<CommandSpec>
-    formatter?: Array<string>
-    kind: CompletionItemKind
-    label: string
-}
+import { Model } from '../model'
 
 export interface InstrumentSpec {
-    current: RangeSpec
-    resistance: RangeSpec
-    voltage: RangeSpec
+    currentLevel: RangeSpec
+    currentRange: RangeSpec
+    overflow: number
+    resistanceLevel: RangeSpec
+    resistanceRange: RangeSpec
+    voltageLevel: RangeSpec
+    voltageRange: RangeSpec
 }
 
-interface RangeSpec {
+export interface RangeSpec {
     high: number
     low: number
 }
 
-export class ModelSpec {
-    commandSpecs: Array<CommandSpec>
+export interface CommandDocumentation {
+    kind: MarkupKind
+    toString(spec: InstrumentSpec): string
+}
 
-    /* TODO: complete class implementation */
+export function getDocumentation(model: Model): Array<CommandDocumentation> {
+    const results: Array<CommandDocumentation> = new Array()
+
+    return results
 }

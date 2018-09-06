@@ -15,6 +15,8 @@
  */
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
+import { CommandDocumentation } from '..'
+
 import { getBeeperCompletions, getBeeperSignatures } from './beeper'
 import { getBufferCompletions, getBufferSignatures } from './buffer'
 import { getBufferEnumCompletions } from './buffer-enums'
@@ -48,8 +50,8 @@ import { getScriptCompletions, getScriptSignatures } from './script'
 import { getScriptVarCompletions, getScriptVarSignatures } from './scriptVar'
 import { getSmuCompletions } from './smu'
 import { getSmuEnumCompletions } from './smu-enums'
-import { getSmuInterlockCompletions } from './smu-interlock'
-import { getSmuMeasureCompletions, getSmuMeasureSignatures } from './smu-measure'
+import { getSmuInterlockCompletions, getSmuInterlockDocs } from './smu-interlock'
+import { getSmuMeasureCompletions, getSmuMeasureDocs, getSmuMeasureSignatures } from './smu-measure'
 import { getSmuMeasureAutozeroCompletions } from './smu-measure-autozero'
 import { getSmuMeasureConfiglistCompletions, getSmuMeasureConfiglistSignatures } from './smu-measure-configlist'
 import { getSmuMeasureFilterCompletions } from './smu-measure-filter'
@@ -58,7 +60,7 @@ import { getSmuMeasureLimitHighCompletions } from './smu-measure-limit-high'
 import { getSmuMeasureLimitLowCompletions } from './smu-measure-limit-low'
 import { getSmuMeasureMathCompletions } from './smu-measure-math'
 import { getSmuMeasureMathMxbCompletions } from './smu-measure-math-mxb'
-import { getSmuMeasureRelCompletions } from './smu-measure-rel'
+import { getSmuMeasureRelCompletions, getSmuMeasureRelDocs } from './smu-measure-rel'
 import { getSmuSourceCompletions, getSmuSourceSignatures } from './smu-source'
 import { getSmuSourceConfiglistCompletions, getSmuSourceConfiglistSignatures } from './smu-source-configlist'
 import { getSmuSourceIlimitCompletions } from './smu-source-ilimit'
@@ -95,6 +97,8 @@ import { getWaitcompleteCompletions, getWaitcompleteSignatures } from './waitcom
 
 const completions2450: Array<CompletionItem> = new Array()
 const signatures2450: Array<SignatureInformation> = new Array()
+
+let docs2450: Map<string, CommandDocumentation>
 
 export async function get2450Completions(): Promise<Array<CompletionItem>> {
     return completions2450
@@ -175,6 +179,14 @@ export async function get2450Completions(): Promise<Array<CompletionItem>> {
         .concat(await getUpgradeCompletions())
         .concat(await getUserstringCompletions())
         .concat(await getWaitcompleteCompletions())
+}
+
+export async function get2450Docs(): Promise<Map<string, CommandDocumentation>> {
+    return docs2450 = new Map([
+        ...await getSmuInterlockDocs(),
+        ...await getSmuMeasureDocs(),
+        ...await getSmuMeasureRelDocs()
+    ])
 }
 
 export async function get2450Signatures(): Promise<Array<SignatureInformation>> {
