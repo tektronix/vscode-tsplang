@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
+
 const digioLineCompletions: Array<CompletionItem> = [
     {
         data: ['digio'],
@@ -73,15 +77,40 @@ May be set to high on reset, as digial inputs float high if nothing is connected
     },
 ]
 
-export async function getDigioLineCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getDigioLineCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
-            try {
-                resolve(digioLineCompletions)
-            } catch (e) {
-                reject(new Error(e.toString()))
-            }
+        try {
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                digioLineCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions
+            })
+        } catch (e) {
+            reject(new Error(e.toString()))
+        }
     })
 }
+
+// export async function getDigioLineCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(digioLineCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

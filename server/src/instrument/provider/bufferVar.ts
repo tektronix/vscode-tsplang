@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
+
 const bufferVarCompletions: Array<CompletionItem> = [
     // No bufferVar namespace
     {
@@ -289,15 +293,40 @@ Returns, as an array, a string indicating the unit of measure for each reading i
     },
 ]
 
-export async function getBufferVarCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getBufferVarCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(bufferVarCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                bufferVarCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
+
+// export async function getBufferVarCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(bufferVarCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

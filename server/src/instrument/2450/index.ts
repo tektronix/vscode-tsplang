@@ -13,217 +13,162 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
+'use strict'
 
-import { CommandDocumentation } from '..'
+import { ApiSpec, InstrumentSpec } from '..'
 
-import { getBeeperCompletions, getBeeperSignatures } from './beeper'
-import { getBufferCompletions, getBufferSignatures } from './buffer'
-import { getBufferEnumCompletions } from './buffer-enums'
-import { getBufferWriteCompletions, getBufferWriteSignatures } from './buffer-write'
-import { getBufferVarCompletions } from './bufferVar'
-import { getCreateconfigscriptCompletions, getCreateconfigscriptSignatures } from './createconfigscript'
-import { getDataqueueCompletions, getDataqueueSignatures } from './dataqueue'
-import { getDelayCompletions, getDelaySignatures } from './delay'
-import { getDigioCompletions, getDigioSignatures } from './digio'
-import { getDigioEnumCompletions } from './digio-enums'
-import { getDigioLineCompletions } from './digio-line'
-import { getDisplayCompletions, getDisplaySignatures } from './display'
-import { getEventlogCompletions, getEventlogSignatures } from './eventlog'
-import { getEventlogEnumCompletions } from './eventlog-enums'
-import { getExitCompletions } from './exit'
-import { getFileCompletions } from './file'
-import { getFileEnumCompletions } from './file-enums'
-import { getFormatCompletions } from './format'
-import { getFormatEnumCompletions } from './format-enums'
-import { getGpibCompletions } from './gpib'
-import { getLanCompletions, getLanSignatures } from './lan'
-import { getLanEnumCompletions } from './lan-enums'
-import { getLocalnodeCompletions, getLocalnodeSignatures } from './localnode'
-import { getLocalnodeEnumCompletions } from './localnode-enums'
-import { getNodeCompletions, getNodeSignatures } from './node'
-import { getOpcCompletions } from './opc'
-import { getPrintbufferCompletions, getPrintbufferSignatures } from './printbuffer'
-import { getPrintnumberCompletions, getPrintnumberSignatures } from './printnumber'
-import { getResetCompletions, getResetSignatures } from './reset'
-import { getScriptCompletions, getScriptSignatures } from './script'
-import { getScriptVarCompletions, getScriptVarSignatures } from './scriptVar'
-import { getSmuCompletions } from './smu'
-import { getSmuEnumCompletions } from './smu-enums'
-import { getSmuInterlockCompletions, getSmuInterlockDocs } from './smu-interlock'
-import { getSmuMeasureCompletions, getSmuMeasureDocs, getSmuMeasureSignatures } from './smu-measure'
-import { getSmuMeasureAutozeroCompletions } from './smu-measure-autozero'
-import { getSmuMeasureConfiglistCompletions, getSmuMeasureConfiglistSignatures } from './smu-measure-configlist'
-import { getSmuMeasureFilterCompletions } from './smu-measure-filter'
-import { getSmuMeasureLimitCompletions } from './smu-measure-limit'
-import { getSmuMeasureLimitHighCompletions } from './smu-measure-limit-high'
-import { getSmuMeasureLimitLowCompletions } from './smu-measure-limit-low'
-import { getSmuMeasureMathCompletions } from './smu-measure-math'
-import { getSmuMeasureMathMxbCompletions } from './smu-measure-math-mxb'
-import { getSmuMeasureRelCompletions, getSmuMeasureRelDocs } from './smu-measure-rel'
-import { getSmuSourceCompletions, getSmuSourceSignatures } from './smu-source'
-import { getSmuSourceConfiglistCompletions, getSmuSourceConfiglistSignatures } from './smu-source-configlist'
-import { getSmuSourceIlimitCompletions } from './smu-source-ilimit'
-import { getSmuSourceProtectCompletions } from './smu-source-protect'
-import { getSmuSourceVlimitCompletions } from './smu-source-vlimit'
-import { getStatusCompletions } from './status'
-import { getStatusEnumCompletions } from './status-enums'
-import { getStatusOperationCompletions, getStatusOperationSignatures } from './status-operation'
-import { getStatusQuestionableCompletions, getStatusQuestionableSignatures } from './status-questionable'
-import { getStatusStandardCompletions } from './status-standard'
-import { getStatusStandardEnumCompletions } from './status-standard-enums'
-import { getTimerCompletions } from './timer'
-import { getTriggerCompletions, getTriggerSignatures } from './trigger'
-import { getTriggerBlenderCompletions, getTriggerBlenderSignatures } from './trigger-blender'
-import { getTriggerDiginCompletions, getTriggerDiginSignatures } from './trigger-digin'
-import { getTriggerDigoutCompletions } from './trigger-digout'
-import { getTriggerEnumCompletions } from './trigger-enums'
-import { getTriggerLaninCompletions, getTriggerLaninSignatures } from './trigger-lanin'
-import { getTriggerLanoutCompletions } from './trigger-lanout'
-import { getTriggerModelCompletions, getTriggerModelSignatures } from './trigger-model'
-import { getTriggerTimerCompletions, getTriggerTimerSignatures } from './trigger-timer'
-import { getTriggerTimerStartCompletions } from './trigger-timer-start'
-import { getTriggerTsplinkinCompletions, getTriggerTsplinkinSignatures } from './trigger-tsplinkin'
-import { getTriggerTsplinkoutCompletions } from './trigger-tsplinkout'
-import { getTsplinkCompletions, getTsplinkSignatures } from './tsplink'
-import { getTsplinkEnumCompletions } from './tsplink-enums'
-import { getTsplinkLineCompletions } from './tsplink-line'
-import { getTspnetCompletions, getTspnetSignatures } from './tspnet'
-import { getTspnetEnumCompletions } from './tspnet-enums'
-import { getTspnetTspCompletions, getTspnetTspSignatures } from './tspnet-tsp'
-import { getUpgradeCompletions } from './upgrade'
-import { getUserstringCompletions, getUserstringSignatures } from './userstring'
-import { getWaitcompleteCompletions, getWaitcompleteSignatures } from './waitcomplete'
+const beeper: Array<ApiSpec> = [
+    { label: 'beeper' },
+    { label: 'beeper.beep' },
+]
 
-const completions2450: Array<CompletionItem> = new Array()
-const signatures2450: Array<SignatureInformation> = new Array()
+const buffer: Array<ApiSpec> = [
+    { label: 'buffer' },
+    { label: 'buffer.clearstats' },
+    { label: 'buffer.delete' },
+    { label: 'buffer.getstats' },
+    { label: 'buffer.make' },
+    { label: 'buffer.save' },
+    { label: 'buffer.saveappend' },
+]
 
-let docs2450: Map<string, CommandDocumentation>
+const bufferEnums: Array<ApiSpec> = [
+    { label: 'buffer.DIGITS_3_5' },
+    { label: 'buffer.DIGITS_4_5' },
+    { label: 'buffer.DIGITS_5_5' },
+    { label: 'buffer.DIGITS_6_5' },
+    { label: 'buffer.DIGITS_7_5' },
+    { label: 'buffer.DIGITS_3_5' },
+    { label: 'buffer.FILL_CONTINUOUS' },
+    { label: 'buffer.FILL_ONCE' },
+    { label: 'buffer.OFF' },
+    { label: 'buffer.ON' },
+    { label: 'buffer.SAVE_FORMAT_TIME' },
+    { label: 'buffer.SAVE_RAW_TIME' },
+    { label: 'buffer.SAVE_RELATIVE_TIME' },
+    { label: 'buffer.SAVE_TIMESTAMP_TIME' },
+    { label: 'buffer.STAT_LIMIT' },
+    { label: 'buffer.STAT_LIMIT1_HIGH' },
+    { label: 'buffer.STAT_LIMIT1_LOW' },
+    { label: 'buffer.STAT_LIMIT2_HIGH' },
+    { label: 'buffer.STAT_LIMIT2_LOW' },
+    { label: 'buffer.STAT_ORIGIN' },
+    { label: 'buffer.STAT_OUTPUT' },
+    { label: 'buffer.STAT_OVER_TEMP' },
+    { label: 'buffer.STAT_PROTECTION' },
+    { label: 'buffer.STAT_QUESTIONABLE' },
+    { label: 'buffer.STAT_READBACK' },
+    { label: 'buffer.STAT_SENSE' },
+    { label: 'buffer.STAT_START_GROUP' },
+    { label: 'buffer.STAT_TERMINAL' },
+    { label: 'buffer.STYLE_COMPACT' },
+    { label: 'buffer.STYLE_FULL' },
+    { label: 'buffer.STYLE_STANDARD' },
+    { label: 'buffer.STYLE_WRITABLE' },
+    { label: 'buffer.STYLE_WRITABLE_FULL' },
+    { label: 'buffer.UNIT_AMP' },
+    { label: 'buffer.UNIT_AMP_AC' },
+    { label: 'buffer.UNIT_CELSIUS' },
+    { label: 'buffer.UNIT_DECIBEL' },
+    { label: 'buffer.UNIT_FAHRENHEIT' },
+    { label: 'buffer.UNIT_FARAD' },
+    { label: 'buffer.UNIT_HERTZ' },
+    { label: 'buffer.UNIT_KELVIN' },
+    { label: 'buffer.UNIT_NONE' },
+    { label: 'buffer.UNIT_OHM' },
+    { label: 'buffer.UNIT_PERCENT' },
+    { label: 'buffer.UNIT_RATIO' },
+    { label: 'buffer.UNIT_RECIPROCAL' },
+    { label: 'buffer.UNIT_SECOND' },
+    { label: 'buffer.UNIT_VOLT' },
+    { label: 'buffer.UNIT_VOLT_AC' },
+    { label: 'buffer.UNIT_WATT' },
+    { label: 'buffer.UNIT_X' },
+]
 
-export async function get2450Completions(): Promise<Array<CompletionItem>> {
-    return completions2450
-        .concat(await getBeeperCompletions())
-        .concat(await getBufferCompletions())
-        .concat(await getBufferEnumCompletions())
-        .concat(await getBufferWriteCompletions())
-        .concat(await getBufferVarCompletions())
-        .concat(await getCreateconfigscriptCompletions())
-        .concat(await getDataqueueCompletions())
-        .concat(await getDelayCompletions())
-        .concat(await getDigioCompletions())
-        .concat(await getDigioEnumCompletions())
-        .concat(await getDigioLineCompletions())
-        .concat(await getDisplayCompletions())
-        .concat(await getEventlogCompletions())
-        .concat(await getEventlogEnumCompletions())
-        .concat(await getExitCompletions())
-        .concat(await getFileCompletions())
-        .concat(await getFileEnumCompletions())
-        .concat(await getFormatCompletions())
-        .concat(await getFormatEnumCompletions())
-        .concat(await getGpibCompletions())
-        .concat(await getLanCompletions())
-        .concat(await getLanEnumCompletions())
-        .concat(await getLocalnodeCompletions())
-        .concat(await getLocalnodeEnumCompletions())
-        .concat(await getNodeCompletions())
-        .concat(await getOpcCompletions())
-        .concat(await getPrintbufferCompletions())
-        .concat(await getPrintnumberCompletions())
-        .concat(await getResetCompletions())
-        .concat(await getScriptCompletions())
-        .concat(await getScriptVarCompletions())
-        .concat(await getSmuCompletions())
-        .concat(await getSmuEnumCompletions())
-        .concat(await getSmuInterlockCompletions())
-        .concat(await getSmuMeasureAutozeroCompletions())
-        .concat(await getSmuMeasureCompletions())
-        .concat(await getSmuMeasureConfiglistCompletions())
-        .concat(await getSmuMeasureFilterCompletions())
-        .concat(await getSmuMeasureLimitCompletions())
-        .concat(await getSmuMeasureLimitHighCompletions())
-        .concat(await getSmuMeasureLimitLowCompletions())
-        .concat(await getSmuMeasureMathCompletions())
-        .concat(await getSmuMeasureMathMxbCompletions())
-        .concat(await getSmuMeasureRelCompletions())
-        .concat(await getSmuSourceCompletions())
-        .concat(await getSmuSourceConfiglistCompletions())
-        .concat(await getSmuSourceIlimitCompletions())
-        .concat(await getSmuSourceProtectCompletions())
-        .concat(await getSmuSourceVlimitCompletions())
-        .concat(await getStatusCompletions())
-        .concat(await getStatusEnumCompletions())
-        .concat(await getStatusOperationCompletions())
-        .concat(await getStatusQuestionableCompletions())
-        .concat(await getStatusStandardCompletions())
-        .concat(await getStatusStandardEnumCompletions())
-        .concat(await getTimerCompletions())
-        .concat(await getTriggerCompletions())
-        .concat(await getTriggerBlenderCompletions())
-        .concat(await getTriggerDiginCompletions())
-        .concat(await getTriggerDigoutCompletions())
-        .concat(await getTriggerEnumCompletions())
-        .concat(await getTriggerLaninCompletions())
-        .concat(await getTriggerLanoutCompletions())
-        .concat(await getTriggerModelCompletions())
-        .concat(await getTriggerTimerCompletions())
-        .concat(await getTriggerTimerStartCompletions())
-        .concat(await getTriggerTsplinkinCompletions())
-        .concat(await getTriggerTsplinkoutCompletions())
-        .concat(await getTsplinkCompletions())
-        .concat(await getTsplinkEnumCompletions())
-        .concat(await getTsplinkLineCompletions())
-        .concat(await getTspnetCompletions())
-        .concat(await getTspnetEnumCompletions())
-        .concat(await getTspnetTspCompletions())
-        .concat(await getUpgradeCompletions())
-        .concat(await getUserstringCompletions())
-        .concat(await getWaitcompleteCompletions())
+const bufferWrite: Array<ApiSpec> = [
+    { label: 'buffer.write' },
+    { label: 'buffer.write.format' },
+    { label: 'buffer.write.reading' },
+]
+
+export function get2450InstrumentSpec(): InstrumentSpec {
+    return {
+        beeper: {
+            maxHertz: 8000,
+            maxSeconds: 100,
+            minHertz: 20,
+            minSeconds: 0.001
+        },
+        current: {
+            measure: {
+                level: {
+                    high: 1.05,
+                    low: -1.05
+                },
+                range: {
+                    default: 1e-4,
+                    high: 1,
+                    low: 1e-9
+                }
+            },
+            source: {
+                rangeDefault: 1e-8,
+                // tslint:disable-next-line:no-magic-numbers
+                ranges: [10e-9, 100e-9, 1e-6, 10e-6, 100e-6, 1e-3, 10e-3, 100e-3, 1]
+            }
+        },
+        overflow: 9.9e37,
+        resistance: {
+            level: {
+                high: 2.1e6,
+                low: -2.1e6
+            },
+            range: {
+                default: 200000,
+                high: 200e6,
+                low: 20
+            }
+        },
+        smuInterlock: {
+            maxNominalVoltageTripped: 42,
+            maxSourceVoltageTripped: 21
+        },
+        smuMeasureAutorange: {
+            currentLowDefault: 10e-9,
+            resistanceHighDefault: 200e6,
+            resistanceLowDefault: 20,
+            voltageLowDefault: 20
+        },
+        smuSourceSweepLog: {
+            currentLevelLow: 1e-12,
+            voltageLevelLow: 1e-12
+        },
+        voltage: {
+            measure: {
+                level: {
+                    high: 210,
+                    low: -210
+                },
+                range: {
+                    default: 0.02,
+                    high: 200,
+                    low: 0.02
+                }
+            },
+            source: {
+                rangeDefault: 2e-2,
+                // tslint:disable-next-line:no-magic-numbers
+                ranges: [20e-3, 200e-3, 2, 20, 200]
+            }
+        }
+    }
 }
 
-export async function get2450Docs(): Promise<Map<string, CommandDocumentation>> {
-    return docs2450 = new Map([
-        ...await getSmuInterlockDocs(),
-        ...await getSmuMeasureDocs(),
-        ...await getSmuMeasureRelDocs()
-    ])
-}
-
-export async function get2450Signatures(): Promise<Array<SignatureInformation>> {
-    return signatures2450
-        .concat(await getBeeperSignatures())
-        .concat(await getBufferSignatures())
-        .concat(await getBufferWriteSignatures())
-        .concat(await getCreateconfigscriptSignatures())
-        .concat(await getDataqueueSignatures())
-        .concat(await getDelaySignatures())
-        .concat(await getDigioSignatures())
-        .concat(await getDisplaySignatures())
-        .concat(await getEventlogSignatures())
-        .concat(await getLanSignatures())
-        .concat(await getLocalnodeSignatures())
-        .concat(await getNodeSignatures())
-        .concat(await getPrintbufferSignatures())
-        .concat(await getPrintnumberSignatures())
-        .concat(await getResetSignatures())
-        .concat(await getScriptSignatures())
-        .concat(await getScriptVarSignatures())
-        .concat(await getSmuMeasureSignatures())
-        .concat(await getSmuMeasureConfiglistSignatures())
-        .concat(await getSmuSourceSignatures())
-        .concat(await getSmuSourceConfiglistSignatures())
-        .concat(await getStatusOperationSignatures())
-        .concat(await getStatusQuestionableSignatures())
-        .concat(await getTriggerSignatures())
-        .concat(await getTriggerBlenderSignatures())
-        .concat(await getTriggerDiginSignatures())
-        .concat(await getTriggerLaninSignatures())
-        .concat(await getTriggerModelSignatures())
-        .concat(await getTriggerTimerSignatures())
-        .concat(await getTriggerTsplinkinSignatures())
-        .concat(await getTsplinkSignatures())
-        .concat(await getTspnetSignatures())
-        .concat(await getTspnetTspSignatures())
-        .concat(await getUserstringSignatures())
-        .concat(await getWaitcompleteSignatures())
+export function get2450ApiSpec(): Array<ApiSpec> {
+    return new Array()
+        .concat(beeper)
+        .concat(buffer)
+        .concat(bufferEnums)
+        .concat(bufferWrite)
 }

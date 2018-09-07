@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+
 const bufferCompletions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
@@ -165,12 +169,7 @@ user‑defined buffer; defaults to defbuffer1 if not specified.'
         ),
         ParameterInformation.create(
             'style',
-            'The type of reading buffer to create. One of:\n\
-buffer.STYLE_STANDARD (default)\n\
-buffer.STYLE_COMPACT\n\
-buffer.STYLE_FULL\n\
-buffer.STYLE_WRITABLE\n\
-buffer.STYLE_WRITABLE_FULL\n\
+            'The type of reading buffer to create. Some buffer.STYLE_*. Defaults to buffer.STYLE_STANDARD.\n\
 \n\
 Once the first reading is stored in a COMPACT buffer, its range, display digits, and units cannot be changed.\n\
 \n\
@@ -192,11 +191,7 @@ user‑defined buffer.'
         ParameterInformation.create(
             'timeFormat',
             'Defines how date and time information from the buffer is saved in the file on the USB flash drive; \
-one of:\n\
-buffer.SAVE_FORMAT_TIME (dates, times, and fractional seconds)\n\
-buffer.SAVE_RAW_TIME (seconds and fractional seconds)\n\
-buffer.SAVE_RELATIVE_TIME (relative timestamps)\n\
-buffer.SAVE_TIMESTAMP_TIME (timestamps).'
+is some buffer.SAVE_*.'
         ),
         ParameterInformation.create(
             'start',
@@ -222,11 +217,7 @@ user‑defined buffer.'
         ParameterInformation.create(
             'timeFormat',
             'Defines how date and time information from the buffer is saved in the file on the USB flash drive; \
-one of:\n\
-buffer.SAVE_FORMAT_TIME (dates, times, and fractional seconds)\n\
-buffer.SAVE_RAW_TIME (seconds and fractional seconds)\n\
-buffer.SAVE_RELATIVE_TIME (relative timestamps)\n\
-buffer.SAVE_TIMESTAMP_TIME (timestamps).'
+is some buffer.SAVE_*.'
         ),
         ParameterInformation.create(
             'start',
@@ -239,28 +230,67 @@ buffer.SAVE_TIMESTAMP_TIME (timestamps).'
     ),
 ]
 
-export async function getBufferCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getBufferCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(bufferCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+            const resultSignatures: Array<SignatureInformation> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                bufferCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+
+                bufferSignatures.forEach((signature: SignatureInformation) => {
+                    const signaNamespace = resolveSignatureNamespace(signature)
+
+                    if (signaNamespace === undefined) {
+                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
+                    }
+
+                    if (cmd.label.localeCompare(signaNamespace) === 0) {
+                        resultSignatures.push(signature)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions,
+                signatures: resultSignatures
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
 
-export async function getBufferSignatures(): Promise<Array<SignatureInformation>> {
-    return new Promise<Array<SignatureInformation>>((
-        resolve: (value?: Array<SignatureInformation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(bufferSignatures)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+// export async function getBufferCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(bufferCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
+
+// export async function getBufferSignatures(): Promise<Array<SignatureInformation>> {
+//     return new Promise<Array<SignatureInformation>>((
+//         resolve: (value?: Array<SignatureInformation>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(bufferSignatures)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

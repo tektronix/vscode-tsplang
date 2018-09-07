@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
+
 const gpibCompletions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
@@ -46,15 +50,40 @@ The reset() function does not affect a GPIB address set remotely.'
     },
 ]
 
-export async function getGpibCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getGpibCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(gpibCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                gpibCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
+
+// export async function getGpibCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(gpibCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

@@ -188,7 +188,11 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
 
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    return item
+    const result: CompletionItem = item
+
+    // TODO: implement
+
+    return result
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams) => {

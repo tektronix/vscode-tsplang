@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
 const bufferWriteCompletions: Array<CompletionItem> = [
@@ -70,35 +74,11 @@ const bufferWriteSignatures: Array<SignatureInformation> = [
         ),
         ParameterInformation.create(
             'units',
-            'One of:\n\
-buffer.UNIT_AMP\n\
-buffer.UNIT_AMP_AC\n\
-buffer.UNIT_CELSIUS\n\
-buffer.UNIT_DECIBEL\n\
-buffer.UNIT_FAHRENHEIT\n\
-buffer.UNIT_FARAD\n\
-buffer.UNIT_HERTZ\n\
-buffer.UNIT_KELVIN\n\
-buffer.UNIT_NONE\n\
-buffer.UNIT_OHM\n\
-buffer.UNIT_PERCENT\n\
-buffer.UNIT_RATIO\n\
-buffer.UNIT_RECIPROCAL\n\
-buffer.UNIT_SECOND\n\
-buffer.UNIT_VOLT\n\
-buffer.UNIT_VOLT_AC\n\
-buffer.UNIT_WATT\n\
-buffer.UNIT_X.'
+            'Some buffer.UNIT_*.'
         ),
         ParameterInformation.create(
             'displayDigits',
-            'The number of digits to use for the first measurement. One of:\n\
-buffer.DIGITS_3_5\n\
-buffer.DIGITS_4_5\n\
-buffer.DIGITS_5_5\n\
-buffer.DIGITS_6_5\n\
-buffer.DIGITS_7_5\n\
-buffer.DIGITS_8_5'
+            'The number of digits to use for the first measurement. Some buffer.DIGITS_*.'
         ),
         ParameterInformation.create(
             'extraUnits',
@@ -167,28 +147,67 @@ family of curves (default is 0).'
     ),
 ]
 
-export async function getBufferWriteCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getBufferWriteCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(bufferWriteCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+            const resultSignatures: Array<SignatureInformation> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                bufferWriteCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+
+                bufferWriteSignatures.forEach((signature: SignatureInformation) => {
+                    const signaNamespace = resolveSignatureNamespace(signature)
+
+                    if (signaNamespace === undefined) {
+                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
+                    }
+
+                    if (cmd.label.localeCompare(signaNamespace) === 0) {
+                        resultSignatures.push(signature)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions,
+                signatures: resultSignatures
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
 
-export async function getBufferWriteSignatures(): Promise<Array<SignatureInformation>> {
-    return new Promise<Array<SignatureInformation>>((
-        resolve: (value?: Array<SignatureInformation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(bufferWriteSignatures)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+// export async function getBufferWriteCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(bufferWriteCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
+
+// export async function getBufferWriteSignatures(): Promise<Array<SignatureInformation>> {
+//     return new Promise<Array<SignatureInformation>>((
+//         resolve: (value?: Array<SignatureInformation>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(bufferWriteSignatures)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

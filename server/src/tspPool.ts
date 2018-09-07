@@ -17,7 +17,8 @@
 
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
-import { get2450Completions, get2450Signatures } from './instrument/2450'
+import { CommandDocumentation } from './instrument'
+import { get2450Completions, get2450Docs, get2450Signatures } from './instrument/2450'
 import { get2460Completions, get2460Signatures } from './instrument/2460'
 import { get2461Completions, get2461Signatures } from './instrument/2461'
 import { get6500Completions, get6500Signatures } from './instrument/6500'
@@ -25,6 +26,7 @@ import { getLuaCompletions, getLuaSignatures } from './lua'
 import { Model } from './model'
 
 export interface PoolEntry {
+    completionDocs: Map<string, CommandDocumentation>
     completions: Array<CompletionItem>
     references: number
     signatures: Array<SignatureInformation>
@@ -111,8 +113,16 @@ export class TspPool {
 
             switch (model) {
                 case Model.KI2450:
+                    let complDoc2450: Map<string, CommandDocumentation> = new Map()
                     let compl2450: Array<CompletionItem> = new Array()
                     let signa2450: Array<SignatureInformation> = new Array()
+
+                    try {
+                        complDoc2450 = await get2450Docs()
+                    }
+                    catch (e) {
+                        reject(new Error('Unable to load 2450 completion docs'))
+                    }
 
                     try {
                         compl2450 = await get2450Completions()
@@ -129,6 +139,7 @@ export class TspPool {
                     }
 
                     resolve({
+                        completionDocs: complDoc2450,
                         completions: complLua.concat(compl2450),
                         references: 1,
                         signatures: signaLua.concat(signa2450)
@@ -153,6 +164,7 @@ export class TspPool {
                     }
 
                     resolve({
+                        completionDocs: new Map(),
                         completions: complLua.concat(compl2460),
                         references: 1,
                         signatures: signaLua.concat(signa2460)
@@ -179,6 +191,7 @@ export class TspPool {
                     }
 
                     resolve({
+                        completionDocs: new Map(),
                         completions: complLua.concat(compl2461),
                         references: 1,
                         signatures: signaLua.concat(signa2461)
@@ -203,6 +216,7 @@ export class TspPool {
                     }
 
                     resolve({
+                        completionDocs: new Map(),
                         completions: complLua.concat(compl6500),
                         references: 1,
                         signatures: signaLua.concat(signa6500)

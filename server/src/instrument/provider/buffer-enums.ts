@@ -15,7 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
 
 const bufferEnumCompletions: Array<CompletionItem> = [
     {
@@ -74,21 +78,37 @@ const bufferEnumCompletions: Array<CompletionItem> = [
     },
     {
         data: ['buffer'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Save date, time, and fractional seconds.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'SAVE_FORMAT_TIME'
     },
     {
         data: ['buffer'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Save seconds and fractional seconds.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'SAVE_RAW_TIME'
     },
     {
         data: ['buffer'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Save relative timestamps.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'SAVE_RELATIVE_TIME'
     },
     {
         data: ['buffer'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Save timestamps.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'SAVE_TIMESTAMP_TIME'
     },
@@ -293,15 +313,40 @@ const bufferEnumCompletions: Array<CompletionItem> = [
     }
 ]
 
-export async function getBufferEnumCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getBufferEnumCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(bufferEnumCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                bufferEnumCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
+
+// export async function getBufferEnumCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(bufferEnumCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

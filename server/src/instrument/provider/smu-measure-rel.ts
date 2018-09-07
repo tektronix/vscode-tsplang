@@ -17,7 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { CommandDocumentation, InstrumentSpec } from '..'
+import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
 
 const smuMeasureRelDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -37,12 +39,12 @@ When the measurement function is set to Resistance, the valid range of this attr
 When the measurement function is set to Voltage, the valid range of this attribute is %{4} to %{5}.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.currentLevel.low.toString())
-                    .replace('%{1}', spec.currentLevel.high.toString())
-                    .replace('%{2}', spec.resistanceLevel.low.toString())
-                    .replace('%{3}', spec.resistanceLevel.high.toString())
-                    .replace('%{4}', spec.voltageLevel.low.toString())
-                    .replace('%{5}', spec.voltageLevel.high.toString())
+                    .replace('%{0}', spec.current.measure.level.low.toString())
+                    .replace('%{1}', spec.current.measure.level.high.toString())
+                    .replace('%{2}', spec.resistance.level.low.toString())
+                    .replace('%{3}', spec.resistance.level.high.toString())
+                    .replace('%{4}', spec.voltage.measure.level.low.toString())
+                    .replace('%{5}', spec.voltage.measure.level.high.toString())
             }
         }
     ],
@@ -94,28 +96,61 @@ This attribute is saved with the active function and retained until the next ins
     },
 ]
 
-export async function getSmuMeasureRelCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getSmuMeasureRelCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(smuMeasureRelCompletions)
+            const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                smuMeasureRelDocs.forEach((value: CommandDocumentation, key: string) => {
+                    if (cmd.label.localeCompare(key) === 0) {
+                        resultCompletionDocs.set(key, value)
+                    }
+                })
+
+                smuMeasureRelCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completionDocs: resultCompletionDocs,
+                completions: resultCompletions
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
 
-export async function getSmuMeasureRelDocs(): Promise<Map<string, CommandDocumentation>> {
-    return new Promise<Map<string, CommandDocumentation>>((
-        resolve: (value?: Map<string, CommandDocumentation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(smuMeasureRelDocs)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+// export async function getSmuMeasureRelCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureRelCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
+
+// export async function getSmuMeasureRelDocs(): Promise<Map<string, CommandDocumentation>> {
+//     return new Promise<Map<string, CommandDocumentation>>((
+//         resolve: (value?: Map<string, CommandDocumentation>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureRelDocs)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

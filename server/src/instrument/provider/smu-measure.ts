@@ -17,14 +17,16 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-import { CommandDocumentation, InstrumentSpec } from '..'
+import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 const smuMeasureDocs: Map<string, CommandDocumentation> = new Map([
     [
         'smu.measure.autorangehigh',
         {
             kind: MarkupKind.Markdown,
-            toString: (spec: SmuMeasureSpec): string => {
+            toString: (spec: InstrumentSpec): string => {
                 return '```lua\nsmu.measure.autorangehigh\n```\n\
 \n\
 Acts as a read-write attribute if and only if the present measurement function is set to Resistance; otherwise it \
@@ -33,9 +35,9 @@ acts as a read-only attribute.\n\
 For Resistance measurements, this attribute can be set to any number from %{0} to %{1} that is greater than or equal \
 to the measure autorangelow attribute. Defaults to %{2}. Any set value is saved with the resistance function and \
 retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.resistanceRange.low.toString())
-                    .replace('%{1}', spec.resistanceRange.high.toString())
-                    .replace('%{1}', spec.autoRangeHighResistanceDefault.toString())
+                    .replace('%{0}', spec.resistance.range.low.toString())
+                    .replace('%{1}', spec.resistance.range.high.toString())
+                    .replace('%{1}', spec.smuMeasureAutorange.resistanceHighDefault.toString())
             }
         }
     ],
@@ -43,7 +45,7 @@ retained until the next instrument reset or power cycle.'
         'smu.measure.autorangelow',
         {
             kind: MarkupKind.Markdown,
-            toString: (spec: SmuMeasureSpec): string => {
+            toString: (spec: InstrumentSpec): string => {
                 return '```lua\nsmu.measure.autorangelow\n```\n\
 \n\
 Get or set the lowest range available to the autorange setting to a number.\n\
@@ -60,15 +62,15 @@ While this attribute accepts any number in the applicable range, the instrument 
 greater than or equal to the supplied value.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.currentRange.low.toString())
-                    .replace('%{1}', spec.currentRange.high.toString())
-                    .replace('%{2}', spec.autoRangeLowCurrentDefault.toString())
-                    .replace('%{3}', spec.voltageRange.low.toString())
-                    .replace('%{4}', spec.voltageRange.high.toString())
-                    .replace('%{5}', spec.autoRangeLowVoltageDefault.toString())
-                    .replace('%{6}', spec.resistanceRange.low.toString())
-                    .replace('%{7}', spec.resistanceRange.high.toString())
-                    .replace('%{8}', spec.autoRangeLowResistanceDefault.toString())
+                    .replace('%{0}', spec.current.measure.range.low.toString())
+                    .replace('%{1}', spec.current.measure.range.high.toString())
+                    .replace('%{2}', spec.smuMeasureAutorange.currentLowDefault.toString())
+                    .replace('%{3}', spec.voltage.measure.range.low.toString())
+                    .replace('%{4}', spec.voltage.measure.range.high.toString())
+                    .replace('%{5}', spec.smuMeasureAutorange.voltageLowDefault.toString())
+                    .replace('%{6}', spec.resistance.range.low.toString())
+                    .replace('%{7}', spec.resistance.range.high.toString())
+                    .replace('%{8}', spec.smuMeasureAutorange.resistanceLowDefault.toString())
             },
         }
     ],
@@ -76,7 +78,7 @@ This attribute is saved with the active function and retained until the next ins
         'smu.measure.range',
         {
             kind: MarkupKind.Markdown,
-            toString: (spec: SmuMeasureSpec): string => {
+            toString: (spec: InstrumentSpec): string => {
                 return '```lua\nsmu.measure.range\n```\n\
 \n\
 Get or set the measurement range of the active measure function as a number.\n\
@@ -96,15 +98,27 @@ Any signal greater than the set range is returned as %{9}.\n\
 If sourcing and measuring the same function, the source range takes precendence.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.currentRange.low.toString())
-                    .replace('%{1}', spec.currentRange.high.toString())
-                    .replace('%{2}', spec.rangeCurrentDefault.toString())
-                    .replace('%{3}', spec.voltageRange.low.toString())
-                    .replace('%{4}', spec.voltageRange.high.toString())
-                    .replace('%{5}', spec.rangeVoltageDefault.toString())
-                    .replace('%{6}', spec.resistanceRange.low.toString())
-                    .replace('%{7}', spec.resistanceRange.high.toString())
-                    .replace('%{8}', spec.rangeResistanceDefault.toString())
+                    .replace('%{0}', spec.current.measure.range.low.toString())
+                    .replace('%{1}', spec.current.measure.range.high.toString())
+                    .replace(
+                        '%{2}',
+                        (spec.current.measure.range.default === undefined) ?
+                            'UNDEFINED' : spec.current.measure.range.default.toString()
+                    )
+                    .replace('%{3}', spec.voltage.measure.range.low.toString())
+                    .replace('%{4}', spec.voltage.measure.range.high.toString())
+                    .replace(
+                        '%{5}',
+                        (spec.voltage.measure.range.default === undefined) ?
+                            'UNDEFINED' : spec.voltage.measure.range.default.toString()
+                    )
+                    .replace('%{6}', spec.resistance.range.low.toString())
+                    .replace('%{7}', spec.resistance.range.high.toString())
+                    .replace(
+                        '%{8}',
+                        (spec.resistance.range.default === undefined) ?
+                            'UNDEFINED' : spec.resistance.range.default.toString()
+                    )
                     .replace('%{9}', spec.overflow.toString())
             }
         }
@@ -358,51 +372,88 @@ user‑defined buffer; defaults to defbuffer1 if not specified.'
     ),
 ]
 
-export interface SmuMeasureSpec extends InstrumentSpec {
-    autoRangeHighResistanceDefault: number
-    autoRangeLowCurrentDefault: number
-    autoRangeLowResistanceDefault: number
-    autoRangeLowVoltageDefault: number
-    rangeCurrentDefault: number
-    rangeResistanceDefault: number
-    rangeVoltageDefault: number
-}
-
-export async function getSmuMeasureCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getSmuMeasureCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(smuMeasureCompletions)
+            const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+            const resultCompletions: Array<CompletionItem> = new Array()
+            const resultSignatures: Array<SignatureInformation> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                smuMeasureDocs.forEach((value: CommandDocumentation, key: string) => {
+                    if (cmd.label.localeCompare(key) === 0) {
+                        resultCompletionDocs.set(key, value)
+                    }
+                })
+
+                smuMeasureCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+
+                smuMeasureSignatures.forEach((signature: SignatureInformation) => {
+                    const signaNamespace = resolveSignatureNamespace(signature)
+
+                    if (signaNamespace === undefined) {
+                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
+                    }
+
+                    if (cmd.label.localeCompare(signaNamespace) === 0) {
+                        resultSignatures.push(signature)
+                    }
+                })
+            })
+
+            resolve({
+                completionDocs: resultCompletionDocs,
+                completions: resultCompletions,
+                signatures: resultSignatures
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
 
-export async function getSmuMeasureDocs(): Promise<Map<string, CommandDocumentation>> {
-    return new Promise<Map<string, CommandDocumentation>>((
-        resolve: (value?: Map<string, CommandDocumentation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(smuMeasureDocs)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+// export async function getSmuMeasureCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
 
-export async function getSmuMeasureSignatures(): Promise<Array<SignatureInformation>> {
-    return new Promise<Array<SignatureInformation>>((
-        resolve: (value?: Array<SignatureInformation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(smuMeasureSignatures)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+// export async function getSmuMeasureDocs(): Promise<Map<string, CommandDocumentation>> {
+//     return new Promise<Map<string, CommandDocumentation>>((
+//         resolve: (value?: Map<string, CommandDocumentation>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureDocs)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
+
+// export async function getSmuMeasureSignatures(): Promise<Array<SignatureInformation>> {
+//     return new Promise<Array<SignatureInformation>>((
+//         resolve: (value?: Array<SignatureInformation>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureSignatures)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }

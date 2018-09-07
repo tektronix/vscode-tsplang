@@ -17,12 +17,14 @@
 
 import { CompletionItem, SignatureInformation, TextDocumentItem } from 'vscode-languageserver'
 
+import { CommandDocumentation } from './instrument'
 import { getLuaCompletions, getLuaSignatures } from './lua'
 import { Model } from './model'
 import { Shebang } from './shebang'
 import { PoolEntry, TspPool } from './tspPool'
 
 interface TspItem {
+    completionDocs?: Map<string, CommandDocumentation>
     completions: Array<CompletionItem>
     node?: Map<number, Array<CompletionItem>>
     rawShebang?: string
@@ -41,6 +43,13 @@ export class TspManager {
 
     get(uri: string): TspItem | undefined {
         return this.dict.get(uri)
+    }
+
+    getCompletionDoc(completionItem: CompletionItem): string {
+        // get namespace from CompletionItem
+
+        // TODO: implement
+        return ''
     }
 
     has(uri: string): boolean {
