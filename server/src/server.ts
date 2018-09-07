@@ -105,7 +105,7 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
 
     const tspItem = manager.get(textDocumentPosition.textDocument.uri)
 
-    if (tspItem === undefined || tspItem.completions === undefined) {
+    if (tspItem === undefined) {
         return
     }
 

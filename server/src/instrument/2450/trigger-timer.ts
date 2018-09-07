@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerTimerCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -33,7 +31,9 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function clears the timer event detector and overrun indicator for the specified trigger timer number.\n\nThis command sets the timer event detector to the undetected state and resets the overrun indicator.'
+            value: '```lua\nfunction clear()\n```\n\
+\n\
+Clear the event detector and reset the overrun indicator of the currently indexed timer.'
         },
         kind: CompletionItemKind.Function,
         label: 'clear',
@@ -42,7 +42,18 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute sets the number of events to generate each time the timer generates a trigger event or is enabled as a timer or alarm.\n\nIf count is set to a number greater than 1, the timer automatically starts the next trigger timer delay at the expiration of the previous delay.\n\nSet count to zero (0) to cause the timer to generate trigger events indefinitely.\n\nIf you use the trigger timer with a trigger model, make sure the count value is the same or more than any count values expected in the trigger model.'
+            value: '```lua\ntrigger.timer[N].count\n```\n\
+\n\
+Get or set the number of times the currently indexed timer restarts after generating a trigger event to a number from \
+0 to 1 048 575. Defaults to 1.\n\
+\n\
+When set to a number greater than 1, the timer automatically starts the next trigger timer delay at the expiration of \
+the previous delay.\n\
+\n\
+When set to 0, the timer generates trigger events indefinitely.\n\
+\n\
+If you use the trigger timer with a trigger model, make sure the count value is the same or more than any count \
+values expected in the trigger model.'
         },
         kind: CompletionItemKind.Property,
         label: 'count',
@@ -51,7 +62,13 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute sets and reads the timer delay.\n\nOnce the timer is enabled, each time the timer is triggered, it uses this delay period.\n\nAssigning a value to this attribute is equivalent to:\n\nThis creates a delay list of one value.\n\nReading this attribute returns the delay interval that will be used the next time the timer is triggered.\n\nIf you use the trigger timer with a trigger model, make sure the trigger timer delay is set so that the readings are paced correctly.'
+            value: '```lua\ntrigger.timer[N].delay\n```\n\
+\n\
+Get or set the seconds between sequential timer events for the currently selected timer to a number from +8e-6 to \
+100 000. Defaults to +10e-6.\n\
+\n\
+If you use the trigger timer with a trigger model, make sure the trigger timer delay is set so that the readings are \
+paced correctly.'
         },
         kind: CompletionItemKind.Property,
         label: 'delay',
@@ -60,7 +77,16 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute sets an array of timer intervals.\n\nEach time the timer is triggered after it is enabled, it uses the next delay period from the array. The default value is an array with one value of 10 ms.\n\nAfter all elements in the array have been used, the delays restart at the beginning of the list.\n\nIf the array contains more than one element, the average of the delay intervals in the list must be ³50µs.'
+            value: '```lua\ntrigger.timer[N].delaylist\n```\n\
+\n\
+Get or set, as an array, the seconds to use between sequential timer events for the currently indexed timer. Each \
+array element is a number from +8e-6 to 100 000. Defaults to { +10e+6 }.\n\
+\n\
+Each sequential timer event uses the next element in the array as its delay value. After all elements in the array \
+have been used, the delays restart at the beginning.\n\
+\n\
+If the array contains more than one element, the average of the delay intervals in the list must be greater than or \
+equal to +50e-6.'
         },
         kind: CompletionItemKind.Property,
         label: 'delaylist',
@@ -69,7 +95,18 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute enables the trigger timer.\n\nWhen this command is set to on, the timer performs the delay operation.\n\nWhen this command is set to off, there is no timer on the delay operation.\n\nYou must enable a timer before it can use the delay settings or the alarm configuration. For expected results from the timer, it is best to disable the timer before changing a timer setting, such as delay or start seconds.\n\nTo use the timer as a simple delay or pulse generator with digital I/O lines, make sure the timer start time in seconds and fractional seconds is configured for a time in the past. To use the timer as an alarm, configure the timer start time in seconds and fractional seconds for the desired alarm time.'
+            value: '```lua\ntrigger.timer[N].enable\n```\n\
+\n\
+Get or set the state of the currently indexed timer to trigger.ON or OFF. Defaults to trigger.OFF.\n\
+\n\
+When set to trigger.ON, the timer performs the delay operation, otherwise there is no timer on the delay operation.\n\
+\n\
+You must enable a timer before it can use the delay settings or the alarm configuration. For expected results from \
+the timer, it is best to disable the timer before changing its settings.\n\
+\n\
+To use the timer as a simple delay or pulse generator with digital I/O lines, make sure the timer start time in \
+seconds and fractional seconds is configured for a time in the past. To use the timer as an alarm, configure the \
+timer start time in seconds and fractional seconds for the desired alarm time.'
         },
         kind: CompletionItemKind.Property,
         label: 'enable',
@@ -78,7 +115,19 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function resets trigger timer settings to their default values.\n\nThe trigger.timer[N].reset() function resets the following attributes to their default values:\n\nIt also clears trigger.timer[N].overrun.'
+            value: '```lua\nfunction reset()\n\
+\n\
+Reset the following attributes of the currently indexed timer N to their default values: \
+"trigger.timer[N].count", \
+"trigger.timer[N].delay", \
+"trigger.timer[N].delaylist", \
+"trigger.timer[N].enable", \
+"trigger.timer[N].start.fractionalseconds", \
+"trigger.timer[N].start.generate", \
+"trigger.timer[N].start.seconds", \
+and "trigger.timer[N].stimulus".\n\
+\n\
+It also clears "trigger.timer[N].overrun".'
         },
         kind: CompletionItemKind.Function,
         label: 'reset',
@@ -87,7 +136,14 @@ const triggerTimerCompletions: Array<CompletionItem> = [
         data: ['timer', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function waits for a trigger.\n\nIf one or more trigger events were detected since the last time trigger.timer[N].wait() or trigger.timer[N].clear() was called, this function returns immediately.\n\nAfter waiting for a trigger with this function, the event detector is automatically reset and rearmed. This is true regardless of the number of events detected.'
+            value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.timer[N].wait(timeout) -> boolean\n\
+\n\
+Returns a boolean value indicating whether a timer event occurred since the last time this or the clear function was \
+called. If no event is detected after timeout seconds, then false is returned. If an event is detected or has \
+occurred previously, then true is returned immediately.\n\
+\n\
+After detecting a trigger with this function, the event detector automatically resets and rearms regardless of the \
+number of events detected.'
         },
         kind: CompletionItemKind.Function,
         label: 'wait',

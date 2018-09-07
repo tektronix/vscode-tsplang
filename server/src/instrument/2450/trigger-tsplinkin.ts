@@ -17,8 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-/* TODO: CompletionItem.documentation.value */
-
 const triggerTsplinkinCompletions: Array<CompletionItem> = [
     {
         data: ['trigger'],
@@ -33,7 +31,9 @@ const triggerTsplinkinCompletions: Array<CompletionItem> = [
         data: ['tsplinkin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function clears the event detector for a LAN trigger.\n\nThe trigger event detector enters the detected state when an event is detected. When this command is sent, the instrument does the following actions:'
+            value: '```lua\nfunction clear()\n```\n\
+\n\
+Clear the event detector and reset the overrun indicator of the currently indexed TSP-Link trigger.'
         },
         kind: CompletionItemKind.Function,
         label: 'clear',
@@ -42,7 +42,15 @@ const triggerTsplinkinCompletions: Array<CompletionItem> = [
         data: ['tsplinkin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This attribute indicates which trigger edge controls the trigger event detector for a trigger line.\n\nWhen the edge is detected, the instrument asserts a TTL‑low pulse for the output.\n\nThe output state of the I/O line is controlled by the trigger logic. The user-specified output state of the line is ignored.'
+            value: '```lua\ntrigger.tsplinkin[N].edge\n```\n\
+\n\
+Get or set the trigger edge logic for the currently indexed TSP-Link trigger to trigger.EDGE_\\*. Defaults to \
+trigger.EDGE_FALLING.\n\
+\n\
+When the configured edge is detected, the instrument asserts a transistor-transistor logic low‑pulse for the output.\n\
+\n\
+The output state of the TSP-Link trigger is controlled by the trigger logic. Any user-specified output state is \
+ignored.'
         },
         kind: CompletionItemKind.Property,
         label: 'edge',
@@ -51,7 +59,9 @@ const triggerTsplinkinCompletions: Array<CompletionItem> = [
         data: ['tsplinkin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This command indicates whether an event has been ignored because the event detector was already in the detected state when the event occurred.\n\nThis is an indication of the state of the event detector built into the synchronization line itself.\n\nIt does not indicate if an overrun occurred in any other part of the trigger model, or in any other construct that is monitoring the event. It also is not an indication of an output trigger overrun.'
+            value: '```lua\ntrigger.tsplinkin[N].overrun\n```\n\ntrigger.tsplinkin[N].overrun -> boolean\n\
+\n\
+Returns true if an event was ignored because the event detector was already in the detected state and false otherwise.'
         },
         kind: CompletionItemKind.Constant,
         label: 'overrun',
@@ -60,7 +70,14 @@ const triggerTsplinkinCompletions: Array<CompletionItem> = [
         data: ['tsplinkin', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: 'This function waits up to the timeout value for an input trigger. If one or more trigger events are detected since the last time this command or trigger.tsplinkin[N].clear() was called, this function returns immediately.\n\nAfter waiting for a trigger with this function, the event detector is automatically reset and rearmed. This is true regardless of the number of events detected.'
+            value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.tsplinkin[N].wait(timeout) -> boolean\n\
+\n\
+Returns a boolean value indicating whether a TSP-Link trigger event occurred since the last time this or the clear \
+function was called. If no event is detected after timeout seconds, then false is returned. If an event is detected \
+or has occurred previously, then true is returned immediately.\n\
+\n\
+After detecting a trigger with this function, the event detector automatically resets and rearms regardless of the \
+number of events detected.'
         },
         kind: CompletionItemKind.Function,
         label: 'wait',

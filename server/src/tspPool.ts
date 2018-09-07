@@ -21,6 +21,7 @@ import { get2450Completions, get2450Signatures } from './instrument/2450'
 // import { get2460Completions, get2460Signatures } from './instrument/2460'
 // import { get2461Completions, get2461Signatures } from './instrument/2461'
 // import { get6500Completions, get6500Signatures } from './instrument/6500'
+import { getLuaCompletions, getLuaSignatures } from './lua'
 import { Model } from './model'
 
 export interface PoolEntry {
@@ -91,6 +92,23 @@ export class TspPool {
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
         ) : Promise<void> => {
+            let complLua: Array<CompletionItem> = new Array()
+            let signaLua: Array<SignatureInformation> = new Array()
+
+            try {
+                complLua = await getLuaCompletions()
+            }
+            catch (e) {
+                reject(new Error('Unable to load Lua completions'))
+            }
+
+            try {
+                signaLua = await getLuaSignatures()
+            }
+            catch (e) {
+                reject(new Error('Unable to load Lua signatures'))
+            }
+
             switch (model) {
                 case Model.KI2450:
                     let compl2450: Array<CompletionItem> = new Array()
@@ -111,9 +129,9 @@ export class TspPool {
                     }
 
                     resolve({
-                        completions: compl2450,
+                        completions: complLua.concat(compl2450),
                         references: 1,
-                        signatures: signa2450
+                        signatures: signaLua.concat(signa2450)
                     })
                     break
                 // case Model.KI2460:

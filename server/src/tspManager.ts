@@ -17,16 +17,17 @@
 
 import { CompletionItem, SignatureInformation, TextDocumentItem } from 'vscode-languageserver'
 
+import { getLuaCompletions, getLuaSignatures } from './lua'
 import { Model } from './model'
 import { Shebang } from './shebang'
 import { PoolEntry, TspPool } from './tspPool'
 
 interface TspItem {
-    completions?: Array<CompletionItem>
+    completions: Array<CompletionItem>
     node?: Map<number, Array<CompletionItem>>
-    rawShebang: string
-    shebang: Array<Shebang.ShebangToken>
-    signatures?: Array<SignatureInformation>
+    rawShebang?: string
+    shebang?: Array<Shebang.ShebangToken>
+    signatures: Array<SignatureInformation>
 }
 
 export class TspManager {
@@ -60,13 +61,6 @@ export class TspManager {
 
             const shebangLine = this.getShebangLine(document)
 
-            // documents must have a valid shebang to register
-            if (shebangLine === undefined) {
-                reject(new Error('Invalid shebang'))
-
-                return
-            }
-
             try {
                 // try to make a new entry item for this document
                 let item = await this.generateBasicItem(shebangLine)
@@ -88,6 +82,10 @@ export class TspManager {
 
         if (tspCompletion === undefined) {
             return false
+        }
+
+        if (tspCompletion.shebang === undefined) {
+            return true
         }
 
         this.getModels(tspCompletion.shebang)
@@ -122,6 +120,12 @@ export class TspManager {
                     return
                 }
 
+                if (tspCompletion.shebang === undefined) {
+                    resolve()
+
+                    return
+                }
+
                 this.getModels(tspCompletion.shebang)
                     .forEach((element: Model) => {
                         this.pool.unregister(element)
@@ -142,7 +146,7 @@ export class TspManager {
             }
 
             // if the shebang has not changed, then no update is needed
-            if (oldItem.rawShebang.localeCompare(shebangLine) === 0) {
+            if (oldItem.rawShebang !== undefined && oldItem.rawShebang.localeCompare(shebangLine) === 0) {
                 resolve()
 
                 return
@@ -157,6 +161,12 @@ export class TspManager {
 
                 if (tspCompletion === undefined) {
                     reject(new Error('Unable to load TSP information'))
+
+                    return
+                }
+
+                if (tspCompletion.shebang === undefined) {
+                    resolve()
 
                     return
                 }
@@ -181,23 +191,44 @@ export class TspManager {
         })
     }
 
-    private generateBasicItem = async (shebangLine: string): Promise<TspItem> => {
+    private generateBasicItem = async (shebangLine: string | undefined): Promise<TspItem> => {
         return new Promise<TspItem>(async (
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
+            const luaCompletions: Array<CompletionItem> = new Array()
+            const luaSignatures: Array<SignatureInformation> = new Array()
             let shebangTokens: Array<Shebang.ShebangToken>
             try {
-                // parse shebang tokens
-                shebangTokens = await Shebang.tokenize(shebangLine)
+                // get native Lua completions
+                luaCompletions.concat(await getLuaCompletions())
+                luaSignatures.concat(await getLuaSignatures())
 
-                resolve({
-                    rawShebang: shebangLine,
-                    shebang: shebangTokens
-                })
+                // parse shebang tokens
+                shebangTokens = await Shebang.tokenize((shebangLine === undefined) ? '' : shebangLine)
+                    .catch((reason: Error) => {
+                        console.warn('Shebang Tokenizer: ' + reason.message)
+
+                        return new Array<Shebang.ShebangToken>()
+                    })
+
+                const basicTspItem: TspItem = {
+                    completions: luaCompletions,
+                    signatures: luaSignatures
+                }
+
+                if (shebangLine !== undefined) {
+                    basicTspItem.rawShebang = shebangLine
+                }
+
+                if (shebangTokens.length > 0) {
+                    basicTspItem.shebang = shebangTokens
+                }
+
+                resolve(basicTspItem)
             } catch (e) {
                 // a VALID shebang is required for document registration
-                reject(new Error('Shebang ' + e.toString()))
+                reject(new Error('Lua Completions: ' + e.toString()))
             }
         })
     }
@@ -211,12 +242,42 @@ export class TspManager {
         return result
     }
 
+    /**
+     * Add previously loaded Completions and Signatures to the given TspItem.
+     * @param item - Item to fill.
+     */
     private async getPoolItems(item: TspItem): Promise<TspItem> {
         return new Promise<TspItem>(async (
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
             const result: TspItem = item
+
+            // if no shebang is present, then just provide Lua items
+            if (result.shebang === undefined) {
+                try {
+                    result.completions = await getLuaCompletions()
+                    result.signatures = await getLuaSignatures()
+                }
+                catch (e) {
+                    reject(new Error('Lua Completions: ' + e.toString()))
+
+                    return
+                }
+
+                try {
+                    result.signatures = await getLuaSignatures()
+                }
+                catch (e) {
+                    reject(new Error('Lua Signatures: ' + e.toString()))
+
+                    return
+                }
+
+                resolve(result)
+
+                return
+            }
 
             // get models from shebang
             for (const token of result.shebang) {

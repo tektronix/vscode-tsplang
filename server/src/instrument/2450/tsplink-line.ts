@@ -44,7 +44,7 @@ Get or set the TSP-Link trigger line to tsplink.MODE_\\*. Defaults to tsplink.MO
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\
 \n\
-This function resets the following attributes to their default values: \
+Reset the following attributes of the currently indexed TSP-Link trigger line N to their default values: \
 "trigger.tsplinkin[N].edge", \
 "trigger.tsplinkout[N].logic", \
 "trigger.tsplinkout[N].pulsewidth", \
