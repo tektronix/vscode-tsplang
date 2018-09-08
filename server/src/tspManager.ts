@@ -86,6 +86,10 @@ export class TspManager {
         }
 
         if (tspCompletion.shebang === undefined) {
+            if (this.dict.has(uri)) {
+                return this.dict.delete(uri)
+            }
+
             return true
         }
 
