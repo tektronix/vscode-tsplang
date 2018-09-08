@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
 
@@ -301,204 +301,218 @@ This attribute is saved with the active function and retained until the next ins
 ]
 
 const smuSourceSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
+    {
+        documentation: undefined,
+        label: 'smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
 [, dual][, bufferName])',
-        undefined,
-        ParameterInformation.create(
-            'configListName',
-            'The name of the source configuration list to create as a string.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'The source level at which to start sweeping as a number.\n\
+        parameters: [
+            {
+                documentation: 'The name of the source configuration list to create as a string.',
+                label: 'configListName'
+            },
+            {
+                documentation: 'The source level at which to start sweeping as a number.\n\
 Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-        ),
-        ParameterInformation.create(
-            'stop',
-            'The source level at which to stop sweeping as a number.\n\
+Voltage range: %{2} to %{3}',
+                label: 'start'
+            },
+            {
+                documentation: 'The source level at which to stop sweeping as a number.\n\
 Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-        ),
-        ParameterInformation.create(
-            'points',
-            'The number of source-measure points between the start and stop values of the sweep as a number from +2.0 \
-to +1e+6.'
-        ),
-        ParameterInformation.create(
-            'delay',
-            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for no delay, or \
-smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.'
-        ),
-        ParameterInformation.create(
-            'count',
-            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
-        ),
-        ParameterInformation.create(
-            'rangeType',
-            'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.'
-        ),
-        ParameterInformation.create(
-            'failAbort',
-            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
-to smu.ON.'
-        ),
-        ParameterInformation.create(
-            'dual',
-            'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then back to start. \
-Defaults to smu.OFF.'
-        ),
-        ParameterInformation.create(
-            'bufferName',
-            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
-user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType][, failAbort]\
-[, dual][, bufferName])',
-        undefined,
-        ParameterInformation.create(
-            'configListName',
-            'The name of the source configuration list to create as a string.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'The source level at which to start sweeping as a number.\n\
+Voltage range: %{2} to %{3}',
+                label: 'stop'
+            },
+            {
+                documentation: 'The number of source-measure points between the start and stop values of the sweep as \
+a number from +2.0 to +1e+6.',
+                label: 'points'
+            },
+            {
+                documentation: 'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for \
+no delay, or smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.',
+                label: 'delay'
+            },
+            {
+                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+smu.INFINITE. Defaults to 1.',
+                label: 'count'
+            },
+            {
+                documentation: 'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.',
+                label: 'rangeType'
+            },
+            {
+                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+exceeded. Defaults to smu.ON.',
+                label: 'failAbort'
+            },
+            {
+                documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
+back to start. Defaults to smu.OFF.',
+                label: 'dual'
+            },
+            {
+                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+                label: 'bufferName'
+            },
+        ]
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType]\
+[, failAbort][, dual][, bufferName])',
+        parameters: [
+            {
+                documentation: 'The name of the source configuration list to create as a string.',
+                label: 'configListName'
+            },
+            {
+                documentation: 'The source level at which to start sweeping as a number.\n\
 Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-        ),
-        ParameterInformation.create(
-            'stop',
-            'The source level at which to stop sweeping as a number.\n\
+Voltage range: %{2} to %{3}',
+                label: 'start'
+            },
+            {
+                documentation: 'The source level at which to stop sweeping as a number.\n\
 Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-        ),
-        ParameterInformation.create(
-            'step',
-            'The magnitude by which the output level will change for each step as a number greater than 0.'
-        ),
-        ParameterInformation.create(
-            'delay',
-            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for no delay, or \
-smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.'
-        ),
-        ParameterInformation.create(
-            'count',
-            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
-        ),
-        ParameterInformation.create(
-            'rangeType',
-            'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.'
-        ),
-        ParameterInformation.create(
-            'failAbort',
-            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
-to smu.ON.'
-        ),
-        ParameterInformation.create(
-            'dual',
-            'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then back to start. \
-Defaults to smu.OFF.'
-        ),
-        ParameterInformation.create(
-            'bufferName',
-            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
-user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])',
-        undefined,
-        ParameterInformation.create(
-            'configListName',
-            'The name of the source configuration list to load as a string.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'A number that defines a specific configuration index in the configuration list. \
-Defaults to the first configuration index.'
-        ),
-        ParameterInformation.create(
-            'delay',
-            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds or 0 for no delay.'
-        ),
-        ParameterInformation.create(
-            'count',
-            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
-        ),
-        ParameterInformation.create(
-            'failAbort',
-            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
-to smu.ON.'
-        ),
-        ParameterInformation.create(
-            'bufferName',
-            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
-user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort][, dual]\
-[, bufferName][, asymptote])',
-        undefined,
-        ParameterInformation.create(
-            'configListName',
-            'The name of the source configuration list to create as a string.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'The source level at which to start sweeping as a number.\n\
+Voltage range: %{2} to %{3}',
+                label: 'stop'
+            },
+            {
+                documentation: 'The magnitude by which the output level will change for each step as a number greater \
+than 0.',
+                label: 'step'
+            },
+            {
+                documentation: 'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for \
+no delay, or smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.',
+                label: 'delay'
+            },
+            {
+                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+smu.INFINITE. Defaults to 1.',
+                label: 'count'
+            },
+            {
+                documentation: 'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.',
+                label: 'rangeType'
+            },
+            {
+                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+exceeded. Defaults to smu.ON.',
+                label: 'failAbort'
+            },
+            {
+                documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
+back to start. Defaults to smu.OFF.',
+                label: 'dual'
+            },
+            {
+                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+                label: 'bufferName'
+            },
+        ]
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])',
+        parameters: [
+            {
+                documentation: 'The name of the source configuration list to load as a string.',
+                label: 'configListName'
+            },
+            {
+                documentation: 'A number that defines a specific configuration index in the configuration list. \
+Defaults to the first configuration index.',
+                label: 'index'
+            },
+            {
+                documentation: 'The delay between measurement points as a number from +50e-6 to +10e+3 seconds or 0 \
+for no delay.',
+                label: 'delay'
+            },
+            {
+                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+smu.INFINITE. Defaults to 1.',
+                label: 'count'
+            },
+            {
+                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+exceeded. Defaults to smu.ON.',
+                label: 'failAbort'
+            },
+            {
+                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+                label: 'bufferName'
+            },
+        ]
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
+[, dual][, bufferName][, asymptote])',
+        parameters: [
+            {
+                documentation: 'The name of the source configuration list to create as a string.',
+                label: 'configListName'
+            },
+            {
+                documentation: 'The source level at which to start sweeping as a number.\n\
 Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-        ),
-        ParameterInformation.create(
-            'stop',
-            'The source level at which to stop sweeping as a number.\n\
+Voltage range: %{2} to %{3}',
+                label: 'start'
+            },
+            {
+                documentation: 'The source level at which to stop sweeping as a number.\n\
 Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-        ),
-        ParameterInformation.create(
-            'points',
-            'The number of source-measure points between the start and stop values of the sweep as a number from +2.0 \
-to +1e+6.'
-        ),
-        ParameterInformation.create(
-            'delay',
-            'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for no delay, or \
-smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.'
-        ),
-        ParameterInformation.create(
-            'count',
-            'The number of times to run the sweep as a number from 1 to 268 435 455 or smu.INFINITE. Defaults to 1.'
-        ),
-        ParameterInformation.create(
-            'rangeType',
-            'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.'
-        ),
-        ParameterInformation.create(
-            'failAbort',
-            'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if exceeded. Defaults \
-to smu.ON.'
-        ),
-        ParameterInformation.create(
-            'dual',
-            'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then back to start. \
-Defaults to smu.OFF.'
-        ),
-        ParameterInformation.create(
-            'bufferName',
-            'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the name of a \
-user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.'
-        ),
-        ParameterInformation.create(
-            'asymptote',
-            'The value of the asymtotic curve at either positive or negative infinity, depending on the direction of \
-the sweep. Defaults to 0.\n\
-Asymtotic value cannot be less than or equal to the sweep bounds.'
-        ),
-    ),
+Voltage range: %{2} to %{3}',
+                label: 'stop'
+            },
+            {
+                documentation: 'The number of source-measure points between the start and stop values of the sweep as \
+a number from +2.0 to +1e+6.',
+                label: 'points'
+            },
+            {
+                documentation: 'The delay between measurement points as a number from +50e-6 to +10e+3 seconds, 0 for \
+no delay, or smu.DELAY_AUTO. Defaults to smu.DELAY_AUTO.',
+                label: 'delay'
+            },
+            {
+                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+smu.INFINITE. Defaults to 1.',
+                label: 'count'
+            },
+            {
+                documentation: 'Some smu.RANGE_*. Defaults to smu.RANGE_BEST.',
+                label: 'rangeType'
+            },
+            {
+                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+exceeded. Defaults to smu.ON.',
+                label: 'failAbort'
+            },
+            {
+                documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
+back to start. Defaults to smu.OFF.',
+                label: 'dual'
+            },
+            {
+                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+                label: 'bufferName'
+            },
+            {
+                documentation: 'The value of the asymtotic curve at either positive or negative infinity, depending \
+on the direction of the sweep. Defaults to 0.\n\
+Asymtotic value cannot be less than or equal to the sweep bounds.',
+                label: 'asymptote'
+            },
+        ]
+    },
 ]
 
 export async function getSmuSourceCommandSet(cmds: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
