@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
+import { ApiSpec, InstrumentSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
+
 const keywordCompletions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Keyword,
@@ -80,13 +84,29 @@ const keywordCompletions: Array<CompletionItem> = [
     },
 ]
 
-export async function getKeywordCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(keywordCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            if (cmd.children === undefined) {
+                throw new Error('Missing required children field.')
+            }
+
+            cmd.children.forEach((cmdItem: ApiSpec) => {
+                keywordCompletions.forEach((completion: CompletionItem) => {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }

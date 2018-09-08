@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
+import { ApiSpec, InstrumentSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+
 const mathCompletions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
@@ -492,26 +496,44 @@ const mathSignatures: Array<SignatureInformation> = [
     ),
 ]
 
-export async function getMathCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(mathCompletions)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+            const resultCompletions: Array<CompletionItem> = new Array()
+            const resultSignatures: Array<SignatureInformation> = new Array()
 
-export async function getMathSignatures(): Promise<Array<SignatureInformation>> {
-    return new Promise<Array<SignatureInformation>>((
-        resolve: (value?: Array<SignatureInformation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(mathSignatures)
+            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+            if (cmd.children !== undefined) {
+                cmds.concat(cmd.children)
+            }
+
+            cmds.forEach((cmdItem: ApiSpec) => {
+                mathCompletions.forEach((completion: CompletionItem) => {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+
+                mathSignatures.forEach((signature: SignatureInformation) => {
+                    const signaNamespace = resolveSignatureNamespace(signature)
+
+                    if (signaNamespace === undefined) {
+                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
+                    }
+
+                    if (cmdItem.label.localeCompare(signaNamespace) === 0) {
+                        resultSignatures.push(signature)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions,
+                signatures: resultSignatures
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
