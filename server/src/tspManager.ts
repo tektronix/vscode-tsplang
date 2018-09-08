@@ -17,19 +17,18 @@
 
 import { CompletionItem, SignatureInformation, TextDocumentItem } from 'vscode-languageserver'
 
-import { CommandDocumentation } from './instrument'
-import { getLuaCompletions, getLuaSignatures } from './lua'
+import { ApiSpec, InstrumentSpec } from './instrument'
+import { getLuaApiSpec, getLuaInstrumentSpec } from './instrument/lua'
+import { CommandSet, generateCommandSet } from './instrument/provider'
 import { Model } from './model'
 import { Shebang } from './shebang'
 import { PoolEntry, TspPool } from './tspPool'
 
 interface TspItem {
-    completionDocs?: Map<string, CommandDocumentation>
-    completions: Array<CompletionItem>
-    node?: Map<number, Array<CompletionItem>>
+    commandSet: CommandSet
+    node?: Map<number, CommandSet>
     rawShebang?: string
     shebang?: Array<Shebang.ShebangToken>
-    signatures: Array<SignatureInformation>
 }
 
 export class TspManager {
@@ -43,13 +42,6 @@ export class TspManager {
 
     get(uri: string): TspItem | undefined {
         return this.dict.get(uri)
-    }
-
-    getCompletionDoc(completionItem: CompletionItem): string {
-        // get namespace from CompletionItem
-
-        // TODO: implement
-        return ''
     }
 
     has(uri: string): boolean {
@@ -205,13 +197,11 @@ export class TspManager {
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
-            const luaCompletions: Array<CompletionItem> = new Array()
-            const luaSignatures: Array<SignatureInformation> = new Array()
             let shebangTokens: Array<Shebang.ShebangToken>
             try {
                 // get native Lua completions
-                luaCompletions.concat(await getLuaCompletions())
-                luaSignatures.concat(await getLuaSignatures())
+                const apiLua: Array<ApiSpec> = await getLuaApiSpec()
+                const specLua: InstrumentSpec = await getLuaInstrumentSpec()
 
                 // parse shebang tokens
                 shebangTokens = await Shebang.tokenize((shebangLine === undefined) ? '' : shebangLine)
@@ -222,8 +212,7 @@ export class TspManager {
                     })
 
                 const basicTspItem: TspItem = {
-                    completions: luaCompletions,
-                    signatures: luaSignatures
+                    commandSet: await generateCommandSet(apiLua, specLua)
                 }
 
                 if (shebangLine !== undefined) {
@@ -262,27 +251,8 @@ export class TspManager {
         ): Promise<void> => {
             const result: TspItem = item
 
-            // if no shebang is present, then just provide Lua items
+            // if no shebang is present, then return what we were given
             if (result.shebang === undefined) {
-                try {
-                    result.completions = await getLuaCompletions()
-                    result.signatures = await getLuaSignatures()
-                }
-                catch (e) {
-                    reject(new Error('Lua Completions: ' + e.toString()))
-
-                    return
-                }
-
-                try {
-                    result.signatures = await getLuaSignatures()
-                }
-                catch (e) {
-                    reject(new Error('Lua Signatures: ' + e.toString()))
-
-                    return
-                }
-
                 resolve(result)
 
                 return
@@ -303,19 +273,17 @@ export class TspManager {
 
                 // if element has no node number, then assume master model
                 if (token.node === undefined) {
-
-                    result.completions = entry.completions
-                    result.signatures = entry.signatures
+                    result.commandSet = entry.commandSet
                 }
                 else {
                     if (result.node === undefined) {
                         result.node = new Map()
                     }
 
-                    if (entry.completions !== undefined) {
+                    if (entry.commandSet !== undefined) {
                         result.node.set(
                             token.node,
-                            entry.completions
+                            entry.commandSet
                         )
                     }
                 }

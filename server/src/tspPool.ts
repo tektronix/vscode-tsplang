@@ -17,19 +17,20 @@
 
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
-import { CommandDocumentation } from './instrument'
-import { get2450Completions, get2450Docs, get2450Signatures } from './instrument/2450'
-import { get2460Completions, get2460Signatures } from './instrument/2460'
-import { get2461Completions, get2461Signatures } from './instrument/2461'
-import { get6500Completions, get6500Signatures } from './instrument/6500'
-import { getLuaCompletions, getLuaSignatures } from './lua'
+import { ApiSpec, InstrumentSpec } from './instrument'
+import { get2450ApiSpec, get2450InstrumentSpec } from './instrument/2450'
+// import { get2460Completions, get2460Signatures } from './instrument/2460'
+// import { get2461Completions, get2461Signatures } from './instrument/2461'
+// import { get6500Completions, get6500Signatures } from './instrument/6500'
+import { CommandSet, generateCommandSet } from './instrument/provider'
+// import { getLuaCompletions, getLuaSignatures } from './lua'
 import { Model } from './model'
 
 export interface PoolEntry {
-    completionDocs: Map<string, CommandDocumentation>
-    completions: Array<CompletionItem>
+    apiSpec: Array<ApiSpec>
+    commandSet: CommandSet
+    instrumentSpec: InstrumentSpec
     references: number
-    signatures: Array<SignatureInformation>
 }
 
 export class TspPool {
@@ -94,134 +95,105 @@ export class TspPool {
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
         ) : Promise<void> => {
-            let complLua: Array<CompletionItem> = new Array()
-            let signaLua: Array<SignatureInformation> = new Array()
-
-            try {
-                complLua = await getLuaCompletions()
-            }
-            catch (e) {
-                reject(new Error('Unable to load Lua completions'))
-            }
-
-            try {
-                signaLua = await getLuaSignatures()
-            }
-            catch (e) {
-                reject(new Error('Unable to load Lua signatures'))
-            }
-
             switch (model) {
                 case Model.KI2450:
-                    let complDoc2450: Map<string, CommandDocumentation> = new Map()
-                    let compl2450: Array<CompletionItem> = new Array()
-                    let signa2450: Array<SignatureInformation> = new Array()
-
                     try {
-                        complDoc2450 = await get2450Docs()
+                        const api2450: Array<ApiSpec> = await get2450ApiSpec()
+                        const spec2450: InstrumentSpec = await get2450InstrumentSpec()
+
+                        const cmdSet2450: CommandSet = await generateCommandSet(api2450, spec2450)
+
+                        resolve({
+                            apiSpec: api2450,
+                            commandSet: cmdSet2450,
+                            instrumentSpec: spec2450,
+                            references: 1
+                        })
                     }
                     catch (e) {
-                        reject(new Error('Unable to load 2450 completion docs'))
+                        reject(new Error('2450 load failure: ' + e.toString()))
                     }
 
-                    try {
-                        compl2450 = await get2450Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2450 completions'))
-                    }
-
-                    try {
-                        signa2450 = await get2450Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2450 signatures'))
-                    }
-
-                    resolve({
-                        completionDocs: complDoc2450,
-                        completions: complLua.concat(compl2450),
-                        references: 1,
-                        signatures: signaLua.concat(signa2450)
-                    })
                     break
-                case Model.KI2460:
-                    let compl2460: Array<CompletionItem> = new Array()
-                    let signa2460: Array<SignatureInformation> = new Array()
 
-                    try {
-                        compl2460 = await get2460Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2460 completions'))
-                    }
+                // case Model.KI2460:
+                //     let compl2460: Array<CompletionItem> = new Array()
+                //     let signa2460: Array<SignatureInformation> = new Array()
 
-                    try {
-                        signa2460 = await get2460Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2460 signatures'))
-                    }
+                //     try {
+                //         compl2460 = await get2460Completions()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2460 completions'))
+                //     }
 
-                    resolve({
-                        completionDocs: new Map(),
-                        completions: complLua.concat(compl2460),
-                        references: 1,
-                        signatures: signaLua.concat(signa2460)
-                    })
-                    break
-                case Model.KI2461:
-                    /* fall through */
-                case Model.KI2461SYS:
-                    let compl2461: Array<CompletionItem> = new Array()
-                    let signa2461: Array<SignatureInformation> = new Array()
+                //     try {
+                //         signa2460 = await get2460Signatures()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2460 signatures'))
+                //     }
 
-                    try {
-                        compl2461 = await get2461Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2461 completions'))
-                    }
+                //     resolve({
+                //         completionDocs: new Map(),
+                //         completions: complLua.concat(compl2460),
+                //         references: 1,
+                //         signatures: signaLua.concat(signa2460)
+                //     })
+                //     break
+                // case Model.KI2461:
+                //     /* fall through */
+                // case Model.KI2461SYS:
+                //     let compl2461: Array<CompletionItem> = new Array()
+                //     let signa2461: Array<SignatureInformation> = new Array()
 
-                    try {
-                        signa2461 = await get2461Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 2461 signatures'))
-                    }
+                //     try {
+                //         compl2461 = await get2461Completions()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2461 completions'))
+                //     }
 
-                    resolve({
-                        completionDocs: new Map(),
-                        completions: complLua.concat(compl2461),
-                        references: 1,
-                        signatures: signaLua.concat(signa2461)
-                    })
-                    break
-                case Model.KI6500:
-                    let compl6500: Array<CompletionItem> = new Array()
-                    let signa6500: Array<SignatureInformation> = new Array()
+                //     try {
+                //         signa2461 = await get2461Signatures()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 2461 signatures'))
+                //     }
 
-                    try {
-                        compl6500 = await get6500Completions()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 6500 completions'))
-                    }
+                //     resolve({
+                //         completionDocs: new Map(),
+                //         completions: complLua.concat(compl2461),
+                //         references: 1,
+                //         signatures: signaLua.concat(signa2461)
+                //     })
+                //     break
+                // case Model.KI6500:
+                //     let compl6500: Array<CompletionItem> = new Array()
+                //     let signa6500: Array<SignatureInformation> = new Array()
 
-                    try {
-                        signa6500 = await get6500Signatures()
-                    }
-                    catch (e) {
-                        reject(new Error('Unable to load 6500 signatures'))
-                    }
+                //     try {
+                //         compl6500 = await get6500Completions()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 6500 completions'))
+                //     }
 
-                    resolve({
-                        completionDocs: new Map(),
-                        completions: complLua.concat(compl6500),
-                        references: 1,
-                        signatures: signaLua.concat(signa6500)
-                    })
-                    break
+                //     try {
+                //         signa6500 = await get6500Signatures()
+                //     }
+                //     catch (e) {
+                //         reject(new Error('Unable to load 6500 signatures'))
+                //     }
+
+                //     resolve({
+                //         completionDocs: new Map(),
+                //         completions: complLua.concat(compl6500),
+                //         references: 1,
+                //         signatures: signaLua.concat(signa6500)
+                //     })
+                //     break
+
                 default:
                     reject(new Error(`Model ${model} not supported`))
             }
