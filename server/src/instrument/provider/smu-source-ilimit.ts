@@ -70,7 +70,7 @@ When smu.ON is returned, the instrument has clamped the source to keep it within
     },
 ]
 
-export async function getSmuSourceIlimitCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
@@ -79,15 +79,20 @@ export async function getSmuSourceIlimitCommandSet(cmds: Array<ApiSpec>): Promis
             const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
             const resultCompletions: Array<CompletionItem> = new Array()
 
-            cmds.forEach((cmd: ApiSpec) => {
+            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+            if (cmd.children !== undefined) {
+                cmds.concat(cmd.children)
+            }
+
+            cmds.forEach((cmdItem: ApiSpec) => {
                 smuSourceIlimitDocs.forEach((value: CommandDocumentation, key: string) => {
-                    if (cmd.label.localeCompare(key) === 0) {
+                    if (cmdItem.label.localeCompare(key) === 0) {
                         resultCompletionDocs.set(key, value)
                     }
                 })
 
                 smuSourceIlimitCompletions.forEach((completion: CompletionItem) => {
-                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
                         resultCompletions.push(completion)
                     }
                 })

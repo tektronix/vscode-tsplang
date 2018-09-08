@@ -17,7 +17,7 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec } from '..'
+import { ApiSpec, InstrumentSpec } from '..'
 
 import { CommandSet, resolveCompletionNamespace } from '.'
 
@@ -99,7 +99,7 @@ When set to 0, event processing is disabled and the timer triggers based on its 
     },
 ]
 
-export async function getTriggerTimerStartCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
@@ -107,9 +107,14 @@ export async function getTriggerTimerStartCommandSet(cmds: Array<ApiSpec>): Prom
         try {
             const resultCompletions: Array<CompletionItem> = new Array()
 
-            cmds.forEach((cmd: ApiSpec) => {
+            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+            if (cmd.children !== undefined) {
+                cmds.concat(cmd.children)
+            }
+
+            cmds.forEach((cmdItem: ApiSpec) => {
                 triggerTimerStartCompletions.forEach((completion: CompletionItem) => {
-                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
                         resultCompletions.push(completion)
                     }
                 })

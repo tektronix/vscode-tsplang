@@ -515,7 +515,7 @@ Asymtotic value cannot be less than or equal to the sweep bounds.',
     },
 ]
 
-export async function getSmuSourceCommandSet(cmds: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
@@ -525,15 +525,20 @@ export async function getSmuSourceCommandSet(cmds: Array<ApiSpec>, spec: Instrum
             const resultCompletions: Array<CompletionItem> = new Array()
             const resultSignatures: Array<SignatureInformation> = new Array()
 
-            cmds.forEach((cmd: ApiSpec) => {
+            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+            if (cmd.children !== undefined) {
+                cmds.concat(cmd.children)
+            }
+
+            cmds.forEach((cmdItem: ApiSpec) => {
                 smuSourceDocs.forEach((value: CommandDocumentation, key: string) => {
-                    if (cmd.label.localeCompare(key) === 0) {
+                    if (cmdItem.label.localeCompare(key) === 0) {
                         resultCompletionDocs.set(key, value)
                     }
                 })
 
                 smuSourceCompletions.forEach((completion: CompletionItem) => {
-                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
                         resultCompletions.push(completion)
                     }
                 })
@@ -545,7 +550,7 @@ export async function getSmuSourceCommandSet(cmds: Array<ApiSpec>, spec: Instrum
                         throw new Error('Unable to resolve signature namespace for ' + signature.label)
                     }
 
-                    if (cmd.label.localeCompare(signaNamespace) === 0) {
+                    if (cmdItem.label.localeCompare(signaNamespace) === 0) {
                         const item: SignatureInformation = signature
 
                         if (item.parameters !== undefined) {

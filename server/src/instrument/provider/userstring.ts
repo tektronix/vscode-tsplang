@@ -17,7 +17,7 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec } from '..'
+import { ApiSpec, InstrumentSpec } from '..'
 
 import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
@@ -103,7 +103,7 @@ const userstringSignatures: Array<SignatureInformation> = [
     ),
 ]
 
-export async function getUserstringCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
@@ -112,9 +112,14 @@ export async function getUserstringCommandSet(cmds: Array<ApiSpec>): Promise<Com
             const resultCompletions: Array<CompletionItem> = new Array()
             const resultSignatures: Array<SignatureInformation> = new Array()
 
-            cmds.forEach((cmd: ApiSpec) => {
+            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+            if (cmd.children !== undefined) {
+                cmds.concat(cmd.children)
+            }
+
+            cmds.forEach((cmdItem: ApiSpec) => {
                 userstringCompletions.forEach((completion: CompletionItem) => {
-                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
                         resultCompletions.push(completion)
                     }
                 })
@@ -126,7 +131,7 @@ export async function getUserstringCommandSet(cmds: Array<ApiSpec>): Promise<Com
                         throw new Error('Unable to resolve signature namespace for ' + signature.label)
                     }
 
-                    if (cmd.label.localeCompare(signaNamespace) === 0) {
+                    if (cmdItem.label.localeCompare(signaNamespace) === 0) {
                         resultSignatures.push(signature)
                     }
                 })

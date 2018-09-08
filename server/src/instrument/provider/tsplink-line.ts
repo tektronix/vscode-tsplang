@@ -17,7 +17,7 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec } from '..'
+import { ApiSpec, InstrumentSpec } from '..'
 
 import { CommandSet, resolveCompletionNamespace } from '.'
 
@@ -73,7 +73,7 @@ Get or set the state of a TSP-Link trigger line to tsplink.STATE_HIGH or STATE_L
     },
 ]
 
-export async function getTsplinkLineCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
@@ -81,9 +81,14 @@ export async function getTsplinkLineCommandSet(cmds: Array<ApiSpec>): Promise<Co
         try {
             const resultCompletions: Array<CompletionItem> = new Array()
 
-            cmds.forEach((cmd: ApiSpec) => {
+            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+            if (cmd.children !== undefined) {
+                cmds.concat(cmd.children)
+            }
+
+            cmds.forEach((cmdItem: ApiSpec) => {
                 tsplinkLineCompletions.forEach((completion: CompletionItem) => {
-                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
                         resultCompletions.push(completion)
                     }
                 })
