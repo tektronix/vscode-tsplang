@@ -142,7 +142,8 @@ const coroutineSignatures: Array<SignatureInformation> = [
     ),
 ]
 
-export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
+// tslint:disable-next-line:no-default-export
+export default async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
@@ -153,7 +154,7 @@ export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise
 
             const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
             if (cmd.children !== undefined) {
-                cmds.concat(cmd.children)
+                cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
             }
 
             cmds.forEach((cmdItem: ApiSpec) => {

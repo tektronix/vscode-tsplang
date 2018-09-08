@@ -384,7 +384,7 @@ export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise
 
             const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
             if (cmd.children !== undefined) {
-                cmds.concat(cmd.children)
+                cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
             }
 
             cmds.forEach((cmdItem: ApiSpec) => {
