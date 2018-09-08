@@ -20,6 +20,8 @@ import { MarkupKind } from 'vscode-languageserver'
 import { Model } from '../model'
 
 export interface ApiSpec {
+    children?: Array<ApiSpec>
+    enums?: Array<ApiSpec>
     label: string
 }
 
