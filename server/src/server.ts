@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, ParameterInformation, SignatureHelp, SignatureInformation, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, SignatureInformation, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
 import { TspManager } from './tspManager'
 
@@ -116,7 +116,7 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
     let firstMatch = reverseMatches.shift()
 
     if (firstMatch === undefined || firstMatch === '') {
-        for (const compl of tspItem.completions) {
+        for (const compl of tspItem.commandSet.completions) {
             // get root namespace completions
             if (compl.data === undefined) {
                 results.push(compl)
@@ -144,7 +144,7 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
     // split the unreversed string on namespace qualifiers and reverse the namespace domains
     const namespaceArray: Array<string> = unreversed.split('.').reverse()
 
-    for (const compl of tspItem.completions) {
+    for (const compl of tspItem.commandSet.completions) {
         // if the completion has a data field, then it's not a root namespace
         if (compl.data !== undefined && compl.data instanceof Array) {
             if (compl.data.join('.') === namespaceArray.join('.')) {
@@ -241,12 +241,12 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
 
     const tspItem = manager.get(params.textDocument.uri)
 
-    if (tspItem === undefined || tspItem.signatures === undefined) {
+    if (tspItem === undefined || tspItem.commandSet.signatures === undefined) {
         return
     }
 
     const results: Array<SignatureInformation> = new Array()
-    for (const signa of tspItem.signatures) {
+    for (const signa of tspItem.commandSet.signatures) {
         if (signa.label.indexOf(unreversed) !== -1) {
             results.push(signa)
         }
