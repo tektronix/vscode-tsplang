@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace } from '.'
+
 const lanEnumCompletions: Array<CompletionItem> = [
     {
         data: ['lan'],
@@ -30,15 +34,40 @@ const lanEnumCompletions: Array<CompletionItem> = [
     },
 ]
 
-export async function getLanEnumCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getLanEnumCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(lanEnumCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                lanEnumCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
+
+// export async function getLanEnumCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(lanEnumCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
