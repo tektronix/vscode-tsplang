@@ -17,6 +17,10 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
+import { ApiSpec } from '..'
+
+import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+
 const smuMeasureConfiglistCompletions: Array<CompletionItem> = [
     {
         data: ['measure', 'smu'],
@@ -199,28 +203,67 @@ Defaults to the first configuration index.'
     ),
 ]
 
-export async function getSmuMeasureConfiglistCompletions(): Promise<Array<CompletionItem>> {
-    return new Promise<Array<CompletionItem>>((
-        resolve: (value?: Array<CompletionItem>) => void,
+export async function getSmuMeasureConfiglistCommandSet(cmds: Array<ApiSpec>): Promise<CommandSet> {
+    return new Promise<CommandSet>((
+        resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            resolve(smuMeasureConfiglistCompletions)
+            const resultCompletions: Array<CompletionItem> = new Array()
+            const resultSignatures: Array<SignatureInformation> = new Array()
+
+            cmds.forEach((cmd: ApiSpec) => {
+                smuMeasureConfiglistCompletions.forEach((completion: CompletionItem) => {
+                    if (cmd.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                        resultCompletions.push(completion)
+                    }
+                })
+
+                smuMeasureConfiglistSignatures.forEach((signature: SignatureInformation) => {
+                    const signaNamespace = resolveSignatureNamespace(signature)
+
+                    if (signaNamespace === undefined) {
+                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
+                    }
+
+                    if (cmd.label.localeCompare(signaNamespace) === 0) {
+                        resultSignatures.push(signature)
+                    }
+                })
+            })
+
+            resolve({
+                completions: resultCompletions,
+                signatures: resultSignatures
+            })
         } catch (e) {
             reject(new Error(e.toString()))
         }
     })
 }
 
-export async function getSmuMeasureConfiglistSignatures(): Promise<Array<SignatureInformation>> {
-    return new Promise<Array<SignatureInformation>>((
-        resolve: (value?: Array<SignatureInformation>) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            resolve(smuMeasureConfiglistSignatures)
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
-    })
-}
+// export async function getSmuMeasureConfiglistCompletions(): Promise<Array<CompletionItem>> {
+//     return new Promise<Array<CompletionItem>>((
+//         resolve: (value?: Array<CompletionItem>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureConfiglistCompletions)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
+
+// export async function getSmuMeasureConfiglistSignatures(): Promise<Array<SignatureInformation>> {
+//     return new Promise<Array<SignatureInformation>>((
+//         resolve: (value?: Array<SignatureInformation>) => void,
+//         reject: (reason?: Error) => void
+//     ): void => {
+//         try {
+//             resolve(smuMeasureConfiglistSignatures)
+//         } catch (e) {
+//             reject(new Error(e.toString()))
+//         }
+//     })
+// }
