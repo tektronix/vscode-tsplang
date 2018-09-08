@@ -16,81 +16,95 @@
 'use strict'
 
 import { ApiSpec, InstrumentSpec } from '..'
+import { getLuaApiSpec } from '../lua'
 
-const beeper: Array<ApiSpec> = [
-    { label: 'beeper' },
-    { label: 'beeper.beep' },
-]
+const beeper: ApiSpec = {
+    children: [
+        { label: 'beeper.beep' },
+    ],
+    label: 'beeper'
+}
 
-const buffer: Array<ApiSpec> = [
-    { label: 'buffer' },
-    { label: 'buffer.clearstats' },
-    { label: 'buffer.delete' },
-    { label: 'buffer.getstats' },
-    { label: 'buffer.make' },
-    { label: 'buffer.save' },
-    { label: 'buffer.saveappend' },
-]
+const buffer: ApiSpec = {
+    children: [
+        { label: 'buffer.clearstats' },
+        { label: 'buffer.delete' },
+        { label: 'buffer.getstats' },
+        { label: 'buffer.make' },
+        { label: 'buffer.save' },
+        { label: 'buffer.saveappend' },
+    ],
+    enums: [
+        { label: 'buffer.DIGITS_3_5' },
+        { label: 'buffer.DIGITS_4_5' },
+        { label: 'buffer.DIGITS_5_5' },
+        { label: 'buffer.DIGITS_6_5' },
+        { label: 'buffer.DIGITS_7_5' },
+        { label: 'buffer.DIGITS_3_5' },
+        { label: 'buffer.FILL_CONTINUOUS' },
+        { label: 'buffer.FILL_ONCE' },
+        { label: 'buffer.OFF' },
+        { label: 'buffer.ON' },
+        { label: 'buffer.SAVE_FORMAT_TIME' },
+        { label: 'buffer.SAVE_RAW_TIME' },
+        { label: 'buffer.SAVE_RELATIVE_TIME' },
+        { label: 'buffer.SAVE_TIMESTAMP_TIME' },
+        { label: 'buffer.STAT_LIMIT' },
+        { label: 'buffer.STAT_LIMIT1_HIGH' },
+        { label: 'buffer.STAT_LIMIT1_LOW' },
+        { label: 'buffer.STAT_LIMIT2_HIGH' },
+        { label: 'buffer.STAT_LIMIT2_LOW' },
+        { label: 'buffer.STAT_ORIGIN' },
+        { label: 'buffer.STAT_OUTPUT' },
+        { label: 'buffer.STAT_OVER_TEMP' },
+        { label: 'buffer.STAT_PROTECTION' },
+        { label: 'buffer.STAT_QUESTIONABLE' },
+        { label: 'buffer.STAT_READBACK' },
+        { label: 'buffer.STAT_SENSE' },
+        { label: 'buffer.STAT_START_GROUP' },
+        { label: 'buffer.STAT_TERMINAL' },
+        { label: 'buffer.STYLE_COMPACT' },
+        { label: 'buffer.STYLE_FULL' },
+        { label: 'buffer.STYLE_STANDARD' },
+        { label: 'buffer.STYLE_WRITABLE' },
+        { label: 'buffer.STYLE_WRITABLE_FULL' },
+        { label: 'buffer.UNIT_AMP' },
+        { label: 'buffer.UNIT_AMP_AC' },
+        { label: 'buffer.UNIT_CELSIUS' },
+        { label: 'buffer.UNIT_DECIBEL' },
+        { label: 'buffer.UNIT_FAHRENHEIT' },
+        { label: 'buffer.UNIT_FARAD' },
+        { label: 'buffer.UNIT_HERTZ' },
+        { label: 'buffer.UNIT_KELVIN' },
+        { label: 'buffer.UNIT_NONE' },
+        { label: 'buffer.UNIT_OHM' },
+        { label: 'buffer.UNIT_PERCENT' },
+        { label: 'buffer.UNIT_RATIO' },
+        { label: 'buffer.UNIT_RECIPROCAL' },
+        { label: 'buffer.UNIT_SECOND' },
+        { label: 'buffer.UNIT_VOLT' },
+        { label: 'buffer.UNIT_VOLT_AC' },
+        { label: 'buffer.UNIT_WATT' },
+        { label: 'buffer.UNIT_X' },
+    ],
+    label: 'buffer'
+}
 
-const bufferEnums: Array<ApiSpec> = [
-    { label: 'buffer.DIGITS_3_5' },
-    { label: 'buffer.DIGITS_4_5' },
-    { label: 'buffer.DIGITS_5_5' },
-    { label: 'buffer.DIGITS_6_5' },
-    { label: 'buffer.DIGITS_7_5' },
-    { label: 'buffer.DIGITS_3_5' },
-    { label: 'buffer.FILL_CONTINUOUS' },
-    { label: 'buffer.FILL_ONCE' },
-    { label: 'buffer.OFF' },
-    { label: 'buffer.ON' },
-    { label: 'buffer.SAVE_FORMAT_TIME' },
-    { label: 'buffer.SAVE_RAW_TIME' },
-    { label: 'buffer.SAVE_RELATIVE_TIME' },
-    { label: 'buffer.SAVE_TIMESTAMP_TIME' },
-    { label: 'buffer.STAT_LIMIT' },
-    { label: 'buffer.STAT_LIMIT1_HIGH' },
-    { label: 'buffer.STAT_LIMIT1_LOW' },
-    { label: 'buffer.STAT_LIMIT2_HIGH' },
-    { label: 'buffer.STAT_LIMIT2_LOW' },
-    { label: 'buffer.STAT_ORIGIN' },
-    { label: 'buffer.STAT_OUTPUT' },
-    { label: 'buffer.STAT_OVER_TEMP' },
-    { label: 'buffer.STAT_PROTECTION' },
-    { label: 'buffer.STAT_QUESTIONABLE' },
-    { label: 'buffer.STAT_READBACK' },
-    { label: 'buffer.STAT_SENSE' },
-    { label: 'buffer.STAT_START_GROUP' },
-    { label: 'buffer.STAT_TERMINAL' },
-    { label: 'buffer.STYLE_COMPACT' },
-    { label: 'buffer.STYLE_FULL' },
-    { label: 'buffer.STYLE_STANDARD' },
-    { label: 'buffer.STYLE_WRITABLE' },
-    { label: 'buffer.STYLE_WRITABLE_FULL' },
-    { label: 'buffer.UNIT_AMP' },
-    { label: 'buffer.UNIT_AMP_AC' },
-    { label: 'buffer.UNIT_CELSIUS' },
-    { label: 'buffer.UNIT_DECIBEL' },
-    { label: 'buffer.UNIT_FAHRENHEIT' },
-    { label: 'buffer.UNIT_FARAD' },
-    { label: 'buffer.UNIT_HERTZ' },
-    { label: 'buffer.UNIT_KELVIN' },
-    { label: 'buffer.UNIT_NONE' },
-    { label: 'buffer.UNIT_OHM' },
-    { label: 'buffer.UNIT_PERCENT' },
-    { label: 'buffer.UNIT_RATIO' },
-    { label: 'buffer.UNIT_RECIPROCAL' },
-    { label: 'buffer.UNIT_SECOND' },
-    { label: 'buffer.UNIT_VOLT' },
-    { label: 'buffer.UNIT_VOLT_AC' },
-    { label: 'buffer.UNIT_WATT' },
-    { label: 'buffer.UNIT_X' },
-]
+const bufferWrite: ApiSpec = {
+    children: [
+        { label: 'buffer.write.format' },
+        { label: 'buffer.write.reading' },
+    ],
+    label: 'buffer.write'
+}
 
-const bufferWrite: Array<ApiSpec> = [
-    { label: 'buffer.write' },
-    { label: 'buffer.write.format' },
-    { label: 'buffer.write.reading' },
-]
+export function get2450ApiSpec(): Array<ApiSpec> {
+    return getLuaApiSpec().concat([
+        beeper,
+        buffer,
+        bufferWrite
+    ])
+}
 
 export function get2450InstrumentSpec(): InstrumentSpec {
     return {
@@ -163,12 +177,4 @@ export function get2450InstrumentSpec(): InstrumentSpec {
             }
         }
     }
-}
-
-export function get2450ApiSpec(): Array<ApiSpec> {
-    return new Array()
-        .concat(beeper)
-        .concat(buffer)
-        .concat(bufferEnums)
-        .concat(bufferWrite)
 }
