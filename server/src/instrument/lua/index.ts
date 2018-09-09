@@ -107,7 +107,7 @@ const math: ApiSpec = {
         { label: 'math.tan' },
     ],
     enums: [
-        { label: 'pi' },
+        { label: 'math.pi' },
     ],
     label: 'math'
 }
