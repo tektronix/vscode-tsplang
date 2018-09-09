@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -62,14 +62,16 @@ Returns the script body as a string with lines separated by newline characters.'
 ]
 
 const scriptVarSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'scriptVar.save([fileName])',
-        undefined,
-        ParameterInformation.create(
-            'fileName',
-            'The file name to use when saving the script to a USB flash drive.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'scriptVar.save([fileName])',
+        parameters: [
+            {
+                documentation: 'The file name to use when saving the script to a USB flash drive.',
+                label: 'fileName',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

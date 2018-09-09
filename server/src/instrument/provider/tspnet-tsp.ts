@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -94,50 +94,56 @@ Output from previous commands is discarded.'
 ]
 
 const tspnetTspSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'tspnet.tsp.abort(connectionID)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.tsp.rbtablecopy(connectionID, name[, startIndex, endIndex])',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-        ParameterInformation.create(
-            'name',
-            'The full name of the reading buffer name and synchronous table to copy.'
-        ),
-        ParameterInformation.create(
-            'startIndex',
-            'One-based integer start value.'
-        ),
-        ParameterInformation.create(
-            'endIndex',
-            'One-based integer end value.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.tsp.runscript(connectionID, name, script)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-        ParameterInformation.create(
-            'name',
-            'The name that is assigned to the script.'
-        ),
-        ParameterInformation.create(
-            'script',
-            'The body of the script as a string.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'tspnet.tsp.abort(connectionID)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.tsp.rbtablecopy(connectionID, name[, startIndex, endIndex])',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+            {
+                documentation: 'The full name of the reading buffer name and synchronous table to copy.',
+                label: 'name',
+            },
+            {
+                documentation: 'One-based integer start value.',
+                label: 'startIndex',
+            },
+            {
+                documentation: 'One-based integer end value.',
+                label: 'endIndex',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.tsp.runscript(connectionID, name, script)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+            {
+                documentation: 'The name that is assigned to the script.',
+                label: 'name',
+            },
+            {
+                documentation: 'The body of the script as a string.',
+                label: 'script',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

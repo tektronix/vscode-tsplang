@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -96,50 +96,60 @@ Suspends execution of the current coroutine. Any arguments given are returned as
 ]
 
 const coroutineSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'coroutine.create(f)',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'A function to use as the coroutine body.'
-        ),
-    ),
-    SignatureInformation.create(
-        'coroutine.resume(co, ...)',
-        undefined,
-        ParameterInformation.create(
-            'co',
-            'A coroutine object of type "thread".'
-        ),
-        ParameterInformation.create(
-            '...',
-            'Zero or more arguments to pass to the coroutine.'
-        ),
-    ),
-    SignatureInformation.create(
-        'coroutine.status(co)',
-        undefined,
-        ParameterInformation.create(
-            'co',
-            'A coroutine object of type "thread".'
-        ),
-    ),
-    SignatureInformation.create(
-        'coroutine.wrap(f)',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'A function to use as the coroutine body.'
-        ),
-    ),
-    SignatureInformation.create(
-        'coroutine.yield(...)',
-        undefined,
-        ParameterInformation.create(
-            '...',
-            'Zero or more arguments to return as extra results to the resume function.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'coroutine.create(f)',
+        parameters: [
+            {
+                documentation: 'A function to use as the coroutine body.',
+                label: 'f',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'coroutine.resume(co, ...)',
+        parameters: [
+            {
+                documentation: 'A coroutine object of type "thread".',
+                label: 'co',
+            },
+            {
+                documentation: 'Zero or more arguments to pass to the coroutine.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'coroutine.status(co)',
+        parameters: [
+            {
+                documentation: 'A coroutine object of type "thread".',
+                label: 'co',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'coroutine.wrap(f)',
+        parameters: [
+            {
+                documentation: 'A function to use as the coroutine body.',
+                label: 'f',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'coroutine.yield(...)',
+        parameters: [
+            {
+                documentation: 'Zero or more arguments to return as extra results to the resume function.',
+                label: '...',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

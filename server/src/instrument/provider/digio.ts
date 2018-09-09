@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -59,14 +59,16 @@ All six lines must be configured as digital control lines or an error will be lo
 ]
 
 const digioSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'digio.writeport(data)',
-        undefined,
-        ParameterInformation.create(
-            'data',
-            'The value to write to the port (0 to 63).'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'digio.writeport(data)',
+        parameters: [
+            {
+                documentation: 'The value to write to the port (0 to 63).',
+                label: 'data',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
 
@@ -348,28 +348,32 @@ This attribute is saved with the active function and retained until the next ins
 ]
 
 const smuMeasureSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'smu.measure.read([bufferName])',
-        undefined,
-        ParameterInformation.create(
-            'reading',
-            'The last reading of the measurement process.'
-        ),
-        ParameterInformation.create(
-            'bufferName',
-            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
-user‑defined buffer; defaults to defbuffer1 if not specified.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.measure.readwithtime([bufferName])',
-        undefined,
-        ParameterInformation.create(
-            'bufferName',
-            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
-user‑defined buffer; defaults to defbuffer1 if not specified.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'smu.measure.read([bufferName])',
+        parameters: [
+            {
+                documentation: 'The last reading of the measurement process.',
+                label: 'reading',
+            },
+            {
+                documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
+defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.',
+                label: 'bufferName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'smu.measure.readwithtime([bufferName])',
+        parameters: [
+            {
+                documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
+defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.',
+                label: 'bufferName',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

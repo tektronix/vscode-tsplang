@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -107,7 +107,7 @@ buffer.save(bufferVar, fileName[, buffer.SAVE_\\*][, start, end])\n\
 \n\
 Save data from the specified reading buffer to a USB flash drive.\n\
 \n\
-The filename must specify the full path (including /usb1/). If included, the file extension must be set to .csv (if \
+The filename must specify the full path (including "/usb1/"). If included, the file extension must be set to .csv (if \
 no file extension is specified, .csv is added).\n\
 \n\
 Verify that you are using a unique name to avoid overwriting any existing .csv files on the flash drive.'
@@ -134,100 +134,113 @@ The index column entry in the .csv file starts at 1 for each append operation.'
 ]
 
 const bufferSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'buffer.clearstats([bufferVar])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
-user‑defined buffer; defaults to defbuffer1 if not specified.'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.delete(bufferName)',
-        undefined,
-        ParameterInformation.create(
-            'bufferName',
-            'The name of a user‑defined reading buffer.'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.getstats([bufferVar])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
-user‑defined buffer; defaults to defbuffer1 if not specified.'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.make(bufferSize[, style])',
-        undefined,
-        ParameterInformation.create(
-            'bufferSize',
-            'The maximum number of readings that can be stored in bufferVar; minimum is 10.'
-        ),
-        ParameterInformation.create(
-            'style',
-            'The type of reading buffer to create. Some buffer.STYLE_*. Defaults to buffer.STYLE_STANDARD.\n\
-\n\
+    {
+        documentation: undefined,
+        label: 'buffer.clearstats([bufferVar])',
+        parameters: [
+            {
+                documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
+defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.',
+                label: 'bufferVar',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.delete(bufferName)',
+        parameters: [
+            {
+                documentation: 'The name of a user‑defined reading buffer.',
+                label: 'bufferName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.getstats([bufferVar])',
+        parameters: [
+            {
+                documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
+defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.',
+                label: 'bufferVar',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.make(bufferSize[, style])',
+        parameters: [
+            {
+                documentation: 'The maximum number of readings that can be stored in bufferVar; minimum is 10.',
+                label: 'bufferSize',
+            },
+            {
+                documentation: 'The type of reading buffer to create as some buffer.STYLE_*. Defaults to \
+buffer.STYLE_STANDARD.\n\
 Once the first reading is stored in a COMPACT buffer, its range, display digits, and units cannot be changed.\n\
-\n\
-WRITABLE buffers are used to import external data and cannot be used to collect readings from the instrument.'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.save(bufferVar, fileName[, timeFormat][, start, end])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
-user‑defined buffer.'
-        ),
-        ParameterInformation.create(
-            'fileName',
-            'A string that indicates the name of the file on the USB flash drive in which to save the reading buffer.'
-        ),
-        ParameterInformation.create(
-            'timeFormat',
-            'Defines how date and time information from the buffer is saved in the file on the USB flash drive; \
-is some buffer.SAVE_*.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'Defines the starting point in the buffer to start saving data.'
-        ),
-        ParameterInformation.create(
-            'end',
-            'Defines the ending point in the buffer to stop saving data.'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.saveappend(bufferVar, fileName[, timeFormat][, start, end])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the reading buffer, which may be a default buffer (defbuffer1 or defbuffer2) or a \
-user‑defined buffer.'
-        ),
-        ParameterInformation.create(
-            'fileName',
-            'A string that indicates the name of the file on the USB flash drive in which to save the reading buffer.'
-        ),
-        ParameterInformation.create(
-            'timeFormat',
-            'Defines how date and time information from the buffer is saved in the file on the USB flash drive; \
-is some buffer.SAVE_*.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'Defines the starting point in the buffer to start saving data.'
-        ),
-        ParameterInformation.create(
-            'end',
-            'Defines the ending point in the buffer to stop saving data.'
-        ),
-    ),
+WRITABLE buffers are used to import external data and cannot be used to collect readings from the instrument.',
+                label: 'style',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.save(bufferVar, fileName[, timeFormat][, start, end])',
+        parameters: [
+            {
+                documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
+defbuffer2) or a user‑defined buffer.',
+                label: 'bufferVar',
+            },
+            {
+                documentation: 'A string that indicates the name of the file on the USB flash drive in which to save \
+the reading buffer.',
+                label: 'fileName',
+            },
+            {
+                documentation: 'Define how date and time information from the buffer is saved in the file on the USB \
+flash drive; given as some buffer.SAVE_*.',
+                label: 'timeFormat',
+            },
+            {
+                documentation: 'Defines the starting point in the buffer to start saving data.',
+                label: 'start',
+            },
+            {
+                documentation: 'Defines the ending point in the buffer to stop saving data.',
+                label: 'end',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.saveappend(bufferVar, fileName[, timeFormat][, start, end])',
+        parameters: [
+            {
+                documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
+defbuffer2) or a user‑defined buffer.',
+                label: 'bufferVar',
+            },
+            {
+                documentation: 'A string that indicates the name of the file on the USB flash drive in which to save \
+the reading buffer.',
+                label: 'fileName',
+            },
+            {
+                documentation: 'Define how date and time information from the buffer is saved in the file on the USB \
+flash drive; given as some buffer.SAVE_*.',
+                label: 'timeFormat',
+            },
+            {
+                documentation: 'Defines the starting point in the buffer to start saving data.',
+                label: 'start',
+            },
+            {
+                documentation: 'Defines the ending point in the buffer to stop saving data.',
+                label: 'end',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

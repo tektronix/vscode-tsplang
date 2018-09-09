@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -98,50 +98,58 @@ for a more accurate conversion.'
 ]
 
 const osSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'os.date([format[, time]])',
-        undefined,
-        ParameterInformation.create(
-            'format',
-            'A date format string. Optionally begins with "!" for UTC. "*t" returns a time table. All other format \
-specifiers follow the convention set by the C-language strftime function.'
-        ),
-        ParameterInformation.create(
-            'time',
-            'An optional number representing a time in seconds.'
-        ),
-    ),
-    SignatureInformation.create(
-        'os.difftime(t1, t2)',
-        undefined,
-        ParameterInformation.create(
-            't1'
-        ),
-        ParameterInformation.create(
-            't2'
-        ),
-    ),
-    SignatureInformation.create(
-        'os.rename(source, destination)',
-        undefined,
-        ParameterInformation.create(
-            'source',
-            'The filepath of the target file as a string.'
-        ),
-        ParameterInformation.create(
-            'destination',
-            'The new filepath of the source file.'
-        ),
-    ),
-    SignatureInformation.create(
-        'os.time(t)',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'A time table that contains a year, month, and day field. The hour, min, sec, and isdst fields are used \
-if available.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'os.date([format[, time]])',
+        parameters: [
+            {
+                documentation: 'A date format string. Optionally begins with "!" for UTC. "*t" returns a time table. \
+All other format specifiers follow the convention set by the C-language strftime function.',
+                label: 'format',
+            },
+            {
+                documentation: 'An optional number representing a time in seconds.',
+                label: 'time',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'os.difftime(t1, t2)',
+        parameters: [
+            {
+                label: 't1',
+            },
+            {
+                label: 't2',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'os.rename(source, destination)',
+        parameters: [
+            {
+                documentation: 'The filepath of the target file as a string.',
+                label: 'source',
+            },
+            {
+                documentation: 'The new filepath of the source file.',
+                label: 'destination',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'os.time(t)',
+        parameters: [
+            {
+                documentation: 'A time table that contains a year, month, and day field. The hour, min, sec, and \
+isdst fields are used if available.',
+                label: 't',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

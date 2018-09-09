@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -155,14 +155,16 @@ number of events detected.'
 ]
 
 const triggerTimerSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'trigger.timer[].wait(timeout)',
-        undefined,
-        ParameterInformation.create(
-            'timeout',
-            'Maximum amount of time in seconds to wait for the trigger.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'trigger.timer[].wait(timeout)',
+        parameters: [
+            {
+                documentation: 'Maximum amount of time in seconds to wait for the trigger.',
+                label: 'timeout',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

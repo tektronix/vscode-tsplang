@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -36,14 +36,17 @@ format.data and format.asciiprecision.'
 ]
 
 const printnumberSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'printnumber(...)',
-        undefined,
-        ParameterInformation.create(
-            '...',
-            'One or more values separated with commas. Values are printed in the currently configured format.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'printnumber(...)',
+        parameters: [
+            {
+                documentation: 'One or more values separated with commas. Values are printed in the currently \
+configured format.',
+                label: '...',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -193,118 +193,136 @@ commands.'
 ]
 
 const tspnetSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'tspnet.clear(connectionID)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.connect(ipAddress[, portNumber, initString])',
-        undefined,
-        ParameterInformation.create(
-            'ipAddress',
-            'IPv4 address string.'
-        ),
-        ParameterInformation.create(
-            'portNumber',
-            'Port number (default 5025).'
-        ),
-        ParameterInformation.create(
-            'initString',
-            'Initialization string to send.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.disconnect(connectionID)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.execute(connectionID, commandString[, formatString])',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-        ParameterInformation.create(
-            'commandString',
-            'The command to send to the remote device.'
-        ),
-        ParameterInformation.create(
-            'formatString',
-            'Format string for the output. Maximum of 10 specifiers. Format specifiers include:\n\
+    {
+        documentation: undefined,
+        label: 'tspnet.clear(connectionID)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.connect(ipAddress[, portNumber, initString])',
+        parameters: [
+            {
+                documentation: 'IPv4 address string.',
+                label: 'ipAddress',
+            },
+            {
+                documentation: 'Port number (default 5025).',
+                label: 'portNumber',
+            },
+            {
+                documentation: 'Initialization string to send.',
+                label: 'initString',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.disconnect(connectionID)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.execute(connectionID, commandString[, formatString])',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+            {
+                documentation: 'The command to send to the remote device.',
+                label: 'commandString',
+            },
+            {
+                documentation: 'Format string for the output. Maximum of 10 specifiers. Format specifiers include:\n\
 %[width]s to read until the specified length\n\
 %[max width]t to read until the specified length or until punctuation is found\n\
 %[max width]n to read until the specified length or until a newline or carriage return is found\n\
-%d to read a punctuation-delimited number.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.idn(connectionID)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.read(connectionID[, formatString])',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-        ParameterInformation.create(
-            'formatString',
-            'Format string for the output. Maximum of 10 specifiers. Format specifiers include:\n\
+%d to read a punctuation-delimited number.',
+                label: 'formatString',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.idn(connectionID)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.read(connectionID[, formatString])',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+            {
+                documentation: 'Format string for the output. Maximum of 10 specifiers. Format specifiers include:\n\
 %[width]s to read until the specified length\n\
 %[max width]t to read until the specified length or until punctuation is found\n\
 %[max width]n to read until the specified length or until a newline or carriage return is found\n\
-%d to read a punctuation-delimited number.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.readavailable(connectionID)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.termination(connectionID[, termSequence])',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-        ParameterInformation.create(
-            'termSequence',
-            'One of:\n\
+%d to read a punctuation-delimited number.',
+                label: 'formatString',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.readavailable(connectionID)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.termination(connectionID[, termSequence])',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+            {
+                documentation: 'One of:\n\
 tspnet.TERM_LF (default for TSP-enabled devices)\n\
 tspnet.TERM_CR\n\
 tspnet.TERM_CRLF (default for non TSP-enabled devices)\n\
-tspnet.TERM_LFCR'
-        ),
-    ),
-    SignatureInformation.create(
-        'tspnet.write(connectionID, inputString)',
-        undefined,
-        ParameterInformation.create(
-            'connectionID',
-            'Connection reference returned from the tspnet.connect() function.'
-        ),
-        ParameterInformation.create(
-            'inputString',
-            'The string to be written.'
-        ),
-    ),
+tspnet.TERM_LFCR',
+                label: 'termSequence',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tspnet.write(connectionID, inputString)',
+        parameters: [
+            {
+                documentation: 'Connection reference returned from the tspnet.connect() function.',
+                label: 'connectionID',
+            },
+            {
+                documentation: 'The string to be written.',
+                label: 'inputString',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -89,14 +89,16 @@ number of events detected.'
 ]
 
 const triggerTsplinkinSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'trigger.tsplinkin[].wait(timeout)',
-        undefined,
-        ParameterInformation.create(
-            'timeout',
-            'The timeout value in seconds.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'trigger.tsplinkin[].wait(timeout)',
+        parameters: [
+            {
+                documentation: 'The timeout value in seconds.',
+                label: 'timeout',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -101,124 +101,132 @@ The prompt is displayed until it has been responded to.'
 ]
 
 const displayInputSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',
-        undefined,
-        ParameterInformation.create(
-            'dialogTitle',
-            'A string that contains the text to be displayed as the title of the dialog box on the front-panel \
-display; can be up to 32 characters.'
-        ),
-        ParameterInformation.create(
-            'numberFormat',
-            'One of:\n\
+    {
+        documentation: undefined,
+        label: 'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',
+        parameters: [
+            {
+                documentation: 'A string that contains the text to be displayed as the title of the dialog box on the \
+front-panel display; can be up to 32 characters.',
+                label: 'dialogTitle',
+            },
+            {
+                documentation: 'One of:\n\
 display.NFORMAT_INTEGER (default)\n\
 display.NFORMAT_DECIMAL\n\
 display.NFORMAT_EXPONENT\n\
-display.NFORMAT_PREFIX'
-        ),
-        ParameterInformation.create(
-            'defaultValue',
-            'Value that is initially displayed in the displayed keypad.'
-        ),
-        ParameterInformation.create(
-            'minimumValue',
-            'The lowest value that can be entered.'
-        ),
-        ParameterInformation.create(
-            'maximumValue',
-            'The highest value that can be entered.'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.input.option(dialogTitle, buttonTitle1, buttonTitle2[, buttonTitle3][, buttonTitle4][, \
+display.NFORMAT_PREFIX',
+                label: 'numberFormat',
+            },
+            {
+                documentation: 'Value that is initially displayed in the displayed keypad.',
+                label: 'defaultValue',
+            },
+            {
+                documentation: 'The lowest value that can be entered.',
+                label: 'minimumValue',
+            },
+            {
+                documentation: 'The highest value that can be entered.',
+                label: 'maximumValue',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.input.option(dialogTitle, buttonTitle1, buttonTitle2[, buttonTitle3][, buttonTitle4][, \
 buttonTitle5][, buttonTitle6][, buttonTitle7][, buttonTitle8][, buttonTitle9][, buttonTitle10])',
-        undefined,
-        ParameterInformation.create(
-            'dialogTitle',
-            'A string that contains the text to be displayed as the title of the dialog box on the front-panel \
-display; can be up to 32 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle1',
-            'A string that contains the name of the first button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle2',
-            'A string that contains the name of the second button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle2',
-            'A string that contains the name of the second button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle3',
-            'A string that contains the name of the third button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle4',
-            'A string that contains the name of the fourth button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle5',
-            'A string that contains the name of the fifth button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle6',
-            'A string that contains the name of the sixth button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle7',
-            'A string that contains the name of the seventh button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle8',
-            'A string that contains the name of the eighth button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle9',
-            'A string that contains the name of the ninth button; up to 15 characters.'
-        ),
-        ParameterInformation.create(
-            'buttonTitle10',
-            'A string that contains the name of the tenth button; up to 15 characters.'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.input.prompt(buttonSet[, dialogTitle])',
-        undefined,
-        ParameterInformation.create(
-            'buttonSet',
-            'One of:\n\
+        parameters: [
+            {
+                documentation: 'A string that contains the text to be displayed as the title of the dialog box on the \
+front-panel display; can be up to 32 characters.',
+                label: 'dialogTitle',
+            },
+            {
+                documentation: 'A string that contains the name of the first button; up to 15 characters.',
+                label: 'buttonTitle1',
+            },
+            {
+                documentation: 'A string that contains the name of the second button; up to 15 characters.',
+                label: 'buttonTitle2',
+            },
+            {
+                documentation: 'A string that contains the name of the second button; up to 15 characters.',
+                label: 'buttonTitle2',
+            },
+            {
+                documentation: 'A string that contains the name of the third button; up to 15 characters.',
+                label: 'buttonTitle3',
+            },
+            {
+                documentation: 'A string that contains the name of the fourth button; up to 15 characters.',
+                label: 'buttonTitle4',
+            },
+            {
+                documentation: 'A string that contains the name of the fifth button; up to 15 characters.',
+                label: 'buttonTitle5',
+            },
+            {
+                documentation: 'A string that contains the name of the sixth button; up to 15 characters.',
+                label: 'buttonTitle6',
+            },
+            {
+                documentation: 'A string that contains the name of the seventh button; up to 15 characters.',
+                label: 'buttonTitle7',
+            },
+            {
+                documentation: 'A string that contains the name of the eighth button; up to 15 characters.',
+                label: 'buttonTitle8',
+            },
+            {
+                documentation: 'A string that contains the name of the ninth button; up to 15 characters.',
+                label: 'buttonTitle9',
+            },
+            {
+                documentation: 'A string that contains the name of the tenth button; up to 15 characters.',
+                label: 'buttonTitle10',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.input.prompt(buttonSet[, dialogTitle])',
+        parameters: [
+            {
+                documentation: 'One of:\n\
 display.BUTTONS_OK\n\
 display.BUTTONS_CANCEL\n\
 display.BUTTONS_OKCANCEL\n\
 display.BUTTONS_YESNO\n\
-display.BUTTONS_YESNOCANCEL'
-        ),
-        ParameterInformation.create(
-            'dialogTitle',
-            'A string that contains the text to be displayed as the title of the dialog box on the front-panel \
-display; can be up to 127 characters.'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.input.string(dialogTitle[, textFormat])',
-        undefined,
-        ParameterInformation.create(
-            'dialogTitle',
-            'A string that contains the text to be displayed as the title of the dialog box on the front-panel \
-display; can be up to 32 characters.'
-        ),
-        ParameterInformation.create(
-            'textFormat',
-            'One of:\n\
+display.BUTTONS_YESNOCANCEL',
+                label: 'buttonSet',
+            },
+            {
+                documentation: 'A string that contains the text to be displayed as the title of the dialog box on the \
+front-panel display; can be up to 127 characters.',
+                label: 'dialogTitle',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.input.string(dialogTitle[, textFormat])',
+        parameters: [
+            {
+                documentation: 'A string that contains the text to be displayed as the title of the dialog box on the \
+front-panel display; can be up to 32 characters.',
+                label: 'dialogTitle',
+            },
+            {
+                documentation: 'One of:\n\
 display.SFORMAT_ANY (default)\n\
 display.SFORMAT_UPPER_LOWER\n\
 display.SFORMAT_UPPER\n\
-display.SFORMAT_BUFFER_NAME'
-        ),
-    ),
+display.SFORMAT_BUFFER_NAME',
+                label: 'textFormat',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

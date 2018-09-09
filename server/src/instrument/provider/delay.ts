@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -37,14 +37,16 @@ However, the processing time may cause the instrument to delay 5μs to 10μs mor
 ]
 
 const delaySignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'delay([seconds])',
-        undefined,
-        ParameterInformation.create(
-            'seconds',
-            'The number of seconds to delay (0 to 100 ks).'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'delay([seconds])',
+        parameters: [
+            {
+                documentation: 'The number of seconds to delay (0 to 100 ks).',
+                label: 'seconds',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

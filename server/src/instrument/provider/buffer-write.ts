@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -65,86 +65,93 @@ you entered.'
 ]
 
 const bufferWriteSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'buffer.write.format(bufferVar, units, displayDigits[, extraUnits][, extraDigits])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the buffer.'
-        ),
-        ParameterInformation.create(
-            'units',
-            'Some buffer.UNIT_*.'
-        ),
-        ParameterInformation.create(
-            'displayDigits',
-            'The number of digits to use for the first measurement. Some buffer.DIGITS_*.'
-        ),
-        ParameterInformation.create(
-            'extraUnits',
-            'The units for the second measurement in the buffer index; the selections are the same as units (only \
-valid for buffer style WRITABLE_FULL); if not specified, will use the value for units.'
-        ),
-        ParameterInformation.create(
-            'extraDigits',
-            'The number of digits to use for the second measurement; the selections are the same as displayDigits \
-(only valid for buffer style WRITABLE_FULL); if not specified, will use the value for displayDigits.'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the buffer.'
-        ),
-        ParameterInformation.create(
-            'readingValue',
-            'The first value that is recorded in the buffer index.'
-        ),
-        ParameterInformation.create(
-            'seconds',
-            'An integer that repesents the seconds.'
-        ),
-        ParameterInformation.create(
-            'fractionalSeconds',
-            'The portion of the time that represents the fractional seconds.'
-        ),
-        ParameterInformation.create(
-            'status',
-            'The reading that is the start of a group of readings: buffer.STAT_START_GROUP; set to 256 to graph a \
-family of curves (default is 0).'
-        ),
-    ),
-    SignatureInformation.create(
-        'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',
-        undefined,
-        ParameterInformation.create(
-            'bufferVar',
-            'The name of the buffer.'
-        ),
-        ParameterInformation.create(
-            'readingValue',
-            'The first value that is recorded in the buffer index.'
-        ),
-        ParameterInformation.create(
-            'extraValue',
-            'A second value that is recorded in the buffer index (only valid for buffer style WRITABLE_FULL).'
-        ),
-        ParameterInformation.create(
-            'seconds',
-            'An integer that repesents the seconds.'
-        ),
-        ParameterInformation.create(
-            'fractionalSeconds',
-            'The portion of the time that represents the fractional seconds.'
-        ),
-        ParameterInformation.create(
-            'status',
-            'The reading that is the start of a group of readings: buffer.STAT_START_GROUP; set to 256 to graph a \
-family of curves (default is 0).'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'buffer.write.format(bufferVar, units, displayDigits[, extraUnits][, extraDigits])',
+        parameters: [
+            {
+                documentation: 'The name of the buffer.',
+                label: 'bufferVar',
+            },
+            {
+                documentation: 'Some buffer.UNIT_*.',
+                label: 'units',
+            },
+            {
+                documentation: 'The number of digits to use for the first measurement. Some buffer.DIGITS_*.',
+                label: 'displayDigits',
+            },
+            {
+                documentation: 'The units for the second measurement in the buffer index; the selections are the same \
+as units (only valid for buffer style WRITABLE_FULL); if not specified, will use the value for units.',
+                label: 'extraUnits',
+            },
+            {
+                documentation: 'The number of digits to use for the second measurement; the selections are the same \
+as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, will use the value for displayDigits.',
+                label: 'extraDigits',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
+        parameters: [
+            {
+                documentation: 'The name of the buffer.',
+                label: 'bufferVar',
+            },
+            {
+                documentation: 'The first value that is recorded in the buffer index.',
+                label: 'readingValue',
+            },
+            {
+                documentation: 'An integer that repesents the seconds.',
+                label: 'seconds',
+            },
+            {
+                documentation: 'The portion of the time that represents the fractional seconds.',
+                label: 'fractionalSeconds',
+            },
+            {
+                documentation: 'The reading that is the start of a group of readings: buffer.STAT_START_GROUP; set to \
+256 to graph a family of curves (default is 0).',
+                label: 'status',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',
+        parameters: [
+            {
+                documentation: 'The name of the buffer.',
+                label: 'bufferVar',
+            },
+            {
+                documentation: 'The first value that is recorded in the buffer index.',
+                label: 'readingValue',
+            },
+            {
+                documentation: 'A second value that is recorded in the buffer index (only valid for buffer style \
+WRITABLE_FULL).',
+                label: 'extraValue',
+            },
+            {
+                documentation: 'An integer that repesents the seconds.',
+                label: 'seconds',
+            },
+            {
+                documentation: 'The portion of the time that represents the fractional seconds.',
+                label: 'fractionalSeconds',
+            },
+            {
+                documentation: 'The reading that is the start of a group of readings: buffer.STAT_START_GROUP; set to \
+256 to graph a family of curves (default is 0).',
+                label: 'status',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -105,30 +105,36 @@ Register is set to 0 upon detection.'
 ]
 
 const statusQuestionableSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'status.questionable.getmap(bitNumber)',
-        undefined,
-        ParameterInformation.create(
-            'bitNumber',
-            'The bit number to check (0 to 14).'
-        ),
-    ),
-    SignatureInformation.create(
-        'status.questionable.setmap(bitNumber, setEvent[, clearEvent])',
-        undefined,
-        ParameterInformation.create(
-            'bitNumber',
-            'The bit number that is mapped to an event (0 to 14).'
-        ),
-        ParameterInformation.create(
-            'setEvent',
-            'The number of the event that sets the bits in the condition and event registers; 0 if no mapping.'
-        ),
-        ParameterInformation.create(
-            'clearEvent',
-            'The number of the event that clears the bit in the condition register; 0 if no mapping.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'status.questionable.getmap(bitNumber)',
+        parameters: [
+            {
+                documentation: 'The bit number to check (0 to 14).',
+                label: 'bitNumber',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'status.questionable.setmap(bitNumber, setEvent[, clearEvent])',
+        parameters: [
+            {
+                documentation: 'The bit number that is mapped to an event (0 to 14).',
+                label: 'bitNumber',
+            },
+            {
+                documentation: 'The number of the event that sets the bits in the condition and event registers; 0 if \
+no mapping is set.',
+                label: 'setEvent',
+            },
+            {
+                documentation: 'The number of the event that clears the bit in the condition register; 0 if no \
+mapping is set.',
+                label: 'clearEvent',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

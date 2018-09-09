@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -351,250 +351,299 @@ otherwise the following values are those returned by function f.'
 ]
 
 const functionSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'assert(condition[, message])',
-        undefined,
-        ParameterInformation.create(
-            'condition',
-            'A boolean condition to evaluate.'
-        ),
-        ParameterInformation.create(
-            'message',
-            'Optional failure message string. Defaults to "assertion failed!"'
-        ),
-    ),
-    SignatureInformation.create(
-        'collectgarbage([limit])',
-        undefined,
-        ParameterInformation.create(
-            'limit',
-            'A number representing the garbage-collection threshold in kilobytes.'
-        ),
-    ),
-    SignatureInformation.create(
-        'dofile(filename)',
-        undefined,
-        ParameterInformation.create(
-            'filename',
-            'A string representing the path of the file to execute.'
-        ),
-    ),
-    SignatureInformation.create(
-        'error(message[, level])',
-        undefined,
-        ParameterInformation.create(
-            'message',
-            'An error message string.'
-        ),
-        ParameterInformation.create(
-            'level',
-            'Stack level of the error location starting at 1. Defaults to 1 (here).'
-        ),
-    ),
-    SignatureInformation.create(
-        'getfenv([f])',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'A function name or a stack level starting at 0 (global environment). Defaults to 1 (here).'
-        ),
-    ),
-    SignatureInformation.create(
-        'getmetatable(object)',
-        undefined,
-        ParameterInformation.create(
-            'object',
-            'The target object of the function call.'
-        ),
-    ),
-    SignatureInformation.create(
-        'ipairs(t)',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The table to iterate over.'
-        ),
-    ),
-    SignatureInformation.create(
-        'loadfile(filename)',
-        undefined,
-        ParameterInformation.create(
-            'filename',
-            'A string representing the path of the file to load.'
-        ),
-    ),
-    SignatureInformation.create(
-        'loadstring(chunkString[, chunkName])',
-        undefined,
-        ParameterInformation.create(
-            'chunkString',
-            'The string to load as a chunk.'
-        ),
-        ParameterInformation.create(
-            'chunkName',
-            'A string representing the name of the loaded chunk.'
-        ),
-    ),
-    SignatureInformation.create(
-        'next(t[, i])',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The table to iterate over.'
-        ),
-        ParameterInformation.create(
-            'i',
-            'The previously returned index or nil to return the first index.'
-        ),
-    ),
-    SignatureInformation.create(
-        'pairs(t)',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The table to iterate over.'
-        ),
-    ),
-    SignatureInformation.create(
-        'pcall(f[, ...])',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'The function to call in protected mode.'
-        ),
-        ParameterInformation.create(
-            '...',
-            'Zero or more arguments that will be passed to function f.'
-        ),
-    ),
-    SignatureInformation.create(
-        'print(...)',
-        undefined,
-        ParameterInformation.create(
-            '...',
-            'One or more values separated with commas.'
-        ),
-    ),
-    SignatureInformation.create(
-        'rawequal(x, y)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'An object whose equality will be compared against object y.'
-        ),
-        ParameterInformation.create(
-            'y',
-            'An object whose equality will be compared against object x.'
-        ),
-    ),
-    SignatureInformation.create(
-        'rawget(t, i)',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The table to access.'
-        ),
-        ParameterInformation.create(
-            'i',
-            'The index of table t to access.'
-        ),
-    ),
-    SignatureInformation.create(
-        'rawset(t, i, v)',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The table to access.'
-        ),
-        ParameterInformation.create(
-            'i',
-            'The index of table t to set.'
-        ),
-        ParameterInformation.create(
-            'v',
-            'The value of the table t at index i.'
-        ),
-    ),
-    SignatureInformation.create(
-        'require(packagename)',
-        undefined,
-        ParameterInformation.create(
-            'packagename',
-            'A string or path string representing the package to load.'
-        ),
-    ),
-    SignatureInformation.create(
-        'setfenv(f, t)',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'A function name or a stack level starting at 0 (current execution context).'
-        ),
-        ParameterInformation.create(
-            't',
-            'The new environment table.'
-        ),
-    ),
-    SignatureInformation.create(
-        'setmetatable(t, m)',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The table whose metatable will be altered.'
-        ),
-        ParameterInformation.create(
-            'm',
-            'The new metatable or nil.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tonumber(v[, base])',
-        undefined,
-        ParameterInformation.create(
-            'v',
-            'Some value to convert.'
-        ),
-        ParameterInformation.create(
-            'base',
-            'Desired numeric base.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tostring(v)',
-        undefined,
-        ParameterInformation.create(
-            'v',
-            'Some value to convert.'
-        ),
-    ),
-    SignatureInformation.create(
-        'type(v)',
-        undefined,
-        ParameterInformation.create(
-            'v',
-            'Some value to query.'
-        ),
-    ),
-    SignatureInformation.create(
-        'unpack(list)',
-        undefined,
-        ParameterInformation.create(
-            'list',
-            'The list whose values will be returned.'
-        ),
-    ),
-    SignatureInformation.create(
-        'xpcall(f, errHandler)',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'The function to call in protected mode.'
-        ),
-        ParameterInformation.create(
-            'errHandler',
-            'The function to call if an error occurs.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'assert(condition[, message])',
+        parameters: [
+            {
+                documentation: 'A boolean condition to evaluate.',
+                label: 'condition',
+            },
+            {
+                documentation: 'Optional failure message string. Defaults to "assertion failed!"',
+                label: 'message',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'collectgarbage([limit])',
+        parameters: [
+            {
+                documentation: 'A number representing the garbage-collection threshold in kilobytes.',
+                label: 'limit',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'dofile(filename)',
+        parameters: [
+            {
+                documentation: 'A string representing the path of the file to execute.',
+                label: 'filename',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'error(message[, level])',
+        parameters: [
+            {
+                documentation: 'An error message string.',
+                label: 'message',
+            },
+            {
+                documentation: 'Stack level of the error location starting at 1. Defaults to 1 (here).',
+                label: 'level',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'getfenv([f])',
+        parameters: [
+            {
+                documentation: 'A function name or a stack level starting at 0 (global environment). Defaults to 1 \
+(here).',
+                label: 'f',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'getmetatable(object)',
+        parameters: [
+            {
+                documentation: 'The target object of the function call.',
+                label: 'object',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'ipairs(t)',
+        parameters: [
+            {
+                documentation: 'The table to iterate over.',
+                label: 't',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'loadfile(filename)',
+        parameters: [
+            {
+                documentation: 'A string representing the path of the file to load.',
+                label: 'filename',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'loadstring(chunkString[, chunkName])',
+        parameters: [
+            {
+                documentation: 'The string to load as a chunk.',
+                label: 'chunkString',
+            },
+            {
+                documentation: 'A string representing the name of the loaded chunk.',
+                label: 'chunkName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'next(t[, i])',
+        parameters: [
+            {
+                documentation: 'The table to iterate over.',
+                label: 't',
+            },
+            {
+                documentation: 'The previously returned index or nil to return the first index.',
+                label: 'i',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'pairs(t)',
+        parameters: [
+            {
+                documentation: 'The table to iterate over.',
+                label: 't',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'pcall(f[, ...])',
+        parameters: [
+            {
+                documentation: 'The function to call in protected mode.',
+                label: 'f',
+            },
+            {
+                documentation: 'Zero or more arguments that will be passed to function f.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'print(...)',
+        parameters: [
+            {
+                documentation: 'One or more values separated with commas.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'rawequal(x, y)',
+        parameters: [
+            {
+                documentation: 'An object whose equality will be compared against object y.',
+                label: 'x',
+            },
+            {
+                documentation: 'An object whose equality will be compared against object x.',
+                label: 'y',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'rawget(t, i)',
+        parameters: [
+            {
+                documentation: 'The table to access.',
+                label: 't',
+            },
+            {
+                documentation: 'The index of table t to access.',
+                label: 'i',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'rawset(t, i, v)',
+        parameters: [
+            {
+                documentation: 'The table to access.',
+                label: 't',
+            },
+            {
+                documentation: 'The index of table t to set.',
+                label: 'i',
+            },
+            {
+                documentation: 'The value of the table t at index i.',
+                label: 'v',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'require(packagename)',
+        parameters: [
+            {
+                documentation: 'A string or path string representing the package to load.',
+                label: 'packagename',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'setfenv(f, t)',
+        parameters: [
+            {
+                documentation: 'A function name or a stack level starting at 0 (current execution context).',
+                label: 'f',
+            },
+            {
+                documentation: 'The new environment table.',
+                label: 't',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'setmetatable(t, m)',
+        parameters: [
+            {
+                documentation: 'The table whose metatable will be altered.',
+                label: 't',
+            },
+            {
+                documentation: 'The new metatable or nil.',
+                label: 'm',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tonumber(v[, base])',
+        parameters: [
+            {
+                documentation: 'Some value to convert.',
+                label: 'v',
+            },
+            {
+                documentation: 'Desired numeric base.',
+                label: 'base',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tostring(v)',
+        parameters: [
+            {
+                documentation: 'Some value to convert.',
+                label: 'v',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'type(v)',
+        parameters: [
+            {
+                documentation: 'Some value to query.',
+                label: 'v',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'unpack(list)',
+        parameters: [
+            {
+                documentation: 'The list whose values will be returned.',
+                label: 'list',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'xpcall(f, errHandler)',
+        parameters: [
+            {
+                documentation: 'The function to call in protected mode.',
+                label: 'f',
+            },
+            {
+                documentation: 'The function to call if an error occurs.',
+                label: 'errHandler',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

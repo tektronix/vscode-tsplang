@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -56,23 +56,27 @@ For scripts residing on a USB flash drive, the given fileName should be absolute
 ]
 
 const scriptSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'script.delete(scriptName)',
-        undefined,
-        ParameterInformation.create(
-            'scriptName',
-            'A string that represents the name of the script.'
-        ),
-    ),
-    SignatureInformation.create(
-        'script.load(fileName)',
-        undefined,
-        ParameterInformation.create(
-            'fileName',
-            "The filepath of the script file to load.\n\
-Scripts residing on a USB flash drive should be absolute and begin with '/usb1/'."
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'script.delete(scriptName)',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of the script.',
+                label: 'scriptName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'script.load(fileName)',
+        parameters: [
+            {
+                documentation: 'The filepath of the script file to load.\n\
+Scripts residing on a USB flash drive should be absolute and begin with "/usb1/".',
+                label: 'fileName',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

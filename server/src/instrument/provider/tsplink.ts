@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -138,24 +138,28 @@ while line 2 is set high (1).'
 ]
 
 const tsplinkSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'tsplink.initialize([expectedNodes])',
-        undefined,
-        ParameterInformation.create(
-            'expectedNodes',
-            'The number of nodes expected on the system as a number from 1 to 32.\n\
-An error is logged if the return value is not equal to this number.'
-        ),
-    ),
-    SignatureInformation.create(
-        'tsplink.writeport(pattern)',
-        undefined,
-        ParameterInformation.create(
-            'pattern',
-            'Value to write to the port as a number from 0 to 7.\n\
-The given value is a binary representation of the high-low pattern that will be written to the I/O port.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'tsplink.initialize([expectedNodes])',
+        parameters: [
+            {
+                documentation: 'The number of nodes expected on the system as a number from 1 to 32.\n\
+An error is logged if the return value is not equal to this number.',
+                label: 'expectedNodes',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'tsplink.writeport(pattern)',
+        parameters: [
+            {
+                documentation: 'Value to write to the port as a number from 0 to 7.\n\
+The given value is a binary representation of the high-low pattern that will be written to the I/O port.',
+                label: 'pattern',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

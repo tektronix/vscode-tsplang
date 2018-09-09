@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -188,70 +188,76 @@ Returns the firmware version of the instrument as a string.'
 ]
 
 const localnodeSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'localnode.settime(utcTime)',
-        undefined,
-        ParameterInformation.create(
-            'utcTime',
-            'UTC time string as formatted by os.time.'
-        ),
-    ),
-    SignatureInformation.create(
-        'localnode.settime(hour, minute, second)',
-        undefined,
-        ParameterInformation.create(
-            'year',
-            'Year before 1970.'
-        ),
-        ParameterInformation.create(
-            'month',
-            'Month (1 to 12).'
-        ),
-        ParameterInformation.create(
-            'day',
-            'Day (1 to 31).'
-        ),
-        ParameterInformation.create(
-            'hour',
-            'Hour in 24‑hour time format (0 to 23).'
-        ),
-        ParameterInformation.create(
-            'minute',
-            'Minute (0 to 59).'
-        ),
-        ParameterInformation.create(
-            'second',
-            'Second (0 to 59).'
-        ),
-    ),
-    SignatureInformation.create(
-        'localnode.settime(year, month, day, hour, minute, second)',
-        undefined,
-        ParameterInformation.create(
-            'year',
-            'Year before 1970.'
-        ),
-        ParameterInformation.create(
-            'month',
-            'Month (1 to 12).'
-        ),
-        ParameterInformation.create(
-            'day',
-            'Day (1 to 31).'
-        ),
-        ParameterInformation.create(
-            'hour',
-            'Hour in 24‑hour time format (0 to 23).'
-        ),
-        ParameterInformation.create(
-            'minute',
-            'Minute (0 to 59).'
-        ),
-        ParameterInformation.create(
-            'second',
-            'Second (0 to 59).'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'localnode.settime(utcTime)',
+        parameters: [
+            {
+                documentation: 'UTC time string as formatted by os.time.',
+                label: 'utcTime',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'localnode.settime(hour, minute, second)',
+        parameters: [
+            {
+                documentation: 'Year before 1970.',
+                label: 'year',
+            },
+            {
+                documentation: 'Month (1 to 12).',
+                label: 'month',
+            },
+            {
+                documentation: 'Day (1 to 31).',
+                label: 'day',
+            },
+            {
+                documentation: 'Hour in 24‑hour time format (0 to 23).',
+                label: 'hour',
+            },
+            {
+                documentation: 'Minute (0 to 59).',
+                label: 'minute',
+            },
+            {
+                documentation: 'Second (0 to 59).',
+                label: 'second',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'localnode.settime(year, month, day, hour, minute, second)',
+        parameters: [
+            {
+                documentation: 'Year before 1970.',
+                label: 'year',
+            },
+            {
+                documentation: 'Month (1 to 12).',
+                label: 'month',
+            },
+            {
+                documentation: 'Day (1 to 31).',
+                label: 'day',
+            },
+            {
+                documentation: 'Hour in 24‑hour time format (0 to 23).',
+                label: 'hour',
+            },
+            {
+                documentation: 'Minute (0 to 59).',
+                label: 'minute',
+            },
+            {
+                documentation: 'Second (0 to 59).',
+                label: 'second',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

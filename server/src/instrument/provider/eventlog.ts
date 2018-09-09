@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -102,61 +102,57 @@ The .csv extension is automatically added to the file name.'
 ]
 
 const eventlogSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'eventlog.getcount([eventType])',
-        undefined,
-        ParameterInformation.create(
-            'eventType',
-            'Limit the return to specific event log types as defined by:\n\
-eventlog.SEV_ERROR (1)\n\
-eventlog.SEV_WARN (2)\n\
-eventlog.SEV_INFO (4)\n\
-eventlog.SEV_ALL (7)\n\
-Combinations via bitwise OR are supported.'
-        ),
-    ),
-    SignatureInformation.create(
-        'eventlog.next([eventType])',
-        undefined,
-        ParameterInformation.create(
-            'eventType',
-            'Limit the return to specific event log types as defined by:\n\
-eventlog.SEV_ERROR (1)\n\
-eventlog.SEV_WARN (2)\n\
-eventlog.SEV_INFO (4)\n\
-eventlog.SEV_ALL (7)\n\
-Combinations via bitwise OR are supported.'
-        ),
-    ),
-    SignatureInformation.create(
-        'eventlog.post(message[, eventType])',
-        undefined,
-        ParameterInformation.create(
-            'message',
-            'String that contains the message.'
-        ),
-        ParameterInformation.create(
-            'eventType',
-            'One of:\n`eventlog.SEV_ERROR` (1)\n`eventlog.SEV_WARN` (2)\n`eventlog.SEV_INFO` (4, default)'
-        ),
-    ),
-    SignatureInformation.create(
-        'eventlog.save(filename, eventType)',
-        undefined,
-        ParameterInformation.create(
-            'filename',
-            'A string that represents the name of the file to be saved.'
-        ),
-        ParameterInformation.create(
-            'eventType',
-            'Limit the return to specific event log types as defined by:\n\
-eventlog.SEV_ERROR (1)\n\
-eventlog.SEV_WARN (2)\n\
-eventlog.SEV_INFO (4)\n\
-eventlog.SEV_ALL (7)\n\
-Combinations via bitwise OR are supported.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'eventlog.getcount([eventType])',
+        parameters: [
+            {
+                documentation: 'Limit the return to specific event log types as defined by eventlog.SEV_*.\n\
+Combinations via bitwise OR are supported.',
+                label: 'eventType',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'eventlog.next([eventType])',
+        parameters: [
+            {
+                documentation: 'Limit the return to specific event log types as defined by eventlog.SEV_*.\n\
+Combinations via bitwise OR are supported.',
+                label: 'eventType',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'eventlog.post(message[, eventType])',
+        parameters: [
+            {
+                documentation: 'String that contains the message.',
+                label: 'message',
+            },
+            {
+                documentation: 'The type of event to post as some eventlog.SEV_*. Defaults to eventlog.SEV_INFO.',
+                label: 'eventType',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'eventlog.save(filename, eventType)',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of the file to be saved.',
+                label: 'filename',
+            },
+            {
+                documentation: 'Limit the return to specific event log types as defined by eventlog.SEV_*.\n\
+Combinations via bitwise OR are supported.',
+                label: 'eventType',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

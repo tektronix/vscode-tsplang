@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -127,72 +127,78 @@ Files should be closed before script exit via file.close().'
 ]
 
 const fileSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'file.close(fileNumber)',
-        undefined,
-        ParameterInformation.create(
-            'fileNumber',
-            'A file reference returned from the file.open() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'file.flush(fileNumber)',
-        undefined,
-        ParameterInformation.create(
-            'fileNumber',
-            'A file reference returned from the file.open() function.'
-        ),
-    ),
-    SignatureInformation.create(
-        'file.mkdir(path)',
-        undefined,
-        ParameterInformation.create(
-            'path',
-            "Directory path. May begin with '/usb1/'."
-        ),
-    ),
-    SignatureInformation.create(
-        'file.open(fileName, accessType)',
-        undefined,
-        ParameterInformation.create(
-            'fileName',
-            'Absolute filepath to the target file.'
-        ),
-        ParameterInformation.create(
-            'accessType',
-            'One of:\n\
-file.MODE_APPEND\n\
-file.MODE_READ\n\
-file.MODE_WRITE'
-        ),
-    ),
-    SignatureInformation.create(
-        'file.read(fileNumber, readAction)',
-        undefined,
-        ParameterInformation.create(
-            'fileNumber',
-            'A file reference returned from the file.open() function.'
-        ),
-        ParameterInformation.create(
-            'readAction',
-            'One of:\n\
-file.READ_LINE\n\
-file.READ_NUMBER\n\
-file.READ_ALL'
-        ),
-    ),
-    SignatureInformation.create(
-        'file.write(fileNumber, data)',
-        undefined,
-        ParameterInformation.create(
-            'fileNumber',
-            'A file reference returned from the file.open() function.'
-        ),
-        ParameterInformation.create(
-            'data',
-            'The string to write to the file.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'file.close(fileNumber)',
+        parameters: [
+            {
+                documentation: 'A file reference returned from the file.open() function.',
+                label: 'fileNumber',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'file.flush(fileNumber)',
+        parameters: [
+            {
+                documentation: 'A file reference returned from the file.open() function.',
+                label: 'fileNumber',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'file.mkdir(path)',
+        parameters: [
+            {
+                documentation: 'Directory path. May begin with "/usb1/".',
+                label: 'path',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'file.open(fileName, accessType)',
+        parameters: [
+            {
+                documentation: 'Absolute filepath to the target file.',
+                label: 'fileName',
+            },
+            {
+                documentation: 'Some: file.MODE_*',
+                label: 'accessType',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'file.read(fileNumber, readAction)',
+        parameters: [
+            {
+                documentation: 'A file reference returned from the file.open() function.',
+                label: 'fileNumber',
+            },
+            {
+                documentation: 'Some file.READ_*',
+                label: 'readAction',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'file.write(fileNumber, data)',
+        parameters: [
+            {
+                documentation: 'A file reference returned from the file.open() function.',
+                label: 'fileNumber',
+            },
+            {
+                documentation: 'The string to write to the file.',
+                label: 'data',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

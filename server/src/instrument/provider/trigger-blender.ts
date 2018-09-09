@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -116,14 +116,16 @@ number of events detected.'
 ]
 
 const triggerBlenderSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'trigger.blender[].wait(timeout)',
-        undefined,
-        ParameterInformation.create(
-            'timeout',
-            'Timeout in seconds.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'trigger.blender[].wait(timeout)',
+        parameters: [
+            {
+                documentation: 'Timeout in seconds.',
+                label: 'timeout',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

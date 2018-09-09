@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -39,16 +39,17 @@ If system is true (default) and the local node is not the master, then an error 
 ]
 
 const resetSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'reset([system])',
-        undefined,
-        ParameterInformation.create(
-            'system',
-            'true to reset all nodes (default) or false to reset the local node.\n\
-\n\
-If true and local node is not the master, then an error is logged.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'reset([system])',
+        parameters: [
+            {
+                documentation: 'true to reset all nodes (default) or false to reset the local node.\n\
+If true and local node is not the master, then an error is logged.',
+                label: 'system',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

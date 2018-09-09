@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -39,14 +39,16 @@ A group number may only be specified when this node is the master node.'
 ]
 
 const waitcompleteSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'waitcomplete([group])',
-        undefined,
-        ParameterInformation.create(
-            'group',
-            'Specifies which TSP-Link group on which to wait or 0 for all nodes.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'waitcomplete([group])',
+        parameters: [
+            {
+                documentation: 'Specifies which TSP-Link group on which to wait or 0 for all nodes.',
+                label: 'group',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

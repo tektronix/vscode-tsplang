@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -71,34 +71,40 @@ Set the value of a global variable on a subordinate node from the TSP-Link maste
 ]
 
 const nodeSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'node[].execute(scriptCode)',
-        undefined,
-        ParameterInformation.create(
-            'scriptCode',
-            'A string containing the source code.'
-        ),
-    ),
-    SignatureInformation.create(
-        'node[].getglobal(name)',
-        undefined,
-        ParameterInformation.create(
-            'name',
-            'The global variable name as a string.'
-        ),
-    ),
-    SignatureInformation.create(
-        'node[].setglobal(name, value)',
-        undefined,
-        ParameterInformation.create(
-            'name',
-            'The global variable name as a string.'
-        ),
-        ParameterInformation.create(
-            'value',
-            'The value to assign to the global variable.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'node[].execute(scriptCode)',
+        parameters: [
+            {
+                documentation: 'A string containing the source code.',
+                label: 'scriptCode',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'node[].getglobal(name)',
+        parameters: [
+            {
+                documentation: 'The global variable name as a string.',
+                label: 'name',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'node[].setglobal(name, value)',
+        parameters: [
+            {
+                documentation: 'The global variable name as a string.',
+                label: 'name',
+            },
+            {
+                documentation: 'The value to assign to the global variable.',
+                label: 'value',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -73,34 +73,40 @@ Returns a string if the given name exists; otherwise nil is returned and an erro
 ]
 
 const userstringSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'userstring.add(name, value)',
-        undefined,
-        ParameterInformation.create(
-            'name',
-            'The name of the string.'
-        ),
-        ParameterInformation.create(
-            'value',
-            'The value of the string.'
-        ),
-    ),
-    SignatureInformation.create(
-        'userstring.delete(name)',
-        undefined,
-        ParameterInformation.create(
-            'name',
-            'Name of the user‑defined string to delete.'
-        ),
-    ),
-    SignatureInformation.create(
-        'userstring.get(name)',
-        undefined,
-        ParameterInformation.create(
-            'name',
-            'Name of the user‑defined string.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'userstring.add(name, value)',
+        parameters: [
+            {
+                documentation: 'The name of the string.',
+                label: 'name',
+            },
+            {
+                documentation: 'The value of the string.',
+                label: 'value',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'userstring.delete(name)',
+        parameters: [
+            {
+                documentation: 'Name of the user‑defined string to delete.',
+                label: 'name',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'userstring.get(name)',
+        parameters: [
+            {
+                documentation: 'Name of the user‑defined string.',
+                label: 'name',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

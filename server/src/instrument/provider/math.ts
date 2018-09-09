@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -293,207 +293,255 @@ Returns the tangent of angle x in radians.'
 ]
 
 const mathSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'math.abs(x)',
-        undefined,
-        ParameterInformation.create(
-            'x'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.acos(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'A number on the interval [-1, +1].'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.asin(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'A number on the interval [-1, +1].'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.atan(x)',
-        undefined,
-        ParameterInformation.create(
-            'x'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.atan2(y, x)',
-        undefined,
-        ParameterInformation.create(
-            'y',
-            'A number representing the y-coordinate.'
-        ),
-        ParameterInformation.create(
-            'x',
-            'A number representing the x-coordinate.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.ceil(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'Number to round upward.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.cos(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'An angle in radians.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.deg(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'An angle in radians.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.exp(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'The exponent to raise e.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.floor(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'Number to round downward.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.frexp(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'Number to decompose into a significand and power of 2.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.ldexp(x, exp)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'Binary significand.'
-        ),
-        ParameterInformation.create(
-            'exp',
-            'Binary exponent.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.log(x)',
-        undefined,
-        ParameterInformation.create(
-            'x'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.log10(x)',
-        undefined,
-        ParameterInformation.create(
-            'x'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.max(...)',
-        undefined,
-        ParameterInformation.create(
-            '...',
-            'One or more numbers to compare.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.min(...)',
-        undefined,
-        ParameterInformation.create(
-            '...',
-            'One or more numbers to compare.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.pow(base, exp)',
-        undefined,
-        ParameterInformation.create(
-            'base'
-        ),
-        ParameterInformation.create(
-            'exp'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.rad(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'An angle in degrees.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.random(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'Upper bound of the inclusive interval [1, x].'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.random(x, y)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'Lower bound of the inclusive interval [x, y].'
-        ),
-        ParameterInformation.create(
-            'y',
-            'Upper bound of the inclusive interval [x, y].'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.randomseed(x)',
-        undefined,
-        ParameterInformation.create(
-            'x'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.sin(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'An angle in degrees.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.sqrt(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'A non-negative number.'
-        ),
-    ),
-    SignatureInformation.create(
-        'math.tan(x)',
-        undefined,
-        ParameterInformation.create(
-            'x',
-            'An angle in degrees.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'math.abs(x)',
+        parameters: [
+            {
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.acos(x)',
+        parameters: [
+            {
+                documentation: 'A number on the interval [-1, +1].',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.asin(x)',
+        parameters: [
+            {
+                documentation: 'A number on the interval [-1, +1].',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.atan(x)',
+        parameters: [
+            {
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.atan2(y, x)',
+        parameters: [
+            {
+                documentation: 'A number representing the y-coordinate.',
+                label: 'y',
+            },
+            {
+                documentation: 'A number representing the x-coordinate.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.ceil(x)',
+        parameters: [
+            {
+                documentation: 'Number to round upward.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.cos(x)',
+        parameters: [
+            {
+                documentation: 'An angle in radians.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.deg(x)',
+        parameters: [
+            {
+                documentation: 'An angle in radians.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.exp(x)',
+        parameters: [
+            {
+                documentation: 'The exponent to raise e.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.floor(x)',
+        parameters: [
+            {
+                documentation: 'Number to round downward.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.frexp(x)',
+        parameters: [
+            {
+                documentation: 'Number to decompose into a significand and power of 2.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.ldexp(x, exp)',
+        parameters: [
+            {
+                documentation: 'Binary significand.',
+                label: 'x',
+            },
+            {
+                documentation: 'Binary exponent.',
+                label: 'exp',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.log(x)',
+        parameters: [
+            {
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.log10(x)',
+        parameters: [
+            {
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.max(...)',
+        parameters: [
+            {
+                documentation: 'One or more numbers to compare.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.min(...)',
+        parameters: [
+            {
+                documentation: 'One or more numbers to compare.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.pow(base, exp)',
+        parameters: [
+            {
+                label: 'base',
+            },
+            {
+                label: 'exp',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.rad(x)',
+        parameters: [
+            {
+                documentation: 'An angle in degrees.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.random(x)',
+        parameters: [
+            {
+                documentation: 'Upper bound of the inclusive interval [1, x].',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.random(x, y)',
+        parameters: [
+            {
+                documentation: 'Lower bound of the inclusive interval [x, y].',
+                label: 'x',
+            },
+            {
+                documentation: 'Upper bound of the inclusive interval [x, y].',
+                label: 'y',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.randomseed(x)',
+        parameters: [
+            {
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.sin(x)',
+        parameters: [
+            {
+                documentation: 'An angle in degrees.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.sqrt(x)',
+        parameters: [
+            {
+                documentation: 'A non-negative number.',
+                label: 'x',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'math.tan(x)',
+        parameters: [
+            {
+                documentation: 'An angle in degrees.',
+                label: 'x',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

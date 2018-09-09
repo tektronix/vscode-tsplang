@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -83,28 +83,28 @@ separated by a colon.'
 ]
 
 const lanSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'lan.ipconfig([method][, ipV4Address][, subnetMask][, gateway])',
-        undefined,
-        ParameterInformation.create(
-            'method',
-            'The method for configuring LAN settings; one of:\n\
-lan.MODE_AUTO\n\
-lan.MODE_MANUAL'
-        ),
-        ParameterInformation.create(
-            'ipV4Address',
-            'LAN IP address; must be a valid IPv4 address.'
-        ),
-        ParameterInformation.create(
-            'subnetMask',
-            'The LAN subnet mask; must be a valid IPv4 subnet mask.'
-        ),
-        ParameterInformation.create(
-            'gateway',
-            'The LAN default gateway; must be a valid IPv4 address.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'lan.ipconfig([method][, ipV4Address][, subnetMask][, gateway])',
+        parameters: [
+            {
+                documentation: 'The method for configuring LAN settings; Some lan.MODE_*',
+                label: 'method',
+            },
+            {
+                documentation: 'LAN IP address; must be a valid IPv4 address.',
+                label: 'ipV4Address',
+            },
+            {
+                documentation: 'The LAN subnet mask; must be a valid IPv4 subnet mask.',
+                label: 'subnetMask',
+            },
+            {
+                documentation: 'The LAN default gateway; must be a valid IPv4 address.',
+                label: 'gateway',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -134,73 +134,85 @@ between power cycles.'
 ]
 
 const smuSourceConfiglistSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'smu.source.configlist.create(listName)',
-        undefined,
-        ParameterInformation.create(
-            'listName',
-            'A string that represents the name of a source configuration list.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.configlist.delete(listName[, index])',
-        undefined,
-        ParameterInformation.create(
-            'listName',
-            'A string that represents the name of a source configuration list.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'A number that defines a specific configuration index in the configuration list. \
-Deletes the entire configuration list by default.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.configlist.query(listName, index[, fieldSeparator])',
-        undefined,
-        ParameterInformation.create(
-            'listName',
-            'A string that represents the name of a source configuration list.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'A number that defines a specific configuration index in the configuration list. \
-Defaults to the first configuration index.'
-        ),
-        ParameterInformation.create(
-            'fieldSeparator',
-            'The string that will separate each setting.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.configlist.recall(listName[, index])',
-        undefined,
-        ParameterInformation.create(
-            'listName',
-            'A string that represents the name of a source configuration list.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'A number that defines a specific configuration index in the configuration list. \
-Defaults to the first configuration index.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.configlist.size(listName)',
-        undefined,
-        ParameterInformation.create(
-            'listName',
-            'A string that represents the name of a source configuration list.'
-        ),
-    ),
-    SignatureInformation.create(
-        'smu.source.configlist.store(listName)',
-        undefined,
-        ParameterInformation.create(
-            'listName',
-            'A string that represents the name of a source configuration list.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'smu.source.configlist.create(listName)',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of a source configuration list.',
+                label: 'listName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.configlist.delete(listName[, index])',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of a source configuration list.',
+                label: 'listName',
+            },
+            {
+                documentation: 'A number that defines a specific configuration index in the configuration list. \
+Deletes the entire configuration list by default.',
+                label: 'index',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.configlist.query(listName, index[, fieldSeparator])',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of a source configuration list.',
+                label: 'listName',
+            },
+            {
+                documentation: 'A number that defines a specific configuration index in the configuration list. \
+Defaults to the first configuration index.',
+                label: 'index',
+            },
+            {
+                documentation: 'The string that will separate each setting.',
+                label: 'fieldSeparator',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.configlist.recall(listName[, index])',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of a source configuration list.',
+                label: 'listName',
+            },
+            {
+                documentation: 'A number that defines a specific configuration index in the configuration list. \
+Defaults to the first configuration index.',
+                label: 'index',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.configlist.size(listName)',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of a source configuration list.',
+                label: 'listName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'smu.source.configlist.store(listName)',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of a source configuration list.',
+                label: 'listName',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

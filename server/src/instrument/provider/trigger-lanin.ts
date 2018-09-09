@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -88,14 +88,16 @@ number of events detected.'
 ]
 
 const triggerLaninSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'trigger.lanin[].wait(timeout)',
-        undefined,
-        ParameterInformation.create(
-            'timeout',
-            'Timeout in seconds.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'trigger.lanin[].wait(timeout)',
+        parameters: [
+            {
+                documentation: 'Timeout in seconds.',
+                label: 'timeout',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

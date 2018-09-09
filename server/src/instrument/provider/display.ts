@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -143,12 +143,12 @@ This command waits until a user responds to a front‑panel prompt that was crea
 ]
 
 const displaySignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'display.changescreen(screenName)',
-        undefined,
-        ParameterInformation.create(
-            'screenName',
-            'One of:\n\
+    {
+        documentation: undefined,
+        label: 'display.changescreen(screenName)',
+        parameters: [
+            {
+                documentation: 'One of:\n\
 display.SCREEN_HOME\n\
 display.SCREEN_HOME_LARGE_READING\n\
 display.SCREEN_READING_TABLE\n\
@@ -158,67 +158,74 @@ display.SCREEN_GRAPH_SWIPE\n\
 display.SCREEN_SETTINGS_SWIPE\n\
 display.SCREEN_SOURCE_SWIPE\n\
 display.SCREEN_STATS_SWIPE\n\
-display.SCREEN_USER_SWIPE'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.delete(promptID)',
-        undefined,
-        ParameterInformation.create(
-            'promptID',
-            'An object reference returned by display.prompt().'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.prompt(buttonSet, promptText)',
-        undefined,
-        ParameterInformation.create(
-            'buttonSet',
-            'One of:\n\
+display.SCREEN_USER_SWIPE',
+                label: 'screenName',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.delete(promptID)',
+        parameters: [
+            {
+                documentation: 'An object reference returned by display.prompt().',
+                label: 'promptID',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.prompt(buttonSet, promptText)',
+        parameters: [
+            {
+                documentation: 'One of:\n\
 display.BUTTONS_NONE\n\
 display.BUTTONS_OK\n\
 display.BUTTONS_CANCEL\n\
 display.BUTTONS_OKCANCEL\n\
 display.BUTTONS_YESNO\n\
-display.BUTTONS_YESNOCANCEL'
-        ),
-        ParameterInformation.create(
-            'promptText',
-            'A string that contains the text that is displayed above the prompts.'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.settext(position, userDisplayText)',
-        undefined,
-        ParameterInformation.create(
-            'position',
-            'One of:\n\
-display.TEXT1 (top line)\n\
-display.TEXT2 (bottom line)'
-        ),
-        ParameterInformation.create(
-            'userDisplayText',
-            'String that contains the message for the USER swipe screen.\n\
-If position is display.TEXT1, then up to 20 characters can be displayed. \
-If position is display.TEXT2, then up to 32 characters are available.'
-        ),
-    ),
-    SignatureInformation.create(
-        'display.waitevent([timeout])',
-        undefined,
-        ParameterInformation.create(
-            'timeout',
-            'The amount of time to wait before timing out; time is 0 to 300 s, where 0 (default) waits indefinitely.'
-        ),
-        ParameterInformation.create(
-            'subID',
-            'The returned value after a button is pressed on the front panel. One of:\n\
-display.BUTTON_YES\n\
-display.BUTTON_NO\n\
-display.BUTTON_OK\n\
-display.BUTTON_CANCEL.'
-        ),
-    ),
+display.BUTTONS_YESNOCANCEL',
+                label: 'buttonSet',
+            },
+            {
+                documentation: 'A string that contains the text that is displayed above the prompts.',
+                label: 'promptText',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.settext(position, userDisplayText)',
+        parameters: [
+            {
+                documentation: 'Some display.TEXT*.\n\
+TEXT1 places the text on the top line and TEXT2 on the bottom line.',
+                label: 'position',
+            },
+            {
+                documentation: 'String that contains the message for the USER swipe screen.\n\
+If position is display.TEXT1, then up to 20 characters can be displayed. If position is display.TEXT2, then up to 32 \
+characters are available.',
+                label: 'userDisplayText',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'display.waitevent([timeout])',
+        parameters: [
+            {
+                documentation: 'The amount of time to wait before timing out; time is 0 to 300 s, where 0 (default) \
+waits indefinitely.',
+                label: 'timeout',
+            },
+            {
+                documentation: 'The returned value after a button is pressed on the front panel. One of \
+display.BUTTON_YES, BUTTON_NO, BUTTON_OK, or BUTTON_CANCEL.',
+                label: 'subID',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

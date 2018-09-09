@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -44,23 +44,26 @@ specified index), data will be printed as it becomes available.'
 ]
 
 const printbufferSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'printbuffer(startIndex, endIndex, ...)',
-        undefined,
-        ParameterInformation.create(
-            'startIndex',
-            'Beginning index of the buffer to print; must be greater than or equal to one and less than endIndex.'
-        ),
-        ParameterInformation.create(
-            'endIndex',
-            'Ending index of the buffer to print; \
-must be greater than startIndex and less than or equal to the last table index.'
-        ),
-        ParameterInformation.create(
-            '...',
-            'One or more tables or reading buffer subtables separated with commas.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'printbuffer(startIndex, endIndex, ...)',
+        parameters: [
+            {
+                documentation: 'Beginning index of the buffer to print; must be greater than or equal to one and less \
+than endIndex.',
+                label: 'startIndex',
+            },
+            {
+                documentation: 'Ending index of the buffer to print; must be greater than startIndex and less than or \
+equal to the last table index.',
+                label: 'endIndex',
+            },
+            {
+                documentation: 'One or more tables or reading buffer subtables separated with commas.',
+                label: '...',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

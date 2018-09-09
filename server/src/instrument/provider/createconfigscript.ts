@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -39,14 +39,16 @@ Once created, the script that contains the settings can be run and edited like a
 ]
 
 const createconfigscriptSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'createconfigscript(scriptName)',
-        undefined,
-        ParameterInformation.create(
-            'scriptName',
-            'A string that represents the name of the script that will be created.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'createconfigscript(scriptName)',
+        parameters: [
+            {
+                documentation: 'A string that represents the name of the script that will be created.',
+                label: 'scriptName',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

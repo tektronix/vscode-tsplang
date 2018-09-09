@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -99,26 +99,30 @@ Any returned tables and subtables are duplicates and contain no references to th
 ]
 
 const dataqueueSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'dataqueue.add(value[, timeout])',
-        undefined,
-        ParameterInformation.create(
-            'value',
-            'The data item to add; value can be of any type.'
-        ),
-        ParameterInformation.create(
-            'timeout',
-            'The maximum number of seconds to wait for space in the data queue.'
-        ),
-    ),
-    SignatureInformation.create(
-        'dataqueue.next([timeout])',
-        undefined,
-        ParameterInformation.create(
-            'timeout',
-            'The number of seconds to wait for data in the queue.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'dataqueue.add(value[, timeout])',
+        parameters: [
+            {
+                documentation: 'The data item to add; value can be of any type.',
+                label: 'value',
+            },
+            {
+                documentation: 'The maximum number of seconds to wait for space in the data queue.',
+                label: 'timeout',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'dataqueue.next([timeout])',
+        parameters: [
+            {
+                documentation: 'The number of seconds to wait for data in the queue.',
+                label: 'timeout',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

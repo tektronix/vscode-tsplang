@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -170,138 +170,162 @@ Returns a copy of the string s with all cased characters converted to uppercase.
 ]
 
 const stringSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'string.byte(s[, index])',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'An optional one-based index. Defaults to 1.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.char([...])',
-        undefined,
-        ParameterInformation.create(
-            '...',
-            'Zero or more integers representing character codes.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.dump(f)',
-        undefined,
-        ParameterInformation.create(
-            'f',
-            'A function to convert to a binary string.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.find(s, pattern[, start[, plain]])',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-        ParameterInformation.create(
-            'pattern',
-            'A pattern string.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'The index to start searching. Defaults to 1.'
-        ),
-        ParameterInformation.create(
-            'plain',
-            'Whether or not to perform a plain-text search. Defaults to false (disabled).'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.format(formatstring[, ...])',
-        undefined,
-        ParameterInformation.create(
-            'formatstring',
-            'A C-like printf format string.'
-        ),
-        ParameterInformation.create(
-            '...',
-            'Zero or more arguments as required by the formatstring.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.gsub(s, pattern, repl[, n])',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-        ParameterInformation.create(
-            'pattern',
-            'A pattern string.'
-        ),
-        ParameterInformation.create(
-            'repl',
-            'A replacement string or replacement function that returns the string to use for the match substitution.'
-        ),
-        ParameterInformation.create(
-            'n',
-            'The maximum number of substitutions to perform. Defaults to all occurrences.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.len(s)',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.lower(s)',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.rep(s, n)',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The source string.'
-        ),
-        ParameterInformation.create(
-            'n',
-            'The number of times to duplicate the source string s.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.sub(s, start[, end])',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'The one-based index to begin the substring (inclusive). May be negative.'
-        ),
-        ParameterInformation.create(
-            'end',
-            'An optional one-based index to end the substring (inclusive). May be negative. Defaults to -1.'
-        ),
-    ),
-    SignatureInformation.create(
-        'string.upper(s)',
-        undefined,
-        ParameterInformation.create(
-            's',
-            'The target string.'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'string.byte(s[, index])',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+            {
+                documentation: 'An optional one-based index. Defaults to 1.',
+                label: 'index',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.char([...])',
+        parameters: [
+            {
+                documentation: 'Zero or more integers representing character codes.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.dump(f)',
+        parameters: [
+            {
+                documentation: 'A function to convert to a binary string.',
+                label: 'f',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.find(s, pattern[, start[, plain]])',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+            {
+                documentation: 'A pattern string.',
+                label: 'pattern',
+            },
+            {
+                documentation: 'The index to start searching. Defaults to 1.',
+                label: 'start',
+            },
+            {
+                documentation: 'Whether or not to perform a plain-text search. Defaults to false (disabled).',
+                label: 'plain',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.format(formatstring[, ...])',
+        parameters: [
+            {
+                documentation: 'A C-like printf format string.',
+                label: 'formatstring',
+            },
+            {
+                documentation: 'Zero or more arguments as required by the formatstring.',
+                label: '...',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.gsub(s, pattern, repl[, n])',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+            {
+                documentation: 'A pattern string.',
+                label: 'pattern',
+            },
+            {
+                documentation: 'A replacement string or replacement function that returns the string to use for the \
+match substitution.',
+                label: 'repl',
+            },
+            {
+                documentation: 'The maximum number of substitutions to perform. Defaults to all occurrences.',
+                label: 'n',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.len(s)',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.lower(s)',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.rep(s, n)',
+        parameters: [
+            {
+                documentation: 'The source string.',
+                label: 's',
+            },
+            {
+                documentation: 'The number of times to duplicate the source string s.',
+                label: 'n',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.sub(s, start[, end])',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+            {
+                documentation: 'The one-based index to begin the substring (inclusive). May be negative.',
+                label: 'start',
+            },
+            {
+                documentation: 'An optional one-based index to end the substring (inclusive). May be negative. \
+Defaults to -1.',
+                label: 'end',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'string.upper(s)',
+        parameters: [
+            {
+                documentation: 'The target string.',
+                label: 's',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {

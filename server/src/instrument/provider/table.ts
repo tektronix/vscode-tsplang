@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, InstrumentSpec } from '..'
 
@@ -81,79 +81,89 @@ Function f must accept two arguments and return true when the first is less than
 ]
 
 const tableSignatures: Array<SignatureInformation> = [
-    SignatureInformation.create(
-        'table.concat(t[, sep[, start[, end]]])',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The target table.'
-        ),
-        ParameterInformation.create(
-            'sep',
-            'The string to add between each element. Defaults to an empty string.'
-        ),
-        ParameterInformation.create(
-            'start',
-            'The starting index (inclusive). Defaults to 1.'
-        ),
-        ParameterInformation.create(
-            'end',
-            'The ending index (inclusive). Defaults to the size of the table.'
-        ),
-    ),
-    SignatureInformation.create(
-        'table.insert(t, v)',
-        'Insert an element into the last position of the table.',
-        ParameterInformation.create(
-            't',
-            'The target table.'
-        ),
-        ParameterInformation.create(
-            'v',
-            'The value to insert.'
-        ),
-    ),
-    SignatureInformation.create(
-        'table.insert(t, index, v)',
-        'Insert an element into the specified table index.',
-        ParameterInformation.create(
-            't',
-            'The target table.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'The one-based index of the new value.'
-        ),
-        ParameterInformation.create(
-            'v',
-            'The value to insert.'
-        ),
-    ),
-    SignatureInformation.create(
-        'table.remove(t[, index])',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The target table.'
-        ),
-        ParameterInformation.create(
-            'index',
-            'The one-based index to remove.'
-        ),
-    ),
-    SignatureInformation.create(
-        'table.sort(t[, f])',
-        undefined,
-        ParameterInformation.create(
-            't',
-            'The target table.'
-        ),
-        ParameterInformation.create(
-            'f',
-            'An optional sorting function that accepts two arguments and returns true when the first is less than the \
-second. Defaults to using the less than operator (<).'
-        ),
-    ),
+    {
+        documentation: undefined,
+        label: 'table.concat(t[, sep[, start[, end]]])',
+        parameters: [
+            {
+                documentation: 'The target table.',
+                label: 't',
+            },
+            {
+                documentation: 'The string to add between each element. Defaults to an empty string.',
+                label: 'sep',
+            },
+            {
+                documentation: 'The starting index (inclusive). Defaults to 1.',
+                label: 'start',
+            },
+            {
+                documentation: 'The ending index (inclusive). Defaults to the size of the table.',
+                label: 'end',
+            },
+        ],
+    },
+    {
+        documentation: 'Insert an element into the last position of the table.',
+        label: 'table.insert(t, v)',
+        parameters: [
+            {
+                documentation: 'The target table.',
+                label: 't',
+            },
+            {
+                documentation: 'The value to insert.',
+                label: 'v',
+            },
+        ],
+    },
+    {
+        documentation: 'Insert an element into the specified table index.',
+        label: 'table.insert(t, index, v)',
+        parameters: [
+            {
+                documentation: 'The target table.',
+                label: 't',
+            },
+            {
+                documentation: 'The one-based index of the new value.',
+                label: 'index',
+            },
+            {
+                documentation: 'The value to insert.',
+                label: 'v',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'table.remove(t[, index])',
+        parameters: [
+            {
+                documentation: 'The target table.',
+                label: 't',
+            },
+            {
+                documentation: 'The one-based index to remove.',
+                label: 'index',
+            },
+        ],
+    },
+    {
+        documentation: undefined,
+        label: 'table.sort(t[, f])',
+        parameters: [
+            {
+                documentation: 'The target table.',
+                label: 't',
+            },
+            {
+                documentation: 'An optional sorting function that accepts two arguments and returns true when the \
+first is less than the second. Defaults to using the less than operator (<).',
+                label: 'f',
+            },
+        ],
+    },
 ]
 
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
