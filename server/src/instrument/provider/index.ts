@@ -17,7 +17,7 @@ import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
 
-declare function require(moduleName: string): (cmd: ApiSpec, spec: InstrumentSpec) => Promise<CommandSet>
+declare type GetCommandSet = (cmd: ApiSpec, spec: InstrumentSpec) => CommandSet
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes
@@ -55,49 +55,52 @@ export interface CommandSet {
     completions: Array<CompletionItem>
     signatures?: Array<SignatureInformation>
 }
-// export namespace CommandSet {
-//     /**
-//      * Concatenate setB onto setA.
-//      */
-//     export function concat(setA: CommandSet, setB: CommandSet): CommandSet {
-//         let resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-//         let resultSignatures: Array<SignatureInformation> = new Array()
+export namespace CommandSet {
+    /**
+     * Concatenate setB onto setA.
+     */
+    export function concat(setA: CommandSet, setB: CommandSet): CommandSet {
+        let resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+        let resultSignatures: Array<SignatureInformation> = new Array()
 
-//         let resultCompletions: Array<CompletionItem> = setA.completions
+        let resultCompletions: Array<CompletionItem> = setA.completions
 
-//         if (setA.completionDocs !== undefined) {
-//             resultCompletionDocs = setA.completionDocs
+        // merge completions documentation
+        if (setA.completionDocs !== undefined) {
+            resultCompletionDocs = setA.completionDocs
 
-//             if (setB.completionDocs !== undefined) {
-//                 setB.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-//                     resultCompletionDocs.set(key, value)
-//                 })
-//             }
-//         }
-//         else if (setB.completionDocs !== undefined) {
-//             resultCompletionDocs = setB.completionDocs
-//         }
+            if (setB.completionDocs !== undefined) {
+                setB.completionDocs.forEach((value: CommandDocumentation, key: string) => {
+                    resultCompletionDocs.set(key, value)
+                })
+            }
+        }
+        else if (setB.completionDocs !== undefined) {
+            resultCompletionDocs = setB.completionDocs
+        }
 
-//         if (setA.signatures !== undefined) {
-//             resultSignatures = resultSignatures.concat(setA.signatures)
+        // merge signatures
+        if (setA.signatures !== undefined) {
+            resultSignatures = resultSignatures.concat(setA.signatures)
 
-//             if (setB.signatures !== undefined) {
-//                 resultSignatures = resultSignatures.concat(setB.signatures)
-//             }
-//         }
-//         else if (setB.signatures !== undefined) {
-//             resultSignatures = resultSignatures.concat(setB.signatures)
-//         }
+            if (setB.signatures !== undefined) {
+                resultSignatures = resultSignatures.concat(setB.signatures)
+            }
+        }
+        else if (setB.signatures !== undefined) {
+            resultSignatures = resultSignatures.concat(setB.signatures)
+        }
 
-//         resultCompletions = resultCompletions.concat(setB.completions)
+        // merge completion items
+        resultCompletions = resultCompletions.concat(setB.completions)
 
-//         return {
-//             completionDocs: (resultCompletionDocs.size > 0) ? resultCompletionDocs : undefined,
-//             completions: resultCompletions,
-//             signatures: (resultSignatures.length > 0) ? resultSignatures : undefined
-//         }
-//     }
-// }
+        return {
+            completionDocs: (resultCompletionDocs.size > 0) ? resultCompletionDocs : undefined,
+            completions: resultCompletions,
+            signatures: (resultSignatures.length > 0) ? resultSignatures : undefined
+        }
+    }
+}
 
 export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
@@ -105,78 +108,25 @@ export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: Instrum
         reject: (reason?: Error) => void
     ): void => {
         try {
-            const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-            const resultCompletions: Array<CompletionItem> = Array()
-            const resultSignatures: Array<SignatureInformation> = new Array()
+            let result: CommandSet | undefined
 
+            // let func: GetCommandSet | undefined
             apiSpecs.forEach((api: ApiSpec) => {
-                // let cmdSet: CommandSet | undefined
-                require(labelToModuleName(api.label))(api, spec)
-                    .then((promiseValue: CommandSet): void => {
-                        // extract completions documentation
-                        if (promiseValue.completionDocs !== undefined) {
-                            promiseValue.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-                                resultCompletionDocs.set(key, value)
-                            })
-                        }
+                const getter: GetCommandSet = require(labelToModuleName(api.label)).getCommandSet
+                const cmdSet: CommandSet = getter(api, spec)
 
-                        // extract completion items
-                        promiseValue.completions.forEach((value: CompletionItem) => {
-                            resultCompletions.push(value)
-                        })
-
-                        // extract signatures
-                        if (promiseValue.signatures !== undefined) {
-                            promiseValue.signatures.forEach((value: SignatureInformation) => {
-                                resultSignatures.push(value)
-                            })
-                        }
-                    })
-
-                // if (cmdSet === undefined) {
-                //     throw new Error('Unable to resolve command-set for ' + api.label)
-                // }
-
-                // result = CommandSet.concat(result, cmdSet)
+                result = (result === undefined) ? cmdSet : CommandSet.concat(result, cmdSet)
 
                 // any enums must be loaded speparately due to the command storage scheme
                 if (api.enums !== undefined) {
-                    // let enumSet: CommandSet | undefined
-                    require(labelToModuleName(api.label))(api, spec)
-                        .then((promiseValue: CommandSet): void => {
-                            // extract completions documentation
-                            if (promiseValue.completionDocs !== undefined) {
-                                promiseValue.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-                                    resultCompletionDocs.set(key, value)
-                                })
-                            }
+                    const enumGetter: GetCommandSet = require(labelToModuleName(api.label, true)).getCommandSet
+                    const enumSet: CommandSet = enumGetter(api, spec)
 
-                            // extract completion items
-                            promiseValue.completions.forEach((value: CompletionItem) => {
-                                resultCompletions.push(value)
-                            })
-
-                            // extract signatures
-                            if (promiseValue.signatures !== undefined) {
-                                promiseValue.signatures.forEach((value: SignatureInformation) => {
-                                    resultSignatures.push(value)
-                                })
-                            }
-                        })
-
-                    // if (enumSet === undefined) {
-                    //     throw new Error('Unable to resolve enumeration-set for ' + api.label)
-                    // }
-
-                    // result = CommandSet.concat(result, enumSet)
+                    result = (result === undefined) ? enumSet : CommandSet.concat(result, enumSet)
                 }
             })
 
-            resolve({
-                completionDocs: (resultCompletionDocs.size > 0) ? resultCompletionDocs : undefined,
-                completions: resultCompletions,
-                signatures: (resultSignatures.length > 0) ? resultSignatures : undefined
-            })
+            resolve(result)
         } catch (e) {
             reject(new Error(e.toString()))
         }
