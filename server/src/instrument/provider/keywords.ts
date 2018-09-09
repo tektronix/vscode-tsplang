@@ -84,31 +84,20 @@ const keywordCompletions: Array<CompletionItem> = [
     },
 ]
 
-export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
-    return new Promise<CommandSet>((
-        resolve: (value?: CommandSet) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            const resultCompletions: Array<CompletionItem> = new Array()
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+    const resultCompletions: Array<CompletionItem> = new Array()
 
-            if (cmd.children === undefined) {
-                throw new Error('Missing required children field.')
+    if (cmd.children === undefined) {
+        throw new Error('Missing required children field.')
+    }
+
+    cmd.children.forEach((cmdItem: ApiSpec) => {
+        keywordCompletions.forEach((completion: CompletionItem) => {
+            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                resultCompletions.push(completion)
             }
-
-            cmd.children.forEach((cmdItem: ApiSpec) => {
-                keywordCompletions.forEach((completion: CompletionItem) => {
-                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                        resultCompletions.push(completion)
-                    }
-                })
-            })
-
-            resolve({
-                completions: resultCompletions
-            })
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
+        })
     })
+
+    return { completions: resultCompletions }
 }

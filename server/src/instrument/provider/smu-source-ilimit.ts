@@ -70,53 +70,28 @@ When smu.ON is returned, the instrument has clamped the source to keep it within
     },
 ]
 
-export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
-    return new Promise<CommandSet>((
-        resolve: (value?: CommandSet) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-            const resultCompletions: Array<CompletionItem> = new Array()
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+    const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+    const resultCompletions: Array<CompletionItem> = new Array()
 
-            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-            if (cmd.children !== undefined) {
-                cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
+    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+    if (cmd.children !== undefined) {
+        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
+    }
+
+    cmds.forEach((cmdItem: ApiSpec) => {
+        smuSourceIlimitDocs.forEach((value: CommandDocumentation, key: string) => {
+            if (cmdItem.label.localeCompare(key) === 0) {
+                resultCompletionDocs.set(key, value)
             }
+        })
 
-            cmds.forEach((cmdItem: ApiSpec) => {
-                smuSourceIlimitDocs.forEach((value: CommandDocumentation, key: string) => {
-                    if (cmdItem.label.localeCompare(key) === 0) {
-                        resultCompletionDocs.set(key, value)
-                    }
-                })
-
-                smuSourceIlimitCompletions.forEach((completion: CompletionItem) => {
-                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                        resultCompletions.push(completion)
-                    }
-                })
-            })
-
-            resolve({
-                completionDocs: resultCompletionDocs,
-                completions: resultCompletions
-            })
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
+        smuSourceIlimitCompletions.forEach((completion: CompletionItem) => {
+            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                resultCompletions.push(completion)
+            }
+        })
     })
-}
 
-// export async function getSmuSourceIlimitCompletions(): Promise<Array<CompletionItem>> {
-//     return new Promise<Array<CompletionItem>>((
-//         resolve: (value?: Array<CompletionItem>) => void,
-//         reject: (reason?: Error) => void
-//     ): void => {
-//         try {
-//             resolve(smuSourceIlimitCompletions)
-//         } catch (e) {
-//             reject(new Error(e.toString()))
-//         }
-//     })
-// }
+    return { completionDocs: resultCompletionDocs, completions: resultCompletions }
+}

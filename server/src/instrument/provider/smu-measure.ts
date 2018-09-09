@@ -372,93 +372,45 @@ user‑defined buffer; defaults to defbuffer1 if not specified.'
     ),
 ]
 
-export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
-    return new Promise<CommandSet>((
-        resolve: (value?: CommandSet) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-            const resultCompletions: Array<CompletionItem> = new Array()
-            const resultSignatures: Array<SignatureInformation> = new Array()
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+    const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+    const resultCompletions: Array<CompletionItem> = new Array()
+    const resultSignatures: Array<SignatureInformation> = new Array()
 
-            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-            if (cmd.children !== undefined) {
-                cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
+    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+    if (cmd.children !== undefined) {
+        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
+    }
+
+    cmds.forEach((cmdItem: ApiSpec) => {
+        smuMeasureDocs.forEach((value: CommandDocumentation, key: string) => {
+            if (cmdItem.label.localeCompare(key) === 0) {
+                resultCompletionDocs.set(key, value)
+            }
+        })
+
+        smuMeasureCompletions.forEach((completion: CompletionItem) => {
+            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                resultCompletions.push(completion)
+            }
+        })
+
+        smuMeasureSignatures.forEach((signature: SignatureInformation) => {
+            const signaNamespace = resolveSignatureNamespace(signature)
+
+            if (signaNamespace === undefined) {
+                throw new Error('Unable to resolve signature namespace for ' + signature.label)
             }
 
-            cmds.forEach((cmdItem: ApiSpec) => {
-                smuMeasureDocs.forEach((value: CommandDocumentation, key: string) => {
-                    if (cmdItem.label.localeCompare(key) === 0) {
-                        resultCompletionDocs.set(key, value)
-                    }
-                })
-
-                smuMeasureCompletions.forEach((completion: CompletionItem) => {
-                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                        resultCompletions.push(completion)
-                    }
-                })
-
-                smuMeasureSignatures.forEach((signature: SignatureInformation) => {
-                    const signaNamespace = resolveSignatureNamespace(signature)
-
-                    if (signaNamespace === undefined) {
-                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
-                    }
-
-                    if (cmdItem.label.localeCompare(signaNamespace) === 0) {
-                        resultSignatures.push(signature)
-                    }
-                })
-            })
-
-            resolve({
-                completionDocs: resultCompletionDocs,
-                completions: resultCompletions,
-                signatures: resultSignatures
-            })
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
+            if (cmdItem.label.localeCompare(signaNamespace) === 0) {
+                resultSignatures.push(signature)
+            }
+        })
     })
+
+    return {
+        completionDocs: resultCompletionDocs,
+        completions: resultCompletions,
+        signatures: resultSignatures
+    }
 }
-
-// export async function getSmuMeasureCompletions(): Promise<Array<CompletionItem>> {
-//     return new Promise<Array<CompletionItem>>((
-//         resolve: (value?: Array<CompletionItem>) => void,
-//         reject: (reason?: Error) => void
-//     ): void => {
-//         try {
-//             resolve(smuMeasureCompletions)
-//         } catch (e) {
-//             reject(new Error(e.toString()))
-//         }
-//     })
-// }
-
-// export async function getSmuMeasureDocs(): Promise<Map<string, CommandDocumentation>> {
-//     return new Promise<Map<string, CommandDocumentation>>((
-//         resolve: (value?: Map<string, CommandDocumentation>) => void,
-//         reject: (reason?: Error) => void
-//     ): void => {
-//         try {
-//             resolve(smuMeasureDocs)
-//         } catch (e) {
-//             reject(new Error(e.toString()))
-//         }
-//     })
-// }
-
-// export async function getSmuMeasureSignatures(): Promise<Array<SignatureInformation>> {
-//     return new Promise<Array<SignatureInformation>>((
-//         resolve: (value?: Array<SignatureInformation>) => void,
-//         reject: (reason?: Error) => void
-//     ): void => {
-//         try {
-//             resolve(smuMeasureSignatures)
-//         } catch (e) {
-//             reject(new Error(e.toString()))
-//         }
-//     })
-// }

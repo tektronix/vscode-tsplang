@@ -515,116 +515,81 @@ Asymtotic value cannot be less than or equal to the sweep bounds.',
     },
 ]
 
-export async function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): Promise<CommandSet> {
-    return new Promise<CommandSet>((
-        resolve: (value?: CommandSet) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-            const resultCompletions: Array<CompletionItem> = new Array()
-            const resultSignatures: Array<SignatureInformation> = new Array()
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+    const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+    const resultCompletions: Array<CompletionItem> = new Array()
+    const resultSignatures: Array<SignatureInformation> = new Array()
 
-            const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-            if (cmd.children !== undefined) {
-                cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
+    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
+    if (cmd.children !== undefined) {
+        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
+    }
+
+    cmds.forEach((cmdItem: ApiSpec) => {
+        smuSourceDocs.forEach((value: CommandDocumentation, key: string) => {
+            if (cmdItem.label.localeCompare(key) === 0) {
+                resultCompletionDocs.set(key, value)
+            }
+        })
+
+        smuSourceCompletions.forEach((completion: CompletionItem) => {
+            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
+                resultCompletions.push(completion)
+            }
+        })
+
+        smuSourceSignatures.forEach((signature: SignatureInformation) => {
+            const signaNamespace = resolveSignatureNamespace(signature)
+
+            if (signaNamespace === undefined) {
+                throw new Error('Unable to resolve signature namespace for ' + signature.label)
             }
 
-            cmds.forEach((cmdItem: ApiSpec) => {
-                smuSourceDocs.forEach((value: CommandDocumentation, key: string) => {
-                    if (cmdItem.label.localeCompare(key) === 0) {
-                        resultCompletionDocs.set(key, value)
-                    }
-                })
+            if (cmdItem.label.localeCompare(signaNamespace) === 0) {
+                const item: SignatureInformation = signature
 
-                smuSourceCompletions.forEach((completion: CompletionItem) => {
-                    if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                        resultCompletions.push(completion)
-                    }
-                })
+                if (item.parameters !== undefined) {
+                    for (let index = 0; index < item.parameters.length; index++) {
+                        const element = item.parameters[index]
 
-                smuSourceSignatures.forEach((signature: SignatureInformation) => {
-                    const signaNamespace = resolveSignatureNamespace(signature)
+                        // if the signature has a parameter that needs to be formatted
+                        if (element.documentation !== undefined
+                            && typeof element.documentation === 'string'
+                            && element.documentation.indexOf('%{') !== -1) {
 
-                    if (signaNamespace === undefined) {
-                        throw new Error('Unable to resolve signature namespace for ' + signature.label)
-                    }
-
-                    if (cmdItem.label.localeCompare(signaNamespace) === 0) {
-                        const item: SignatureInformation = signature
-
-                        if (item.parameters !== undefined) {
-                            for (let index = 0; index < item.parameters.length; index++) {
-                                const element = item.parameters[index]
-
-                                // if the signature has a parameter that needs to be formatted
-                                if (element.documentation !== undefined
-                                    && typeof element.documentation === 'string'
-                                    && element.documentation.indexOf('%{') !== -1) {
-
-                                    switch (element.label) {
-                                        case 'start':
-                                            // fall-through
-                                        case 'stop':
-                                            if (signaNamespace.indexOf('sweeplog') === -1) {
-                                                element.documentation = element.documentation
-                                                    .replace('%{0}', spec.current.measure.level.low.toString())
-                                                    .replace('%{1}', spec.current.measure.level.high.toString())
-                                                    .replace('%{2}', spec.voltage.measure.level.low.toString())
-                                                    .replace('%{3}', spec.voltage.measure.level.high.toString())
-                                            }
-                                            else {
-                                                element.documentation = element.documentation
-                                                    .replace('%{0}', spec.smuSourceSweepLog.currentLevelLow.toString())
-                                                    .replace('%{1}', spec.current.measure.level.high.toString())
-                                                    .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
-                                                    .replace('%{3}', spec.voltage.measure.level.high.toString())
-                                            }
+                            switch (element.label) {
+                                case 'start':
+                                    // fall-through
+                                case 'stop':
+                                    if (signaNamespace.indexOf('sweeplog') === -1) {
+                                        element.documentation = element.documentation
+                                            .replace('%{0}', spec.current.measure.level.low.toString())
+                                            .replace('%{1}', spec.current.measure.level.high.toString())
+                                            .replace('%{2}', spec.voltage.measure.level.low.toString())
+                                            .replace('%{3}', spec.voltage.measure.level.high.toString())
                                     }
-
-                                    item.parameters[index] = element
-                                }
+                                    else {
+                                        element.documentation = element.documentation
+                                            .replace('%{0}', spec.smuSourceSweepLog.currentLevelLow.toString())
+                                            .replace('%{1}', spec.current.measure.level.high.toString())
+                                            .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
+                                            .replace('%{3}', spec.voltage.measure.level.high.toString())
+                                    }
                             }
+
+                            item.parameters[index] = element
                         }
-
-                        resultSignatures.push(item)
                     }
-                })
-            })
+                }
 
-            resolve({
-                completionDocs: resultCompletionDocs,
-                completions: resultCompletions,
-                signatures: resultSignatures
-            })
-        } catch (e) {
-            reject(new Error(e.toString()))
-        }
+                resultSignatures.push(item)
+            }
+        })
     })
+
+    return {
+        completionDocs: resultCompletionDocs,
+        completions: resultCompletions,
+        signatures: resultSignatures
+    }
 }
-
-// export async function getSmuSourceCompletions(): Promise<Array<CompletionItem>> {
-//     return new Promise<Array<CompletionItem>>((
-//         resolve: (value?: Array<CompletionItem>) => void,
-//         reject: (reason?: Error) => void
-//     ): void => {
-//         try {
-//             resolve(smuSourceCompletions)
-//         } catch (e) {
-//             reject(new Error(e.toString()))
-//         }
-//     })
-// }
-
-// export async function getSmuSourceSignatures(): Promise<Array<SignatureInformation>> {
-//     return new Promise<Array<SignatureInformation>>((
-//         resolve: (value?: Array<SignatureInformation>) => void,
-//         reject: (reason?: Error) => void
-//     ): void => {
-//         try {
-//             resolve(smuSourceSignatures)
-//         } catch (e) {
-//             reject(new Error(e.toString()))
-//         }
-//     })
-// }
