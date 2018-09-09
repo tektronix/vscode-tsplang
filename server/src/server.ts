@@ -171,18 +171,6 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
         }
     }
 
-    // sort on CompletionItem.kind
-    if (results.length > 0) {
-        results.sort((a: CompletionItem, b: CompletionItem): number => {
-            if (a.kind !== undefined && b.kind !== undefined) {
-                return a.kind - b.kind
-            }
-            else {
-                return a.label.localeCompare(b.label)
-            }
-        })
-    }
-
     return results
 })
 
