@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec, CommandDocumentation, CommandSetInterface, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace } from '.'
+import { CommandDocumentation, resolveCompletionNamespace } from '.'
 
 const smuSourceIlimitDocs: Map<string, CommandDocumentation> = new Map([
     [

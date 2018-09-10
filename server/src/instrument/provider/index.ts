@@ -13,9 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSet, CommandSetInterface, InstrumentSpec } from '..'
+
+export interface CommandDocumentation {
+    kind: MarkupKind
+    toString(spec: InstrumentSpec): string
+}
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes

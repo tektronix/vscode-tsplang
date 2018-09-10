@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, CommandDocumentation, CommandSetInterface, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { CommandDocumentation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 const smuSourceDocs: Map<string, CommandDocumentation> = new Map([
     [

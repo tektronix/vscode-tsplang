@@ -15,13 +15,7 @@
 */
 'use strict'
 
-import { MarkupKind } from 'vscode-languageserver'
-
-import { Model } from '../model'
-
-import { CommandSet, CommandSetInterface } from './commandSet'
-
-export { CommandSet, CommandSetInterface }
+export { CommandSet, CommandSetInterface } from './commandSet'
 
 export interface ApiSpec {
     children?: Array<ApiSpec>
@@ -185,15 +179,4 @@ export interface InstrumentSpec {
         measure: MeasureVoltageSpec;
         source: SourceVoltageSpec;
     }
-}
-
-export interface CommandDocumentation {
-    kind: MarkupKind
-    toString(spec: InstrumentSpec): string
-}
-
-export function getDocumentation(model: Model): Array<CommandDocumentation> {
-    const results: Array<CommandDocumentation> = new Array()
-
-    return results
 }

@@ -15,13 +15,14 @@
  */
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
-import { CommandDocumentation } from '.'
+import { CommandDocumentation } from './provider'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, CommandDocumentation>
     completions: Array<CompletionItem>
     signatures?: Array<SignatureInformation>
 }
+
 export class CommandSet implements CommandSetInterface {
     readonly completionDocs: Map<string, CommandDocumentation>
     readonly completions: Array<CompletionItem>
