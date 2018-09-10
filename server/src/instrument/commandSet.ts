@@ -28,6 +28,12 @@ export class CommandSet implements CommandSetInterface {
     readonly completions: Array<CompletionItem>
     readonly signatures: Array<SignatureInformation>
 
+    constructor() {
+        this.completionDocs = new Map()
+        this.completions = new Array()
+        this.signatures = new Array()
+    }
+
     add(set: CommandSetInterface): void {
         // merge completion documentation
         if (set.completionDocs !== undefined) {
