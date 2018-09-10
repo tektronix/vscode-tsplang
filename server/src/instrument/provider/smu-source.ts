@@ -630,3 +630,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
         signatures: resultSignatures
     }
 }
+*/
