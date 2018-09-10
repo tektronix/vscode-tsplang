@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace } from '.'
+import { resolveCompletionNamespace } from '.'
 
 const tsplinkLineCompletions: Array<CompletionItem> = [
     {
@@ -73,7 +73,7 @@ Get or set the state of a TSP-Link trigger line to tsplink.STATE_HIGH or STATE_L
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
     const cmds: Array<ApiSpec> = new Array({ label: cmd.label })

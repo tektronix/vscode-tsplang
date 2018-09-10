@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace } from '.'
+import { resolveCompletionNamespace } from '.'
 
 const opcCompletions: Array<CompletionItem> = [
     {
@@ -37,7 +37,7 @@ Each node independently sets its operation complete bit in its own status model.
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
     const cmds: Array<ApiSpec> = new Array({ label: cmd.label })

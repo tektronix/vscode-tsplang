@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace } from '.'
+import { resolveCompletionNamespace } from '.'
 
 const smuMeasureAutozeroCompletions: Array<CompletionItem> = [
     {
@@ -61,7 +61,7 @@ If the NPLC setting is less than 0.2 PLC, calling this function may result in a 
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
     const cmds: Array<ApiSpec> = new Array({ label: cmd.label })

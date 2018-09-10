@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 const digioCompletions: Array<CompletionItem> = [
     {
@@ -71,7 +71,7 @@ const digioSignatures: Array<SignatureInformation> = [
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
 

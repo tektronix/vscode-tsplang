@@ -17,9 +17,9 @@
 
 import { CompletionItem, SignatureInformation, TextDocumentItem } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from './instrument'
+import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
 import { getLuaApiSpec, getLuaInstrumentSpec } from './instrument/lua'
-import { CommandSet, generateCommandSet } from './instrument/provider'
+import { generateCommandSet } from './instrument/provider'
 import { Model } from './model'
 import { Shebang } from './shebang'
 import { PoolEntry, TspPool } from './tspPool'

@@ -15,9 +15,7 @@
  */
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
-
-declare type GetCommandSet = (cmd: ApiSpec, spec: InstrumentSpec) => CommandSet
+import { ApiSpec, CommandSet, CommandSetInterface, InstrumentSpec } from '..'
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes
@@ -50,79 +48,32 @@ export function resolveSignatureNamespace(item: SignatureInformation): string | 
     return item.label.slice(0, openParamIndex).replace('[]', '')
 }
 
-export interface CommandSet {
-    completionDocs?: Map<string, CommandDocumentation>
-    completions: Array<CompletionItem>
-    signatures?: Array<SignatureInformation>
-}
-export namespace CommandSet {
-    /**
-     * Concatenate setB onto setA.
-     */
-    export function concat(setA: CommandSet, setB: CommandSet): CommandSet {
-        let resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-        let resultSignatures: Array<SignatureInformation> = new Array()
-
-        let resultCompletions: Array<CompletionItem> = setA.completions
-
-        // merge completions documentation
-        if (setA.completionDocs !== undefined) {
-            resultCompletionDocs = setA.completionDocs
-
-            if (setB.completionDocs !== undefined) {
-                setB.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-                    resultCompletionDocs.set(key, value)
-                })
-            }
-        }
-        else if (setB.completionDocs !== undefined) {
-            resultCompletionDocs = setB.completionDocs
-        }
-
-        // merge signatures
-        if (setA.signatures !== undefined) {
-            resultSignatures = resultSignatures.concat(setA.signatures)
-
-            if (setB.signatures !== undefined) {
-                resultSignatures = resultSignatures.concat(setB.signatures)
-            }
-        }
-        else if (setB.signatures !== undefined) {
-            resultSignatures = resultSignatures.concat(setB.signatures)
-        }
-
-        // merge completion items
-        resultCompletions = resultCompletions.concat(setB.completions)
-
-        return {
-            completionDocs: (resultCompletionDocs.size > 0) ? resultCompletionDocs : undefined,
-            completions: resultCompletions,
-            signatures: (resultSignatures.length > 0) ? resultSignatures : undefined
-        }
-    }
-}
-
 export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void
     ): void => {
         try {
-            let result: CommandSet | undefined
+            const result: CommandSet = new CommandSet()
 
-            // let func: GetCommandSet | undefined
             apiSpecs.forEach((api: ApiSpec) => {
-                const getter: GetCommandSet = require(labelToModuleName(api.label)).getCommandSet
-                const cmdSet: CommandSet = getter(api, spec)
+                const cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
 
-                result = (result === undefined) ? cmdSet : CommandSet.concat(result, cmdSet)
+                result.add({
+                    completionDocs: cmdModule.completionDocs,
+                    completions: cmdModule.completions,
+                    signatures: cmdModule.signatures
+                })
 
                 // any enums must be loaded speparately due to the command storage scheme
                 if (api.enums !== undefined) {
-                    const enumGetter: GetCommandSet = require(labelToModuleName(api.label, true)).getCommandSet
-                    const enumSet: CommandSet = enumGetter(api, spec)
+                    const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
 
-                    result = (result === undefined) ? enumSet : CommandSet.concat(result, enumSet)
+                    result.add({
+                        completionDocs: enumModule.completionDocs,
+                        completions: enumModule.completions,
+                        signatures: enumModule.signatures
+                    })
                 }
             })
 

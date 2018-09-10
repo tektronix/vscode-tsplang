@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
+import { ApiSpec, CommandDocumentation, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 const smuSourceDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -515,7 +515,7 @@ Asymtotic value cannot be less than or equal to the sweep bounds.',
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()

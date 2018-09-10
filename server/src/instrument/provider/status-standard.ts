@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace } from '.'
+import { resolveCompletionNamespace } from '.'
 
 const statusStandardCompletions: Array<CompletionItem> = [
     {
@@ -96,7 +96,7 @@ the OPC (1) and PON (129) registers are set.'
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
     const cmds: Array<ApiSpec> = new Array({ label: cmd.label })

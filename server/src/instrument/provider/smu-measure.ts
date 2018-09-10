@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, CommandDocumentation, InstrumentSpec } from '..'
+import { ApiSpec, CommandDocumentation, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 const smuMeasureDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -376,7 +376,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()

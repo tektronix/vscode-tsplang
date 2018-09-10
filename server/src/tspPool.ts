@@ -17,13 +17,12 @@
 
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from './instrument'
+import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
 import { get2450ApiSpec, get2450InstrumentSpec } from './instrument/2450'
 // import { get2460Completions, get2460Signatures } from './instrument/2460'
 // import { get2461Completions, get2461Signatures } from './instrument/2461'
 // import { get6500Completions, get6500Signatures } from './instrument/6500'
-import { CommandSet, generateCommandSet } from './instrument/provider'
-// import { getLuaCompletions, getLuaSignatures } from './lua'
+import { generateCommandSet } from './instrument/provider'
 import { Model } from './model'
 
 export interface PoolEntry {

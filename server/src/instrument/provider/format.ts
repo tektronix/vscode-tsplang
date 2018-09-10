@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace } from '.'
+import { resolveCompletionNamespace } from '.'
 
 const formatCompletions: Array<CompletionItem> = [
     {
@@ -69,7 +69,7 @@ When in ASCII format, multiple elements are separated with a comma and space.'
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
     const cmds: Array<ApiSpec> = new Array({ label: cmd.label })

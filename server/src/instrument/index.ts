@@ -19,6 +19,10 @@ import { MarkupKind } from 'vscode-languageserver'
 
 import { Model } from '../model'
 
+import { CommandSet, CommandSetInterface } from './commandSet'
+
+export { CommandSet, CommandSetInterface }
+
 export interface ApiSpec {
     children?: Array<ApiSpec>
     enums?: Array<ApiSpec>

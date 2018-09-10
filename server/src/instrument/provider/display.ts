@@ -17,9 +17,9 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandSet, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 const displayCompletions: Array<CompletionItem> = [
     {
@@ -228,7 +228,7 @@ display.BUTTON_YES, BUTTON_NO, BUTTON_OK, or BUTTON_CANCEL.',
     },
 ]
 
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSet {
+export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
 
