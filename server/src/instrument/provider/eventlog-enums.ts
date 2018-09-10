@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const eventlogEnumCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['eventlog'],
         detail: 'eventlog.SEV_ERROR: 1',
@@ -51,7 +51,7 @@ const eventlogEnumCompletions: Array<CompletionItem> = [
         label: 'SEV_ALL'
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -70,3 +70,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

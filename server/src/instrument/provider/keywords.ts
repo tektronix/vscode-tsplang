@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const keywordCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Keyword,
         label: 'break'
@@ -83,7 +83,7 @@ const keywordCompletions: Array<CompletionItem> = [
         label: 'while'
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -101,3 +101,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

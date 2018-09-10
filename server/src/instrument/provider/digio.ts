@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const digioCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'digio'
@@ -58,9 +58,10 @@ All six lines must be configured as digital control lines or an error will be lo
     },
 ]
 
-const digioSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'digio.writeport(data)',
         parameters: [
             {
@@ -70,7 +71,7 @@ const digioSignatures: Array<SignatureInformation> = [
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -102,3 +103,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

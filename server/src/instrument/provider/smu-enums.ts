@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const smuEnumCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['smu'],
         kind: CompletionItemKind.EnumMember,
@@ -330,7 +330,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
         label: 'UNIT_WATT'
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -349,3 +349,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

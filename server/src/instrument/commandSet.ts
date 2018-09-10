@@ -15,12 +15,12 @@
  */
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
-import { CommandDocumentation } from './provider'
+import { CommandDocumentation, FormattableSignatureInformation } from './provider'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, CommandDocumentation>
     completions: Array<CompletionItem>
-    signatures?: Array<SignatureInformation>
+    signatures?: Array<SignatureInformation | FormattableSignatureInformation>
 }
 
 export class CommandSet implements CommandSetInterface {

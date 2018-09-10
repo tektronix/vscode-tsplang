@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const formatEnumCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['format'],
         kind: CompletionItemKind.EnumMember,
@@ -52,7 +52,7 @@ const formatEnumCompletions: Array<CompletionItem> = [
         label: 'REAL64'
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -71,3 +71,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

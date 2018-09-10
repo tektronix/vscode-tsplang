@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandDocumentation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { CommandDocumentation, FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const smuMeasureDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
         'smu.measure.autorangehigh',
         {
@@ -125,7 +125,7 @@ This attribute is saved with the active function and retained until the next ins
     ],
 ])
 
-const smuMeasureCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['smu'],
         kind: CompletionItemKind.Module,
@@ -347,9 +347,10 @@ This attribute is saved with the active function and retained until the next ins
     },
 ]
 
-const smuMeasureSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.measure.read([bufferName])',
         parameters: [
             {
@@ -365,6 +366,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.measure.readwithtime([bufferName])',
         parameters: [
             {
@@ -375,7 +377,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()
@@ -418,3 +420,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
         signatures: resultSignatures
     }
 }
+*/

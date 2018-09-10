@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { CommandDocumentation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { CommandDocumentation, FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const smuSourceDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
         'smu.source.level',
         {
@@ -81,7 +81,7 @@ This attribute is saved with the active function and retained until the next ins
     ],
 ])
 
-const smuSourceCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['smu'],
         kind: CompletionItemKind.Module,
@@ -300,27 +300,39 @@ This attribute is saved with the active function and retained until the next ins
     },
 ]
 
-const smuSourceSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            return [
+                {
+                    documentation: 'The source level at which to start sweeping as a number.\n\
+Current range: %{0} to %{1}\n\
+Voltage range: %{2} to %{3}'
+                        .replace('%{0}', spec.current.measure.level.low.toString())
+                        .replace('%{1}', spec.current.measure.level.high.toString())
+                        .replace('%{2}', spec.voltage.measure.level.low.toString())
+                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    label: 'start'
+                },
+                {
+                    documentation: 'The source level at which to stop sweeping as a number.\n\
+Current range: %{0} to %{1}\n\
+Voltage range: %{2} to %{3}'
+                        .replace('%{0}', spec.current.measure.level.low.toString())
+                        .replace('%{1}', spec.current.measure.level.high.toString())
+                        .replace('%{2}', spec.voltage.measure.level.low.toString())
+                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    label: 'stop'
+                },
+            ]
+        },
         label: 'smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
 [, dual][, bufferName])',
         parameters: [
             {
                 documentation: 'The name of the source configuration list to create as a string.',
                 label: 'configListName'
-            },
-            {
-                documentation: 'The source level at which to start sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}',
-                label: 'start'
-            },
-            {
-                documentation: 'The source level at which to stop sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}',
-                label: 'stop'
             },
             {
                 documentation: 'The number of source-measure points between the start and stop values of the sweep as \
@@ -360,24 +372,36 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            return [
+                {
+                    documentation: 'The source level at which to start sweeping as a number.\n\
+Current range: %{0} to %{1}\n\
+Voltage range: %{2} to %{3}'
+                        .replace('%{0}', spec.current.measure.level.low.toString())
+                        .replace('%{1}', spec.current.measure.level.high.toString())
+                        .replace('%{2}', spec.voltage.measure.level.low.toString())
+                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    label: 'start'
+                },
+                {
+                    documentation: 'The source level at which to stop sweeping as a number.\n\
+Current range: %{0} to %{1}\n\
+Voltage range: %{2} to %{3}'
+                        .replace('%{0}', spec.current.measure.level.low.toString())
+                        .replace('%{1}', spec.current.measure.level.high.toString())
+                        .replace('%{2}', spec.voltage.measure.level.low.toString())
+                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    label: 'stop'
+                },
+            ]
+        },
         label: 'smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType]\
 [, failAbort][, dual][, bufferName])',
         parameters: [
             {
                 documentation: 'The name of the source configuration list to create as a string.',
                 label: 'configListName'
-            },
-            {
-                documentation: 'The source level at which to start sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}',
-                label: 'start'
-            },
-            {
-                documentation: 'The source level at which to stop sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}',
-                label: 'stop'
             },
             {
                 documentation: 'The magnitude by which the output level will change for each step as a number greater \
@@ -417,6 +441,7 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])',
         parameters: [
             {
@@ -452,24 +477,36 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            return [
+                {
+                    documentation: 'The source level at which to start sweeping as a number.\n\
+Current range: %{0} to %{1}\n\
+Voltage range: %{2} to %{3}'
+                        .replace('%{0}', spec.smuSourceSweepLog.currentLevelLow.toString())
+                        .replace('%{1}', spec.current.measure.level.high.toString())
+                        .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
+                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    label: 'start'
+                },
+                {
+                    documentation: 'The source level at which to stop sweeping as a number.\n\
+Current range: %{0} to %{1}\n\
+Voltage range: %{2} to %{3}'
+                        .replace('%{0}', spec.smuSourceSweepLog.currentLevelLow.toString())
+                        .replace('%{1}', spec.current.measure.level.high.toString())
+                        .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
+                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    label: 'stop'
+                },
+            ]
+        },
         label: 'smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
 [, dual][, bufferName][, asymptote])',
         parameters: [
             {
                 documentation: 'The name of the source configuration list to create as a string.',
                 label: 'configListName'
-            },
-            {
-                documentation: 'The source level at which to start sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}',
-                label: 'start'
-            },
-            {
-                documentation: 'The source level at which to stop sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}',
-                label: 'stop'
             },
             {
                 documentation: 'The number of source-measure points between the start and stop values of the sweep as \
@@ -514,7 +551,7 @@ Asymtotic value cannot be less than or equal to the sweep bounds.',
         ]
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()

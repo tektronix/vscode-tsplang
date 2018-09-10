@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const tableCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'table'
@@ -80,9 +80,10 @@ Function f must accept two arguments and return true when the first is less than
     },
 ]
 
-const tableSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'table.concat(t[, sep[, start[, end]]])',
         parameters: [
             {
@@ -105,6 +106,7 @@ const tableSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: 'Insert an element into the last position of the table.',
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'table.insert(t, v)',
         parameters: [
             {
@@ -119,6 +121,7 @@ const tableSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: 'Insert an element into the specified table index.',
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'table.insert(t, index, v)',
         parameters: [
             {
@@ -137,6 +140,7 @@ const tableSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'table.remove(t[, index])',
         parameters: [
             {
@@ -151,6 +155,7 @@ const tableSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'table.sort(t[, f])',
         parameters: [
             {
@@ -165,7 +170,7 @@ first is less than the second. Defaults to using the less than operator (<).',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -199,3 +204,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

@@ -15,15 +15,15 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
-const bufferWriteCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['buffer'],
         kind: CompletionItemKind.Module,
@@ -64,9 +64,10 @@ you entered.'
     },
 ]
 
-const bufferWriteSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.write.format(bufferVar, units, displayDigits[, extraUnits][, extraDigits])',
         parameters: [
             {
@@ -95,6 +96,7 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
         parameters: [
             {
@@ -122,6 +124,7 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',
         parameters: [
             {
@@ -153,7 +156,7 @@ WRITABLE_FULL).',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -185,3 +188,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

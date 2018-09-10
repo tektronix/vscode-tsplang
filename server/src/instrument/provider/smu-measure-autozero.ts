@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const smuMeasureAutozeroCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['measure', 'smu'],
         kind: CompletionItemKind.Module,
@@ -60,7 +60,7 @@ If the NPLC setting is less than 0.2 PLC, calling this function may result in a 
         label: 'once',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -79,3 +79,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

@@ -17,10 +17,13 @@
 
 export { CommandSet, CommandSetInterface } from './commandSet'
 
-export interface ApiSpec {
-    children?: Array<ApiSpec>
-    enums?: Array<ApiSpec>
+export interface BaseApiSpec {
     label: string
+}
+
+export interface ApiSpec extends BaseApiSpec {
+    children?: Array<BaseApiSpec>
+    enums?: Array<BaseApiSpec>
 }
 
 export interface BeeperSpec {

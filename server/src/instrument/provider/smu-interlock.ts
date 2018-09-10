@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { CommandDocumentation, resolveCompletionNamespace } from '.'
 
-const smuInterlockDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
         'smu.interlock.tripped',
         {
@@ -41,7 +41,7 @@ than ±%{2}V will generate an error message; otherwise all voltage ranges are av
     ],
 ])
 
-const smuInterlockCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['smu'],
         kind: CompletionItemKind.Module,
@@ -53,7 +53,7 @@ const smuInterlockCompletions: Array<CompletionItem> = [
         label: 'tripped',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()
@@ -79,3 +79,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completionDocs: resultCompletionDocs, completions: resultCompletions }
 }
+*/

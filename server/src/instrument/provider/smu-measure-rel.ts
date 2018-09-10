@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { CommandDocumentation, resolveCompletionNamespace } from '.'
 
-const smuMeasureRelDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
         'smu.measure.rel.level',
         {
@@ -50,7 +50,7 @@ This attribute is saved with the active function and retained until the next ins
     ],
 ])
 
-const smuMeasureRelCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['measure', 'smu'],
         kind: CompletionItemKind.Module,
@@ -95,7 +95,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'level',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()
@@ -121,3 +121,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completionDocs: resultCompletionDocs, completions: resultCompletions }
 }
+*/

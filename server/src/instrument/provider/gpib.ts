@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const gpibCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'gpib'
@@ -49,7 +49,7 @@ The reset() function does not affect a GPIB address set remotely.'
         label: 'address',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -68,3 +68,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

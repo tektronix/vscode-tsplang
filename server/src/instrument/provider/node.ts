@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const nodeCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         documentation: {
             kind: MarkupKind.PlainText,
@@ -70,9 +70,10 @@ Set the value of a global variable on a subordinate node from the TSP-Link maste
     },
 ]
 
-const nodeSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'node[].execute(scriptCode)',
         parameters: [
             {
@@ -83,6 +84,7 @@ const nodeSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'node[].getglobal(name)',
         parameters: [
             {
@@ -93,6 +95,7 @@ const nodeSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'node[].setglobal(name, value)',
         parameters: [
             {
@@ -106,7 +109,7 @@ const nodeSignatures: Array<SignatureInformation> = [
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -138,3 +141,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

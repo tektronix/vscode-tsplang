@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const statusQuestionableCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['status'],
         kind: CompletionItemKind.Module,
@@ -104,9 +104,10 @@ Register is set to 0 upon detection.'
     },
 ]
 
-const statusQuestionableSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'status.questionable.getmap(bitNumber)',
         parameters: [
             {
@@ -117,6 +118,7 @@ const statusQuestionableSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'status.questionable.setmap(bitNumber, setEvent[, clearEvent])',
         parameters: [
             {
@@ -136,7 +138,7 @@ mapping is set.',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -168,3 +170,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

@@ -13,13 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CompletionItem, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-import { ApiSpec, CommandSet, CommandSetInterface, InstrumentSpec } from '..'
+import { ApiSpec, BaseApiSpec, CommandSet, CommandSetInterface, InstrumentSpec } from '..'
 
 export interface CommandDocumentation {
     kind: MarkupKind
     toString(spec: InstrumentSpec): string
+}
+
+export interface FormattableSignatureInformation extends SignatureInformation {
+    getFormattedParameters(spec: InstrumentSpec): Array<ParameterInformation>
 }
 
 /**
@@ -53,6 +57,66 @@ export function resolveSignatureNamespace(item: SignatureInformation): string | 
     return item.label.slice(0, openParamIndex).replace('[]', '')
 }
 
+function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: CommandSetInterface): CommandSetInterface {
+    const cmds: Array<ApiSpec> = new Array()
+
+    if (cmd.children !== undefined) {
+        if (! isEnum
+            || cmd.label.localeCompare('keywords') === 0
+            || cmd.label.localeCompare('functions') === 0) {
+            cmds.push({ label: cmd.label })
+        }
+
+        cmd.children.forEach((child: BaseApiSpec) => { cmds.push(child) })
+    }
+
+    // filter completion documentation
+    const resultCompletionDocs: Map<string, CommandDocumentation> = (set.completionDocs === undefined) ?
+        new Map() :
+        new Map([...set.completionDocs].filter(
+            ([key, value]: [string, CommandDocumentation]) => {
+                return cmd.label.localeCompare(key) === 0
+            }))
+
+    // filter completion items
+    const resultCompletions: Array<CompletionItem> = set.completions.filter(
+        (value: CompletionItem) => {
+            return cmd.label.localeCompare(resolveCompletionNamespace(value)) === 0
+        })
+
+    // filter signatures
+    const unformattedSignatures: Array<FormattableSignatureInformation> = (set.signatures === undefined) ?
+        new Array() :
+        set.signatures.filter(
+            (value: FormattableSignatureInformation) => {
+                const signaNamespace = resolveSignatureNamespace(value)
+
+                if (signaNamespace === undefined) {
+                    throw new Error('Unable to resolve signature namespace for ' + cmd.label)
+                }
+
+                return cmd.label.localeCompare(signaNamespace) === 0
+            })
+
+    // format signatures
+    const resultSignatures: Array<SignatureInformation> = new Array()
+    unformattedSignatures.forEach((value: FormattableSignatureInformation) => {
+        resultSignatures.push({
+            documentation: value.documentation,
+            label: value.label,
+            parameters: (value.parameters === undefined) ?
+                value.getFormattedParameters(spec) :
+                value.parameters.concat(value.getFormattedParameters(spec))
+        })
+    })
+
+    return {
+        completionDocs: (resultCompletionDocs.size === 0) ? undefined : resultCompletionDocs,
+        completions: resultCompletions,
+        signatures: (resultSignatures.length === 0) ? undefined : resultSignatures
+    }
+}
+
 export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
@@ -64,21 +128,21 @@ export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: Instrum
             apiSpecs.forEach((api: ApiSpec) => {
                 const cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
 
-                result.add({
+                result.add(filter(api, spec, false, {
                     completionDocs: cmdModule.completionDocs,
                     completions: cmdModule.completions,
                     signatures: cmdModule.signatures
-                })
+                }))
 
                 // any enums must be loaded speparately due to the command storage scheme
                 if (api.enums !== undefined) {
                     const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
 
-                    result.add({
+                    result.add(filter(api, spec, true, {
                         completionDocs: enumModule.completionDocs,
                         completions: enumModule.completions,
                         signatures: enumModule.signatures
-                    })
+                    }))
                 }
             })
 

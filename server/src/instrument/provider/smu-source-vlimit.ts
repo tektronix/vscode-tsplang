@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { CommandDocumentation, resolveCompletionNamespace } from '.'
 
-const smuSourceVlimitDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
         'smu.source.ilimit.level',
         {
@@ -49,7 +49,7 @@ Values that can be set for this attribute are limited by the overvoltage protect
     ],
 ])
 
-const smuSourceVlimitCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['source', 'smu'],
         kind: CompletionItemKind.Module,
@@ -75,7 +75,7 @@ When smu.ON is returned, the instrument has clamped the source to keep it within
         label: 'tripped',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     const resultCompletions: Array<CompletionItem> = new Array()
@@ -101,3 +101,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completionDocs: resultCompletionDocs, completions: resultCompletions }
 }
+*/

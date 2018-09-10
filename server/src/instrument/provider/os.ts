@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const osCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'os'
@@ -97,9 +97,10 @@ for a more accurate conversion.'
     },
 ]
 
-const osSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'os.date([format[, time]])',
         parameters: [
             {
@@ -115,6 +116,7 @@ All other format specifiers follow the convention set by the C-language strftime
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'os.difftime(t1, t2)',
         parameters: [
             {
@@ -127,6 +129,7 @@ All other format specifiers follow the convention set by the C-language strftime
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'os.rename(source, destination)',
         parameters: [
             {
@@ -141,6 +144,7 @@ All other format specifiers follow the convention set by the C-language strftime
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'os.time(t)',
         parameters: [
             {
@@ -151,7 +155,7 @@ isdst fields are used if available.',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -185,3 +189,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

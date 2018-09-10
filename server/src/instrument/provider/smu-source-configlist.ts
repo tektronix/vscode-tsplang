@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const smuSourceConfiglistCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['source', 'smu'],
         kind: CompletionItemKind.Module,
@@ -133,9 +133,10 @@ between power cycles.'
     },
 ]
 
-const smuSourceConfiglistSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.configlist.create(listName)',
         parameters: [
             {
@@ -146,6 +147,7 @@ const smuSourceConfiglistSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.configlist.delete(listName[, index])',
         parameters: [
             {
@@ -161,6 +163,7 @@ Deletes the entire configuration list by default.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.configlist.query(listName, index[, fieldSeparator])',
         parameters: [
             {
@@ -180,6 +183,7 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.configlist.recall(listName[, index])',
         parameters: [
             {
@@ -195,6 +199,7 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.configlist.size(listName)',
         parameters: [
             {
@@ -205,6 +210,7 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'smu.source.configlist.store(listName)',
         parameters: [
             {
@@ -214,7 +220,7 @@ Defaults to the first configuration index.',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -246,3 +252,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

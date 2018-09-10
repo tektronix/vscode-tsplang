@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const functionCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         documentation: {
             kind: MarkupKind.Markdown,
@@ -350,9 +350,10 @@ otherwise the following values are those returned by function f.'
     },
 ]
 
-const functionSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'assert(condition[, message])',
         parameters: [
             {
@@ -367,6 +368,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'collectgarbage([limit])',
         parameters: [
             {
@@ -377,6 +379,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'dofile(filename)',
         parameters: [
             {
@@ -387,6 +390,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'error(message[, level])',
         parameters: [
             {
@@ -401,6 +405,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'getfenv([f])',
         parameters: [
             {
@@ -412,6 +417,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'getmetatable(object)',
         parameters: [
             {
@@ -422,6 +428,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'ipairs(t)',
         parameters: [
             {
@@ -432,6 +439,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'loadfile(filename)',
         parameters: [
             {
@@ -442,6 +450,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'loadstring(chunkString[, chunkName])',
         parameters: [
             {
@@ -456,6 +465,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'next(t[, i])',
         parameters: [
             {
@@ -470,6 +480,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'pairs(t)',
         parameters: [
             {
@@ -480,6 +491,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'pcall(f[, ...])',
         parameters: [
             {
@@ -494,6 +506,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'print(...)',
         parameters: [
             {
@@ -504,6 +517,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'rawequal(x, y)',
         parameters: [
             {
@@ -518,6 +532,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'rawget(t, i)',
         parameters: [
             {
@@ -532,6 +547,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'rawset(t, i, v)',
         parameters: [
             {
@@ -550,6 +566,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'require(packagename)',
         parameters: [
             {
@@ -560,6 +577,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'setfenv(f, t)',
         parameters: [
             {
@@ -574,6 +592,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'setmetatable(t, m)',
         parameters: [
             {
@@ -588,6 +607,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'tonumber(v[, base])',
         parameters: [
             {
@@ -602,6 +622,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'tostring(v)',
         parameters: [
             {
@@ -612,6 +633,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'type(v)',
         parameters: [
             {
@@ -622,6 +644,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'unpack(list)',
         parameters: [
             {
@@ -632,6 +655,7 @@ const functionSignatures: Array<SignatureInformation> = [
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'xpcall(f, errHandler)',
         parameters: [
             {
@@ -645,7 +669,7 @@ const functionSignatures: Array<SignatureInformation> = [
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -676,3 +700,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

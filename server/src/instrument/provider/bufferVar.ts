@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const bufferVarCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     // No bufferVar namespace
     {
         data: ['bufferVar'],
@@ -292,7 +292,7 @@ Returns, as an array, a string indicating the unit of measure for each reading i
         label: 'units',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -311,3 +311,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

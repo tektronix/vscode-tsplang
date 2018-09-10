@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const beeperCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'beeper'
@@ -42,23 +42,29 @@ the front panel.'
     },
 ]
 
-const beeperSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            return [
+                {
+                    documentation: 'The amount of time to play the tone (%{0} to %{1} seconds).'
+                        .replace('%{0}', spec.beeper.minSeconds.toString())
+                        .replace('%{1}', spec.beeper.maxSeconds.toString()),
+                    label: 'duration'
+                },
+                {
+                    documentation: 'The frequency of the beep (%{0} to %{1} Hz).'
+                        .replace('%{0}', spec.beeper.minHertz.toString())
+                        .replace('%{1}', spec.beeper.maxHertz.toString()),
+                    label: 'frequency'
+                },
+            ]
+        },
         label: 'beeper.beep(duration, frequency)',
-        parameters: [
-            {
-                documentation: 'The amount of time to play the tone (%{0} to %{1}s).',
-                label: 'duration'
-            },
-            {
-                documentation: 'The frequency of the beep (%{0} to %{1} Hz).',
-                label: 'frequency'
-            }
-        ]
-    }
+    },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -75,7 +81,7 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
             }
         })
 
-        beeperSignatures.forEach((signature: SignatureInformation) => {
+        beeperSignatures.forEach((signature: FormattableSignatureInformation) => {
             const signaNamespace = resolveSignatureNamespace(signature)
 
             if (signaNamespace === undefined) {
@@ -83,39 +89,17 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
             }
 
             if (cmdItem.label.localeCompare(signaNamespace) === 0) {
-                const item: SignatureInformation = signature
-
-                if (item.parameters !== undefined) {
-                    for (let index = 0; index < item.parameters.length; index++) {
-                        const element = item.parameters[index]
-
-                        // if the signature has a parameter that needs to be formatted
-                        if (element.documentation !== undefined
-                            && typeof element.documentation === 'string'
-                            && element.documentation.indexOf('%{') !== -1) {
-
-                            switch (element.label) {
-                                case 'duration':
-                                    element.documentation = element.documentation
-                                        .replace('%{0}', spec.beeper.minSeconds.toString())
-                                        .replace('%{1}', spec.beeper.maxSeconds.toString())
-                                    break
-
-                                case 'frequency':
-                                    element.documentation = element.documentation
-                                        .replace('%{0}', spec.beeper.minHertz.toString())
-                                        .replace('%{1}', spec.beeper.maxHertz.toString())
-                            }
-
-                            item.parameters[index] = element
-                        }
-                    }
-                }
-
-                resultSignatures.push(item)
+                resultSignatures.push({
+                    documentation: signature.documentation,
+                    label: signature.label,
+                    parameters: (signature.parameters === undefined) ?
+                        signature.getFormattedParameters(spec) :
+                        signature.parameters.concat(signature.getFormattedParameters(spec))
+                })
             }
         })
     })
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

@@ -16,6 +16,7 @@
 'use strict'
 
 import { ApiSpec, InstrumentSpec } from '..'
+import { CommandDocumentation } from '../provider';
 
 const coroutine: ApiSpec = {
     children: [

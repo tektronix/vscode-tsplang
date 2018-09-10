@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const bufferCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'buffer'
@@ -133,9 +133,10 @@ The index column entry in the .csv file starts at 1 for each append operation.'
     },
 ]
 
-const bufferSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.clearstats([bufferVar])',
         parameters: [
             {
@@ -147,6 +148,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.delete(bufferName)',
         parameters: [
             {
@@ -157,6 +159,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.getstats([bufferVar])',
         parameters: [
             {
@@ -168,6 +171,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.make(bufferSize[, style])',
         parameters: [
             {
@@ -185,6 +189,7 @@ WRITABLE buffers are used to import external data and cannot be used to collect 
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.save(bufferVar, fileName[, timeFormat][, start, end])',
         parameters: [
             {
@@ -214,6 +219,7 @@ flash drive; given as some buffer.SAVE_*.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'buffer.saveappend(bufferVar, fileName[, timeFormat][, start, end])',
         parameters: [
             {
@@ -242,7 +248,7 @@ flash drive; given as some buffer.SAVE_*.',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -274,3 +280,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

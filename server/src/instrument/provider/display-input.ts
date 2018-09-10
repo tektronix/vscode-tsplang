@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
-import { resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
-const displayInputCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: ['display'],
         kind: CompletionItemKind.Module,
@@ -100,9 +100,10 @@ The prompt is displayed until it has been responded to.'
     },
 ]
 
-const displayInputSignatures: Array<SignatureInformation> = [
+export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',
         parameters: [
             {
@@ -134,6 +135,7 @@ display.NFORMAT_PREFIX',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'display.input.option(dialogTitle, buttonTitle1, buttonTitle2[, buttonTitle3][, buttonTitle4][, \
 buttonTitle5][, buttonTitle6][, buttonTitle7][, buttonTitle8][, buttonTitle9][, buttonTitle10])',
         parameters: [
@@ -190,6 +192,7 @@ front-panel display; can be up to 32 characters.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'display.input.prompt(buttonSet[, dialogTitle])',
         parameters: [
             {
@@ -210,6 +213,7 @@ front-panel display; can be up to 127 characters.',
     },
     {
         documentation: undefined,
+        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
         label: 'display.input.string(dialogTitle[, textFormat])',
         parameters: [
             {
@@ -228,7 +232,7 @@ display.SFORMAT_BUFFER_NAME',
         ],
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
     const resultSignatures: Array<SignatureInformation> = new Array()
@@ -260,3 +264,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions, signatures: resultSignatures }
 }
+*/

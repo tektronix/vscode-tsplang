@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const exitCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         detail: 'This function stops a script that is presently running.',
         documentation: {
@@ -37,7 +37,7 @@ If overlapped commands are required to finish, call waitcomplete() before callin
         label: 'exit',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -56,3 +56,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/

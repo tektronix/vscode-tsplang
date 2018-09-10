@@ -21,7 +21,7 @@ import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 
-const opcCompletions: Array<CompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         documentation: {
             kind: MarkupKind.Markdown,
@@ -36,7 +36,7 @@ Each node independently sets its operation complete bit in its own status model.
         label: 'opc',
     },
 ]
-
+/*
 export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
     const resultCompletions: Array<CompletionItem> = new Array()
 
@@ -55,3 +55,4 @@ export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInt
 
     return { completions: resultCompletions }
 }
+*/
