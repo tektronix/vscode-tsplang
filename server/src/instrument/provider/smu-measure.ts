@@ -19,7 +19,7 @@ import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } 
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation, FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { CommandDocumentation, FormattableSignatureInformation } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [

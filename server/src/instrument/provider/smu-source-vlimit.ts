@@ -19,7 +19,7 @@ import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languages
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation, resolveCompletionNamespace } from '.'
+import { CommandDocumentation } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [

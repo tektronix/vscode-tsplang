@@ -17,10 +17,6 @@
 
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { resolveCompletionNamespace } from '.'
-
 export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Keyword,

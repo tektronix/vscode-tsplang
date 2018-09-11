@@ -19,7 +19,7 @@ import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } 
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation } from '.'
 
 export const completions: Array<CompletionItem> = [
     {

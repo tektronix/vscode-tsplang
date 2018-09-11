@@ -17,10 +17,6 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { resolveCompletionNamespace } from '.'
-
 export const completions: Array<CompletionItem> = [
     {
         detail: 'This function stops a script that is presently running.',

@@ -19,7 +19,7 @@ import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } 
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
+import { FormattableSignatureInformation } from '.'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
