@@ -60,15 +60,22 @@ export function resolveSignatureNamespace(item: SignatureInformation): string | 
 function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: CommandSetInterface): CommandSetInterface {
     const cmds: Array<ApiSpec> = new Array()
 
-    if (cmd.children !== undefined) {
-        if (! isEnum
-            || cmd.label.localeCompare('keywords') !== 0
-            || cmd.label.localeCompare('functions') !== 0) {
-            // add the root namespace to the list of cmds we want
-            cmds.push({ label: cmd.label })
-        }
+    if (! isEnum
+        && cmd.label.localeCompare('keywords') !== 0
+        && cmd.label.localeCompare('functions') !== 0) {
+        // add the root namespace to the list of cmds we want
+        cmds.push({ label: cmd.label })
+    }
 
-        cmd.children.forEach((child: BaseApiSpec) => { cmds.push(child) })
+    if (! isEnum) {
+        if (cmd.children !== undefined) {
+            cmd.children.forEach((child: BaseApiSpec) => { cmds.push(child) })
+        }
+    }
+    else {
+        if (cmd.enums !== undefined) {
+            cmd.enums.forEach((enumItem: BaseApiSpec) => { cmds.push(enumItem) })
+        }
     }
 
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
