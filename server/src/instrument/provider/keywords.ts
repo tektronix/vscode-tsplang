@@ -83,22 +83,3 @@ export const completions: Array<CompletionItem> = [
         label: 'while'
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    if (cmd.children === undefined) {
-        throw new Error('Missing required children field.')
-    }
-
-    cmd.children.forEach((cmdItem: ApiSpec) => {
-        keywordCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completions: resultCompletions }
-}
-*/

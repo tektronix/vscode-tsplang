@@ -49,23 +49,3 @@ The reset() function does not affect a GPIB address set remotely.'
         label: 'address',
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-    if (cmd.children !== undefined) {
-        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        gpibCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completions: resultCompletions }
-}
-*/

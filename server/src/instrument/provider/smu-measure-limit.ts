@@ -108,23 +108,3 @@ cleared after being accessed. This attribute is always cleared when changing mea
         label: 'fail',
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-    if (cmd.children !== undefined) {
-        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        smuMeasureLimitCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completions: resultCompletions }
-}
-*/

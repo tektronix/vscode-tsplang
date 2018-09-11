@@ -116,23 +116,3 @@ as output.'
         label: 'STATE_LOW'
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array()
-    if (cmd.enums !== undefined) {
-        cmd.enums.forEach((enumItem: ApiSpec) => { cmds.push(enumItem) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        digioEnumCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completions: resultCompletions }
-}
-*/

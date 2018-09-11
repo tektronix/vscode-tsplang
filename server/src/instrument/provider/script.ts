@@ -80,36 +80,3 @@ Scripts residing on a USB flash drive should be absolute and begin with "/usb1/"
         ],
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-    const resultSignatures: Array<SignatureInformation> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-    if (cmd.children !== undefined) {
-        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        scriptCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-
-        scriptSignatures.forEach((signature: SignatureInformation) => {
-            const signaNamespace = resolveSignatureNamespace(signature)
-
-            if (signaNamespace === undefined) {
-                throw new Error('Unable to resolve signature namespace for ' + signature.label)
-            }
-
-            if (cmdItem.label.localeCompare(signaNamespace) === 0) {
-                resultSignatures.push(signature)
-            }
-        })
-    })
-
-    return { completions: resultCompletions, signatures: resultSignatures }
-}
-*/

@@ -43,23 +43,3 @@ export const completions: Array<CompletionItem> = [
         label: 'TERM_LFCR'
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array()
-    if (cmd.enums !== undefined) {
-        cmd.enums.forEach((enumItem: ApiSpec) => { cmds.push(enumItem) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        tspnetEnumCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completions: resultCompletions }
-}
-*/

@@ -148,23 +148,3 @@ trigger.EVENT_NONE.'
         label: 'stimulus',
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-    if (cmd.children !== undefined) {
-        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        triggerLanoutCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completions: resultCompletions }
-}
-*/

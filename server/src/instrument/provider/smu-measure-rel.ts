@@ -95,30 +95,3 @@ This attribute is saved with the active function and retained until the next ins
         label: 'level',
     },
 ]
-/*
-export function getCommandSet(cmd: ApiSpec, spec: InstrumentSpec): CommandSetInterface {
-    const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-    const resultCompletions: Array<CompletionItem> = new Array()
-
-    const cmds: Array<ApiSpec> = new Array({ label: cmd.label })
-    if (cmd.children !== undefined) {
-        cmd.children.forEach((child: ApiSpec) => { cmds.push(child) })
-    }
-
-    cmds.forEach((cmdItem: ApiSpec) => {
-        smuMeasureRelDocs.forEach((value: CommandDocumentation, key: string) => {
-            if (cmdItem.label.localeCompare(key) === 0) {
-                resultCompletionDocs.set(key, value)
-            }
-        })
-
-        smuMeasureRelCompletions.forEach((completion: CompletionItem) => {
-            if (cmdItem.label.localeCompare(resolveCompletionNamespace(completion)) === 0) {
-                resultCompletions.push(completion)
-            }
-        })
-    })
-
-    return { completionDocs: resultCompletionDocs, completions: resultCompletions }
-}
-*/
