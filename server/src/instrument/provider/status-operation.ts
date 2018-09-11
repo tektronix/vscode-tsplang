@@ -105,7 +105,7 @@ set to 0 upon detection.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'status.operation.getmap(bitNumber)',
         parameters: [
             {
@@ -116,7 +116,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'status.operation.setmap(bitNumber, setEvent[, clearEvent])',
         parameters: [
             {

@@ -145,7 +145,7 @@ This command waits until a user responds to a front‑panel prompt that was crea
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.changescreen(screenName)',
         parameters: [
             {
@@ -166,7 +166,7 @@ display.SCREEN_USER_SWIPE',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.delete(promptID)',
         parameters: [
             {
@@ -177,7 +177,7 @@ display.SCREEN_USER_SWIPE',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.prompt(buttonSet, promptText)',
         parameters: [
             {
@@ -198,7 +198,7 @@ display.BUTTONS_YESNOCANCEL',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.settext(position, userDisplayText)',
         parameters: [
             {
@@ -216,7 +216,7 @@ characters are available.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.waitevent([timeout])',
         parameters: [
             {

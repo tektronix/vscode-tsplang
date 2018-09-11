@@ -441,7 +441,7 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])',
         parameters: [
             {

@@ -350,7 +350,7 @@ This attribute is saved with the active function and retained until the next ins
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.read([bufferName])',
         parameters: [
             {
@@ -366,7 +366,7 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.readwithtime([bufferName])',
         parameters: [
             {

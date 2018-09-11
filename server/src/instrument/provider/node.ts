@@ -73,7 +73,7 @@ Set the value of a global variable on a subordinate node from the TSP-Link maste
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'node[].execute(scriptCode)',
         parameters: [
             {
@@ -84,7 +84,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'node[].getglobal(name)',
         parameters: [
             {
@@ -95,7 +95,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'node[].setglobal(name, value)',
         parameters: [
             {

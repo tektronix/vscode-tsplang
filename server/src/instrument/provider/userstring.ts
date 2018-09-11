@@ -75,7 +75,7 @@ Returns a string if the given name exists; otherwise nil is returned and an erro
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'userstring.add(name, value)',
         parameters: [
             {
@@ -90,7 +90,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'userstring.delete(name)',
         parameters: [
             {
@@ -101,7 +101,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'userstring.get(name)',
         parameters: [
             {

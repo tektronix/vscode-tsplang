@@ -41,7 +41,7 @@ A group number may only be specified when this node is the master node.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'waitcomplete([group])',
         parameters: [
             {

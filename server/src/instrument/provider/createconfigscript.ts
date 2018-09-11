@@ -41,7 +41,7 @@ Once created, the script that contains the settings can be run and edited like a
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'createconfigscript(scriptName)',
         parameters: [
             {

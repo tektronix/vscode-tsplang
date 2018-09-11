@@ -61,7 +61,7 @@ All six lines must be configured as digital control lines or an error will be lo
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'digio.writeport(data)',
         parameters: [
             {

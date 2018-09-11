@@ -101,7 +101,7 @@ Any returned tables and subtables are duplicates and contain no references to th
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'dataqueue.add(value[, timeout])',
         parameters: [
             {
@@ -116,7 +116,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'dataqueue.next([timeout])',
         parameters: [
             {

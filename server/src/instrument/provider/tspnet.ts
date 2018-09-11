@@ -195,7 +195,7 @@ commands.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.clear(connectionID)',
         parameters: [
             {
@@ -206,7 +206,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.connect(ipAddress[, portNumber, initString])',
         parameters: [
             {
@@ -225,7 +225,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.disconnect(connectionID)',
         parameters: [
             {
@@ -236,7 +236,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.execute(connectionID, commandString[, formatString])',
         parameters: [
             {
@@ -259,7 +259,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.idn(connectionID)',
         parameters: [
             {
@@ -270,7 +270,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.read(connectionID[, formatString])',
         parameters: [
             {
@@ -289,7 +289,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.readavailable(connectionID)',
         parameters: [
             {
@@ -300,7 +300,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.termination(connectionID[, termSequence])',
         parameters: [
             {
@@ -319,7 +319,7 @@ tspnet.TERM_LFCR',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.write(connectionID, inputString)',
         parameters: [
             {

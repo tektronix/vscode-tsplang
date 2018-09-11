@@ -46,7 +46,7 @@ specified index), data will be printed as it becomes available.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'printbuffer(startIndex, endIndex, ...)',
         parameters: [
             {

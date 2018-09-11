@@ -104,7 +104,7 @@ The .csv extension is automatically added to the file name.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'eventlog.getcount([eventType])',
         parameters: [
             {
@@ -116,7 +116,7 @@ Combinations via bitwise OR are supported.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'eventlog.next([eventType])',
         parameters: [
             {
@@ -128,7 +128,7 @@ Combinations via bitwise OR are supported.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'eventlog.post(message[, eventType])',
         parameters: [
             {
@@ -143,7 +143,7 @@ Combinations via bitwise OR are supported.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'eventlog.save(filename, eventType)',
         parameters: [
             {

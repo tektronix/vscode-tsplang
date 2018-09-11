@@ -60,7 +60,7 @@ The event detector is automatically reset and rearmed when this function returns
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.wait(timeout)',
         parameters: [
             {

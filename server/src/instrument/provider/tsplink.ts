@@ -140,7 +140,7 @@ while line 2 is set high (1).'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tsplink.initialize([expectedNodes])',
         parameters: [
             {
@@ -152,7 +152,7 @@ An error is logged if the return value is not equal to this number.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tsplink.writeport(pattern)',
         parameters: [
             {

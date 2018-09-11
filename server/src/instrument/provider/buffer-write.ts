@@ -67,7 +67,7 @@ you entered.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.format(bufferVar, units, displayDigits[, extraUnits][, extraDigits])',
         parameters: [
             {
@@ -96,7 +96,7 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
         parameters: [
             {
@@ -124,7 +124,7 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',
         parameters: [
             {

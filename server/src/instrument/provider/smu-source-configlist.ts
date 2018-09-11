@@ -136,7 +136,7 @@ between power cycles.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.create(listName)',
         parameters: [
             {
@@ -147,7 +147,7 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.delete(listName[, index])',
         parameters: [
             {
@@ -163,7 +163,7 @@ Deletes the entire configuration list by default.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.query(listName, index[, fieldSeparator])',
         parameters: [
             {
@@ -183,7 +183,7 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.recall(listName[, index])',
         parameters: [
             {
@@ -199,7 +199,7 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.size(listName)',
         parameters: [
             {
@@ -210,7 +210,7 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.store(listName)',
         parameters: [
             {

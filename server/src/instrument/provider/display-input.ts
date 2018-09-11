@@ -103,7 +103,7 @@ The prompt is displayed until it has been responded to.'
 export const signatures: Array<FormattableSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',
         parameters: [
             {
@@ -135,7 +135,7 @@ display.NFORMAT_PREFIX',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.option(dialogTitle, buttonTitle1, buttonTitle2[, buttonTitle3][, buttonTitle4][, \
 buttonTitle5][, buttonTitle6][, buttonTitle7][, buttonTitle8][, buttonTitle9][, buttonTitle10])',
         parameters: [
@@ -192,7 +192,7 @@ front-panel display; can be up to 32 characters.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.prompt(buttonSet[, dialogTitle])',
         parameters: [
             {
@@ -213,7 +213,7 @@ front-panel display; can be up to 127 characters.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<SignatureInformation> => new Array(),
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.string(dialogTitle[, textFormat])',
         parameters: [
             {
