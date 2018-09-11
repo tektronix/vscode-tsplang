@@ -62,7 +62,7 @@ If using the GPIB, USB, or VXI-11 serial poll sequence to retrieve the status by
 then B6 is the Request for Service (RQS) bit. When set, it indicates that a serial poll request (SRQ) has occurred.'
         },
         kind: CompletionItemKind.Constant,
-        label: 'status.condition',
+        label: 'condition',
     },
     {
         data: ['status'],
