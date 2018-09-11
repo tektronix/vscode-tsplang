@@ -15,8 +15,6 @@
  */
 'use strict'
 
-import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
-
 import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
 import { get2450ApiSpec, get2450InstrumentSpec } from './instrument/2450'
 // import { get2460Completions, get2460Signatures } from './instrument/2460'
@@ -114,84 +112,6 @@ export class TspPool {
                     }
 
                     break
-
-                // case Model.KI2460:
-                //     let compl2460: Array<CompletionItem> = new Array()
-                //     let signa2460: Array<SignatureInformation> = new Array()
-
-                //     try {
-                //         compl2460 = await get2460Completions()
-                //     }
-                //     catch (e) {
-                //         reject(new Error('Unable to load 2460 completions'))
-                //     }
-
-                //     try {
-                //         signa2460 = await get2460Signatures()
-                //     }
-                //     catch (e) {
-                //         reject(new Error('Unable to load 2460 signatures'))
-                //     }
-
-                //     resolve({
-                //         completionDocs: new Map(),
-                //         completions: complLua.concat(compl2460),
-                //         references: 1,
-                //         signatures: signaLua.concat(signa2460)
-                //     })
-                //     break
-                // case Model.KI2461:
-                //     /* fall through */
-                // case Model.KI2461SYS:
-                //     let compl2461: Array<CompletionItem> = new Array()
-                //     let signa2461: Array<SignatureInformation> = new Array()
-
-                //     try {
-                //         compl2461 = await get2461Completions()
-                //     }
-                //     catch (e) {
-                //         reject(new Error('Unable to load 2461 completions'))
-                //     }
-
-                //     try {
-                //         signa2461 = await get2461Signatures()
-                //     }
-                //     catch (e) {
-                //         reject(new Error('Unable to load 2461 signatures'))
-                //     }
-
-                //     resolve({
-                //         completionDocs: new Map(),
-                //         completions: complLua.concat(compl2461),
-                //         references: 1,
-                //         signatures: signaLua.concat(signa2461)
-                //     })
-                //     break
-                // case Model.KI6500:
-                //     let compl6500: Array<CompletionItem> = new Array()
-                //     let signa6500: Array<SignatureInformation> = new Array()
-
-                //     try {
-                //         compl6500 = await get6500Completions()
-                //     }
-                //     catch (e) {
-                //         reject(new Error('Unable to load 6500 completions'))
-                //     }
-
-                //     try {
-                //         signa6500 = await get6500Signatures()
-                //     }
-                //     catch (e) {
-                //         reject(new Error('Unable to load 6500 signatures'))
-                //     }
-
-                //     resolve({
-                //         completionDocs: new Map(),
-                //         completions: complLua.concat(compl6500),
-                //         references: 1,
-                //         signatures: signaLua.concat(signa6500)
-                //     })
-                //     break
 
                 default:
                     reject(new Error(`Model ${model} not supported`))

@@ -272,6 +272,7 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
         }
     }
 
+    // get the index of each comma between our surrounding parenthesis
     for (let i = openParenOffset + 1; i < closeParenOffset;) {
         const commaIndex = content.getText().indexOf(',', i)
         if (commaIndex >= i) {
@@ -283,6 +284,7 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
         }
     }
 
+    // compare the current offset to the index of the last comma to get the active parameter
     let activeParam = 0
     commaIndices.forEach((element: number) => {
         if (offset > element) {

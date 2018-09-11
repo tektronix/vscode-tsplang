@@ -120,7 +120,7 @@ export const completions: Array<CompletionItem> = [
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Percentage of deviation from the reference constant supplied by the math percent attribute.'
         },
         kind: CompletionItemKind.EnumMember,
@@ -143,7 +143,7 @@ export const completions: Array<CompletionItem> = [
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire and the voltage limit to 10% of \
 the present voltage range. If the output is acting a current source, then it is selected and set to 0A; otherwise it \
 is set to 0V.'
@@ -154,7 +154,7 @@ is set to 0V.'
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire and opens the output relay. \
 Opening this relay disconnects the instrument as a load. To prevent execessive wear, do not use this offmode during \
 tests that toggle the output state frequently.'
@@ -165,7 +165,7 @@ tests that toggle the output state frequently.'
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire, selects the voltage source and \
 sets it to 0V, and sets the current limit to 10% of the present measurement autorange value.'
         },
@@ -175,7 +175,7 @@ sets it to 0V, and sets the current limit to 10% of the present measurement auto
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire, selects the voltage source and \
 sets it to 0V and sets the range to the present range (turning off autorange if enabled). If the output is acting as \
 a current source, then the current limit is set to the programmed source current value or to 10% of the present \
@@ -256,16 +256,28 @@ current range, whichever is greater; otherwise the current limit is not changed.
     },
     {
         data: ['smu'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Automatically choose the most sensitive range for each source level in the sweep.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'RANGE_AUTO'
     },
     {
         data: ['smu'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Automatically choose the most sensitive range for all source levels in the sweep.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'RANGE_BEST'
     },
     {
         data: ['smu'],
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Use whatever range was configured at the start of the sweep.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'RANGE_FIXED'
     },
@@ -292,7 +304,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Only available for Current measurements.'
         },
         kind: CompletionItemKind.EnumMember,
@@ -301,7 +313,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Available for all measurement functions.'
         },
         kind: CompletionItemKind.EnumMember,
@@ -310,7 +322,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Only available for Voltage measurements.'
         },
         kind: CompletionItemKind.EnumMember,
@@ -319,7 +331,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
     {
         data: ['smu'],
         documentation: {
-            kind: MarkupKind.Markdown,
+            kind: MarkupKind.PlainText,
             value: 'Only available for Current or Voltage measurements.'
         },
         kind: CompletionItemKind.EnumMember,

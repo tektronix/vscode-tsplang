@@ -1,6 +1,6 @@
 # TSPLang
 
-The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supportedinstruments) TSP-enabled Keithley Instruments.
+The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supported-instruments) TSP-enabled Keithley Instruments.
 
 ## Requirements
 
@@ -14,7 +14,7 @@ After installation, if you have not restarted VSCode, you may have to manually s
 
 ## Supported Instruments
 
-Release builds are available as VSIX files in the [Releases](/releases) section and currently support these instrument models:
+Release builds are available as VSIX files in the [Releases](https://github.com/tektronixofficial/vscode-tsplang/releases) section and currently support these instrument models:
 * 2450
 
 Developer builds include all instruments supported in Release builds in addition to these instrument models:
@@ -28,6 +28,10 @@ Developer builds include all instruments supported in Release builds in addition
 See a typo? Know how to fix an issue? Implement a requested feature?
 
 We'd love to accept your patches and contributions! The [Contributing](CONTRIBUTING.md) document guides you through checkout, unit testing, and building.
+
+## Maintainer
+
+* [Evan Hall](https://github.com/ethall)
 
 ## Disclaimer
 
