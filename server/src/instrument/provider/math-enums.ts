@@ -17,7 +17,7 @@
 
 import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
-import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
+import { InstrumentSpec } from '..'
 
 import { resolveCompletionNamespace } from '.'
 

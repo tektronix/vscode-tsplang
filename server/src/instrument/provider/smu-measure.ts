@@ -17,7 +17,7 @@
 
 import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
-import { ApiSpec, CommandSetInterface, InstrumentSpec } from '..'
+import { InstrumentSpec } from '..'
 
 import { CommandDocumentation, FormattableSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from '.'
 
