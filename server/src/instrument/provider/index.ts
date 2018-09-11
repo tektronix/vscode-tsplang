@@ -34,7 +34,7 @@ export interface FormattableSignatureInformation extends SignatureInformation {
  * @param getEnums true to load the enums file associated with the given label. Defaults to false.
  */
 function labelToModuleName(label: string, getEnums: boolean = false): string {
-    const result = './'.concat(label.replace('.', '-'))
+    const result = './'.concat(label.replace(new RegExp(/\./, 'g'), '-'))
 
     return (getEnums) ? result.concat('-enums') : result
 }
@@ -54,7 +54,7 @@ export function resolveSignatureNamespace(item: SignatureInformation): string | 
         return
     }
 
-    return item.label.slice(0, openParamIndex).replace('[]', '')
+    return item.label.slice(0, openParamIndex).replace(new RegExp(/\[\]/, 'g'), '')
 }
 
 function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: CommandSetInterface): CommandSetInterface {
