@@ -71,33 +71,43 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
         cmd.children.forEach((child: BaseApiSpec) => { cmds.push(child) })
     }
 
-    // filter completion documentation
-    const resultCompletionDocs: Map<string, CommandDocumentation> = (set.completionDocs === undefined) ?
-        new Map() :
-        new Map([...set.completionDocs].filter(
-            ([key, value]: [string, CommandDocumentation]) => {
-                return cmd.label.localeCompare(key) === 0
-            }))
+    const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
+    let resultCompletions: Array<CompletionItem> = new Array()
+    let unformattedSignatures: Array<SignatureInformation> = new Array()
 
-    // filter completion items
-    const resultCompletions: Array<CompletionItem> = set.completions.filter(
-        (value: CompletionItem) => {
-            return cmd.label.localeCompare(resolveCompletionNamespace(value)) === 0
-        })
-
-    // filter signatures
-    const unformattedSignatures: Array<FormattableSignatureInformation> = (set.signatures === undefined) ?
-        new Array() :
-        set.signatures.filter(
-            (value: FormattableSignatureInformation) => {
-                const signaNamespace = resolveSignatureNamespace(value)
-
-                if (signaNamespace === undefined) {
-                    throw new Error('Unable to resolve signature namespace for ' + cmd.label)
+    cmds.forEach((cmdItem: ApiSpec) => {
+        // filter completion documentation
+        if (set.completionDocs !== undefined) {
+            set.completionDocs.forEach((value: CommandDocumentation, key: string) => {
+                // if this completion document is listed in the given API
+                if (cmdItem.label.localeCompare(key) === 0) {
+                    resultCompletionDocs.set(key, value)
                 }
-
-                return cmd.label.localeCompare(signaNamespace) === 0
             })
+        }
+
+        // filter completion items
+        resultCompletions = resultCompletions.concat(set.completions.filter(
+            (value: CompletionItem) => {
+                return cmdItem.label.localeCompare(resolveCompletionNamespace(value)) === 0
+            })
+        )
+
+        // filter signatures
+        if (set.signatures !== undefined) {
+            unformattedSignatures = unformattedSignatures.concat(set.signatures.filter(
+                (value: FormattableSignatureInformation) => {
+                    const signaNamespace = resolveSignatureNamespace(value)
+
+                    if (signaNamespace === undefined) {
+                        throw new Error('Unable to resolve signature namespace for ' + cmd.label)
+                    }
+
+                    return cmdItem.label.localeCompare(signaNamespace) === 0
+                })
+            )
+        }
+    })
 
     // format signatures
     const resultSignatures: Array<SignatureInformation> = new Array()
