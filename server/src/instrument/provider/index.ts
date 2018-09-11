@@ -62,8 +62,9 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
 
     if (cmd.children !== undefined) {
         if (! isEnum
-            || cmd.label.localeCompare('keywords') === 0
-            || cmd.label.localeCompare('functions') === 0) {
+            || cmd.label.localeCompare('keywords') !== 0
+            || cmd.label.localeCompare('functions') !== 0) {
+            // add the root namespace to the list of cmds we want
             cmds.push({ label: cmd.label })
         }
 
