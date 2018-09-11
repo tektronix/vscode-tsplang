@@ -17,6 +17,7 @@
 
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, SignatureInformation, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
+import { resolveCompletionNamespace } from './instrument/provider'
 import { TspManager } from './tspManager'
 
 const manager: TspManager = new TspManager()
@@ -30,6 +31,10 @@ const connection: IConnection = createConnection(
 // Create a simple text document manager. The text document manager supports full document sync
 // only
 const documents: TextDocuments = new TextDocuments()
+
+// Lets onCompletionResolve perform a TspItem lookup on TspManager using the last document uri
+// that completions were requested for
+let lastOnCompleteUri: string | undefined
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
@@ -83,6 +88,9 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 
 // This handler provides the initial list of completion items.
 connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
+    // save the last uri for which we are registed to accept events
+    lastOnCompleteUri = textDocumentPosition.textDocument.uri
+
     const content = documents.get(textDocumentPosition.textDocument.uri)
 
     if (content === undefined) {
@@ -178,7 +186,31 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
     const result: CompletionItem = item
 
-    // TODO: implement
+    if (result.documentation === undefined && lastOnCompleteUri !== undefined) {
+        // get the TspItem servicing this document
+        const tspItem = manager.get(lastOnCompleteUri)
+
+        // if no TspItem is registered to this uri OR there are no completionDocs
+        if (tspItem === undefined || tspItem.commandSet.completionDocs === undefined) {
+            return result
+        }
+
+        // resolve our namespace
+        const label = resolveCompletionNamespace(result)
+
+        // get the CommandDocumentation for our label
+        const commandDoc = tspItem.commandSet.completionDocs.get(label)
+
+        // if no CommandDocumentation exists for our label
+        if (commandDoc === undefined) {
+            return result
+        }
+
+        result.documentation = {
+            kind: commandDoc.kind,
+            value: commandDoc.toString(tspItem.commandSet.specification)
+        }
+    }
 
     return result
 })
