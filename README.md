@@ -14,14 +14,8 @@ After installation, if you have not restarted VSCode, you may have to manually s
 
 ## Supported Instruments
 
-Release builds are available as VSIX files in the [Releases](https://github.com/tektronixofficial/vscode-tsplang/releases) section and currently support these instrument models:
+Release builds are available as VSIX files in the [Releases](https://github.com/tektronixofficial/vscode-tsplang/releases) section. Currently supported instrument models include:
 * 2450
-
-Developer builds include all instruments supported in Release builds in addition to these instrument models:
-* 2460
-* 2461
-* 2461-SYS
-* 6500
 
 ## Contribute
 
