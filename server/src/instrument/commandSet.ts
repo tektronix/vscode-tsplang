@@ -15,6 +15,7 @@
  */
 import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
 
+import { InstrumentSpec } from '.'
 import { CommandDocumentation, FormattableSignatureInformation } from './provider'
 
 export interface CommandSetInterface {
@@ -27,11 +28,13 @@ export class CommandSet implements CommandSetInterface {
     readonly completionDocs: Map<string, CommandDocumentation>
     readonly completions: Array<CompletionItem>
     readonly signatures: Array<SignatureInformation>
+    readonly specification: InstrumentSpec
 
-    constructor() {
+    constructor(spec: InstrumentSpec) {
         this.completionDocs = new Map()
         this.completions = new Array()
         this.signatures = new Array()
+        this.specification = spec
     }
 
     add(set: CommandSetInterface): void {

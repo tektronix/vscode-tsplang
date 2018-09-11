@@ -141,7 +141,7 @@ export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: Instrum
         reject: (reason?: Error) => void
     ): void => {
         try {
-            const result: CommandSet = new CommandSet()
+            const result: CommandSet = new CommandSet(spec)
 
             apiSpecs.forEach((api: ApiSpec) => {
                 const cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
