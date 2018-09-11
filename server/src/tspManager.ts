@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, SignatureInformation, TextDocumentItem } from 'vscode-languageserver'
+import { TextDocumentItem } from 'vscode-languageserver'
 
 import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
 import { getLuaApiSpec, getLuaInstrumentSpec } from './instrument/lua'
