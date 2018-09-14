@@ -21,15 +21,15 @@ import * as Beeper from '../../../../../server/src/instrument/provider/beeper'
 
 @suite class BeeperTest {
     @test('Exports completions')
-    beeperExportsCompletions(): void {
+    exportsCompletions(): void {
         assert(
-            Beeper.hasOwnProperty('completions'),
+            Beeper.completions !== undefined,
             'Expected Beeper to export completions'
         )
     }
 
     @test('Exports no completionDocs')
-    beeperExportsNoCompletionDocs(): void {
+    exportsNoCompletionDocs(): void {
         assert(
             ! Beeper.hasOwnProperty('completionDocs'),
             'Unexpected completionDocs export from Beeper'
@@ -37,9 +37,9 @@ import * as Beeper from '../../../../../server/src/instrument/provider/beeper'
     }
 
     @test('Exports signatures')
-    beeperExportsSignatures(): void {
+    exportsSignatures(): void {
         assert(
-            Beeper.hasOwnProperty('signatures'),
+            Beeper.signatures !== undefined,
             'Expected Beeper to export signatures'
         )
     }
