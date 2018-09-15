@@ -92,23 +92,6 @@ export class TspPool {
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
         ) : Promise<void> => {
-            let complLua: Array<CompletionItem> = new Array()
-            let signaLua: Array<SignatureInformation> = new Array()
-
-            try {
-                complLua = await getLuaCompletions()
-            }
-            catch (e) {
-                reject(new Error('Unable to load Lua completions'))
-            }
-
-            try {
-                signaLua = await getLuaSignatures()
-            }
-            catch (e) {
-                reject(new Error('Unable to load Lua signatures'))
-            }
-
             switch (model) {
                 case Model.KI2450:
                     try {
