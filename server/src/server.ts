@@ -15,8 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, ParameterInformation, SignatureHelp, SignatureInformation, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, SignatureInformation, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
+import { resolveCompletionNamespace } from './instrument/provider'
 import { TspManager } from './tspManager'
 
 const manager: TspManager = new TspManager()
@@ -30,6 +31,10 @@ const connection: IConnection = createConnection(
 // Create a simple text document manager. The text document manager supports full document sync
 // only
 const documents: TextDocuments = new TextDocuments()
+
+// Lets onCompletionResolve perform a TspItem lookup on TspManager using the last document uri
+// that completions were requested for
+let lastOnCompleteUri: string | undefined
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
@@ -83,6 +88,9 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 
 // This handler provides the initial list of completion items.
 connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
+    // save the last uri for which we are registed to accept events
+    lastOnCompleteUri = textDocumentPosition.textDocument.uri
+
     const content = documents.get(textDocumentPosition.textDocument.uri)
 
     if (content === undefined) {
@@ -116,7 +124,7 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
     let firstMatch = reverseMatches.shift()
 
     if (firstMatch === undefined || firstMatch === '') {
-        for (const compl of tspItem.completions) {
+        for (const compl of tspItem.commandSet.completions) {
             // get root namespace completions
             if (compl.data === undefined) {
                 results.push(compl)
@@ -144,7 +152,7 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
     // split the unreversed string on namespace qualifiers and reverse the namespace domains
     const namespaceArray: Array<string> = unreversed.split('.').reverse()
 
-    for (const compl of tspItem.completions) {
+    for (const compl of tspItem.commandSet.completions) {
         // if the completion has a data field, then it's not a root namespace
         if (compl.data !== undefined && compl.data instanceof Array) {
             if (compl.data.join('.') === namespaceArray.join('.')) {
@@ -171,24 +179,40 @@ connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Arra
         }
     }
 
-    // sort on CompletionItem.kind
-    if (results.length > 0) {
-        results.sort((a: CompletionItem, b: CompletionItem): number => {
-            if (a.kind !== undefined && b.kind !== undefined) {
-                return a.kind - b.kind
-            }
-            else {
-                return a.label.localeCompare(b.label)
-            }
-        })
-    }
-
     return results
 })
 
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    return item
+    const result: CompletionItem = item
+
+    if (result.documentation === undefined && lastOnCompleteUri !== undefined) {
+        // get the TspItem servicing this document
+        const tspItem = manager.get(lastOnCompleteUri)
+
+        // if no TspItem is registered to this uri OR there are no completionDocs
+        if (tspItem === undefined || tspItem.commandSet.completionDocs === undefined) {
+            return result
+        }
+
+        // resolve our namespace
+        const label = resolveCompletionNamespace(result)
+
+        // get the CommandDocumentation for our label
+        const commandDoc = tspItem.commandSet.completionDocs.get(label)
+
+        // if no CommandDocumentation exists for our label
+        if (commandDoc === undefined) {
+            return result
+        }
+
+        result.documentation = {
+            kind: commandDoc.kind,
+            value: commandDoc.toString(tspItem.commandSet.specification)
+        }
+    }
+
+    return result
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams) => {
@@ -237,17 +261,13 @@ connection.onSignatureHelp((params: TextDocumentPositionParams) => {
 
     const tspItem = manager.get(params.textDocument.uri)
 
-    if (tspItem === undefined || tspItem.signatures === undefined) {
+    if (tspItem === undefined || tspItem.commandSet.signatures === undefined) {
         return
     }
 
     const results: Array<SignatureInformation> = new Array()
-
-    // add all matching signatures to the results array
-    for (const signa of tspItem.signatures) {
-        const signaBeforeParams = signa.label.slice(0, signa.label.indexOf('('))
-
-        if (signaBeforeParams.localeCompare(unreversed) === 0) {
+    for (const signa of tspItem.commandSet.signatures) {
+        if (signa.label.indexOf(unreversed) !== -1) {
             results.push(signa)
         }
     }
