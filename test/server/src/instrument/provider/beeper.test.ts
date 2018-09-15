@@ -16,8 +16,11 @@
 // tslint:disable:no-implicit-dependencies prefer-function-over-method
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
+import { ParameterInformation } from 'vscode-languageclient'
 
+import { FormattableSignatureInformation } from '../../../../../server/src/instrument/provider'
 import * as Beeper from '../../../../../server/src/instrument/provider/beeper'
+import { emptySpec } from '../emptySpec'
 
 @suite class BeeperTest {
     @test('Exports completions')
@@ -42,5 +45,55 @@ import * as Beeper from '../../../../../server/src/instrument/provider/beeper'
             Beeper.signatures !== undefined,
             'Expected Beeper to export signatures'
         )
+    }
+
+    @test('Signatures formatted properly')
+    signaturesFormattedProperly(): void {
+        Beeper.signatures.forEach((element: FormattableSignatureInformation) => {
+            const formattedParams = element.getFormattedParameters(emptySpec)
+
+            if (formattedParams.length === 0) {
+                assert(true)
+
+                return
+            }
+
+            formattedParams.forEach((value: ParameterInformation) => {
+                if (value.documentation !== undefined) {
+                    let docString: string
+
+                    if (typeof value.documentation === 'string') {
+                        docString = value.documentation
+                    }
+                    else if (typeof value.documentation === 'object') {
+                        docString = value.documentation.value
+                    }
+                    else {
+                        assert(
+                            false,
+                            'Unknown type for ParameterInformation.documentation: ' + typeof value.documentation
+                        )
+
+                        return
+                    }
+
+                    const matches = docString.match(/%\{[0-9]+\}/)
+
+                    if (matches === null || matches.length > 0) {
+                        return
+                    }
+                    else {
+                        matches.forEach((matched: string) => {
+                            assert(
+                                false,
+                                'Matched a replacement string "' + matched + '" from ' + element.label
+                            )
+                        })
+
+                        return
+                    }
+                }
+            })
+        })
     }
 }
