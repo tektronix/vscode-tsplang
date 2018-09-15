@@ -168,7 +168,7 @@ export function getLuaInstrumentSpec(): InstrumentSpec {
         beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
         current: {
             measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-            source: { rangeDefault: NaN, ranges: [] }
+            source: { rangeDefault: NaN, ranges: [ NaN ] }
         },
         overflow: NaN,
         resistance: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
@@ -182,7 +182,7 @@ export function getLuaInstrumentSpec(): InstrumentSpec {
         smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
         voltage: {
             measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-            source: { rangeDefault: NaN, ranges: [] }
+            source: { rangeDefault: NaN, ranges: [ NaN ] }
         }
     }
 }
