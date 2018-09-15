@@ -19,14 +19,14 @@ import { suite, test } from 'mocha-typescript'
 import { ParameterInformation } from 'vscode-languageclient'
 
 import { FormattableSignatureInformation } from '../../../../../server/src/instrument/provider'
-import * as Beeper from '../../../../../server/src/instrument/provider/beeper'
+import * as Namespace from '../../../../../server/src/instrument/provider/beeper'
 import { emptySpec } from '../emptySpec'
 
 @suite class BeeperTest {
     @test('Exports completions')
     exportsCompletions(): void {
         assert(
-            Beeper.completions !== undefined,
+            Namespace.completions !== undefined,
             'Expected Beeper to export completions'
         )
     }
@@ -34,7 +34,7 @@ import { emptySpec } from '../emptySpec'
     @test('Exports no completionDocs')
     exportsNoCompletionDocs(): void {
         assert(
-            ! Beeper.hasOwnProperty('completionDocs'),
+            ! Namespace.hasOwnProperty('completionDocs'),
             'Unexpected completionDocs export from Beeper'
         )
     }
@@ -42,14 +42,14 @@ import { emptySpec } from '../emptySpec'
     @test('Exports signatures')
     exportsSignatures(): void {
         assert(
-            Beeper.signatures !== undefined,
+            Namespace.signatures !== undefined,
             'Expected Beeper to export signatures'
         )
     }
 
     @test('Signatures formatted properly')
     signaturesFormattedProperly(): void {
-        Beeper.signatures.forEach((element: FormattableSignatureInformation) => {
+        Namespace.signatures.forEach((element: FormattableSignatureInformation) => {
             const formattedParams = element.getFormattedParameters(emptySpec)
 
             if (formattedParams.length === 0) {
