@@ -200,7 +200,7 @@ drain.'
             kind: MarkupKind.PlainText,
             value: 'If the active interface is GPIB, then trigger upon receiving a GET command. On VXI-11, trigger \
 when the device_trigger method is invoked. If neither of those interfaces are active, then trigger upon receiving a \
-\\*TRG message.'
+*TRG message.'
         },
         kind: CompletionItemKind.EnumMember,
         label: 'EVENT_COMMAND'
