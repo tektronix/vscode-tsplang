@@ -89,7 +89,7 @@ Load a predefined trigger model configuration.'
         data: ['model', 'trigger'],
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nfunction setblock(blockNumber, trigger.BLOCK_\\*, blockParams, ...)\n```\n\
+            value: '```lua\nfunction setblock(blockNumber, trigger.BLOCK_*, blockParams, ...)\n```\n\
 \n\
 Add a block to the trigger model.'
         },
