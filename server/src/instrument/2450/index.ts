@@ -338,6 +338,13 @@ const script: ApiSpec = {
     label: 'script'
 }
 
+const smuInterlock: ApiSpec = {
+    children: [
+        { label: 'smu.interlock.tripped' },
+    ],
+    label: 'smu.interlock'
+}
+
 const smuMeasureAutozero: ApiSpec = {
     children: [
         { label: 'smu.measure.autozero.enable' },
@@ -677,6 +684,19 @@ const triggerLanout: ApiSpec = {
     label: 'trigger.lanout'
 }
 
+const triggerModel: ApiSpec = {
+    children: [
+        { label: 'trigger.model.abort' },
+        { label: 'trigger.model.getblocklist' },
+        { label: 'trigger.model.getbranchcount' },
+        { label: 'trigger.model.initiate' },
+        { label: 'trigger.model.load' },
+        { label: 'trigger.model.setblock' },
+        { label: 'trigger.model.state' },
+    ],
+    label: 'trigger.model'
+}
+
 const triggerTimerStart: ApiSpec = {
     children: [
         { label: 'trigger.timer.start.fractionalseconds' },
@@ -946,6 +966,7 @@ export function get2450ApiSpec(): Array<ApiSpec> {
         printnumber,
         reset,
         script,
+        smuInterlock,
         smuMeasureAutozero,
         smuMeasureConfiglist,
         smuMeasureFilter,
@@ -972,6 +993,7 @@ export function get2450ApiSpec(): Array<ApiSpec> {
         triggerDigout,
         triggerLanin,
         triggerLanout,
+        triggerModel,
         triggerTimerStart,
         triggerTimer,
         triggerTsplinkin,
