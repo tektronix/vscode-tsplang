@@ -25,6 +25,14 @@ const beeper: ApiSpec = {
     label: 'beeper'
 }
 
+const bufferWrite: ApiSpec = {
+    children: [
+        { label: 'buffer.write.format' },
+        { label: 'buffer.write.reading' },
+    ],
+    label: 'buffer.write'
+}
+
 const buffer: ApiSpec = {
     children: [
         { label: 'buffer.clearstats' },
@@ -90,14 +98,6 @@ const buffer: ApiSpec = {
     label: 'buffer'
 }
 
-const bufferWrite: ApiSpec = {
-    children: [
-        { label: 'buffer.write.format' },
-        { label: 'buffer.write.reading' },
-    ],
-    label: 'buffer.write'
-}
-
 const createconfigscript: ApiSpec = { label: 'createconfigscript' }
 
 const dataqueue: ApiSpec = {
@@ -112,6 +112,15 @@ const dataqueue: ApiSpec = {
 }
 
 const delay: ApiSpec = { label: 'delay' }
+
+const digioLine: ApiSpec = {
+    children: [
+        { label: 'digio.line.mode' },
+        { label: 'digio.line.reset' },
+        { label: 'digio.line.state' },
+    ],
+    label: 'digio.line'
+}
 
 const digio: ApiSpec = {
     children: [
@@ -133,13 +142,14 @@ const digio: ApiSpec = {
     label: 'digio'
 }
 
-const digioLine: ApiSpec = {
+const displayInput: ApiSpec = {
     children: [
-        { label: 'digio.line.mode' },
-        { label: 'digio.line.reset' },
-        { label: 'digio.line.state' },
+        { label: 'display.input.number' },
+        { label: 'display.input.option' },
+        { label: 'display.input.prompt' },
+        { label: 'display.input.string' },
     ],
-    label: 'digio.line'
+    label: 'display.input'
 }
 
 const display: ApiSpec = {
@@ -205,16 +215,6 @@ const display: ApiSpec = {
         { label: 'display.TEXT2' },
     ],
     label: 'display'
-}
-
-const displayInput: ApiSpec = {
-    children: [
-        { label: 'display.input.number' },
-        { label: 'display.input.option' },
-        { label: 'display.input.prompt' },
-        { label: 'display.input.string' },
-    ],
-    label: 'display.input'
 }
 
 const eventlog: ApiSpec = {
@@ -338,85 +338,11 @@ const script: ApiSpec = {
     label: 'script'
 }
 
-const smu: ApiSpec = {
+const smuInterlock: ApiSpec = {
     children: [
-        { label: 'smu.reset' },
+        { label: 'smu.interlock.tripped' },
     ],
-    enums: [
-        { label: 'smu.AUDIBLE_FAIL' },
-        { label: 'smu.AUDIBLE_NONE' },
-        { label: 'smu.AUDIBLE_PASS' },
-        { label: 'smu.DELAY_AUTO' },
-        { label: 'smu.DIGITS_3_5' },
-        { label: 'smu.DIGITS_4_5' },
-        { label: 'smu.DIGITS_5_5' },
-        { label: 'smu.DIGITS_6_5' },
-        { label: 'smu.FAIL_BOTH' },
-        { label: 'smu.FAIL_HIGH' },
-        { label: 'smu.FAIL_LOW' },
-        { label: 'smu.FAIL_NONE' },
-        { label: 'smu.FILTER_MOVING_AVG' },
-        { label: 'smu.FILTER_REPEAT_AVG' },
-        { label: 'smu.FUNC_DC_CURRENT' },
-        { label: 'smu.FUNC_DC_VOLTAGE' },
-        { label: 'smu.FUNC_RESISTANCE' },
-        { label: 'smu.INFINITE' },
-        { label: 'smu.MATH_MXB' },
-        { label: 'smu.MATH_PERCENT' },
-        { label: 'smu.MATH_RECIPROCAL' },
-        { label: 'smu.OFF' },
-        { label: 'smu.OFFMODE_GUARD' },
-        { label: 'smu.OFFMODE_HIGHZ' },
-        { label: 'smu.OFFMODE_NORMAL' },
-        { label: 'smu.OFFMODE_ZERO' },
-        { label: 'smu.ON' },
-        { label: 'smu.PROTECT_2V' },
-        { label: 'smu.PROTECT_5V' },
-        { label: 'smu.PROTECT_10V' },
-        { label: 'smu.PROTECT_20V' },
-        { label: 'smu.PROTECT_40V' },
-        { label: 'smu.PROTECT_60V' },
-        { label: 'smu.PROTECT_80V' },
-        { label: 'smu.PROTECT_100V' },
-        { label: 'smu.PROTECT_120V' },
-        { label: 'smu.PROTECT_140V' },
-        { label: 'smu.PROTECT_160V' },
-        { label: 'smu.PROTECT_180V' },
-        { label: 'smu.PROTECT_NONE' },
-        { label: 'smu.RANGE_AUTO' },
-        { label: 'smu.RANGE_BEST' },
-        { label: 'smu.RANGE_FIXED' },
-        { label: 'smu.SENSE_2WIRE' },
-        { label: 'smu.SENSE_4WIRE' },
-        { label: 'smu.TERMINALS_FRONT' },
-        { label: 'smu.TERMINALS_REAR' },
-        { label: 'smu.UNIT_AMP' },
-        { label: 'smu.UNIT_OHM' },
-        { label: 'smu.UNIT_VOLT' },
-        { label: 'smu.UNIT_WATT' },
-    ],
-    label: 'smu'
-}
-
-const smuMeasure: ApiSpec = {
-    children: [
-        { label: 'smu.measure.autorange' },
-        { label: 'smu.measure.autorangehigh' },
-        { label: 'smu.measure.autorangelow' },
-        { label: 'smu.measure.count' },
-        { label: 'smu.measure.displaydigits' },
-        { label: 'smu.measure.func' },
-        { label: 'smu.measure.nplc' },
-        { label: 'smu.measure.offsetcompensation' },
-        { label: 'smu.measure.range' },
-        { label: 'smu.measure.read' },
-        { label: 'smu.measure.readwithtime' },
-        { label: 'smu.measure.sense' },
-        { label: 'smu.measure.terminals' },
-        { label: 'smu.measure.unit' },
-        { label: 'smu.measure.userdelay' },
-    ],
-    label: 'smu.measure'
+    label: 'smu.interlock'
 }
 
 const smuMeasureAutozero: ApiSpec = {
@@ -500,25 +426,25 @@ const smuMeasureRel: ApiSpec = {
     label: 'smu.measure.rel'
 }
 
-const smuSource: ApiSpec = {
+const smuMeasure: ApiSpec = {
     children: [
-        { label: 'smu.source.autodelay' },
-        { label: 'smu.source.autorange' },
-        { label: 'smu.source.delay' },
-        { label: 'smu.source.func' },
-        { label: 'smu.source.highc' },
-        { label: 'smu.source.level' },
-        { label: 'smu.source.offmode' },
-        { label: 'smu.source.output' },
-        { label: 'smu.source.range' },
-        { label: 'smu.source.readback' },
-        { label: 'smu.source.sweeplinear' },
-        { label: 'smu.source.sweeplinearstep' },
-        { label: 'smu.source.sweeplist' },
-        { label: 'smu.source.sweeplog' },
-        { label: 'smu.source.userdelay' },
+        { label: 'smu.measure.autorange' },
+        { label: 'smu.measure.autorangehigh' },
+        { label: 'smu.measure.autorangelow' },
+        { label: 'smu.measure.count' },
+        { label: 'smu.measure.displaydigits' },
+        { label: 'smu.measure.func' },
+        { label: 'smu.measure.nplc' },
+        { label: 'smu.measure.offsetcompensation' },
+        { label: 'smu.measure.range' },
+        { label: 'smu.measure.read' },
+        { label: 'smu.measure.readwithtime' },
+        { label: 'smu.measure.sense' },
+        { label: 'smu.measure.terminals' },
+        { label: 'smu.measure.unit' },
+        { label: 'smu.measure.userdelay' },
     ],
-    label: 'smu.source'
+    label: 'smu.measure'
 }
 
 const smuSourceConfiglist: ApiSpec = {
@@ -556,6 +482,87 @@ const smuSourceVlimit: ApiSpec = {
         { label: 'smu.source.vlimit.tripped' },
     ],
     label: 'smu.source.vlimit'
+}
+
+const smuSource: ApiSpec = {
+    children: [
+        { label: 'smu.source.autodelay' },
+        { label: 'smu.source.autorange' },
+        { label: 'smu.source.delay' },
+        { label: 'smu.source.func' },
+        { label: 'smu.source.highc' },
+        { label: 'smu.source.level' },
+        { label: 'smu.source.offmode' },
+        { label: 'smu.source.output' },
+        { label: 'smu.source.range' },
+        { label: 'smu.source.readback' },
+        { label: 'smu.source.sweeplinear' },
+        { label: 'smu.source.sweeplinearstep' },
+        { label: 'smu.source.sweeplist' },
+        { label: 'smu.source.sweeplog' },
+        { label: 'smu.source.userdelay' },
+    ],
+    label: 'smu.source'
+}
+
+const smu: ApiSpec = {
+    children: [
+        { label: 'smu.reset' },
+    ],
+    enums: [
+        { label: 'smu.AUDIBLE_FAIL' },
+        { label: 'smu.AUDIBLE_NONE' },
+        { label: 'smu.AUDIBLE_PASS' },
+        { label: 'smu.DELAY_AUTO' },
+        { label: 'smu.DIGITS_3_5' },
+        { label: 'smu.DIGITS_4_5' },
+        { label: 'smu.DIGITS_5_5' },
+        { label: 'smu.DIGITS_6_5' },
+        { label: 'smu.FAIL_BOTH' },
+        { label: 'smu.FAIL_HIGH' },
+        { label: 'smu.FAIL_LOW' },
+        { label: 'smu.FAIL_NONE' },
+        { label: 'smu.FILTER_MOVING_AVG' },
+        { label: 'smu.FILTER_REPEAT_AVG' },
+        { label: 'smu.FUNC_DC_CURRENT' },
+        { label: 'smu.FUNC_DC_VOLTAGE' },
+        { label: 'smu.FUNC_RESISTANCE' },
+        { label: 'smu.INFINITE' },
+        { label: 'smu.MATH_MXB' },
+        { label: 'smu.MATH_PERCENT' },
+        { label: 'smu.MATH_RECIPROCAL' },
+        { label: 'smu.OFF' },
+        { label: 'smu.OFFMODE_GUARD' },
+        { label: 'smu.OFFMODE_HIGHZ' },
+        { label: 'smu.OFFMODE_NORMAL' },
+        { label: 'smu.OFFMODE_ZERO' },
+        { label: 'smu.ON' },
+        { label: 'smu.PROTECT_2V' },
+        { label: 'smu.PROTECT_5V' },
+        { label: 'smu.PROTECT_10V' },
+        { label: 'smu.PROTECT_20V' },
+        { label: 'smu.PROTECT_40V' },
+        { label: 'smu.PROTECT_60V' },
+        { label: 'smu.PROTECT_80V' },
+        { label: 'smu.PROTECT_100V' },
+        { label: 'smu.PROTECT_120V' },
+        { label: 'smu.PROTECT_140V' },
+        { label: 'smu.PROTECT_160V' },
+        { label: 'smu.PROTECT_180V' },
+        { label: 'smu.PROTECT_NONE' },
+        { label: 'smu.RANGE_AUTO' },
+        { label: 'smu.RANGE_BEST' },
+        { label: 'smu.RANGE_FIXED' },
+        { label: 'smu.SENSE_2WIRE' },
+        { label: 'smu.SENSE_4WIRE' },
+        { label: 'smu.TERMINALS_FRONT' },
+        { label: 'smu.TERMINALS_REAR' },
+        { label: 'smu.UNIT_AMP' },
+        { label: 'smu.UNIT_OHM' },
+        { label: 'smu.UNIT_VOLT' },
+        { label: 'smu.UNIT_WATT' },
+    ],
+    label: 'smu'
 }
 
 const statusOperation: ApiSpec = {
@@ -618,6 +625,121 @@ const timer: ApiSpec = {
         { label: 'timer.gettime' },
     ],
     label: 'timer'
+}
+
+const triggerBlender: ApiSpec = {
+    children: [
+        { label: 'trigger.blender.clear' },
+        { label: 'trigger.blender.orenable' },
+        { label: 'trigger.blender.overrun' },
+        { label: 'trigger.blender.reset' },
+        { label: 'trigger.blender.stimulus' },
+        { label: 'trigger.blender.wait' },
+    ],
+    label: 'trigger.blender'
+}
+
+const triggerDigin: ApiSpec = {
+    children: [
+        { label: 'trigger.digin.clear' },
+        { label: 'trigger.digin.edge' },
+        { label: 'trigger.digin.overrun' },
+        { label: 'trigger.digin.wait' },
+    ],
+    label: 'trigger.digin'
+}
+
+const triggerDigout: ApiSpec = {
+    children: [
+        { label: 'trigger.digout.assert' },
+        { label: 'trigger.digout.logic' },
+        { label: 'trigger.digout.pulsewidth' },
+        { label: 'trigger.digout.release' },
+        { label: 'trigger.digout.stimulus' },
+    ],
+    label: 'trigger.digout'
+}
+
+const triggerLanin: ApiSpec = {
+    children: [
+        { label: 'trigger.lanin.clear' },
+        { label: 'trigger.lanin.edge' },
+        { label: 'trigger.lanin.overrun' },
+        { label: 'trigger.lanin.wait' },
+    ],
+    label: 'trigger.lanin'
+}
+
+const triggerLanout: ApiSpec = {
+    children: [
+        { label: 'trigger.lanout.assert' },
+        { label: 'trigger.lanout.connect' },
+        { label: 'trigger.lanout.connected' },
+        { label: 'trigger.lanout.disconnect' },
+        { label: 'trigger.lanout.ipaddress' },
+        { label: 'trigger.lanout.logic' },
+        { label: 'trigger.lanout.protocol' },
+        { label: 'trigger.lanout.stimulus' },
+    ],
+    label: 'trigger.lanout'
+}
+
+const triggerModel: ApiSpec = {
+    children: [
+        { label: 'trigger.model.abort' },
+        { label: 'trigger.model.getblocklist' },
+        { label: 'trigger.model.getbranchcount' },
+        { label: 'trigger.model.initiate' },
+        { label: 'trigger.model.load' },
+        { label: 'trigger.model.setblock' },
+        { label: 'trigger.model.state' },
+    ],
+    label: 'trigger.model'
+}
+
+const triggerTimerStart: ApiSpec = {
+    children: [
+        { label: 'trigger.timer.start.fractionalseconds' },
+        { label: 'trigger.timer.start.generate' },
+        { label: 'trigger.timer.start.overrun' },
+        { label: 'trigger.timer.start.seconds' },
+        { label: 'trigger.timer.start.stimulus' },
+    ],
+    label: 'trigger.timer.start'
+}
+
+const triggerTimer: ApiSpec = {
+    children: [
+        { label: 'trigger.timer.clear' },
+        { label: 'trigger.timer.count' },
+        { label: 'trigger.timer.delay' },
+        { label: 'trigger.timer.delaylist' },
+        { label: 'trigger.timer.enable' },
+        { label: 'trigger.timer.reset' },
+        { label: 'trigger.timer.wait' },
+    ],
+    label: 'trigger.timer'
+}
+
+const triggerTsplinkin: ApiSpec = {
+    children: [
+        { label: 'trigger.tsplinkin.clear' },
+        { label: 'trigger.tsplinkin.edge' },
+        { label: 'trigger.tsplinkin.overrun' },
+        { label: 'trigger.tsplinkin.wait' },
+    ],
+    label: 'trigger.tsplinkin'
+}
+
+const triggerTsplinkout: ApiSpec = {
+    children: [
+        { label: 'trigger.tsplinkout.assert' },
+        { label: 'trigger.tsplinkout.logic' },
+        { label: 'trigger.tsplinkout.pulsewidth' },
+        { label: 'trigger.tsplinkout.release' },
+        { label: 'trigger.tsplinkout.stimulus' },
+    ],
+    label: 'trigger.tsplinkout'
 }
 
 const trigger: ApiSpec = {
@@ -735,108 +857,6 @@ const trigger: ApiSpec = {
     label: 'trigger'
 }
 
-const triggerBlender: ApiSpec = {
-    children: [
-        { label: 'trigger.blender.clear' },
-        { label: 'trigger.blender.orenable' },
-        { label: 'trigger.blender.overrun' },
-        { label: 'trigger.blender.reset' },
-        { label: 'trigger.blender.stimulus' },
-        { label: 'trigger.blender.wait' },
-    ],
-    label: 'trigger.blender'
-}
-
-const triggerDigin: ApiSpec = {
-    children: [
-        { label: 'trigger.digin.clear' },
-        { label: 'trigger.digin.edge' },
-        { label: 'trigger.digin.overrun' },
-        { label: 'trigger.digin.wait' },
-    ],
-    label: 'trigger.digin'
-}
-
-const triggerDigout: ApiSpec = {
-    children: [
-        { label: 'trigger.digout.assert' },
-        { label: 'trigger.digout.logic' },
-        { label: 'trigger.digout.pulsewidth' },
-        { label: 'trigger.digout.release' },
-        { label: 'trigger.digout.stimulus' },
-    ],
-    label: 'trigger.digout'
-}
-
-const triggerLanin: ApiSpec = {
-    children: [
-        { label: 'trigger.lanin.clear' },
-        { label: 'trigger.lanin.edge' },
-        { label: 'trigger.lanin.overrun' },
-        { label: 'trigger.lanin.wait' },
-    ],
-    label: 'trigger.lanin'
-}
-
-const triggerLanout: ApiSpec = {
-    children: [
-        { label: 'trigger.lanout.assert' },
-        { label: 'trigger.lanout.connect' },
-        { label: 'trigger.lanout.connected' },
-        { label: 'trigger.lanout.disconnect' },
-        { label: 'trigger.lanout.ipaddress' },
-        { label: 'trigger.lanout.logic' },
-        { label: 'trigger.lanout.protocol' },
-        { label: 'trigger.lanout.stimulus' },
-    ],
-    label: 'trigger.lanout'
-}
-
-const triggerTimer: ApiSpec = {
-    children: [
-        { label: 'trigger.timer.clear' },
-        { label: 'trigger.timer.count' },
-        { label: 'trigger.timer.delay' },
-        { label: 'trigger.timer.delaylist' },
-        { label: 'trigger.timer.enable' },
-        { label: 'trigger.timer.reset' },
-        { label: 'trigger.timer.wait' },
-    ],
-    label: 'trigger.timer'
-}
-
-const triggerTimerStart: ApiSpec = {
-    children: [
-        { label: 'trigger.timer.start.fractionalseconds' },
-        { label: 'trigger.timer.start.generate' },
-        { label: 'trigger.timer.start.overrun' },
-        { label: 'trigger.timer.start.seconds' },
-        { label: 'trigger.timer.start.stimulus' },
-    ],
-    label: 'trigger.timer.start'
-}
-
-const triggerTsplinkin: ApiSpec = {
-    children: [
-        { label: 'trigger.tsplinkin.clear' },
-        { label: 'trigger.tsplinkin.edge' },
-        { label: 'trigger.tsplinkin.overrun' },
-        { label: 'trigger.tsplinkin.wait' },
-    ],
-    label: 'trigger.tsplinkin'
-}
-
-const triggerTsplinkout: ApiSpec = {
-    children: [
-        { label: 'trigger.tsplinkout.assert' },
-        { label: 'trigger.tsplinkout.logic' },
-        { label: 'trigger.tsplinkout.pulsewidth' },
-        { label: 'trigger.tsplinkout.release' },
-        { label: 'trigger.tsplinkout.stimulus' },
-    ],
-    label: 'trigger.tsplinkout'
-}
-
 const tsplink: ApiSpec = {
     children: [
         { label: 'tsplink.MODE_DIGITAL_OPEN_DRAIN' },
@@ -924,15 +944,15 @@ const waitcomplete: ApiSpec = { label: 'waitcomplete' }
 export function get2450ApiSpec(): Array<ApiSpec> {
     return getLuaApiSpec().concat([
         beeper,
-        buffer,
         bufferWrite,
+        buffer,
         createconfigscript,
         dataqueue,
         delay,
-        digio,
         digioLine,
-        display,
+        digio,
         displayInput,
+        display,
         eventlog,
         exit,
         file,
@@ -946,41 +966,43 @@ export function get2450ApiSpec(): Array<ApiSpec> {
         printnumber,
         reset,
         script,
-        smu,
-        smuMeasure,
+        smuInterlock,
         smuMeasureAutozero,
         smuMeasureConfiglist,
         smuMeasureFilter,
-        smuMeasureLimit,
         smuMeasureLimitHigh,
         smuMeasureLimitLow,
+        smuMeasureLimit,
         smuMeasureMath,
         smuMeasureMathMxb,
         smuMeasureRel,
-        smuSource,
+        smuMeasure,
         smuSourceConfiglist,
         smuSourceIlimit,
         smuSourceProtect,
         smuSourceVlimit,
-        status,
+        smuSource,
+        smu,
         statusOperation,
         statusQuestionable,
         statusStandard,
+        status,
         timer,
-        trigger,
         triggerBlender,
         triggerDigin,
         triggerDigout,
         triggerLanin,
         triggerLanout,
-        triggerTimer,
+        triggerModel,
         triggerTimerStart,
+        triggerTimer,
         triggerTsplinkin,
         triggerTsplinkout,
-        tsplink,
+        trigger,
         tsplinkLine,
-        tspnet,
+        tsplink,
         tspnetTsp,
+        tspnet,
         upgrade,
         userstring,
         waitcomplete
