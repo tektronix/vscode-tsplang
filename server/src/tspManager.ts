@@ -24,7 +24,7 @@ import { Model } from './model'
 import { Shebang } from './shebang'
 import { PoolEntry, TspPool } from './tspPool'
 
-interface TspItem {
+export interface TspItem {
     commandSet: CommandSet
     node?: Map<number, CommandSet>
     rawShebang?: string
