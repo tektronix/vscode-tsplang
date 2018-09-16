@@ -26,21 +26,24 @@ import { emptySpec } from '../emptySpec'
     @test('Exports ApiSpec array')
     exportsCompletions(): void {
         // tslint:disable-next-line:no-magic-numbers
-        assert(Namespace.get2450ApiSpec().length === 68, '2450 ApiSpec contains unknown namespaces')
+        const totalModules = 70
 
+        assert(Namespace.get2450ApiSpec().length === totalModules, 'Unexpected number of 2450 ApiSpec modules')
+
+        const uniqueNamespaces: Map<string, number> = new Map()
         Namespace.get2450ApiSpec().forEach((value: ApiSpec) => {
             switch (value.label) {
                 case 'beeper':
-                case 'buffer':
                 case 'buffer.write':
+                case 'buffer':
                 case 'coroutine':
                 case 'createconfigscript':
                 case 'dataqueue':
                 case 'delay':
-                case 'digio':
                 case 'digio.line':
-                case 'display':
+                case 'digio':
                 case 'display.input':
+                case 'display':
                 case 'eventlog':
                 case 'exit':
                 case 'file':
@@ -58,51 +61,62 @@ import { emptySpec } from '../emptySpec'
                 case 'printnumber':
                 case 'reset':
                 case 'script':
-                case 'smu':
-                case 'smu.measure':
+                case 'smu.interlock':
                 case 'smu.measure.autozero':
                 case 'smu.measure.configlist':
                 case 'smu.measure.filter':
-                case 'smu.measure.limit':
                 case 'smu.measure.limit.high':
                 case 'smu.measure.limit.low':
-                case 'smu.measure.math':
+                case 'smu.measure.limit':
                 case 'smu.measure.math.mxb':
+                case 'smu.measure.math':
                 case 'smu.measure.rel':
-                case 'smu.source':
+                case 'smu.measure':
                 case 'smu.source.configlist':
                 case 'smu.source.ilimit':
                 case 'smu.source.protect':
                 case 'smu.source.vlimit':
-                case 'status':
+                case 'smu.source':
+                case 'smu':
                 case 'status.operation':
                 case 'status.questionable':
                 case 'status.standard':
+                case 'status':
                 case 'string':
                 case 'table':
                 case 'timer':
-                case 'trigger':
                 case 'trigger.blender':
                 case 'trigger.digin':
                 case 'trigger.digout':
                 case 'trigger.lanin':
                 case 'trigger.lanout':
-                case 'trigger.timer':
+                case 'trigger.model':
                 case 'trigger.timer.start':
+                case 'trigger.timer':
                 case 'trigger.tsplinkin':
                 case 'trigger.tsplinkout':
-                case 'tsplink':
+                case 'trigger':
                 case 'tsplink.line':
-                case 'tspnet':
+                case 'tsplink':
                 case 'tspnet.tsp':
+                case 'tspnet':
                 case 'upgrade':
                 case 'userstring':
                 case 'waitcomplete':
+                    uniqueNamespaces.set(
+                        value.label,
+                        (uniqueNamespaces.has(value.label)) ?
+                            uniqueNamespaces[value.label] + 1 :
+                            1
+                    )
+
                     return
                 default:
                     assert(false, '2450 ApiSpec contains an unknown namespace "' + value.label + '"')
             }
         })
+
+        assert(uniqueNamespaces.size === totalModules, '2450 ApiSpec contains duplicate namespaces')
     }
 
     @test('Exports InstrumentSpec')
