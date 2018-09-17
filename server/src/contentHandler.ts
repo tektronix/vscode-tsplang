@@ -20,7 +20,7 @@ import { CompletionItem, Position, SignatureHelp, SignatureInformation, TextDocu
 import { resolveCompletionNamespace } from './instrument/provider'
 import { TspItem } from './tspManager'
 
-export class ContentParser {
+export class ContentHandler {
     lastCompletionUri?: string
 
     private backwardSignatureRegexp: RegExp = new RegExp(
