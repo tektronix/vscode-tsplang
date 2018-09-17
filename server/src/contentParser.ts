@@ -23,7 +23,13 @@ import { TspItem } from './tspManager'
 export class ContentParser {
     lastCompletionUri?: string
 
+    private backwardSignatureRegexp: RegExp = new RegExp(
+        /[^(]*?(\'([^\\\']|\\.)*\'|\"([^\\\"]|\\.)*\"|\[\[.*\]\]|[^()]|\()*\(/
+    )
     private readonly documents: TextDocuments
+    private forwardSignatureRegexp: RegExp = new RegExp(
+        /[^)]*?(\'([^\\\']|\\.)*\'|\"([^\\\"]|\\.)*\"|\[\[.*\]\]|[^()]|\))*\)/
+    )
     private namespaceRegexp: RegExp = new RegExp(/^[a-zA-Z0-9\[\].]*/)
     private tableIndexRegexp: RegExp = new RegExp(/\[[0-9]\]/g)
 
@@ -169,10 +175,39 @@ export class ContentParser {
 
         // Convert the current Position to a zero-based offset
         const offset: number = content.offsetAt(position)
+
+        // Get everything after the cursor offset and match to the signature's closing parenthesis
+        const matchesAfterOffset = contentText.slice(offset).match(this.forwardSignatureRegexp)
+
+        if (matchesAfterOffset === null) {
+            return
+        }
+
+        const signatureAfterOffset = matchesAfterOffset.shift()
+
+        if (signatureAfterOffset === undefined) {
+            return
+        }
+
+        // Get everything before the cursor offset, reverse it, and match to the signature's closing parenthesis
+        const matchesBeforeOffset = this.reverse(contentText.slice(0, offset)).match(this.backwardSignatureRegexp)
+
+        if (matchesBeforeOffset === null) {
+            return
+        }
+
+        const signatureBeforeOffset = matchesBeforeOffset.shift()
+
+        if (signatureBeforeOffset === undefined) {
+            return
+        }
+
         // Get the document offset of the nearest open-parenthesis to the left of the cursor offset
-        const openParenOffset = contentText.lastIndexOf('(', offset)
+        const openParenOffset = offset - signatureBeforeOffset.length
         // Get the document offset of the nearest close-parenthesis to the right of the cursor offset
-        const closeParenOffset = contentText.indexOf(')', offset)
+        const closeParenOffset = offset + signatureAfterOffset.length - 1
+
+        // TODO: still need to determine which commas belong to the current signature
 
         // Do not provide signature help if we cannot find a closing parenthesis
         if (closeParenOffset === -1) {
