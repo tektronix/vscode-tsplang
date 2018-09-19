@@ -21,44 +21,129 @@ interface Next {
 }
 
 interface Pair {
-    close: string
     escape?: string
-    open: string
+    close(reverse: boolean): string
+    open(reverse: boolean): string
 }
-const parentheses: Pair = { close: ')', open: '(' }
-const singleQuotes: Pair = { close: "'", escape: '\\', open: "'" }
-const doubleQuotes: Pair = { close: '"', escape: '\\', open: '"' }
-const doubleSquareBrackets: Pair = { close: ']]', open: '[[' }
 
-export const getOffsetOfUnmatched = (text: string, char: string, reverse: boolean): number => {
-    let offset: number = (reverse) ? text.length : 0
+export const parentheses: Pair = {
+    close: (reverse: boolean): string => {
+        return (reverse) ? '(' : ')'
+    },
+    open: (reverse: boolean): string => {
+        return (reverse) ? ')' : '('
+    }
+}
 
-    return -1
+export const singleQuotes: Pair = {
+    close: (reverse: boolean): string => {
+        return "'"
+    },
+    escape: '\\',
+    open: (reverse: boolean): string => {
+        return "'"
+    }
+}
+
+export const doubleQuotes: Pair = {
+    close: (reverse: boolean): string => {
+        return '"'
+    },
+    escape: '\\',
+    open: (reverse: boolean): string => {
+        return '"'
+    }
+}
+
+export const doubleSquareBrackets: Pair = {
+    close: (reverse: boolean): string => {
+        return (reverse) ? '[[' : ']]'
+    },
+    open: (reverse: boolean): string => {
+        return (reverse) ? ']]' : '[['
+    }
+}
+
+export const getOffsetOfUnmatched = (text: string, type: Pair, reverse: boolean): number | undefined => {
+    let state: Next = {
+        char: '',
+        offset: (reverse) ? text.length - 1 : 0
+    }
+
+    do {
+        let foundType: Pair | undefined
+
+        state = next(text, state.offset, reverse)
+
+        if (state.char.localeCompare(type.close(reverse)) === 0) {
+            return state.offset
+        }
+        else if (state.char.localeCompare(singleQuotes.open(reverse)) === 0) {
+            foundType = singleQuotes
+            state.offset = consumePair(text, state.offset, singleQuotes, reverse)
+        }
+        else if (state.char.localeCompare(doubleQuotes.open(reverse)) === 0) {
+            foundType = doubleQuotes
+            state.offset = consumePair(text, state.offset, doubleQuotes, reverse)
+        }
+        else if (state.char.localeCompare(doubleSquareBrackets.open(reverse)[0]) === 0) {
+            // lookahead check to see if the next character is also an open square bracket
+            if (peek(text, state.offset, reverse).localeCompare(doubleSquareBrackets.open(reverse)[0]) === 0) {
+                foundType = doubleSquareBrackets
+                state = next(text, state.offset, reverse)
+            }
+        }
+
+        if (foundType !== undefined) {
+            state.offset = consumePair(text, state.offset, foundType, reverse)
+        }
+
+    } while (state.char.localeCompare('') === 0)
+
+    return
 }
 
 /**
  * @returns The new offset.
  */
-const consumePair = (text: string, offset: number, reverse: boolean): number | undefined => {
-
-}
-
-const isPairStart = (char: string, reverse: boolean): boolean => {
-    if (reverse) {
-        if (char.localeCompare(parentheses.close) === 0) {
-            return true
-        }
+const consumePair = (text: string, offset: number, type: Pair, reverse: boolean): number => {
+    let lastCharWasEscape = false
+    let state: Next = {
+        offset,
+        char: ''
     }
 
-    return false
+    do {
+        state = next(text, state.offset, false)
+
+        if (state.char.localeCompare(type.close(reverse)) === 0 && !lastCharWasEscape) {
+            return state.offset
+        }
+
+        if (type.escape !== undefined) {
+            lastCharWasEscape = (state.char.localeCompare(type.escape) === 0)
+        }
+
+    } while (state.char.localeCompare('') === 0)
+
+    return offset
 }
 
 /**
  * @returns An object containing the next character and the new offset.
  */
 const next = (text: string, offset: number, reverse: boolean): Next => {
+    const newOffset = (reverse) ? offset - 1 : offset + 1
+
     return {
-        char: text.charAt(offset),
-        offset: (reverse) ? offset - 1 : offset + 1
+        char: text.charAt(newOffset),
+        offset: newOffset
     }
+}
+
+/**
+ * @returns The character at the next offset.
+ */
+const peek = (text: string, offset: number, reverse: boolean): string => {
+    return text.charAt((reverse) ? offset - 1 : offset + 1)
 }
