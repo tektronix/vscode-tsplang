@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Fixed
 - Fixed document unregistration in `tspManager` if it lacked a shebang.
 - Corrected the completion label for `status.condition`.
+- Removed unnecessary asterisk escapes.
+- Added missing `smu.interlock` and `trigger.model` 2450 commands.
 
 ## 0.4.0 - 2018-09-07
 ### Added
