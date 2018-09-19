@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- "node"
+- "lts/*"
+install:
+- npm install
+- npm install --devDependencies
+script:
+- npm run lint
+- npm run test:coverage
+cache:
+  directories:
+    - "node_modules"
