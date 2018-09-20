@@ -114,6 +114,8 @@
             "./server/src/instrument/raw-tsb-help/*"
         ],
         "reporter": [
+            "json",
+            "html",
             "lcov",
             "mocha",
             "text"
