@@ -19,7 +19,7 @@
         ],
         "editor.tabSize": 4
     },
-    "mocha.files.glob": "test/**/*.ts",
+    "mocha.files.glob": "test/**/*.test.ts",
     "mocha.options": {
         "recursive": true
     },

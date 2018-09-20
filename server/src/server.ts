@@ -15,8 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, ParameterInformation, SignatureHelp, SignatureInformation, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
+import { ContentParser } from './contentParser'
 import { TspManager } from './tspManager'
 
 const manager: TspManager = new TspManager()
@@ -30,6 +31,9 @@ const connection: IConnection = createConnection(
 // Create a simple text document manager. The text document manager supports full document sync
 // only
 const documents: TextDocuments = new TextDocuments()
+
+// Create a content parser to provide regular-expression based document parsing
+const parser: ContentParser = new ContentParser(documents)
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
@@ -82,206 +86,39 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 })
 
 // This handler provides the initial list of completion items.
-connection.onCompletion((textDocumentPosition: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
-    const content = documents.get(textDocumentPosition.textDocument.uri)
-
-    if (content === undefined) {
-        return
-    }
-
-    const offset: number = content.offsetAt(textDocumentPosition.position)
-
-    const namespaceRegexp = new RegExp('^[a-zA-Z.\\[\\]0-9]*')
-
-    // get all text before the cursor position,
-    // convert the string to an array of characters,
-    // reverse the array of characters,
-    // convert the array to a string
-    // (we need to reverse because we don't know where the namespace starts)
-    const reverseText = content.getText().slice(0, offset).split('').reverse().join('')
-    const reverseMatches = reverseText.match(namespaceRegexp)
-
-    const results: Array<CompletionItem> = new Array()
-
-    const tspItem = manager.get(textDocumentPosition.textDocument.uri)
+connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
+    const tspItem = manager.get(params.textDocument.uri)
 
     if (tspItem === undefined) {
         return
     }
 
-    if (reverseMatches === null) {
-        return
-    }
-
-    let firstMatch = reverseMatches.shift()
-
-    if (firstMatch === undefined || firstMatch === '') {
-        for (const compl of tspItem.completions) {
-            // get root namespace completions
-            if (compl.data === undefined) {
-                results.push(compl)
-            }
-        }
-
-        return results
-    }
-
-    let endingQualifier = false
-
-    // remove any namespace qualifier at position 0
-    if (firstMatch.indexOf('.') === 0) {
-        firstMatch = firstMatch.slice(1)
-        endingQualifier = true
-
-        // return if we just deleted the entire string
-        if (firstMatch.length === 0) {
-            return
-        }
-    }
-
-    // un-reverse the string and remove square brackets and their contents
-    const unreversed = firstMatch.split('').reverse().join('').replace(/\[[0-9]\]/g, '')
-    // split the unreversed string on namespace qualifiers and reverse the namespace domains
-    const namespaceArray: Array<string> = unreversed.split('.').reverse()
-
-    for (const compl of tspItem.completions) {
-        // if the completion has a data field, then it's not a root namespace
-        if (compl.data !== undefined && compl.data instanceof Array) {
-            if (compl.data.join('.') === namespaceArray.join('.')) {
-                results.push(compl)
-            }
-        }
-        else {
-            // prevent the same namespace from showing up again if it is 1 deep
-            if (endingQualifier) {
-                continue
-            }
-
-            // root namespaces only have label fields, so partial match against that
-            const partialMatches = compl.label.match(namespaceArray.join('.'))
-
-            if (partialMatches === null) {
-                continue
-            }
-
-            const partial = partialMatches.shift()
-            if (partial !== undefined && partial !== '') {
-                results.push(compl)
-            }
-        }
-    }
-
-    // sort on CompletionItem.kind
-    if (results.length > 0) {
-        results.sort((a: CompletionItem, b: CompletionItem): number => {
-            if (a.kind !== undefined && b.kind !== undefined) {
-                return a.kind - b.kind
-            }
-            else {
-                return a.label.localeCompare(b.label)
-            }
-        })
-    }
-
-    return results
+    return parser.getCompletions(params.textDocument.uri, params.position, tspItem)
 })
 
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    return item
+    if (parser.lastCompletionUri === undefined) {
+        return item
+    }
+
+    const tspItem = manager.get(parser.lastCompletionUri)
+
+    if (tspItem === undefined) {
+        return item
+    }
+
+    return parser.getCompletionDoc(item, tspItem)
 })
 
-connection.onSignatureHelp((params: TextDocumentPositionParams) => {
-    const content = documents.get(params.textDocument.uri)
-
-    if (content === undefined) {
-        return
-    }
-
-    const offset: number = content.offsetAt(params.position)
-    const openParenOffset: number = content.getText().lastIndexOf('(', offset)
-    const closeParenOffset: number = content.getText().indexOf(')', offset)
-    const commaIndices: Array<number> = new Array()
-
-    if (closeParenOffset === -1) {
-        return
-    }
-
-    // stop providing signature info if the cursor is outside of the parenthesis
-    if (offset <= openParenOffset || offset > closeParenOffset) {
-        return
-    }
-
-    const callRegexp = new RegExp('^[a-zA-Z.\\[\\]0-9]*')
-
-    // get all text before the open parenthesis offset,
-    // convert the string to an array of characters,
-    // reverse the array of characters,
-    // convert the array to a string
-    // (we need to reverse because we don't know where the function call starts)
-    const reverseText = content.getText().slice(0, openParenOffset).split('').reverse().join('')
-    const reverseMatches = reverseText.match(callRegexp)
-
-    if (reverseMatches === null) {
-        return
-    }
-
-    const firstMatch = reverseMatches.shift()
-
-    if (firstMatch === undefined) {
-        return
-    }
-
-    // un-reverse the string and remove digits inside of square brackets
-    const unreversed = firstMatch.split('').reverse().join('').replace(/\[[0-9]\]/g, '[]')
-
+connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
     const tspItem = manager.get(params.textDocument.uri)
 
-    if (tspItem === undefined || tspItem.signatures === undefined) {
+    if (tspItem === undefined) {
         return
     }
 
-    const results: Array<SignatureInformation> = new Array()
-
-    // add all matching signatures to the results array
-    for (const signa of tspItem.signatures) {
-        const signaBeforeParams = signa.label.slice(0, signa.label.indexOf('('))
-
-        if (signaBeforeParams.localeCompare(unreversed) === 0) {
-            results.push(signa)
-        }
-    }
-
-    // get the index of each comma between our surrounding parenthesis
-    for (let i = openParenOffset + 1; i < closeParenOffset;) {
-        const commaIndex = content.getText().indexOf(',', i)
-        if (commaIndex >= i) {
-            commaIndices.push(commaIndex)
-            i = commaIndex + 1
-        }
-        else {
-            i++
-        }
-    }
-
-    // compare the current offset to the index of the last comma to get the active parameter
-    let activeParam = 0
-    commaIndices.forEach((element: number) => {
-        if (offset > element) {
-            activeParam++
-        }
-        else {
-            return
-        }
-    })
-
-    const sig: SignatureHelp = {
-        activeParameter: activeParam,
-        activeSignature: 0,
-        signatures: results
-    }
-
-    return sig
+    return parser.getSignatures(params.textDocument.uri, params.position, tspItem)
 })
 
 // Make the text document manager listen on the connection for open, change and close text

@@ -4,8 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+- How completions and signatures are generated behind the scenes, resulting in a lower memory footprint.
+### Fixed
+- Fixed document unregistration in `tspManager` if it lacked a shebang.
+- Corrected the completion label for `status.condition`.
+- Removed unnecessary asterisk escapes.
+- Added missing `smu.interlock` and `trigger.model` 2450 commands.
 
-## [0.4.0] - 2018-09-07
+## 0.4.0 - 2018-09-07
 ### Added
 - Model 2450 support.
 - Lua 5.0.3 support.

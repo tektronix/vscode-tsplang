@@ -2,7 +2,7 @@
     "name": "tsplang",
     "displayName": "TSPLang",
     "description": "Keithley Instruments TSP® language extension for Visual Studio Code",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "preview": true,
     "publisher": "Keithley",
     "license": "Apache-2.0",
@@ -76,6 +76,8 @@
         "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json"
     },
     "nyc": {
+        "all": true,
+        "clean": true,
         "extension": [
             ".ts",
             ".tsx"
@@ -89,13 +91,15 @@
             "./coverage/**",
             "./out/**",
             "./client/**",
-            "./src/extension.ts"
+            "./src/extension.ts",
+            "./server/src/instrument/2460/*",
+            "./server/src/instrument/2461/*",
+            "./server/src/instrument/6500/*",
+            "./server/src/instrument/raw-tsb-help/*"
         ],
         "reporter": [
-            "html",
-            "text",
-            "mocha"
-        ],
-        "all": true
+            "mocha",
+            "text"
+        ]
     }
 }
