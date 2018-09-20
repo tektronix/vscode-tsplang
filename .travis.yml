@@ -3,7 +3,6 @@ node_js:
 - "node"
 - "lts/*"
 install:
-- npm install
 - npm install --devDependencies
 script:
 - npm run lint
