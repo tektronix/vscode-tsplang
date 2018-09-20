@@ -17,4 +17,4 @@ script:
 - npm run test:coverage
 cache:
   directories:
-    - "node_modules"
+  - "node_modules"
