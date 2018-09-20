@@ -76,6 +76,8 @@
         "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json"
     },
     "nyc": {
+        "all": true,
+        "clean": true,
         "extension": [
             ".ts",
             ".tsx"
@@ -96,10 +98,8 @@
             "./server/src/instrument/raw-tsb-help/*"
         ],
         "reporter": [
-            "html",
-            "text",
-            "mocha"
-        ],
-        "all": true
+            "mocha",
+            "text"
+        ]
     }
 }
