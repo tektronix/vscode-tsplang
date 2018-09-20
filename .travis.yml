@@ -1,20 +1,30 @@
 language: node_js
+
+node_js:
+- "node"
+- "lts/*"
+
 branches:
   # only master, dev, and tagged commits
   only:
   - master
   - dev
   - /^v\d+\.\d+(\.\d+)?(-\S*)?$/
-node_js:
-- "node"
-- "lts/*"
-install:
-- npm install --devDependencies
-before_script:
-- npm run compile
-script:
-- npm run lint
-- npm run test:coverage
+
 cache:
   directories:
   - "node_modules"
+  - "server/node_modules"
+
+install:
+- npm install --devDependencies
+
+before_script:
+- npm run compile
+
+script:
+- npm run lint
+- npm run test:coverage
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
