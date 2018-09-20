@@ -10,6 +10,10 @@
         "type": "git",
         "url": "https://github.com/tektronixofficial/vscode-tsplang"
     },
+    "bugs": {
+        "url": "https://github.com/tektronixofficial/vscode-tsplang/issues"
+    },
+    "qna": "https://github.com/tektronixofficial/vscode-tsplang/issues",
     "engines": {
         "vscode": "^1.26.0"
     },
