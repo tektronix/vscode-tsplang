@@ -14,6 +14,18 @@
         "url": "https://github.com/tektronixofficial/vscode-tsplang/issues"
     },
     "qna": "https://github.com/tektronixofficial/vscode-tsplang/issues",
+    "badges": [
+        {
+            "url": "https://travis-ci.com/tektronixofficial/vscode-tsplang.svg?branch=master",
+            "href": "https://travis-ci.com/tektronixofficial/vscode-tsplang",
+            "description": "Continuous Integration (Travis-CI)"
+        },
+        {
+            "url": "https://codecov.io/gh/tektronixofficial/vscode-tsplang/branch/master/graph/badge.svg",
+            "href": "https://codecov.io/gh/tektronixofficial/vscode-tsplang",
+            "description": "Test Coverage (Codecov)"
+        }
+    ],
     "engines": {
         "vscode": "^1.26.0"
     },
