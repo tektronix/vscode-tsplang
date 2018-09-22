@@ -32,7 +32,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = ')'
@@ -44,7 +44,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '1)'
@@ -56,7 +56,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '3.14159)'
@@ -68,7 +68,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = "')')"
@@ -80,7 +80,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // '\')')
@@ -93,7 +93,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '")")'
@@ -105,7 +105,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // "\")")
@@ -118,7 +118,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '[[)]])'
@@ -130,7 +130,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '[[] ])]])'
@@ -142,7 +142,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // '\')', "\")", [[] ])]])
@@ -155,7 +155,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '5, math.abs(-3.14159))'
@@ -167,7 +167,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '((((((((((())))))))))))'
@@ -179,7 +179,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '((((((((((()))))))))))),)'
@@ -191,7 +191,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a('\')', b("\")", c([[] ])]]))))
@@ -204,7 +204,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a('(\'', b("(\"", c([[(] ] ]]))))
@@ -217,7 +217,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a('(\')', b("(\")", c([[(] ])]]))))
@@ -230,7 +230,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
     }
 
@@ -245,7 +245,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b('
@@ -257,7 +257,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b(1'
@@ -269,7 +269,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b(3.14159'
@@ -281,7 +281,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = "a.b('('"
@@ -293,7 +293,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a.b('(\''
@@ -306,7 +306,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b("("'
@@ -318,7 +318,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a.b("(\""
@@ -331,7 +331,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b([[(]]'
@@ -343,7 +343,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b([[(] ] ]]'
@@ -355,7 +355,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a.b('(\'', "(\"", [[(] ] ]]
@@ -368,7 +368,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = 'a.b(5, math.abs(-3.14159)'
@@ -380,7 +380,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '(((((((((((()))))))))))'
@@ -392,7 +392,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         testString = '(,(((((((((((()))))))))))'
@@ -404,7 +404,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a.b(c('(\'', d("(\"", e([[(] ] ]])))
@@ -417,7 +417,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a.b(c('\')', d("\")", e([[(] ] ]])))
@@ -430,7 +430,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
         // a.b(c('(\')', d("(\")", e([[(] ])]])))
@@ -443,7 +443,7 @@ import { parentheses } from '../../../server/src/lua/pair'
         )
         assert(
             actualOffset === expectedOffset,
-            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
     }
 }
