@@ -22,6 +22,57 @@ interface Next {
     offset: number
 }
 
+/**
+ * @param openParenOffset - The zero-based index of the signature's opening parenthesis.
+ * @param closeParenOffset - The zero-based index of the signature's closing parenthesis.
+ */
+export const getActiveParameter = (
+    text: string,
+    cursorOffset: number,
+    openParenOffset: number,
+    closeParenOffset: number
+): number => {
+    const commaIndices: Array<number> = new Array()
+    const searchString = text.slice(openParenOffset + 1, closeParenOffset)
+    let state: Next = {
+        char: searchString.charAt(0),
+        offset: 0
+    }
+
+    do {
+        if (state.char.localeCompare(',') === 0) {
+            commaIndices.push(state.offset + openParenOffset + 1)
+        }
+
+        if (isPairStart(searchString, state.offset, false)) {
+            const foundType = getPair(searchString, state.offset, false)
+
+            if (foundType !== undefined) {
+                state.offset = consumePair(searchString, state.offset, foundType, false)
+            }
+        }
+
+        state = next(searchString, state.offset, false)
+
+    } while (state.char.localeCompare('') !== 0)
+
+    // The zero-based index of the parameter to highlight and show documentation for
+    let result = 0
+
+    // For each comma index, increment the active parameter until the current offset
+    // is greater than the current comma index.
+    commaIndices.forEach((index: number) => {
+        if (cursorOffset > index) {
+            result++
+        }
+        else {
+            return
+        }
+    })
+
+    return result
+}
+
 export const getOffsetOfUnmatched = (text: string, type: Pair, reverse: boolean): number | undefined => {
     const offset = (reverse) ? text.length - 1 : 0
     let state: Next = {
