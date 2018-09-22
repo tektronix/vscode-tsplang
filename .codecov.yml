@@ -1,5 +1,5 @@
 comment:
-  layout: "header, diff, files"
+  layout: "diff, files"
   behavior: default
   require_changes: no
 
