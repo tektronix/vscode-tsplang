@@ -15,53 +15,11 @@
  */
 'use strict'
 
+import { doubleQuotes, doubleSquareBrackets, Pair, parentheses, singleQuotes } from './lua/pair'
+
 interface Next {
     char: string
     offset: number
-}
-
-interface Pair {
-    escape?: string
-    close(reverse: boolean): string
-    open(reverse: boolean): string
-}
-
-export const parentheses: Pair = {
-    close: (reverse: boolean): string => {
-        return (reverse) ? '(' : ')'
-    },
-    open: (reverse: boolean): string => {
-        return (reverse) ? ')' : '('
-    }
-}
-
-export const singleQuotes: Pair = {
-    close: (reverse: boolean): string => {
-        return "'"
-    },
-    escape: '\\',
-    open: (reverse: boolean): string => {
-        return "'"
-    }
-}
-
-export const doubleQuotes: Pair = {
-    close: (reverse: boolean): string => {
-        return '"'
-    },
-    escape: '\\',
-    open: (reverse: boolean): string => {
-        return '"'
-    }
-}
-
-export const doubleSquareBrackets: Pair = {
-    close: (reverse: boolean): string => {
-        return (reverse) ? '[[' : ']]'
-    },
-    open: (reverse: boolean): string => {
-        return (reverse) ? ']]' : '[['
-    }
 }
 
 export const getOffsetOfUnmatched = (text: string, type: Pair, reverse: boolean): number | undefined => {
@@ -76,24 +34,24 @@ export const getOffsetOfUnmatched = (text: string, type: Pair, reverse: boolean)
 
         const index1 = (reverse) ? 1 : 0
 
-        if (state.char.localeCompare(type.close(reverse)) === 0) {
+        if (state.char.localeCompare(getClose(type, reverse)) === 0) {
             return state.offset
         }
-        else if (state.char.localeCompare(doubleQuotes.open(reverse)) === 0) {
+        else if (state.char.localeCompare(getOpen(doubleQuotes, reverse)) === 0) {
             foundType = doubleQuotes
         }
-        else if (state.char.localeCompare(doubleSquareBrackets.open(reverse)[index1]) === 0) {
+        else if (state.char.localeCompare(getOpen(doubleSquareBrackets, reverse)[index1]) === 0) {
             const index2 = (reverse) ? 0 : 1
 
             // Lookahead check to see if the next character is also an open square bracket.
-            if (peek(text, state.offset, reverse).localeCompare(doubleSquareBrackets.open(reverse)[index2]) === 0) {
+            if (peek(text, state.offset, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)[index2]) === 0) {
                 foundType = doubleSquareBrackets
             }
         }
-        else if (state.char.localeCompare(singleQuotes.open(reverse)) === 0) {
+        else if (state.char.localeCompare(getOpen(singleQuotes, reverse)) === 0) {
             foundType = singleQuotes
         }
-        else if (state.char.localeCompare(parentheses.open(reverse)) === 0) {
+        else if (state.char.localeCompare(getOpen(parentheses, reverse)) === 0) {
             foundType = parentheses
         }
 
@@ -126,14 +84,14 @@ function consumePair(text: string, offset: number, type: Pair, reverse: boolean)
             lastCharWasEscape = (peek(text, state.offset, reverse).localeCompare(type.escape) === 0)
         }
 
-        const index1 = (reverse && type.close(reverse).length > 1) ? 1 : 0
+        const index1 = (reverse && getClose(type, reverse).length > 1) ? 1 : 0
         const index2 = (reverse) ? 0 : 1
 
-        if (state.char.localeCompare(type.close(reverse)[index1]) === 0 && !lastCharWasEscape) {
+        if (state.char.localeCompare(getClose(type, reverse)[index1]) === 0 && !lastCharWasEscape) {
             // If the closing string is more than 1 character.
-            if (type.close(reverse).length > 1) {
+            if (getClose(type, reverse).length > 1) {
                 // Lookahead check to see if the next character also matches the closing character.
-                if (peek(text, state.offset, reverse).localeCompare(type.close(reverse)[index2]) === 0) {
+                if (peek(text, state.offset, reverse).localeCompare(getClose(type, reverse)[index2]) === 0) {
                     state = next(text, state.offset, reverse)
 
                     return state.offset
@@ -146,36 +104,39 @@ function consumePair(text: string, offset: number, type: Pair, reverse: boolean)
 
         let recurseType: Pair | undefined
 
-        if (state.char.localeCompare(doubleQuotes.open(reverse)) === 0) {
+        if (state.char.localeCompare(getOpen(doubleQuotes, reverse)) === 0) {
             // If we are not inside double square brackets and we are not inside single quotes.
-            if (type.open(reverse).localeCompare(doubleSquareBrackets.open(reverse)) !== 0
-                && type.open(reverse).localeCompare(singleQuotes.open(reverse)) !== 0) {
+            if (getOpen(type, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)) !== 0
+                && getOpen(type, reverse).localeCompare(getOpen(singleQuotes, reverse)) !== 0) {
                 recurseType = doubleQuotes
             }
         }
-        else if (state.char.localeCompare(doubleSquareBrackets.open(reverse)[index1]) === 0) {
-            if (peek(text, state.offset, reverse).localeCompare(doubleSquareBrackets.open(reverse)[index2]) === 0) {
+        else if (state.char.localeCompare(getOpen(doubleSquareBrackets, reverse)[index1]) === 0) {
+            if (peek(text, state.offset, reverse).localeCompare(getOpen(
+                doubleSquareBrackets,
+                reverse)[index2]) === 0
+            ) {
                 // If we are not inside double quotes and we are not inside single quotes.
-                if (type.open(reverse).localeCompare(doubleQuotes.open(reverse)) !== 0
-                    && type.open(reverse).localeCompare(singleQuotes.open(reverse)) !== 0) {
+                if (getOpen(type, reverse).localeCompare(getOpen(doubleQuotes, reverse)) !== 0
+                    && getOpen(type, reverse).localeCompare(getOpen(singleQuotes, reverse)) !== 0) {
                     recurseType = doubleSquareBrackets
                 }
             }
         }
-        else if (state.char.localeCompare(parentheses.open(reverse)) === 0) {
+        else if (state.char.localeCompare(getOpen(parentheses, reverse)) === 0) {
             // If we are not inside double quotes,
             // and we are not inside double square brackets,
             // and we are not inside single quotes.
-            if (type.open(reverse).localeCompare(doubleQuotes.open(reverse)) !== 0
-                && type.open(reverse).localeCompare(doubleSquareBrackets.open(reverse)) !== 0
-                && type.open(reverse).localeCompare(singleQuotes.open(reverse)) !== 0) {
+            if (getOpen(type, reverse).localeCompare(getOpen(doubleQuotes, reverse)) !== 0
+                && getOpen(type, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)) !== 0
+                && getOpen(type, reverse).localeCompare(getOpen(singleQuotes, reverse)) !== 0) {
                 recurseType = parentheses
             }
         }
-        else if (state.char.localeCompare(singleQuotes.open(reverse)) === 0) {
+        else if (state.char.localeCompare(getOpen(singleQuotes, reverse)) === 0) {
             // If we are not inside double quotes and we are not inside double square brackets
-            if (type.open(reverse).localeCompare(doubleQuotes.open(reverse)) !== 0
-                && type.open(reverse).localeCompare(doubleSquareBrackets.open(reverse)) !== 0) {
+            if (getOpen(type, reverse).localeCompare(getOpen(doubleQuotes, reverse)) !== 0
+                && getOpen(type, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)) !== 0) {
                 recurseType = singleQuotes
             }
         }
@@ -192,6 +153,14 @@ function consumePair(text: string, offset: number, type: Pair, reverse: boolean)
     } while (state.char.localeCompare('') !== 0)
 
     return offset
+}
+
+const getClose = (type: Pair, reverse: boolean): string => {
+    return (reverse) ? type.open : type.close
+}
+
+const getOpen = (type: Pair, reverse: boolean): string => {
+    return (reverse) ? type.close : type.open
 }
 
 /**
