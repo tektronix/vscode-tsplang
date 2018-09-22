@@ -13,11 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
+// tslint:disable:no-implicit-dependencies no-magic-numbers prefer-function-over-method
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
-import { doubleQuotes, doubleSquareBrackets, parentheses, singleQuotes } from '../../../server/src/contentProcessor'
+import { doubleQuotes, doubleSquareBrackets, getOffsetOfUnmatched, parentheses, singleQuotes } from '../../../server/src/contentProcessor'
 
 @suite class ContentProcessorTest {
     @test('doubleQuotes.close')
@@ -69,6 +69,432 @@ import { doubleQuotes, doubleSquareBrackets, parentheses, singleQuotes } from '.
         assert(
             doubleSquareBrackets.open(true).localeCompare(']]') === 0,
             'doubleSquareBrackets.open(reverse: true) does not return ]]'
+        )
+    }
+
+    @test('getOffsetOfUnmatched Parenthesis')
+    getOffsetOfUnmatchedParenthesis(): void {
+        let testString = ''
+        let expectedOffset: number | undefined
+        let actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = ')'
+        expectedOffset = 0
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '1)'
+        expectedOffset = 1
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '3.14159)'
+        expectedOffset = 7
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = "')')"
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // '\')')
+        testString = "'\\')')"
+        expectedOffset = 5
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '")")'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // "\")")
+        testString = '"\\")")'
+        expectedOffset = 5
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '[[)]])'
+        expectedOffset = 5
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '[[] ])]])'
+        expectedOffset = 8
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // '\')', "\")", [[] ])]])
+        testString = '\'\\\')\', "\\")", [[] ])]])'
+        expectedOffset = 22
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '5, math.abs(-3.14159))'
+        expectedOffset = 21
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '((((((((((())))))))))))'
+        expectedOffset = 22
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '((((((((((()))))))))))),)'
+        expectedOffset = 22
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a('\')', b("\")", c([[] ])]]))))
+        testString = 'a(\'\\\')\', b("\\")", c([[] ])]]))))'
+        expectedOffset = 31
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a('(\'', b("(\"", c([[(] ] ]]))))
+        testString = 'a(\'(\\\'\', b("(\\"", c([[(] ] ]]))))'
+        expectedOffset = 32
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a('(\')', b("(\")", c([[(] ])]]))))
+        testString = 'a(\'(\\\')\', b("(\\")", c([[(] ])]]))))'
+        expectedOffset = 34
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+    }
+
+    @test('getOffsetOfUnmatched Parenthesis Reverse')
+    getOffsetOfUnmatchedParenthesisReverse(): void {
+        let testString = ''
+        let expectedOffset: number | undefined
+        let actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b('
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b(1'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b(3.14159'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = "a.b('('"
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a.b('(\''
+        testString = "a.b('(\\''"
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b("("'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a.b("(\""
+        testString = 'a.b("(\\""'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b([[(]]'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b([[(] ] ]]'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a.b('(\'', "(\"", [[(] ] ]]
+        testString = 'a.b(\'(\\\'\', "(\\"", [[(] ] ]]'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = 'a.b(5, math.abs(-3.14159)'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '(((((((((((()))))))))))'
+        expectedOffset = 0
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '(,(((((((((((()))))))))))'
+        expectedOffset = 2
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a.b(c('(\'', d("(\"", e([[(] ] ]])))
+        testString = 'a.b(c(\'(\\\'\', d("(\\"", e([[(] ] ]])))'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a.b(c('\')', d("\")", e([[(] ] ]])))
+        testString = 'a.b(c(\'\\\')\', d("\\")", e([[] ])]])))'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        // a.b(c('(\')', d("(\")", e([[(] ])]])))
+        testString = 'a.b(c(\'(\\\')\', d("(\\")", e([[(] ])]])))'
+        expectedOffset = 3
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Faled to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
     }
 
