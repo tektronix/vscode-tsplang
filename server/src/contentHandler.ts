@@ -17,10 +17,12 @@
 
 import { CompletionItem, Position, SignatureHelp, SignatureInformation, TextDocuments } from 'vscode-languageserver'
 
+import { getActiveParameter, getOffsetOfUnmatched } from './contentProcessor'
 import { resolveCompletionNamespace } from './instrument/provider'
+import { parentheses } from './lua/pair'
 import { TspItem } from './tspManager'
 
-export class ContentParser {
+export class ContentHandler {
     lastCompletionUri?: string
 
     private readonly documents: TextDocuments
@@ -169,15 +171,22 @@ export class ContentParser {
 
         // Convert the current Position to a zero-based offset
         const offset: number = content.offsetAt(position)
-        // Get the document offset of the nearest open-parenthesis to the left of the cursor offset
-        const openParenOffset = contentText.lastIndexOf('(', offset)
-        // Get the document offset of the nearest close-parenthesis to the right of the cursor offset
-        const closeParenOffset = contentText.indexOf(')', offset)
 
-        // Do not provide signature help if we cannot find a closing parenthesis
-        if (closeParenOffset === -1) {
+        // Get the document offset of the nearest open-parenthesis to the left of the cursor offset
+        const openParenOffset = getOffsetOfUnmatched(contentText.slice(0, offset), parentheses, true)
+
+        if (openParenOffset === undefined) {
             return
         }
+
+        // Get the document offset of the nearest close-parenthesis to the right of the cursor offset
+        let closeParenOffset = getOffsetOfUnmatched(contentText.slice(offset), parentheses, false)
+
+        if (closeParenOffset === undefined) {
+            return
+        }
+
+        closeParenOffset = offset + closeParenOffset
 
         // Do not provide signature help if the cursor moves outside of a parenthesis-pair
         if (offset <= openParenOffset || offset > closeParenOffset) {
@@ -214,45 +223,15 @@ export class ContentParser {
             }
         }
 
-        const commaIndices: Array<number> = new Array()
-
-        // Get the index of each comma between our parentheses offsets.
-        // Starting i is the character following the open parenthesis.
-        // Breaks when the i reaches the closing parenthesis.
-        for (let i = openParenOffset + 1; i < closeParenOffset;) {
-            // Find the index of the nearest comma to the right of i
-            const commaIndex = contentText.indexOf(',', i)
-
-            // Break if no more commas can be found or if the next index lies outside our parentheses
-            if (commaIndex === -1 || commaIndex > closeParenOffset) {
-                break
-            }
-
-            // If this comma is located to the right of i
-            if (commaIndex >= i) {
-                commaIndices.push(commaIndex)
-                // Next time, start searching one after the index of this comma to prevent
-                // indexOf from matching it again.
-                i = commaIndex + 1
-            }
-        }
-
-        // The zero-based index of the parameter to highlight and show documentation for
-        let active = 0
-
-        // For each comma index, increment the active parameter until the current offset
-        // is greater than the current comma index.
-        commaIndices.forEach((index: number) => {
-            if (offset > index) {
-                active++
-            }
-            else {
-                return
-            }
-        })
+        const activeParameter = getActiveParameter(
+            contentText,
+            offset,
+            openParenOffset,
+            closeParenOffset
+        )
 
         return {
-            activeParameter: active,
+            activeParameter,
             activeSignature: 0,
             signatures: results
         }

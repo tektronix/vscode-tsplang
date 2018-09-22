@@ -17,7 +17,7 @@
 
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
-import { ContentParser } from './contentParser'
+import { ContentHandler } from './contentHandler'
 import { TspManager } from './tspManager'
 
 const manager: TspManager = new TspManager()
@@ -33,7 +33,7 @@ const connection: IConnection = createConnection(
 const documents: TextDocuments = new TextDocuments()
 
 // Create a content parser to provide regular-expression based document parsing
-const parser: ContentParser = new ContentParser(documents)
+const parser: ContentHandler = new ContentHandler(documents)
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
