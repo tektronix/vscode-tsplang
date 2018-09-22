@@ -217,6 +217,7 @@ const getPair = (text: string, offset: number, reverse: boolean): Pair | undefin
         return singleQuotes
     }
 
+    /* istanbul ignore next */
     return
 }
 
