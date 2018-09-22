@@ -30,33 +30,16 @@ export const getOffsetOfUnmatched = (text: string, type: Pair, reverse: boolean)
     }
 
     do {
-        let foundType: Pair | undefined
-
-        const index1 = (reverse) ? 1 : 0
-
         if (state.char.localeCompare(getClose(type, reverse)) === 0) {
             return state.offset
         }
-        else if (state.char.localeCompare(getOpen(doubleQuotes, reverse)) === 0) {
-            foundType = doubleQuotes
-        }
-        else if (state.char.localeCompare(getOpen(doubleSquareBrackets, reverse)[index1]) === 0) {
-            const index2 = (reverse) ? 0 : 1
 
-            // Lookahead check to see if the next character is also an open square bracket.
-            if (peek(text, state.offset, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)[index2]) === 0) {
-                foundType = doubleSquareBrackets
+        if (isPairStart(text, state.offset, reverse)) {
+            const foundType = getPair(text, state.offset, reverse)
+
+            if (foundType !== undefined) {
+                state.offset = consumePair(text, state.offset, foundType, reverse)
             }
-        }
-        else if (state.char.localeCompare(getOpen(singleQuotes, reverse)) === 0) {
-            foundType = singleQuotes
-        }
-        else if (state.char.localeCompare(getOpen(parentheses, reverse)) === 0) {
-            foundType = parentheses
-        }
-
-        if (foundType !== undefined) {
-            state.offset = consumePair(text, state.offset, foundType, reverse)
         }
 
         state = next(text, state.offset, reverse)
@@ -161,6 +144,48 @@ const getClose = (type: Pair, reverse: boolean): string => {
 
 const getOpen = (type: Pair, reverse: boolean): string => {
     return (reverse) ? type.close : type.open
+}
+
+const getPair = (text: string, offset: number, reverse: boolean): Pair | undefined => {
+    const char = text.charAt(offset)
+    const index1 = (reverse) ? 1 : 0
+
+    if (char.localeCompare(getOpen(doubleQuotes, reverse)) === 0) {
+        return doubleQuotes
+    }
+    else if (char.localeCompare(getOpen(doubleSquareBrackets, reverse)[index1]) === 0) {
+        const index2 = (reverse) ? 0 : 1
+        if (peek(text, offset, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)[index2]) === 0) {
+            return doubleSquareBrackets
+        }
+    }
+    else if (char.localeCompare(getOpen(parentheses, reverse)) === 0) {
+        return parentheses
+    }
+    else if (char.localeCompare(getOpen(singleQuotes, reverse)) === 0) {
+        return singleQuotes
+    }
+
+    return
+}
+
+const isPairStart = (text: string, offset: number, reverse: boolean): boolean => {
+    const char = text.charAt(offset)
+    const index1 = (reverse) ? 1 : 0
+
+    if (char.localeCompare(getOpen(doubleQuotes, reverse)) === 0
+        || char.localeCompare(getOpen(parentheses, reverse)) === 0
+        || char.localeCompare(getOpen(singleQuotes, reverse)) === 0) {
+        return true
+    }
+    else if (char.localeCompare(getOpen(doubleSquareBrackets, reverse)[index1]) === 0) {
+        const index2 = (reverse) ? 0 : 1
+        if (peek(text, offset, reverse).localeCompare(getOpen(doubleSquareBrackets, reverse)[index2]) === 0) {
+            return true
+        }
+    }
+
+    return false
 }
 
 /**
