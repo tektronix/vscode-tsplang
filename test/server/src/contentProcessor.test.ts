@@ -271,6 +271,17 @@ import { parentheses } from '../../../server/src/lua/pair'
             'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
         )
 
+        testString = '"'
+        actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            false
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
         testString = ')'
         expectedOffset = 0
         actualOffset = getOffsetOfUnmatched(
@@ -475,6 +486,17 @@ import { parentheses } from '../../../server/src/lua/pair'
         let testString = ''
         let expectedOffset: number | undefined
         let actualOffset = getOffsetOfUnmatched(
+            testString,
+            parentheses,
+            true
+        )
+        assert(
+            actualOffset === expectedOffset,
+            'Failed to return offset "' + expectedOffset + '" for input string "' + testString + '"'
+        )
+
+        testString = '"'
+        actualOffset = getOffsetOfUnmatched(
             testString,
             parentheses,
             true
