@@ -17,9 +17,10 @@
 
 import { CompletionItem, Position, SignatureHelp, SignatureInformation, TextDocuments } from 'vscode-languageserver'
 
-import { getActiveParameter, getOffsetOfUnmatched } from './contentProcessor'
+import { isPartialMatch } from './completionProcessor'
 import { resolveCompletionNamespace } from './instrument/provider'
 import { parentheses } from './lua/pair'
+import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspManager'
 
 export class ContentHandler {
@@ -89,7 +90,7 @@ export class ContentHandler {
 
         const results: Array<CompletionItem> = new Array()
 
-        let firstMatch = reverseMatches.shift()
+        const firstMatch = reverseMatches.shift()
 
         // Show root namespace completions if we did not match against a namespace
         if (firstMatch === undefined || firstMatch === '') {
@@ -103,52 +104,12 @@ export class ContentHandler {
             return results
         }
 
-        let endingQualifier = false
-
-        // Remove any trailing namespace qualifiers (".").
-        // Since the string is reversed, this is index 0.
-        if (firstMatch.indexOf('.') === 0) {
-            firstMatch = firstMatch.slice(1)
-            endingQualifier = true
-
-            // Return if we just deleted the entire string
-            if (firstMatch.length === 0) {
-                return
-            }
-        }
-
         // Un-reverse the string and remove any table indexers
         const unreversed = this.reverse(firstMatch.replace(this.tableIndexRegexp, ''))
-        // Split the unreversed string on namespace qualifiers and reverse the resulting array
-        const reverseNamespaceArray: Array<string> = unreversed.split('.').reverse()
 
         for (const completion of tspItem.commandSet.completions) {
-            // Use the "data" property if it exists...
-            if (completion.data !== undefined) {
-                if (completion.data.join('.') === reverseNamespaceArray.join('.')) {
-                    results.push(completion)
-                }
-            }
-            // ...otherwise this completion should be treated as a root namespace.
-            else {
-                // Do not include a root namespace in our results if the last character
-                // of the user's current namespace is a namespace qualifier.
-                // Suggest the foo module on a "foo" match but not on a "foo." match.
-                if (endingQualifier) {
-                    continue
-                }
-
-                // Partial match against the "label" property
-                const partialMatches = completion.label.match(reverseNamespaceArray.join('.'))
-
-                if (partialMatches === null) {
-                    continue
-                }
-
-                const partial = partialMatches.shift()
-                if (partial !== undefined && partial.length !== 0) {
-                    results.push(completion)
-                }
+            if (isPartialMatch(unreversed, completion)) {
+                results.push(completion)
             }
         }
 
