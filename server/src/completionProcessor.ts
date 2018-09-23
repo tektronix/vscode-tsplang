@@ -54,8 +54,7 @@ export function isPartialMatch(content: string, completion: CompletionItem): boo
         if (matches === null) {
             return false
         }
-
-        if (matches.length > 0) {
+        else {
             return true
         }
     }
