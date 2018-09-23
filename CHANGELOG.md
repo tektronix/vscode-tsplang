@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ## [v0.4.1] - 2018-09-23
 ### Changed
 - Completions and signatures are now dynamically generated behind the scenes, resulting in a lower memory footprint. *(#19)*
+
 ### Fixed
 - Fixed document unregistration in `tspManager` if it lacked a shebang. *(#19)*
 - Corrected the completion label for `status.condition`. *(#19)*
@@ -20,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Added
 - Model 2450 support.
 - Lua 5.0.3 support. *(#10)*
+
 ### Removed
 - Models 2460, 2461, 2461-SYS, and 6500 from the release package.
 
