@@ -86,6 +86,24 @@ function toString(completion: CompletionItem): string {
 
         testCompletion = {
             data: ['a'],
+            label: 'b'
+        }
+        assert(
+            ! isPartialMatch(testString, testCompletion),
+            '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
+        )
+
+        testCompletion = {
+            data: ['b'],
+            label: 'partial'
+        }
+        assert(
+            ! isPartialMatch(testString, testCompletion),
+            '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
+        )
+
+        testCompletion = {
+            data: ['a'],
             label: 'partial'
         }
         assert(
