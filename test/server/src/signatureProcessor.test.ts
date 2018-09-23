@@ -17,10 +17,10 @@
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
-import { getActiveParameter, getOffsetOfUnmatched } from '../../../server/src/contentProcessor'
 import { parentheses } from '../../../server/src/lua/pair'
+import { getActiveParameter, getOffsetOfUnmatched } from '../../../server/src/signatureProcessor'
 
-@suite class ContentProcessorTest {
+@suite class SignatureProcessorTest {
     @test('getActiveParameter')
     getActiveParameterTest(): void {
         let testString = ''
