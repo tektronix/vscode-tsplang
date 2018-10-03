@@ -111,4 +111,69 @@ function toString(completion: CompletionItem): string {
             '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
         )
     }
+
+    // Issue #31 - Unescaped regular expression string input.
+    @test('isPartialMatch Unescaped Regexp')
+    isPartialMatchUnescapedRegexpTest(): void {
+        let testStrings: Array<string> = ['(', '[', 'a(', 'a[']
+        let testCompletion: CompletionItem = {
+            label: 'a'
+        }
+        try {
+            testStrings.forEach((str: string) => {
+                isPartialMatch(str, testCompletion)
+            })
+        } catch (err) {
+            assert(
+                false,
+                'Failed to properly escape regular expression input. Raw Error: ' + err
+            )
+        }
+
+        testStrings = ['a(b', 'a[b']
+        testCompletion = {
+            label: 'b'
+        }
+        try {
+            testStrings.forEach((str: string) => {
+                isPartialMatch(str, testCompletion)
+            })
+        } catch (err) {
+            assert(
+                false,
+                'Failed to properly escape regular expression input. Raw Error: ' + err
+            )
+        }
+
+        testStrings = ['a.b(', 'a.b[']
+        testCompletion = {
+            data: ['a'],
+            label: 'b'
+        }
+        try {
+            testStrings.forEach((str: string) => {
+                isPartialMatch(str, testCompletion)
+            })
+        } catch (err) {
+            assert(
+                false,
+                'Failed to properly escape regular expression input. Raw Error: ' + err
+            )
+        }
+
+        testStrings = ['a.b(p', 'a.b[p']
+        testCompletion = {
+            label: 'partial'
+        }
+        try {
+            testStrings.forEach((str: string) => {
+                isPartialMatch(str, testCompletion)
+            })
+        } catch (err) {
+            assert(
+                false,
+                'Failed to properly escape regular expression input. Raw Error: ' + err
+            )
+        }
+    }
 }

@@ -15,6 +15,8 @@
  */
 'use strict'
 
+// tslint:disable-next-line:no-require-imports
+import escapeStringRegexp = require('escape-string-regexp')
 import { CompletionItem } from 'vscode-languageserver'
 
 export function isPartialMatch(content: string, completion: CompletionItem): boolean {
@@ -47,7 +49,7 @@ export function isPartialMatch(content: string, completion: CompletionItem): boo
             return true
         }
 
-        const labelRegexp = new RegExp('^' + lastName + '.*$')
+        const labelRegexp = new RegExp('^' + escapeStringRegexp(lastName) + '.*$')
 
         const matches = completion.label.match(labelRegexp)
 
