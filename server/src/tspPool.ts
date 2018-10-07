@@ -90,6 +90,7 @@ export class TspPool {
         ) : Promise<void> => {
             switch (model) {
                 case Model.KI2450:
+                case Model.KI2460:
                     try {
                         const instrModule: InstrumentModule = require(`./instrument/${model}`)
 
