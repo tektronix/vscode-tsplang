@@ -15,11 +15,7 @@
  */
 'use strict'
 
-import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
-import { get2450ApiSpec, get2450InstrumentSpec } from './instrument/2450'
-// import { get2460Completions, get2460Signatures } from './instrument/2460'
-// import { get2461Completions, get2461Signatures } from './instrument/2461'
-// import { get6500Completions, get6500Signatures } from './instrument/6500'
+import { ApiSpec, CommandSet, InstrumentModule, InstrumentSpec } from './instrument'
 import { generateCommandSet } from './instrument/provider'
 import { Model } from './model'
 
@@ -94,21 +90,24 @@ export class TspPool {
         ) : Promise<void> => {
             switch (model) {
                 case Model.KI2450:
+                case Model.KI2460:
                     try {
-                        const api2450: Array<ApiSpec> = await get2450ApiSpec()
-                        const spec2450: InstrumentSpec = await get2450InstrumentSpec()
+                        const instrModule: InstrumentModule = require(`./instrument/${model}`)
 
-                        const cmdSet2450: CommandSet = await generateCommandSet(api2450, spec2450)
+                        const api: Array<ApiSpec> = await instrModule.getApiSpec()
+                        const spec: InstrumentSpec = await instrModule.getInstrumentSpec()
+
+                        const cmdSet: CommandSet = await generateCommandSet(api, spec)
 
                         resolve({
-                            apiSpec: api2450,
-                            commandSet: cmdSet2450,
-                            instrumentSpec: spec2450,
+                            apiSpec: api,
+                            commandSet: cmdSet,
+                            instrumentSpec: spec,
                             references: 1
                         })
                     }
                     catch (e) {
-                        reject(new Error('2450 load failure: ' + e.toString()))
+                        reject(new Error('Load failure: ' + e.toString()))
                     }
 
                     break
