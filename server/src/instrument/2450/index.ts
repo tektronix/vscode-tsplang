@@ -941,7 +941,7 @@ const userstring: ApiSpec = {
 
 const waitcomplete: ApiSpec = { label: 'waitcomplete' }
 
-export function get2450ApiSpec(): Array<ApiSpec> {
+export function getApiSpec(): Array<ApiSpec> {
     return getLuaApiSpec().concat([
         beeper,
         bufferWrite,
@@ -1009,7 +1009,7 @@ export function get2450ApiSpec(): Array<ApiSpec> {
     ])
 }
 
-export function get2450InstrumentSpec(): InstrumentSpec {
+export function getInstrumentSpec(): InstrumentSpec {
     return {
         beeper: {
             maxHertz: 8000,

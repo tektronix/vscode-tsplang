@@ -28,10 +28,10 @@ import { emptySpec } from '../emptySpec'
         // tslint:disable-next-line:no-magic-numbers
         const totalModules = 70
 
-        assert(Namespace.get2450ApiSpec().length === totalModules, 'Unexpected number of 2450 ApiSpec modules')
+        assert(Namespace.getApiSpec().length === totalModules, 'Unexpected number of 2450 ApiSpec modules')
 
         const uniqueNamespaces: Map<string, number> = new Map()
-        Namespace.get2450ApiSpec().forEach((value: ApiSpec) => {
+        Namespace.getApiSpec().forEach((value: ApiSpec) => {
             switch (value.label) {
                 case 'beeper':
                 case 'buffer.write':
@@ -122,7 +122,7 @@ import { emptySpec } from '../emptySpec'
     @test('Exports InstrumentSpec')
     exportsInstrumentSpec(): void {
         assert(
-            ! isEqual(Namespace.get2450InstrumentSpec(), emptySpec),
+            ! isEqual(Namespace.getInstrumentSpec(), emptySpec),
             '2450 InstrumentSpec is an empty specification'
         )
     }

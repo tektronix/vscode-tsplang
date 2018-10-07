@@ -17,6 +17,11 @@
 
 export { CommandSet, CommandSetInterface } from './commandSet'
 
+export interface InstrumentModule {
+    getApiSpec(): Array<ApiSpec>
+    getInstrumentSpec(): InstrumentSpec
+}
+
 export interface BaseApiSpec {
     label: string
 }
