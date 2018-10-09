@@ -15,7 +15,7 @@ To make sure that the following instructions work, please install the following 
 To retrieve the TSPLang source code, clone the git repository with:
 
 ````
-$ git clone https://github.com/tektronixofficial/vscode-tsplang
+$ git clone https://github.com/tektronix/vscode-tsplang
 ````
 
 This will clone the complete source to your local machine. Navigate to the project folder

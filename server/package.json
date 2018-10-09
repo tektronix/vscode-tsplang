@@ -10,7 +10,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/tektronixofficial/vscode-tsplang"
+        "url": "https://github.com/tektronix/vscode-tsplang"
     },
     "dependencies": {
         "@types/escape-string-regexp": "^1.0.0",

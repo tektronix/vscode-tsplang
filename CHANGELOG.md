@@ -29,6 +29,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) a
 ### Removed
 - Models 2460, 2461, 2461-SYS, and 6500 from the release package.
 
-[Unreleased]: https://github.com/tektronixofficial/vscode-tsplang/compare/v0.4.2...HEAD
-[v0.4.2]: https://github.com/tektronixofficial/vscode-tsplang/compare/v0.4.1...v0.4.2
-[v0.4.1]: https://github.com/tektronixofficial/vscode-tsplang/compare/v0.4.0...v0.4.1
+[Unreleased]: https://github.com/tektronix/vscode-tsplang/compare/v0.4.2...HEAD
+[v0.4.2]: https://github.com/tektronix/vscode-tsplang/compare/v0.4.1...v0.4.2
+[v0.4.1]: https://github.com/tektronix/vscode-tsplang/compare/v0.4.0...v0.4.1
