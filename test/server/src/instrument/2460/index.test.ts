@@ -19,16 +19,16 @@ import * as isEqual from 'lodash.isequal'
 import { suite, test } from 'mocha-typescript'
 
 import { ApiSpec } from '../../../../../server/src/instrument'
-import * as Namespace from '../../../../../server/src/instrument/2450'
+import * as Namespace from '../../../../../server/src/instrument/2460'
 import { emptySpec } from '../emptySpec'
 
-@suite class Model2450IndexTest {
+@suite class Model2460IndexTest {
     @test('Exports ApiSpec array')
     exportsCompletions(): void {
         // tslint:disable-next-line:no-magic-numbers
         const totalModules = 70
 
-        assert(Namespace.getApiSpec().length === totalModules, 'Unexpected number of 2450 ApiSpec modules')
+        assert(Namespace.getApiSpec().length === totalModules, 'Unexpected number of 2460 ApiSpec modules')
 
         const uniqueNamespaces: Map<string, number> = new Map()
         Namespace.getApiSpec().forEach((value: ApiSpec) => {
@@ -112,18 +112,18 @@ import { emptySpec } from '../emptySpec'
 
                     return
                 default:
-                    assert(false, '2450 ApiSpec contains an unknown namespace "' + value.label + '"')
+                    assert(false, '2460 ApiSpec contains an unknown namespace "' + value.label + '"')
             }
         })
 
-        assert(uniqueNamespaces.size === totalModules, '2450 ApiSpec contains duplicate namespaces')
+        assert(uniqueNamespaces.size === totalModules, '2460 ApiSpec contains duplicate namespaces')
     }
 
     @test('Exports InstrumentSpec')
     exportsInstrumentSpec(): void {
         assert(
             ! isEqual(Namespace.getInstrumentSpec(), emptySpec),
-            '2450 InstrumentSpec is an empty specification'
+            '2460 InstrumentSpec is an empty specification'
         )
     }
 }

@@ -2,27 +2,27 @@
     "name": "tsplang",
     "displayName": "TSPLang",
     "description": "Keithley Instruments TSP® language extension for Visual Studio Code",
-    "version": "0.4.2",
+    "version": "0.5.0",
     "preview": true,
     "publisher": "Keithley",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/tektronixofficial/vscode-tsplang"
+        "url": "https://github.com/tektronix/vscode-tsplang"
     },
     "bugs": {
-        "url": "https://github.com/tektronixofficial/vscode-tsplang/issues"
+        "url": "https://github.com/tektronix/vscode-tsplang/issues"
     },
-    "qna": "https://github.com/tektronixofficial/vscode-tsplang/issues",
+    "qna": "https://github.com/tektronix/vscode-tsplang/issues",
     "badges": [
         {
-            "url": "https://travis-ci.com/tektronixofficial/vscode-tsplang.svg?branch=master",
-            "href": "https://travis-ci.com/tektronixofficial/vscode-tsplang",
+            "url": "https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=master",
+            "href": "https://travis-ci.com/tektronix/vscode-tsplang",
             "description": "Continuous Integration (Travis-CI)"
         },
         {
-            "url": "https://codecov.io/gh/tektronixofficial/vscode-tsplang/branch/master/graph/badge.svg",
-            "href": "https://codecov.io/gh/tektronixofficial/vscode-tsplang",
+            "url": "https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg",
+            "href": "https://codecov.io/gh/tektronix/vscode-tsplang",
             "description": "Test Coverage (Codecov)"
         }
     ],
