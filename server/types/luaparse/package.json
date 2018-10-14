@@ -1,6 +1,0 @@
-{
-  "name": "@types/luaparse",
-  "version": "1.0.0",
-  "description": "Type definitions for the luaparse module.",
-  "main": "index.d.ts"
-}

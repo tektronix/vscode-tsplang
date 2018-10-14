@@ -14,9 +14,8 @@
     },
     "dependencies": {
         "@types/escape-string-regexp": "^1.0.0",
-        "@types/luaparse": "file:types/luaparse",
+        "antlr4": "^4.7.1",
         "escape-string-regexp": "^1.0.5",
-        "luaparse": "^0.2.1",
         "vscode-languageserver": "^4.4.2"
     },
     "scripts": {
