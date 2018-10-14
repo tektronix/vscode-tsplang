@@ -3,6 +3,14 @@
     // List of configurations. Add new configurations or edit existing ones.
     "configurations": [
         {
+            "type": "antlr-debug",
+            "request": "launch",
+            "name": "Run Parser",
+            "input": "test/grammars/antlr-input.lua",
+            "startRule": "chunk",
+            "visualParseTree": true
+        },
+        {
             "name": "Launch Client",
             "type": "extensionHost",
             "request": "launch",
