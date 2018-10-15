@@ -146,11 +146,8 @@ operatorUnary
 operatorPower
     : '^';
 
-// number
-//     : INT | HEX | FLOAT | HEX_FLOAT
-//     ;
 number
-    : INT | FLOAT
+    : INT | HEX | FLOAT
     ;
 
 string
@@ -184,9 +181,9 @@ INT
     : Digit+
     ;
 
-// HEX
-//     : '0' [xX] HexDigit+
-//     ;
+HEX
+    : '0' [xX] HexDigit+
+    ;
 
 FLOAT
     : Digit+ '.' Digit* ExponentPart?
@@ -194,21 +191,10 @@ FLOAT
     | Digit+ ExponentPart
     ;
 
-// HEX_FLOAT
-//     : '0' [xX] HexDigit+ '.' HexDigit* HexExponentPart?
-//     | '0' [xX] '.' HexDigit+ HexExponentPart?
-//     | '0' [xX] HexDigit+ HexExponentPart
-//     ;
-
 fragment
 ExponentPart
     : [eE] [+-]? Digit+
     ;
-
-// fragment
-// HexExponentPart
-//     : [pP] [+-]? Digit+
-//     ;
 
 fragment
 EscapeSequence
@@ -217,8 +203,7 @@ EscapeSequence
     | '\\' ']'
     | '\\' '\r'? '\n'
     | DecimalEscape
-    // | HexEscape
-    // | UtfEscape
+    | HexEscape
     ;
 
 fragment
@@ -228,25 +213,20 @@ DecimalEscape
     | '\\' [0-2] Digit Digit
     ;
 
-// fragment
-// HexEscape
-//     : '\\' 'x' HexDigit HexDigit
-//     ;
-
-// fragment
-// UtfEscape
-//     : '\\' 'u{' HexDigit+ '}'
-//     ;
+fragment
+HexEscape
+    : '\\' 'x' HexDigit HexDigit
+    ;
 
 fragment
 Digit
     : [0-9]
     ;
 
-// fragment
-// HexDigit
-//     : [0-9a-fA-F]
-//     ;
+fragment
+HexDigit
+    : [0-9a-fA-F]
+    ;
 
 LONGCOMMENT
     : '--[' NestedString ']'
