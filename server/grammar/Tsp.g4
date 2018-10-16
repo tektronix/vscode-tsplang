@@ -51,7 +51,7 @@ block
 
 stat
     : ';'
-    | varlist '=' explist
+    | assignment
     | functioncall
     | 'break'
     | 'do' block 'end'
@@ -61,8 +61,12 @@ stat
     | 'for' NAME '=' exp ',' exp (',' exp)? 'do' block 'end'
     | 'for' namelist 'in' explist 'do' block 'end'
     | 'function' funcname funcbody
-    | 'local' 'function' NAME funcbody
-    | 'local' varlist ('=' explist)?
+    | LOCAL 'function' NAME funcbody
+    ;
+
+assignment
+    : varlist '=' explist
+    | LOCAL namelist ('=' explist)?
     ;
 
 retstat
@@ -196,6 +200,10 @@ string
     ;
 
 // LEXER
+
+LOCAL
+    : 'local'
+    ;
 
 NAME
     : [a-zA-Z_][a-zA-Z_0-9]*
