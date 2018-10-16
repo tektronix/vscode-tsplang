@@ -16,8 +16,22 @@
 /* tslint:disable: no-var-requires no-require-imports */
 'use strict'
 
-import * as antlr4 from 'antlr4'
+import { CommonTokenStream, InputStream } from 'antlr4'
 
-export const TspLexer = require('./TspLexer').TspLexer
-export const TspParser = require('./TspParser').TspParser
-export const TspListener = require('./TspListener').TspListener
+export class TspLexer extends require('./TspLexer').TspLexer {
+    constructor(inputStream: InputStream) {
+        super(inputStream)
+    }
+}
+
+export class TspParser extends require('./TspParser').TspParser {
+    constructor(tokens: CommonTokenStream) {
+        super(tokens)
+    }
+}
+
+export class TspListener extends require('./TspListener').TspListener {
+    constructor() {
+        super()
+    }
+}
