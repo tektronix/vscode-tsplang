@@ -16,22 +16,6 @@
 /* tslint:disable: no-var-requires no-require-imports */
 'use strict'
 
-import { CommonTokenStream, InputStream } from 'antlr4'
-
-export class TspLexer extends require('./TspLexer').TspLexer {
-    constructor(inputStream: InputStream) {
-        super(inputStream)
-    }
-}
-
-export class TspParser extends require('./TspParser').TspParser {
-    constructor(tokens: CommonTokenStream) {
-        super(tokens)
-    }
-}
-
-export class TspListener extends require('./TspListener').TspListener {
-    constructor() {
-        super()
-    }
-}
+export { TspLexer } from './TspLexer'
+export { TspListener } from './TspListener'
+export { TspParser } from './TspParser'
