@@ -113,6 +113,12 @@ export class ContentHandler {
             }
         }
 
+        // Add this document's local completion items
+        if (tspItem.context !== undefined) {
+            const localCompletions = tspItem.context.getCompletionItems()
+            results.concat(localCompletions)
+        }
+
         return results
     }
 
