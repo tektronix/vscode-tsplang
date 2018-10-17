@@ -17,6 +17,7 @@
 
 import { TextDocumentItem } from 'vscode-languageserver'
 
+import { DocumentContext } from './documentContext'
 import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
 import { getLuaApiSpec, getLuaInstrumentSpec } from './instrument/lua'
 import { generateCommandSet } from './instrument/provider'
@@ -26,6 +27,7 @@ import { PoolEntry, TspPool } from './tspPool'
 
 export interface TspItem {
     commandSet: CommandSet
+    context?: DocumentContext
     node?: Map<number, CommandSet>
     rawShebang?: string
     shebang?: Array<Shebang.ShebangToken>
@@ -68,6 +70,8 @@ export class TspManager {
 
                 // use valid shebang to populate model-specific items
                 item = await this.getPoolItems(item)
+
+                item.context = new DocumentContext(document.uri, document.text)
 
                 this.dict.set(document.uri, item)
 
@@ -189,6 +193,13 @@ export class TspManager {
 
             // use valid shebang to populate completion items
             item = await this.getPoolItems(item)
+
+            if (item.context === undefined) {
+                item.context = new DocumentContext(document.uri, document.text)
+            }
+            else {
+                item.context.update(document.text)
+            }
 
             this.dict.set(document.uri, item)
 
