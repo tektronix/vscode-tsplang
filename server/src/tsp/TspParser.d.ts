@@ -133,6 +133,35 @@ export declare class TspParser extends Parser {
     assignment(): TspParser.AssignmentContext
     retstat(): TspParser.RetstatContext
     funcname(): TspParser.FuncnameContext
+    varlist(): TspParser.VarlistContext
+    namelist(): TspParser.NamelistContext
+    explist(): TspParser.ExplistContext
+    exp(): TspParser.ExpContext
+    prefixexp(): TspParser.PrefixexpContext
+    functioncall(): TspParser.FunctioncallContext
+    varOrExp(): TspParser.VarOrExpContext
+    variable(): TspParser.VariableContext
+    varSuffix(): TspParser.VarSuffixContext
+    nameAndArgs(): TspParser.NameAndArgsContext
+    args(): TspParser.ArgsContext
+    functiondef(): TspParser.FunctiondefContext
+    funcbody(): TspParser.FuncbodyContext
+    parlist(): TspParser.ParlistContext
+    tableconstructor(): TspParser.TableconstructorContext
+    fieldlist(): TspParser.FieldlistContext
+    field(): TspParser.FieldContext
+    fieldsep(): TspParser.FieldsepContext
+    operatorOr(): TspParser.OperatorOrContext
+    operatorAnd(): TspParser.OperatorAndContext
+    operatorComparison(): TspParser.OperatorComparisonContext
+    operatorStrcat(): TspParser.OperatorStrcatContext
+    operatorAddSub(): TspParser.OperatorAddSubContext
+    operatorMulDiv(): TspParser.OperatorMulDivContext
+    operatorBitwise(): TspParser.OperatorBitwiseContext
+    operatorUnary(): TspParser.OperatorUnaryContext
+    operatorPower(): TspParser.OperatorPowerContext
+    number(): TspParser.NumberContext
+    string(): TspParser.StringContext
 }
 
 export namespace TspParser {
@@ -198,5 +227,256 @@ export namespace TspParser {
         exitRule(listener: ParseTreeListener)
     }
 
+    export class VarlistContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
+        variable(i?: number)
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class NamelistContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        NAME(i?: number)
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class ExplistContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        exp(i?: number)
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class ExpContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        number()
+        string()
+        functiondef()
+        prefixexp()
+        tableconstructor()
+        operatorUnary()
+        exp(i?: number)
+        operatorPower()
+        operatorMulDiv()
+        operatorAddSub()
+        operatorStrcat()
+        operatorComparison()
+        operatorAnd()
+        operatorOr()
+        operatorBitwise()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class PrefixexpContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        varOrExp()
+        nameAndArgs()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class FunctioncallContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        varOrExp()
+        nameAndArgs()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class VarOrExpContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        variable()
+        exp()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class VariableContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        NAME()
+        exp()
+        varSuffix(i?: number)
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class VarSuffixContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        exp()
+        NAME()
+        nameAndArgs(i?: number)
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class NameAndArgsContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        args()
+        NAME()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class ArgsContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        explist()
+        tableconstructor()
+        string()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class FunctiondefContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        funcbody()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class FuncbodyContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        block()
+        parlist()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class ParlistContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        namelist()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class TableconstructorContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        fieldlist()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class FieldlistContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        field(i?: number)
+        fieldsep(i?: number)
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class FieldContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        exp(i?: number)
+        NAME()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class FieldsepContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorOrContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorAndContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorComparisonContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorStrcatContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorAddSubContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorMulDivContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorBitwiseContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorUnaryContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class OperatorPowerContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class NumberContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        INT()
+        HEX()
+        FLOAT()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class StringContext extends ParserRuleContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+
+        NORMALSTRING()
+        CHARSTRING()
+        LONGSTRING()
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
 }
