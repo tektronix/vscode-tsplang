@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Parser, Lexer, ParserRuleContext } from 'antlr4'
+import { CommonTokenStream, Parser, ParserRuleContext } from 'antlr4'
 import { ParseTreeListener } from 'antlr4/tree/Tree'
 
 export declare class TspParser extends Parser {
@@ -125,7 +125,7 @@ export declare class TspParser extends Parser {
     readonly ruleNames: Array<string>
     readonly symbolicNames: Array<string | null>
 
-    constructor(input: Lexer)
+    constructor(input: CommonTokenStream)
 
     chunk(): TspParser.ChunkContext
     block(): TspParser.BlockContext
