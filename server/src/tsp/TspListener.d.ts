@@ -16,6 +16,8 @@
 import { ParserRuleContext } from 'antlr4'
 import { ParseTreeListener, TerminalNode, ErrorNode } from 'antlr4/tree/Tree'
 
+import { TspParser } from './TspParser'
+
 export declare class TspListener implements ParseTreeListener {
     constructor()
 
@@ -24,108 +26,108 @@ export declare class TspListener implements ParseTreeListener {
     visitErrorNode(node: ErrorNode): void
     visitTerminal(node: TerminalNode): void
 
-    enterChunk(context: ParserRuleContext): void
-    exitChunk(context: ParserRuleContext): void
+    enterChunk(context: TspParser.ChunkContext): void
+    exitChunk(context: TspParser.ChunkContext): void
 
-    enterBlock(context: ParserRuleContext): void
-    exitBlock(context: ParserRuleContext): void
+    enterBlock(context: TspParser.BlockContext): void
+    exitBlock(context: TspParser.BlockContext): void
 
-    enterStat(context: ParserRuleContext): void
-    exitStat(context: ParserRuleContext): void
+    enterStat(context: TspParser.StatContext): void
+    exitStat(context: TspParser.StatContext): void
 
-    enterAssignment(context: ParserRuleContext): void
-    exitAssignment(context: ParserRuleContext): void
+    enterAssignment(context: TspParser.AssignmentContext): void
+    exitAssignment(context: TspParser.AssignmentContext): void
 
-    enterRetStat(context: ParserRuleContext): void
-    exitRetStat(context: ParserRuleContext): void
+    enterRetStat(context: TspParser.RetstatContext): void
+    exitRetStat(context: TspParser.RetstatContext): void
 
-    enterFuncname(context: ParserRuleContext): void
-    exitFuncname(context: ParserRuleContext): void
+    enterFuncname(context: TspParser.FuncnameContext): void
+    exitFuncname(context: TspParser.FuncnameContext): void
 
-    enterVarlist(context: ParserRuleContext): void
-    exitVarlist(context: ParserRuleContext): void
+    enterVarlist(context: TspParser.VarlistContext): void
+    exitVarlist(context: TspParser.VarlistContext): void
 
-    enterNamelist(context: ParserRuleContext): void
-    exitNamelist(context: ParserRuleContext): void
+    enterNamelist(context: TspParser.NamelistContext): void
+    exitNamelist(context: TspParser.NamelistContext): void
 
-    enterExplist(context: ParserRuleContext): void
-    exitExplist(context: ParserRuleContext): void
+    enterExplist(context: TspParser.ExplistContext): void
+    exitExplist(context: TspParser.ExplistContext): void
 
-    enterExp(context: ParserRuleContext): void
-    exitExp(context: ParserRuleContext): void
+    enterExp(context: TspParser.ExpContext): void
+    exitExp(context: TspParser.ExpContext): void
 
-    enterPrefixexp(context: ParserRuleContext): void
-    exitPrefixexp(context: ParserRuleContext): void
+    enterPrefixexp(context: TspParser.PrefixexpContext): void
+    exitPrefixexp(context: TspParser.PrefixexpContext): void
 
-    enterFunctioncall(context: ParserRuleContext): void
-    exitFunctioncall(context: ParserRuleContext): void
+    enterFunctioncall(context: TspParser.FunctioncallContext): void
+    exitFunctioncall(context: TspParser.FunctioncallContext): void
 
-    enterVarOrExp(context: ParserRuleContext): void
-    exitVarOrExp(context: ParserRuleContext): void
+    enterVarOrExp(context: TspParser.VarOrExpContext): void
+    exitVarOrExp(context: TspParser.VarOrExpContext): void
 
-    enterVariable(context: ParserRuleContext): void
-    exitVariable(context: ParserRuleContext): void
+    enterVariable(context: TspParser.VariableContext): void
+    exitVariable(context: TspParser.VariableContext): void
 
-    enterVarSuffix(context: ParserRuleContext): void
-    exitVarSuffix(context: ParserRuleContext): void
+    enterVarSuffix(context: TspParser.VarSuffixContext): void
+    exitVarSuffix(context: TspParser.VarSuffixContext): void
 
-    enterNameAndArgs(context: ParserRuleContext): void
-    exitNameAndArgs(context: ParserRuleContext): void
+    enterNameAndArgs(context: TspParser.NameAndArgsContext): void
+    exitNameAndArgs(context: TspParser.NameAndArgsContext): void
 
-    enterArgs(context: ParserRuleContext): void
-    exitArgs(context: ParserRuleContext): void
+    enterArgs(context: TspParser.ArgsContext): void
+    exitArgs(context: TspParser.ArgsContext): void
 
-    enterFunctiondef(context: ParserRuleContext): void
-    exitFunctiondef(context: ParserRuleContext): void
+    enterFunctiondef(context: TspParser.FunctiondefContext): void
+    exitFunctiondef(context: TspParser.FunctiondefContext): void
 
-    enterFuncbody(context: ParserRuleContext): void
-    exitFuncbody(context: ParserRuleContext): void
+    enterFuncbody(context: TspParser.FuncbodyContext): void
+    exitFuncbody(context: TspParser.FuncbodyContext): void
 
-    enterParlist(context: ParserRuleContext): void
-    exitParlist(context: ParserRuleContext): void
+    enterParlist(context: TspParser.ParlistContext): void
+    exitParlist(context: TspParser.ParlistContext): void
 
-    enterTableconstructor(context: ParserRuleContext): void
-    exitTableconstructor(context: ParserRuleContext): void
+    enterTableconstructor(context: TspParser.TableconstructorContext): void
+    exitTableconstructor(context: TspParser.TableconstructorContext): void
 
-    enterFieldlist(context: ParserRuleContext): void
-    exitFieldlist(context: ParserRuleContext): void
+    enterFieldlist(context: TspParser.FieldlistContext): void
+    exitFieldlist(context: TspParser.FieldlistContext): void
 
-    enterField(context: ParserRuleContext): void
-    exitField(context: ParserRuleContext): void
+    enterField(context: TspParser.FieldContext): void
+    exitField(context: TspParser.FieldContext): void
 
-    enterFieldsep(context: ParserRuleContext): void
-    exitFieldsep(context: ParserRuleContext): void
+    enterFieldsep(context: TspParser.FieldsepContext): void
+    exitFieldsep(context: TspParser.FieldsepContext): void
 
-    enterOperatorOr(context: ParserRuleContext): void
-    exitOperatorOr(context: ParserRuleContext): void
+    enterOperatorOr(context: TspParser.OperatorOrContext): void
+    exitOperatorOr(context: TspParser.OperatorOrContext): void
 
-    enterOperatorAnd(context: ParserRuleContext): void
-    exitOperatorAnd(context: ParserRuleContext): void
+    enterOperatorAnd(context: TspParser.OperatorAndContext): void
+    exitOperatorAnd(context: TspParser.OperatorAndContext): void
 
-    enterOperatorComparison(context: ParserRuleContext): void
-    exitOperatorComparison(context: ParserRuleContext): void
+    enterOperatorComparison(context: TspParser.OperatorComparisonContext): void
+    exitOperatorComparison(context: TspParser.OperatorComparisonContext): void
 
-    enterOperatorStrcat(context: ParserRuleContext): void
-    exitOperatorStrcat(context: ParserRuleContext): void
+    enterOperatorStrcat(context: TspParser.OperatorStrcatContext): void
+    exitOperatorStrcat(context: TspParser.OperatorStrcatContext): void
 
-    enterOperatorAddSub(context: ParserRuleContext): void
-    exitOperatorAddSub(context: ParserRuleContext): void
+    enterOperatorAddSub(context: TspParser.OperatorAddSubContext): void
+    exitOperatorAddSub(context: TspParser.OperatorAddSubContext): void
 
-    enterOperatorMulDiv(context: ParserRuleContext): void
-    exitOperatorMulDiv(context: ParserRuleContext): void
+    enterOperatorMulDiv(context: TspParser.OperatorMulDivContext): void
+    exitOperatorMulDiv(context: TspParser.OperatorMulDivContext): void
 
-    enterOperatorBitwise(context: ParserRuleContext): void
-    exitOperatorBitwise(context: ParserRuleContext): void
+    enterOperatorBitwise(context: TspParser.OperatorBitwiseContext): void
+    exitOperatorBitwise(context: TspParser.OperatorBitwiseContext): void
 
-    enterOperatorUnary(context: ParserRuleContext): void
-    exitOperatorUnary(context: ParserRuleContext): void
+    enterOperatorUnary(context: TspParser.OperatorUnaryContext): void
+    exitOperatorUnary(context: TspParser.OperatorUnaryContext): void
 
-    enterOperatorPower(context: ParserRuleContext): void
-    exitOperatorPower(context: ParserRuleContext): void
+    enterOperatorPower(context: TspParser.OperatorPowerContext): void
+    exitOperatorPower(context: TspParser.OperatorPowerContext): void
 
-    enterNumber(context: ParserRuleContext): void
-    exitNumber(context: ParserRuleContext): void
+    enterNumber(context: TspParser.NumberContext): void
+    exitNumber(context: TspParser.NumberContext): void
 
-    enterString(context: ParserRuleContext): void
-    exitString(context: ParserRuleContext): void
+    enterString(context: TspParser.StringContext): void
+    exitString(context: TspParser.StringContext): void
 }
