@@ -14,9 +14,16 @@
  *  limitations under the License.
  */
 import { ParserRuleContext } from 'antlr4'
-import { ParseTreeListener } from 'antlr4/tree/Tree'
+import { ParseTreeListener, TerminalNode, ErrorNode } from 'antlr4/tree/Tree'
 
-export interface TspListener extends ParseTreeListener {
+export declare class TspListener implements ParseTreeListener {
+    constructor()
+
+    enterEveryRule(node: ParserRuleContext): void
+    exitEveryRule(node: ParserRuleContext): void
+    visitErrorNode(node: ErrorNode): void
+    visitTerminal(node: TerminalNode): void
+
     enterChunk(context: ParserRuleContext): void
     exitChunk(context: ParserRuleContext): void
 
@@ -122,7 +129,3 @@ export interface TspListener extends ParseTreeListener {
     enterString(context: ParserRuleContext): void
     exitString(context: ParserRuleContext): void
 }
-export declare class TspListener {
-    constructor()
-}
-
