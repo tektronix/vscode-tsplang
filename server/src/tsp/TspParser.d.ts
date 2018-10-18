@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 import { CommonTokenStream, Parser, ParserRuleContext } from 'antlr4'
-import { ParseTreeListener } from 'antlr4/tree/Tree'
+import { ParseTreeListener, TerminalNode } from 'antlr4/tree/Tree'
 
 export declare class TspParser extends Parser {
     static EOF: number
@@ -168,8 +168,8 @@ export namespace TspParser {
     export class ChunkContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        block()
-        EOF()
+        block(): BlockContext
+        EOF(): TerminalNode
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -177,8 +177,8 @@ export namespace TspParser {
     export class BlockContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        stat(i?: number)
-        retstat()
+        stat(i?: number): StatContext[]
+        retstat(): RetstatContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -186,16 +186,16 @@ export namespace TspParser {
     export class StatContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        assignment()
-        functioncall()
-        block(i?: number)
-        exp(i?: number)
-        NAME()
-        namelist()
-        explist()
-        funcname()
-        funcbody()
-        LOCAL()
+        assignment(): AssignmentContext | null
+        functioncall(): FunctioncallContext | null
+        block(i?: number): BlockContext[]
+        exp(i?: number): ExpContext[]
+        NAME(): TerminalNode | null
+        namelist(): NamelistContext | null
+        explist(): ExplistContext | null
+        funcname(): FuncnameContext | null
+        funcbody(): FuncbodyContext | null
+        LOCAL(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -203,10 +203,10 @@ export namespace TspParser {
     export class AssignmentContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        varlist()
-        explist()
-        LOCAL()
-        namelist()
+        varlist(): VarlistContext | null
+        explist(): VarlistContext | null
+        LOCAL(): TerminalNode | null
+        namelist(): NamelistContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -214,7 +214,7 @@ export namespace TspParser {
     export class RetstatContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        explist()
+        explist(): ExplistContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -222,7 +222,7 @@ export namespace TspParser {
     export class FuncnameContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        NAME(i?: number)
+        NAME(i?: number): TerminalNode[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -230,7 +230,7 @@ export namespace TspParser {
     export class VarlistContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        variable(i?: number)
+        variable(i?: number): VariableContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -238,7 +238,7 @@ export namespace TspParser {
     export class NamelistContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        NAME(i?: number)
+        NAME(i?: number): TerminalNode[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -246,7 +246,7 @@ export namespace TspParser {
     export class ExplistContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        exp(i?: number)
+        exp(i?: number): ExpContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -254,21 +254,21 @@ export namespace TspParser {
     export class ExpContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        number()
-        string()
-        functiondef()
-        prefixexp()
-        tableconstructor()
-        operatorUnary()
-        exp(i?: number)
-        operatorPower()
-        operatorMulDiv()
-        operatorAddSub()
-        operatorStrcat()
-        operatorComparison()
-        operatorAnd()
-        operatorOr()
-        operatorBitwise()
+        number(): TerminalNode
+        string(): TerminalNode
+        functiondef(): FunctiondefContext | null
+        prefixexp(): PrefixexpContext | null
+        tableconstructor(): TableconstructorContext | null
+        operatorUnary(): OperatorUnaryContext | null
+        exp(i?: number): ExpContext[]
+        operatorPower(): OperatorPowerContext | null
+        operatorMulDiv(): OperatorMulDivContext | null
+        operatorAddSub(): OperatorAddSubContext | null
+        operatorStrcat(): OperatorStrcatContext | null
+        operatorComparison(): OperatorComparisonContext | null
+        operatorAnd(): OperatorAndContext | null
+        operatorOr(): OperatorOrContext | null
+        operatorBitwise(): OperatorBitwiseContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -276,8 +276,8 @@ export namespace TspParser {
     export class PrefixexpContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        varOrExp()
-        nameAndArgs()
+        varOrExp(): VarOrExpContext
+        nameAndArgs(): NameAndArgsContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -285,8 +285,8 @@ export namespace TspParser {
     export class FunctioncallContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        varOrExp()
-        nameAndArgs()
+        varOrExp(): VarOrExpContext
+        nameAndArgs(): NameAndArgsContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -294,8 +294,8 @@ export namespace TspParser {
     export class VarOrExpContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        variable()
-        exp()
+        variable(): VariableContext | null
+        exp(): ExpContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -303,9 +303,9 @@ export namespace TspParser {
     export class VariableContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        NAME()
-        exp()
-        varSuffix(i?: number)
+        NAME(): TerminalNode | null
+        exp(): ExpContext | null
+        varSuffix(i?: number): VarSuffixContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -313,9 +313,9 @@ export namespace TspParser {
     export class VarSuffixContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        exp()
-        NAME()
-        nameAndArgs(i?: number)
+        exp(): ExpContext | null
+        NAME(): TerminalNode | null
+        nameAndArgs(i?: number): NameAndArgsContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -323,8 +323,8 @@ export namespace TspParser {
     export class NameAndArgsContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        args()
-        NAME()
+        args(): ArgsContext
+        NAME(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -332,9 +332,9 @@ export namespace TspParser {
     export class ArgsContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        explist()
-        tableconstructor()
-        string()
+        explist(): ExplistContext | null
+        tableconstructor(): TableconstructorContext | null
+        string(): StringContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -342,7 +342,7 @@ export namespace TspParser {
     export class FunctiondefContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        funcbody()
+        funcbody(): FuncbodyContext
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -350,8 +350,8 @@ export namespace TspParser {
     export class FuncbodyContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        block()
-        parlist()
+        block(): BlockContext
+        parlist(): ParlistContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -359,7 +359,7 @@ export namespace TspParser {
     export class ParlistContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        namelist()
+        namelist(): NamelistContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -367,7 +367,7 @@ export namespace TspParser {
     export class TableconstructorContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        fieldlist()
+        fieldlist(): FieldlistContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -375,8 +375,8 @@ export namespace TspParser {
     export class FieldlistContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        field(i?: number)
-        fieldsep(i?: number)
+        field(i?: number): FieldContext[]
+        fieldsep(i?: number): FieldsepContext[]
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -384,8 +384,8 @@ export namespace TspParser {
     export class FieldContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        exp(i?: number)
-        NAME()
+        exp(i?: number): ExpContext[]
+        NAME(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -463,9 +463,9 @@ export namespace TspParser {
     export class NumberContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        INT()
-        HEX()
-        FLOAT()
+        INT(): TerminalNode | null
+        HEX(): TerminalNode | null
+        FLOAT(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
@@ -473,9 +473,9 @@ export namespace TspParser {
     export class StringContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        NORMALSTRING()
-        CHARSTRING()
-        LONGSTRING()
+        NORMALSTRING(): TerminalNode | null
+        CHARSTRING(): TerminalNode | null
+        LONGSTRING(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
