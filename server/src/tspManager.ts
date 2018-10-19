@@ -72,6 +72,7 @@ export class TspManager {
                 item = await this.getPoolItems(item)
 
                 item.context = new DocumentContext(document.uri, document.text)
+                item.context.walk()
 
                 this.dict.set(document.uri, item)
 
@@ -196,9 +197,7 @@ export class TspManager {
 
             if (item.context === undefined) {
                 item.context = new DocumentContext(document.uri, document.text)
-            }
-            else {
-                item.context.update(document.text)
+                item.context.walk()
             }
 
             this.dict.set(document.uri, item)

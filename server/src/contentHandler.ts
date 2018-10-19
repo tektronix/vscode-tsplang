@@ -79,6 +79,12 @@ export class ContentHandler {
         // Convert the current Position to a zero-based offset
         const offset: number = content.offsetAt(position)
 
+        // Update the current document state in preparation for suggesting any user completions
+        if (tspItem.context !== undefined) {
+            tspItem.context.update(contentText.slice(0, offset))
+            tspItem.context.walk()
+        }
+
         // Get all text before the cursor offset, reverse it, and match against it.
         // Reversing allows for a simpler regular expression since the match
         // will start at the beginning of the string.
@@ -101,22 +107,32 @@ export class ContentHandler {
                 }
             }
 
+            // Add this document's user completion items
+            if (tspItem.context !== undefined) {
+                const userCompletions = tspItem.context.getCompletionItems()
+                results.push(...userCompletions)
+            }
+
             return results
         }
 
         // Un-reverse the string and remove any table indexers
         const unreversed = this.reverse(firstMatch.replace(this.tableIndexRegexp, ''))
 
+        // Attempt to partial match against the current command set.
         for (const completion of tspItem.commandSet.completions) {
             if (isPartialMatch(unreversed, completion)) {
                 results.push(completion)
             }
         }
 
-        // Add this document's local completion items
         if (tspItem.context !== undefined) {
-            const localCompletions = tspItem.context.getCompletionItems()
-            results.concat(localCompletions)
+            // Attempt to partial match against the current user completion items.
+            for (const completion of tspItem.context.getCompletionItems()) {
+                if (isPartialMatch(unreversed, completion)) {
+                    results.push(completion)
+                }
+            }
         }
 
         return results
