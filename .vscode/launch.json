@@ -12,7 +12,7 @@
             "type": "antlr-debug",
             "request": "launch",
             "name": "Run Parser",
-            "input": "test/grammars/antlr-input.lua",
+            "input": "test/grammars/bit-of-everything.lua",
             "startRule": "chunk",
             "visualParseTree": true
         },
