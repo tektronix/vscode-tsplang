@@ -29,102 +29,111 @@ TspListener.prototype.exitBlock = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#stat.
-TspListener.prototype.enterStat = function(ctx) {
+// Enter a parse tree produced by TspParser#statement.
+TspListener.prototype.enterStatement = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#stat.
-TspListener.prototype.exitStat = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#assignment.
-TspListener.prototype.enterAssignment = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#assignment.
-TspListener.prototype.exitAssignment = function(ctx) {
+// Exit a parse tree produced by TspParser#statement.
+TspListener.prototype.exitStatement = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#retstat.
-TspListener.prototype.enterRetstat = function(ctx) {
+// Enter a parse tree produced by TspParser#returnStatement.
+TspListener.prototype.enterReturnStatement = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#retstat.
-TspListener.prototype.exitRetstat = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#funcname.
-TspListener.prototype.enterFuncname = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#funcname.
-TspListener.prototype.exitFuncname = function(ctx) {
+// Exit a parse tree produced by TspParser#returnStatement.
+TspListener.prototype.exitReturnStatement = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#varlist.
-TspListener.prototype.enterVarlist = function(ctx) {
+// Enter a parse tree produced by TspParser#functionName.
+TspListener.prototype.enterFunctionName = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#varlist.
-TspListener.prototype.exitVarlist = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#namelist.
-TspListener.prototype.enterNamelist = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#namelist.
-TspListener.prototype.exitNamelist = function(ctx) {
+// Exit a parse tree produced by TspParser#functionName.
+TspListener.prototype.exitFunctionName = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#explist.
-TspListener.prototype.enterExplist = function(ctx) {
+// Enter a parse tree produced by TspParser#variableList.
+TspListener.prototype.enterVariableList = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#explist.
-TspListener.prototype.exitExplist = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#exp.
-TspListener.prototype.enterExp = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#exp.
-TspListener.prototype.exitExp = function(ctx) {
+// Exit a parse tree produced by TspParser#variableList.
+TspListener.prototype.exitVariableList = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#prefixexp.
-TspListener.prototype.enterPrefixexp = function(ctx) {
+// Enter a parse tree produced by TspParser#nameList.
+TspListener.prototype.enterNameList = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#prefixexp.
-TspListener.prototype.exitPrefixexp = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#functioncall.
-TspListener.prototype.enterFunctioncall = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#functioncall.
-TspListener.prototype.exitFunctioncall = function(ctx) {
+// Exit a parse tree produced by TspParser#nameList.
+TspListener.prototype.exitNameList = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#varOrExp.
-TspListener.prototype.enterVarOrExp = function(ctx) {
+// Enter a parse tree produced by TspParser#expressionList.
+TspListener.prototype.enterExpressionList = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#varOrExp.
-TspListener.prototype.exitVarOrExp = function(ctx) {
+// Exit a parse tree produced by TspParser#expressionList.
+TspListener.prototype.exitExpressionList = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#value.
+TspListener.prototype.enterValue = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#value.
+TspListener.prototype.exitValue = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#expression.
+TspListener.prototype.enterExpression = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#expression.
+TspListener.prototype.exitExpression = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#prefix.
+TspListener.prototype.enterPrefix = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#prefix.
+TspListener.prototype.exitPrefix = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#suffix.
+TspListener.prototype.enterSuffix = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#suffix.
+TspListener.prototype.exitSuffix = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#call.
+TspListener.prototype.enterCall = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#call.
+TspListener.prototype.exitCall = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#index.
+TspListener.prototype.enterIndex = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#index.
+TspListener.prototype.exitIndex = function(ctx) {
 };
 
 
@@ -137,75 +146,66 @@ TspListener.prototype.exitVariable = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#varSuffix.
-TspListener.prototype.enterVarSuffix = function(ctx) {
+// Enter a parse tree produced by TspParser#functionCall.
+TspListener.prototype.enterFunctionCall = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#varSuffix.
-TspListener.prototype.exitVarSuffix = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#nameAndArgs.
-TspListener.prototype.enterNameAndArgs = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#nameAndArgs.
-TspListener.prototype.exitNameAndArgs = function(ctx) {
+// Exit a parse tree produced by TspParser#functionCall.
+TspListener.prototype.exitFunctionCall = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#args.
-TspListener.prototype.enterArgs = function(ctx) {
+// Enter a parse tree produced by TspParser#arguments.
+TspListener.prototype.enterArguments = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#args.
-TspListener.prototype.exitArgs = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#functiondef.
-TspListener.prototype.enterFunctiondef = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#functiondef.
-TspListener.prototype.exitFunctiondef = function(ctx) {
+// Exit a parse tree produced by TspParser#arguments.
+TspListener.prototype.exitArguments = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#funcbody.
-TspListener.prototype.enterFuncbody = function(ctx) {
+// Enter a parse tree produced by TspParser#functionDefinition.
+TspListener.prototype.enterFunctionDefinition = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#funcbody.
-TspListener.prototype.exitFuncbody = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#parlist.
-TspListener.prototype.enterParlist = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#parlist.
-TspListener.prototype.exitParlist = function(ctx) {
+// Exit a parse tree produced by TspParser#functionDefinition.
+TspListener.prototype.exitFunctionDefinition = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#tableconstructor.
-TspListener.prototype.enterTableconstructor = function(ctx) {
+// Enter a parse tree produced by TspParser#functionBody.
+TspListener.prototype.enterFunctionBody = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#tableconstructor.
-TspListener.prototype.exitTableconstructor = function(ctx) {
+// Exit a parse tree produced by TspParser#functionBody.
+TspListener.prototype.exitFunctionBody = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#fieldlist.
-TspListener.prototype.enterFieldlist = function(ctx) {
+// Enter a parse tree produced by TspParser#parameterList.
+TspListener.prototype.enterParameterList = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#fieldlist.
-TspListener.prototype.exitFieldlist = function(ctx) {
+// Exit a parse tree produced by TspParser#parameterList.
+TspListener.prototype.exitParameterList = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#tableConstructor.
+TspListener.prototype.enterTableConstructor = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#tableConstructor.
+TspListener.prototype.exitTableConstructor = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#fieldList.
+TspListener.prototype.enterFieldList = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#fieldList.
+TspListener.prototype.exitFieldList = function(ctx) {
 };
 
 
@@ -218,12 +218,12 @@ TspListener.prototype.exitField = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#fieldsep.
-TspListener.prototype.enterFieldsep = function(ctx) {
+// Enter a parse tree produced by TspParser#fieldSeparator.
+TspListener.prototype.enterFieldSeparator = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#fieldsep.
-TspListener.prototype.exitFieldsep = function(ctx) {
+// Exit a parse tree produced by TspParser#fieldSeparator.
+TspListener.prototype.exitFieldSeparator = function(ctx) {
 };
 
 
@@ -281,12 +281,39 @@ TspListener.prototype.exitOperatorMulDiv = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#operatorBitwise.
-TspListener.prototype.enterOperatorBitwise = function(ctx) {
+// Enter a parse tree produced by TspParser#operatorBitwiseAnd.
+TspListener.prototype.enterOperatorBitwiseAnd = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#operatorBitwise.
-TspListener.prototype.exitOperatorBitwise = function(ctx) {
+// Exit a parse tree produced by TspParser#operatorBitwiseAnd.
+TspListener.prototype.exitOperatorBitwiseAnd = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#operatorBitwiseOr.
+TspListener.prototype.enterOperatorBitwiseOr = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseOr.
+TspListener.prototype.exitOperatorBitwiseOr = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#operatorBitwiseXor.
+TspListener.prototype.enterOperatorBitwiseXor = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseXor.
+TspListener.prototype.exitOperatorBitwiseXor = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#operatorBitwiseShift.
+TspListener.prototype.enterOperatorBitwiseShift = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseShift.
+TspListener.prototype.exitOperatorBitwiseShift = function(ctx) {
 };
 
 
