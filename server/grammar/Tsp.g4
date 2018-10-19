@@ -39,6 +39,11 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+/*
+ * The left-recursion of prefixexp in the Lua 5.0 grammar was removed thanks
+ * to the following post:
+ *      http://lua-users.org/lists/lua-l/2010-12/msg00699.html
+ */
 grammar Tsp;
 
 chunk
@@ -46,121 +51,134 @@ chunk
     ;
 
 block
-    : stat* retstat?
+    : (statement ';'?)*
     ;
 
-stat
-    : ';'
-    | assignment
-    | functioncall
-    | 'break'
+statement
+    : variableList '=' expressionList
+    | functionCall
     | 'do' block 'end'
-    | 'while' exp 'do' block 'end'
-    | 'repeat' block 'until' exp
-    | 'if' exp 'then' block ('elseif' exp 'then' block)* ('else' block)? 'end'
-    | 'for' NAME '=' exp ',' exp (',' exp)? 'do' block 'end'
-    | 'for' namelist 'in' explist 'do' block 'end'
-    | 'function' funcname funcbody
-    | LOCAL 'function' NAME funcbody
+    | 'while' expression 'do' block 'end'
+    | 'repeat' block 'until' expression
+    | 'if' expression 'then' block ('elseif' expression 'then' block)* ('else' block)? 'end'
+    | returnStatement
+    | 'break'
+    | 'for' NAME '=' expression ',' expression (',' expression)? 'do' block 'end'
+    | 'for' nameList 'in' expressionList 'do' block 'end'
+    | 'function' functionName functionBody
+    | LOCAL 'function' NAME functionBody
+    | LOCAL nameList ('=' expressionList)?
     ;
 
-assignment
-    : varlist '=' explist
-    | LOCAL namelist ('=' explist)?
+returnStatement
+    : 'return' expressionList?
     ;
 
-retstat
-    : 'return' explist? ';'?
-    ;
-
-funcname
+functionName
     : NAME ('.' NAME)* (':' NAME)?
     ;
 
-varlist
+variableList
     : variable (',' variable)*
     ;
 
-namelist
+nameList
     : NAME (',' NAME)*
     ;
 
-explist
-    : exp (',' exp)*
+expressionList
+    : expression (',' expression)*
     ;
 
-exp
-    : 'nil' | 'false' | 'true'
+value
+    : 'nil'
+    | 'false'
+    | 'true'
     | number
     | string
-    | '...'
-    | functiondef
-    | prefixexp
-    | tableconstructor
-    | <assoc=right> exp operatorPower exp
-    | operatorUnary exp
-    | exp operatorMulDiv exp
-    | exp operatorAddSub exp
-    | <assoc=right> exp operatorStrcat exp
-    | exp operatorComparison exp
-    | exp operatorAnd exp
-    | exp operatorOr exp
-    | exp operatorBitwise exp
+    | functionDefinition
+    | variable
+    | functionCall
+    | tableConstructor
+    | '(' expression ')'
     ;
 
-prefixexp
-    : varOrExp nameAndArgs*
+expression
+    : value operatorOr expression
+    | value operatorAnd expression
+    | value operatorComparison expression
+    | value operatorBitwiseOr expression
+    | value operatorBitwiseXor expression
+    | value operatorBitwiseAnd expression
+    | value operatorBitwiseShift expression
+    | <assoc=right> value operatorStrcat expression
+    | value operatorAddSub expression
+    | value operatorMulDiv expression
+    | operatorUnary expression
+    | <assoc=right> value operatorPower expression
     ;
 
-functioncall
-    : varOrExp nameAndArgs+
+prefix
+    : '(' expression ')'
+    | NAME
     ;
 
-varOrExp
-    : variable | '(' exp ')'
+suffix
+    : call
+    | index
+    ;
+
+call
+    : (':' NAME)? arguments
+    ;
+
+index
+    : '[' expression ']'
+    | '.' NAME
     ;
 
 variable
-    : (NAME | '(' exp ')' varSuffix) varSuffix*
+    : prefix suffix* index
+    | NAME
     ;
 
-varSuffix
-    : nameAndArgs* ('[' exp ']' | '.' NAME)
+functionCall
+    : prefix suffix* call
     ;
 
-nameAndArgs
-    : (':' NAME)? args
+arguments
+    : '(' expressionList? ')'
+    | tableConstructor
+    | string
     ;
 
-args
-    : '(' explist? ')' | tableconstructor | string
+functionDefinition
+    : 'function' functionBody
     ;
 
-functiondef
-    : 'function' funcbody
+functionBody
+    : '(' parameterList? ')' block 'end'
     ;
 
-funcbody
-    : '(' parlist? ')' block 'end'
+parameterList
+    : nameList (',' VARARG)?
+    | VARARG
     ;
 
-parlist
-    : namelist (',' '...')? | '...'
+tableConstructor
+    : '{' fieldList? '}'
     ;
 
-tableconstructor
-    : '{' fieldlist? '}'
-    ;
-
-fieldlist
-    : field (fieldsep field)* fieldsep?
+fieldList
+    : field (fieldSeparator field)* fieldSeparator?
     ;
 
 field
-    : '[' exp ']' '=' exp | NAME '=' exp | exp
+    : '[' expression ']' '=' expression
+    | NAME '=' expression| expression
     ;
 
-fieldsep
+fieldSeparator
     : ',' | ';'
     ;
 
@@ -182,8 +200,17 @@ operatorAddSub
 operatorMulDiv
     : '*' | '/';
 
-operatorBitwise
-    : '&' | '|' | '~' | '<<' | '>>' | '^^';
+operatorBitwiseAnd
+    : '&';
+
+operatorBitwiseOr
+    : '|';
+
+operatorBitwiseXor
+    : '^^';
+
+operatorBitwiseShift
+    : '<<' | '>>';
 
 operatorUnary
     : 'not' | '-' | '!';
@@ -203,6 +230,10 @@ string
 
 LOCAL
     : 'local'
+    ;
+
+VARARG
+    : '...'
     ;
 
 NAME
