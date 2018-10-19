@@ -3,12 +3,6 @@
     // List of configurations. Add new configurations or edit existing ones.
     "configurations": [
         {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch Program",
-            "program": "${workspaceFolder}/server/test.js",
-        },
-        {
             "type": "antlr-debug",
             "request": "launch",
             "name": "Run Parser",
