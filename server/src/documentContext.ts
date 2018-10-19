@@ -17,43 +17,71 @@
 
 import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
-import { ParseTreeListener, ParseTreeWalker } from 'antlr4/tree/Tree'
-import { CompletionItem } from 'vscode-languageserver'
+import { ParseTreeWalker } from 'antlr4/tree/Tree'
+import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from './tsp'
 
-export class DocumentContext {
+export class DocumentContext extends TspListener {
     readonly uri: string
     private content: string
-    private readonly globals: Map<string, CompletionItem>
+    private globals: Map<string, CompletionItem>
     private lexer: TspLexer
-    private readonly listener: TspListener
     private parser: TspParser
     private parseTree: ParserRuleContext
 
     constructor(uri: string, content: string) {
+        super()
+
         this.uri = uri
         this.globals = new Map()
-        this.listener = new TspListener()
 
         this.update(content)
     }
 
-    exitVariable = (context: ParserRuleContext): void => {
-        console.log('exited a variable')
+    exitAssignment(context: TspParser.AssignmentContext): void {
+        // Add global variable completions.
+        const varlist = context.varlist()
+
+        if (varlist === null) {
+            return
+        }
+
+        const newGlobals = new Map<string, CompletionItem>()
+        const variables = varlist.variable()
+        variables.forEach((variable: TspParser.VariableContext): void => {
+            const name = variable.NAME()
+
+            if (name === null) {
+                return
+            }
+
+            // If we have varSuffixes that have nameAndArgs, then skip this variable
+            for (const varsuffix of variable.varSuffix()) {
+                if (varsuffix.nameAndArgs().length > 0) {
+                    return
+                }
+            }
+
+            newGlobals.set(name.getText(), {
+                kind: CompletionItemKind.Variable,
+                label: name.getText()
+            })
+        })
+
+        this.globals = new Map([...this.globals, ...newGlobals])
     }
 
     getCompletionItems(): Array<CompletionItem> {
         const result = new Array<CompletionItem>()
-        result.concat(this.getGlobalCompletionItems())
+        result.push(...this.getGlobalCompletionItems())
 
         return result
     }
 
     update(content: string): void {
         this.content = content
-
-        this.listener.exitVariable = this.exitVariable
+        this.globals = new Map()
 
         this.lexer = new TspLexer(new InputStream(this.content))
         this.parser = new TspParser(new CommonTokenStream(this.lexer))
@@ -63,11 +91,19 @@ export class DocumentContext {
     }
 
     walk(): void {
-        ParseTreeWalker.DEFAULT.walk(this.listener as unknown as ParseTreeListener, this.parseTree)
+        ParseTreeWalker.DEFAULT.walk(this, this.parseTree)
     }
 
     private getGlobalCompletionItems(): Array<CompletionItem> {
         return Array.from(this.globals.values())
     }
-}
 
+    // private isGlobalFunction = (context: TspParser.StatContext | TspParser.AssignmentContext): boolean => {
+    //     if (context instanceof TspParser.StatContext) {
+    //         return (context.funcname() !== null && context.funcbody() !== null)
+    //     }
+    //     else {
+    //         // Perform a local lookup to see if the variable is listed
+    //     }
+    // }
+}
