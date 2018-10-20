@@ -31,6 +31,7 @@ import { getFormatCompletions, getFormatSignatures } from './format'
 import { getGpibCompletions, getGpibSignatures } from './gpib'
 import { getLanCompletions, getLanSignatures } from './lan'
 import { getLocalnodeCompletions, getLocalnodeSignatures } from './localnode'
+// TODO: Import node completions and signatures.
 import { getOpcCompletions, getOpcSignatures } from './opc'
 import { getPrintbufferCompletions, getPrintbufferSignatures } from './printbuffer'
 import { getPrintnumberCompletions, getPrintnumberSignatures } from './printnumber'
