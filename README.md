@@ -2,6 +2,8 @@
 
 [![build](https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=master)](https://travis-ci.com/tektronix/vscode-tsplang)
 [![codecov](https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg)](https://codecov.io/gh/tektronix/vscode-tsplang)
+[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tektronix/vscode-tsplang/context:javascript)
+[![Total Alerts](https://img.shields.io/lgtm/alerts/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tektronix/vscode-tsplang/alerts)
 
 The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supported-instruments) TSP-enabled Keithley Instruments.
 
