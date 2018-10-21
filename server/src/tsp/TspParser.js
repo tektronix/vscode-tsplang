@@ -70,8 +70,8 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\"\u0003#\u0003#\u0003$\u0003$\u0003%\u0003%\u0003&\u0003&\u0003\'\u0003",
     "\'\u0003\'\u0002\u0002(\u0002\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014",
     "\u0016\u0018\u001a\u001c\u001e \"$&(*,.02468:<>@BDFHJL\u0002\n\u0004",
-    "\u0002\u0003\u0003\u0010\u0010\u0003\u0002!\'\u0003\u0002)*\u0003\u0002",
-    "+,\u0003\u000201\u0004\u0002**23\u0003\u0002;=\u0003\u00028:\u0002\u01b2",
+    "\u0002\u0003\u0003\u0010\u0010\u0003\u0002 &\u0003\u0002()\u0003\u0002",
+    "*+\u0003\u0002/0\u0004\u0002))12\u0003\u0002;=\u0003\u00028:\u0002\u01b2",
     "\u0002N\u0003\u0002\u0002\u0002\u0004W\u0003\u0002\u0002\u0002\u0006",
     "\u00a8\u0003\u0002\u0002\u0002\b\u00aa\u0003\u0002\u0002\u0002\n\u00ae",
     "\u0003\u0002\u0002\u0002\f\u00ba\u0003\u0002\u0002\u0002\u000e\u00c2",
@@ -161,12 +161,12 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0003\u0002\u0002\u0002\u00ce\u00d1\u0003\u0002\u0002\u0002\u00cf\u00cd",
     "\u0003\u0002\u0002\u0002\u00cf\u00d0\u0003\u0002\u0002\u0002\u00d0\u0011",
     "\u0003\u0002\u0002\u0002\u00d1\u00cf\u0003\u0002\u0002\u0002\u00d2\u00e0",
-    "\u0007\u0016\u0002\u0002\u00d3\u00e0\u0007\u0017\u0002\u0002\u00d4\u00e0",
-    "\u0007\u0018\u0002\u0002\u00d5\u00e0\u0005J&\u0002\u00d6\u00e0\u0005",
+    "\u00074\u0002\u0002\u00d3\u00e0\u0007\u0016\u0002\u0002\u00d4\u00e0",
+    "\u0007\u0017\u0002\u0002\u00d5\u00e0\u0005J&\u0002\u00d6\u00e0\u0005",
     "L\'\u0002\u00d7\u00e0\u0005$\u0013\u0002\u00d8\u00e0\u0005\u001e\u0010",
     "\u0002\u00d9\u00e0\u0005 \u0011\u0002\u00da\u00e0\u0005*\u0016\u0002",
-    "\u00db\u00dc\u0007\u0019\u0002\u0002\u00dc\u00dd\u0005\u0014\u000b\u0002",
-    "\u00dd\u00de\u0007\u001a\u0002\u0002\u00de\u00e0\u0003\u0002\u0002\u0002",
+    "\u00db\u00dc\u0007\u0018\u0002\u0002\u00dc\u00dd\u0005\u0014\u000b\u0002",
+    "\u00dd\u00de\u0007\u0019\u0002\u0002\u00de\u00e0\u0003\u0002\u0002\u0002",
     "\u00df\u00d2\u0003\u0002\u0002\u0002\u00df\u00d3\u0003\u0002\u0002\u0002",
     "\u00df\u00d4\u0003\u0002\u0002\u0002\u00df\u00d5\u0003\u0002\u0002\u0002",
     "\u00df\u00d6\u0003\u0002\u0002\u0002\u00df\u00d7\u0003\u0002\u0002\u0002",
@@ -202,8 +202,8 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u0111\u00fa\u0003\u0002\u0002\u0002\u0111\u00fe\u0003\u0002\u0002",
     "\u0002\u0111\u0102\u0003\u0002\u0002\u0002\u0111\u0106\u0003\u0002\u0002",
     "\u0002\u0111\u010a\u0003\u0002\u0002\u0002\u0111\u010d\u0003\u0002\u0002",
-    "\u0002\u0112\u0015\u0003\u0002\u0002\u0002\u0113\u0114\u0007\u0019\u0002",
-    "\u0002\u0114\u0115\u0005\u0014\u000b\u0002\u0115\u0116\u0007\u001a\u0002",
+    "\u0002\u0112\u0015\u0003\u0002\u0002\u0002\u0113\u0114\u0007\u0018\u0002",
+    "\u0002\u0114\u0115\u0005\u0014\u000b\u0002\u0115\u0116\u0007\u0019\u0002",
     "\u0002\u0116\u0119\u0003\u0002\u0002\u0002\u0117\u0119\u00077\u0002",
     "\u0002\u0118\u0113\u0003\u0002\u0002\u0002\u0118\u0117\u0003\u0002\u0002",
     "\u0002\u0119\u0017\u0003\u0002\u0002\u0002\u011a\u011d\u0005\u001a\u000e",
@@ -212,8 +212,8 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u011e\u011f\u0007\u0015\u0002\u0002\u011f\u0121\u00077\u0002",
     "\u0002\u0120\u011e\u0003\u0002\u0002\u0002\u0120\u0121\u0003\u0002\u0002",
     "\u0002\u0121\u0122\u0003\u0002\u0002\u0002\u0122\u0123\u0005\"\u0012",
-    "\u0002\u0123\u001b\u0003\u0002\u0002\u0002\u0124\u0125\u0007\u001b\u0002",
-    "\u0002\u0125\u0126\u0005\u0014\u000b\u0002\u0126\u0127\u0007\u001c\u0002",
+    "\u0002\u0123\u001b\u0003\u0002\u0002\u0002\u0124\u0125\u0007\u001a\u0002",
+    "\u0002\u0125\u0126\u0005\u0014\u000b\u0002\u0126\u0127\u0007\u001b\u0002",
     "\u0002\u0127\u012b\u0003\u0002\u0002\u0002\u0128\u0129\u0007\u0014\u0002",
     "\u0002\u0129\u012b\u00077\u0002\u0002\u012a\u0124\u0003\u0002\u0002",
     "\u0002\u012a\u0128\u0003\u0002\u0002\u0002\u012b\u001d\u0003\u0002\u0002",
@@ -229,26 +229,26 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u013a\u0003\u0002\u0002\u0002\u013c\u013d\u0003\u0002\u0002\u0002\u013d",
     "\u013f\u0003\u0002\u0002\u0002\u013e\u013c\u0003\u0002\u0002\u0002\u013f",
     "\u0140\u0005\u001a\u000e\u0002\u0140!\u0003\u0002\u0002\u0002\u0141",
-    "\u0143\u0007\u0019\u0002\u0002\u0142\u0144\u0005\u0010\t\u0002\u0143",
+    "\u0143\u0007\u0018\u0002\u0002\u0142\u0144\u0005\u0010\t\u0002\u0143",
     "\u0142\u0003\u0002\u0002\u0002\u0143\u0144\u0003\u0002\u0002\u0002\u0144",
-    "\u0145\u0003\u0002\u0002\u0002\u0145\u0149\u0007\u001a\u0002\u0002\u0146",
+    "\u0145\u0003\u0002\u0002\u0002\u0145\u0149\u0007\u0019\u0002\u0002\u0146",
     "\u0149\u0005*\u0016\u0002\u0147\u0149\u0005L\'\u0002\u0148\u0141\u0003",
     "\u0002\u0002\u0002\u0148\u0146\u0003\u0002\u0002\u0002\u0148\u0147\u0003",
     "\u0002\u0002\u0002\u0149#\u0003\u0002\u0002\u0002\u014a\u014b\u0007",
     "\u0012\u0002\u0002\u014b\u014c\u0005&\u0014\u0002\u014c%\u0003\u0002",
-    "\u0002\u0002\u014d\u014f\u0007\u0019\u0002\u0002\u014e\u0150\u0005(",
+    "\u0002\u0002\u014d\u014f\u0007\u0018\u0002\u0002\u014e\u0150\u0005(",
     "\u0015\u0002\u014f\u014e\u0003\u0002\u0002\u0002\u014f\u0150\u0003\u0002",
-    "\u0002\u0002\u0150\u0151\u0003\u0002\u0002\u0002\u0151\u0152\u0007\u001a",
+    "\u0002\u0002\u0150\u0151\u0003\u0002\u0002\u0002\u0151\u0152\u0007\u0019",
     "\u0002\u0002\u0152\u0153\u0005\u0004\u0003\u0002\u0153\u0154\u0007\u0006",
     "\u0002\u0002\u0154\'\u0003\u0002\u0002\u0002\u0155\u0158\u0005\u000e",
     "\b\u0002\u0156\u0157\u0007\u0010\u0002\u0002\u0157\u0159\u00076\u0002",
     "\u0002\u0158\u0156\u0003\u0002\u0002\u0002\u0158\u0159\u0003\u0002\u0002",
     "\u0002\u0159\u015c\u0003\u0002\u0002\u0002\u015a\u015c\u00076\u0002",
     "\u0002\u015b\u0155\u0003\u0002\u0002\u0002\u015b\u015a\u0003\u0002\u0002",
-    "\u0002\u015c)\u0003\u0002\u0002\u0002\u015d\u015f\u0007\u001d\u0002",
+    "\u0002\u015c)\u0003\u0002\u0002\u0002\u015d\u015f\u0007\u001c\u0002",
     "\u0002\u015e\u0160\u0005,\u0017\u0002\u015f\u015e\u0003\u0002\u0002",
     "\u0002\u015f\u0160\u0003\u0002\u0002\u0002\u0160\u0161\u0003\u0002\u0002",
-    "\u0002\u0161\u0162\u0007\u001e\u0002\u0002\u0162+\u0003\u0002\u0002",
+    "\u0002\u0161\u0162\u0007\u001d\u0002\u0002\u0162+\u0003\u0002\u0002",
     "\u0002\u0163\u0169\u0005.\u0018\u0002\u0164\u0165\u00050\u0019\u0002",
     "\u0165\u0166\u0005.\u0018\u0002\u0166\u0168\u0003\u0002\u0002\u0002",
     "\u0167\u0164\u0003\u0002\u0002\u0002\u0168\u016b\u0003\u0002\u0002\u0002",
@@ -256,27 +256,27 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u016a\u016d\u0003\u0002\u0002\u0002\u016b\u0169\u0003\u0002\u0002\u0002",
     "\u016c\u016e\u00050\u0019\u0002\u016d\u016c\u0003\u0002\u0002\u0002",
     "\u016d\u016e\u0003\u0002\u0002\u0002\u016e-\u0003\u0002\u0002\u0002",
-    "\u016f\u0170\u0007\u001b\u0002\u0002\u0170\u0171\u0005\u0014\u000b\u0002",
-    "\u0171\u0172\u0007\u001c\u0002\u0002\u0172\u0173\u0007\u0004\u0002\u0002",
+    "\u016f\u0170\u0007\u001a\u0002\u0002\u0170\u0171\u0005\u0014\u000b\u0002",
+    "\u0171\u0172\u0007\u001b\u0002\u0002\u0172\u0173\u0007\u0004\u0002\u0002",
     "\u0173\u0174\u0005\u0014\u000b\u0002\u0174\u017a\u0003\u0002\u0002\u0002",
     "\u0175\u0176\u00077\u0002\u0002\u0176\u0177\u0007\u0004\u0002\u0002",
     "\u0177\u017a\u0005\u0014\u000b\u0002\u0178\u017a\u0005\u0014\u000b\u0002",
     "\u0179\u016f\u0003\u0002\u0002\u0002\u0179\u0175\u0003\u0002\u0002\u0002",
     "\u0179\u0178\u0003\u0002\u0002\u0002\u017a/\u0003\u0002\u0002\u0002",
     "\u017b\u017c\t\u0002\u0002\u0002\u017c1\u0003\u0002\u0002\u0002\u017d",
-    "\u017e\u0007\u001f\u0002\u0002\u017e3\u0003\u0002\u0002\u0002\u017f",
-    "\u0180\u0007 \u0002\u0002\u01805\u0003\u0002\u0002\u0002\u0181\u0182",
-    "\t\u0003\u0002\u0002\u01827\u0003\u0002\u0002\u0002\u0183\u0184\u0007",
-    "(\u0002\u0002\u01849\u0003\u0002\u0002\u0002\u0185\u0186\t\u0004\u0002",
-    "\u0002\u0186;\u0003\u0002\u0002\u0002\u0187\u0188\t\u0005\u0002\u0002",
-    "\u0188=\u0003\u0002\u0002\u0002\u0189\u018a\u0007-\u0002\u0002\u018a",
-    "?\u0003\u0002\u0002\u0002\u018b\u018c\u0007.\u0002\u0002\u018cA\u0003",
-    "\u0002\u0002\u0002\u018d\u018e\u0007/\u0002\u0002\u018eC\u0003\u0002",
-    "\u0002\u0002\u018f\u0190\t\u0006\u0002\u0002\u0190E\u0003\u0002\u0002",
-    "\u0002\u0191\u0192\t\u0007\u0002\u0002\u0192G\u0003\u0002\u0002\u0002",
-    "\u0193\u0194\u00074\u0002\u0002\u0194I\u0003\u0002\u0002\u0002\u0195",
-    "\u0196\t\b\u0002\u0002\u0196K\u0003\u0002\u0002\u0002\u0197\u0198\t",
-    "\t\u0002\u0002\u0198M\u0003\u0002\u0002\u0002!SWy~\u008c\u00a6\u00a8",
+    "\u017e\u0007\u001e\u0002\u0002\u017e3\u0003\u0002\u0002\u0002\u017f",
+    "\u0180\u0007\u001f\u0002\u0002\u01805\u0003\u0002\u0002\u0002\u0181",
+    "\u0182\t\u0003\u0002\u0002\u01827\u0003\u0002\u0002\u0002\u0183\u0184",
+    "\u0007\'\u0002\u0002\u01849\u0003\u0002\u0002\u0002\u0185\u0186\t\u0004",
+    "\u0002\u0002\u0186;\u0003\u0002\u0002\u0002\u0187\u0188\t\u0005\u0002",
+    "\u0002\u0188=\u0003\u0002\u0002\u0002\u0189\u018a\u0007,\u0002\u0002",
+    "\u018a?\u0003\u0002\u0002\u0002\u018b\u018c\u0007-\u0002\u0002\u018c",
+    "A\u0003\u0002\u0002\u0002\u018d\u018e\u0007.\u0002\u0002\u018eC\u0003",
+    "\u0002\u0002\u0002\u018f\u0190\t\u0006\u0002\u0002\u0190E\u0003\u0002",
+    "\u0002\u0002\u0191\u0192\t\u0007\u0002\u0002\u0192G\u0003\u0002\u0002",
+    "\u0002\u0193\u0194\u00073\u0002\u0002\u0194I\u0003\u0002\u0002\u0002",
+    "\u0195\u0196\t\b\u0002\u0002\u0196K\u0003\u0002\u0002\u0002\u0197\u0198",
+    "\t\t\u0002\u0002\u0198M\u0003\u0002\u0002\u0002!SWy~\u008c\u00a6\u00a8",
     "\u00ac\u00b3\u00b8\u00bf\u00c7\u00cf\u00df\u0111\u0118\u011c\u0120\u012a",
     "\u0130\u0136\u013c\u0143\u0148\u014f\u0158\u015b\u015f\u0169\u016d\u0179"].join("");
 
@@ -290,18 +290,19 @@ var sharedContextCache = new antlr4.PredictionContextCache();
 var literalNames = [ null, "';'", "'='", "'do'", "'end'", "'while'", "'repeat'", 
                      "'until'", "'if'", "'then'", "'elseif'", "'else'", 
                      "'break'", "'for'", "','", "'in'", "'function'", "'return'", 
-                     "'.'", "':'", "'nil'", "'false'", "'true'", "'('", 
-                     "')'", "'['", "']'", "'{'", "'}'", "'or'", "'and'", 
-                     "'<'", "'>'", "'<='", "'>='", "'~='", "'!='", "'=='", 
-                     "'..'", "'+'", "'-'", "'*'", "'/'", "'&'", "'|'", "'^^'", 
-                     "'<<'", "'>>'", "'not'", "'!'", "'^'", "'local'", "'...'" ];
+                     "'.'", "':'", "'false'", "'true'", "'('", "')'", "'['", 
+                     "']'", "'{'", "'}'", "'or'", "'and'", "'<'", "'>'", 
+                     "'<='", "'>='", "'~='", "'!='", "'=='", "'..'", "'+'", 
+                     "'-'", "'*'", "'/'", "'&'", "'|'", "'^^'", "'<<'", 
+                     "'>>'", "'not'", "'!'", "'^'", "'nil'", "'local'", 
+                     "'...'" ];
 
 var symbolicNames = [ null, null, null, null, null, null, null, null, null, 
                       null, null, null, null, null, null, null, null, null, 
                       null, null, null, null, null, null, null, null, null, 
                       null, null, null, null, null, null, null, null, null, 
                       null, null, null, null, null, null, null, null, null, 
-                      null, null, null, null, null, null, "LOCAL", "VARARG", 
+                      null, null, null, null, null, "NIL", "LOCAL", "VARARG", 
                       "NAME", "NORMALSTRING", "CHARSTRING", "LONGSTRING", 
                       "INT", "HEX", "FLOAT", "LONGCOMMENT", "LINE_COMMENT", 
                       "WS", "SHEBANG" ];
@@ -385,7 +386,7 @@ TspParser.T__45 = 46;
 TspParser.T__46 = 47;
 TspParser.T__47 = 48;
 TspParser.T__48 = 49;
-TspParser.T__49 = 50;
+TspParser.NIL = 50;
 TspParser.LOCAL = 51;
 TspParser.VARARG = 52;
 TspParser.NAME = 53;
@@ -558,7 +559,7 @@ TspParser.prototype.block = function() {
         this.state = 85;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__2) | (1 << TspParser.T__4) | (1 << TspParser.T__5) | (1 << TspParser.T__7) | (1 << TspParser.T__11) | (1 << TspParser.T__12) | (1 << TspParser.T__15) | (1 << TspParser.T__16) | (1 << TspParser.T__22))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
+        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__2) | (1 << TspParser.T__4) | (1 << TspParser.T__5) | (1 << TspParser.T__7) | (1 << TspParser.T__11) | (1 << TspParser.T__12) | (1 << TspParser.T__15) | (1 << TspParser.T__16) | (1 << TspParser.T__21))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
             this.state = 79;
             this.statement();
             this.state = 81;
@@ -1310,6 +1311,10 @@ function ValueContext(parser, parent, invokingState) {
 ValueContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 ValueContext.prototype.constructor = ValueContext;
 
+ValueContext.prototype.NIL = function() {
+    return this.getToken(TspParser.NIL, 0);
+};
+
 ValueContext.prototype.number = function() {
     return this.getTypedRuleContext(NumberContext,0);
 };
@@ -1367,19 +1372,19 @@ TspParser.prototype.value = function() {
         case 1:
             this.enterOuterAlt(localctx, 1);
             this.state = 208;
-            this.match(TspParser.T__19);
+            this.match(TspParser.NIL);
             break;
 
         case 2:
             this.enterOuterAlt(localctx, 2);
             this.state = 209;
-            this.match(TspParser.T__20);
+            this.match(TspParser.T__19);
             break;
 
         case 3:
             this.enterOuterAlt(localctx, 3);
             this.state = 210;
-            this.match(TspParser.T__21);
+            this.match(TspParser.T__20);
             break;
 
         case 4:
@@ -1421,11 +1426,11 @@ TspParser.prototype.value = function() {
         case 10:
             this.enterOuterAlt(localctx, 10);
             this.state = 217;
-            this.match(TspParser.T__22);
+            this.match(TspParser.T__21);
             this.state = 218;
             this.expression();
             this.state = 219;
-            this.match(TspParser.T__23);
+            this.match(TspParser.T__22);
             break;
 
         }
@@ -1729,14 +1734,14 @@ TspParser.prototype.prefix = function() {
         this.state = 278;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspParser.T__22:
+        case TspParser.T__21:
             this.enterOuterAlt(localctx, 1);
             this.state = 273;
-            this.match(TspParser.T__22);
+            this.match(TspParser.T__21);
             this.state = 274;
             this.expression();
             this.state = 275;
-            this.match(TspParser.T__23);
+            this.match(TspParser.T__22);
             break;
         case TspParser.NAME:
             this.enterOuterAlt(localctx, 2);
@@ -1810,8 +1815,8 @@ TspParser.prototype.suffix = function() {
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
         case TspParser.T__18:
-        case TspParser.T__22:
-        case TspParser.T__26:
+        case TspParser.T__21:
+        case TspParser.T__25:
         case TspParser.NORMALSTRING:
         case TspParser.CHARSTRING:
         case TspParser.LONGSTRING:
@@ -1820,7 +1825,7 @@ TspParser.prototype.suffix = function() {
             this.objectCall();
             break;
         case TspParser.T__17:
-        case TspParser.T__24:
+        case TspParser.T__23:
             this.enterOuterAlt(localctx, 2);
             this.state = 281;
             this.index();
@@ -1965,14 +1970,14 @@ TspParser.prototype.index = function() {
         this.state = 296;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspParser.T__24:
+        case TspParser.T__23:
             this.enterOuterAlt(localctx, 1);
             this.state = 290;
-            this.match(TspParser.T__24);
+            this.match(TspParser.T__23);
             this.state = 291;
             this.expression();
             this.state = 292;
-            this.match(TspParser.T__25);
+            this.match(TspParser.T__24);
             break;
         case TspParser.T__17:
             this.enterOuterAlt(localctx, 2);
@@ -2248,22 +2253,22 @@ TspParser.prototype.args = function() {
         this.state = 326;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspParser.T__22:
+        case TspParser.T__21:
             this.enterOuterAlt(localctx, 1);
             this.state = 319;
-            this.match(TspParser.T__22);
+            this.match(TspParser.T__21);
             this.state = 321;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__15) | (1 << TspParser.T__19) | (1 << TspParser.T__20) | (1 << TspParser.T__21) | (1 << TspParser.T__22) | (1 << TspParser.T__26))) !== 0) || ((((_la - 40)) & ~0x1f) == 0 && ((1 << (_la - 40)) & ((1 << (TspParser.T__39 - 40)) | (1 << (TspParser.T__47 - 40)) | (1 << (TspParser.T__48 - 40)) | (1 << (TspParser.NAME - 40)) | (1 << (TspParser.NORMALSTRING - 40)) | (1 << (TspParser.CHARSTRING - 40)) | (1 << (TspParser.LONGSTRING - 40)) | (1 << (TspParser.INT - 40)) | (1 << (TspParser.HEX - 40)) | (1 << (TspParser.FLOAT - 40)))) !== 0)) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__15) | (1 << TspParser.T__19) | (1 << TspParser.T__20) | (1 << TspParser.T__21) | (1 << TspParser.T__25))) !== 0) || ((((_la - 39)) & ~0x1f) == 0 && ((1 << (_la - 39)) & ((1 << (TspParser.T__38 - 39)) | (1 << (TspParser.T__46 - 39)) | (1 << (TspParser.T__47 - 39)) | (1 << (TspParser.NIL - 39)) | (1 << (TspParser.NAME - 39)) | (1 << (TspParser.NORMALSTRING - 39)) | (1 << (TspParser.CHARSTRING - 39)) | (1 << (TspParser.LONGSTRING - 39)) | (1 << (TspParser.INT - 39)) | (1 << (TspParser.HEX - 39)) | (1 << (TspParser.FLOAT - 39)))) !== 0)) {
                 this.state = 320;
                 this.expressionList();
             }
 
             this.state = 323;
-            this.match(TspParser.T__23);
+            this.match(TspParser.T__22);
             break;
-        case TspParser.T__26:
+        case TspParser.T__25:
             this.enterOuterAlt(localctx, 2);
             this.state = 324;
             this.tableConstructor();
@@ -2402,7 +2407,7 @@ TspParser.prototype.functionBody = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 331;
-        this.match(TspParser.T__22);
+        this.match(TspParser.T__21);
         this.state = 333;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
@@ -2412,7 +2417,7 @@ TspParser.prototype.functionBody = function() {
         }
 
         this.state = 335;
-        this.match(TspParser.T__23);
+        this.match(TspParser.T__22);
         this.state = 336;
         this.block();
         this.state = 337;
@@ -2563,17 +2568,17 @@ TspParser.prototype.tableConstructor = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 347;
-        this.match(TspParser.T__26);
+        this.match(TspParser.T__25);
         this.state = 349;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__15) | (1 << TspParser.T__19) | (1 << TspParser.T__20) | (1 << TspParser.T__21) | (1 << TspParser.T__22) | (1 << TspParser.T__24) | (1 << TspParser.T__26))) !== 0) || ((((_la - 40)) & ~0x1f) == 0 && ((1 << (_la - 40)) & ((1 << (TspParser.T__39 - 40)) | (1 << (TspParser.T__47 - 40)) | (1 << (TspParser.T__48 - 40)) | (1 << (TspParser.NAME - 40)) | (1 << (TspParser.NORMALSTRING - 40)) | (1 << (TspParser.CHARSTRING - 40)) | (1 << (TspParser.LONGSTRING - 40)) | (1 << (TspParser.INT - 40)) | (1 << (TspParser.HEX - 40)) | (1 << (TspParser.FLOAT - 40)))) !== 0)) {
+        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__15) | (1 << TspParser.T__19) | (1 << TspParser.T__20) | (1 << TspParser.T__21) | (1 << TspParser.T__23) | (1 << TspParser.T__25))) !== 0) || ((((_la - 39)) & ~0x1f) == 0 && ((1 << (_la - 39)) & ((1 << (TspParser.T__38 - 39)) | (1 << (TspParser.T__46 - 39)) | (1 << (TspParser.T__47 - 39)) | (1 << (TspParser.NIL - 39)) | (1 << (TspParser.NAME - 39)) | (1 << (TspParser.NORMALSTRING - 39)) | (1 << (TspParser.CHARSTRING - 39)) | (1 << (TspParser.LONGSTRING - 39)) | (1 << (TspParser.INT - 39)) | (1 << (TspParser.HEX - 39)) | (1 << (TspParser.FLOAT - 39)))) !== 0)) {
             this.state = 348;
             this.fieldList();
         }
 
         this.state = 351;
-        this.match(TspParser.T__27);
+        this.match(TspParser.T__26);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2749,11 +2754,11 @@ TspParser.prototype.field = function() {
         case 1:
             this.enterOuterAlt(localctx, 1);
             this.state = 365;
-            this.match(TspParser.T__24);
+            this.match(TspParser.T__23);
             this.state = 366;
             this.expression();
             this.state = 367;
-            this.match(TspParser.T__25);
+            this.match(TspParser.T__24);
             this.state = 368;
             this.match(TspParser.T__1);
             this.state = 369;
@@ -2896,7 +2901,7 @@ TspParser.prototype.operatorOr = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 379;
-        this.match(TspParser.T__28);
+        this.match(TspParser.T__27);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2952,7 +2957,7 @@ TspParser.prototype.operatorAnd = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 381;
-        this.match(TspParser.T__29);
+        this.match(TspParser.T__28);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3010,7 +3015,7 @@ TspParser.prototype.operatorComparison = function() {
         this.enterOuterAlt(localctx, 1);
         this.state = 383;
         _la = this._input.LA(1);
-        if(!(((((_la - 31)) & ~0x1f) == 0 && ((1 << (_la - 31)) & ((1 << (TspParser.T__30 - 31)) | (1 << (TspParser.T__31 - 31)) | (1 << (TspParser.T__32 - 31)) | (1 << (TspParser.T__33 - 31)) | (1 << (TspParser.T__34 - 31)) | (1 << (TspParser.T__35 - 31)) | (1 << (TspParser.T__36 - 31)))) !== 0))) {
+        if(!(((((_la - 30)) & ~0x1f) == 0 && ((1 << (_la - 30)) & ((1 << (TspParser.T__29 - 30)) | (1 << (TspParser.T__30 - 30)) | (1 << (TspParser.T__31 - 30)) | (1 << (TspParser.T__32 - 30)) | (1 << (TspParser.T__33 - 30)) | (1 << (TspParser.T__34 - 30)) | (1 << (TspParser.T__35 - 30)))) !== 0))) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3072,7 +3077,7 @@ TspParser.prototype.operatorStrcat = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 385;
-        this.match(TspParser.T__37);
+        this.match(TspParser.T__36);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3130,7 +3135,7 @@ TspParser.prototype.operatorAddSub = function() {
         this.enterOuterAlt(localctx, 1);
         this.state = 387;
         _la = this._input.LA(1);
-        if(!(_la===TspParser.T__38 || _la===TspParser.T__39)) {
+        if(!(_la===TspParser.T__37 || _la===TspParser.T__38)) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3194,7 +3199,7 @@ TspParser.prototype.operatorMulDiv = function() {
         this.enterOuterAlt(localctx, 1);
         this.state = 389;
         _la = this._input.LA(1);
-        if(!(_la===TspParser.T__40 || _la===TspParser.T__41)) {
+        if(!(_la===TspParser.T__39 || _la===TspParser.T__40)) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3256,7 +3261,7 @@ TspParser.prototype.operatorBitwiseAnd = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 391;
-        this.match(TspParser.T__42);
+        this.match(TspParser.T__41);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3312,7 +3317,7 @@ TspParser.prototype.operatorBitwiseOr = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 393;
-        this.match(TspParser.T__43);
+        this.match(TspParser.T__42);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3368,7 +3373,7 @@ TspParser.prototype.operatorBitwiseXor = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 395;
-        this.match(TspParser.T__44);
+        this.match(TspParser.T__43);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3426,7 +3431,7 @@ TspParser.prototype.operatorBitwiseShift = function() {
         this.enterOuterAlt(localctx, 1);
         this.state = 397;
         _la = this._input.LA(1);
-        if(!(_la===TspParser.T__45 || _la===TspParser.T__46)) {
+        if(!(_la===TspParser.T__44 || _la===TspParser.T__45)) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3490,7 +3495,7 @@ TspParser.prototype.operatorUnary = function() {
         this.enterOuterAlt(localctx, 1);
         this.state = 399;
         _la = this._input.LA(1);
-        if(!(((((_la - 40)) & ~0x1f) == 0 && ((1 << (_la - 40)) & ((1 << (TspParser.T__39 - 40)) | (1 << (TspParser.T__47 - 40)) | (1 << (TspParser.T__48 - 40)))) !== 0))) {
+        if(!(((((_la - 39)) & ~0x1f) == 0 && ((1 << (_la - 39)) & ((1 << (TspParser.T__38 - 39)) | (1 << (TspParser.T__46 - 39)) | (1 << (TspParser.T__47 - 39)))) !== 0))) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3552,7 +3557,7 @@ TspParser.prototype.operatorPower = function() {
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 401;
-        this.match(TspParser.T__49);
+        this.match(TspParser.T__48);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;

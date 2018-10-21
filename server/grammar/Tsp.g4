@@ -91,7 +91,7 @@ expressionList
     ;
 
 value
-    : 'nil'
+    : NIL
     | 'false'
     | 'true'
     | number
@@ -228,6 +228,10 @@ string
     ;
 
 // LEXER
+
+NIL
+    : 'nil'
+    ;
 
 LOCAL
     : 'local'

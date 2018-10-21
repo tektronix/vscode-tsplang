@@ -66,7 +66,7 @@ export declare class TspLexer extends Lexer {
     static T__46: number
     static T__47: number
     static T__48: number
-    static T__49: number
+    static NIL: number
     static LOCAL: number
     static VARARG: number
     static NAME: number
