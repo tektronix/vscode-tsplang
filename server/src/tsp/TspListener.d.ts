@@ -32,71 +32,71 @@ export declare class TspListener implements ParseTreeListener {
     enterBlock(context: TspParser.BlockContext): void
     exitBlock(context: TspParser.BlockContext): void
 
-    enterStat(context: TspParser.StatContext): void
-    exitStat(context: TspParser.StatContext): void
+    enterStatement(context: TspParser.StatementContext): void
+    exitStatement(context: TspParser.StatementContext): void
 
-    enterAssignment(context: TspParser.AssignmentContext): void
-    exitAssignment(context: TspParser.AssignmentContext): void
+    enterReturnStatement(context: TspParser.ReturnStatementContext): void
+    exitReturnStatement(context: TspParser.ReturnStatementContext): void
 
-    enterRetStat(context: TspParser.RetstatContext): void
-    exitRetStat(context: TspParser.RetstatContext): void
+    enterFunctionName(context: TspParser.FunctionNameContext): void
+    exitFunctionName(context: TspParser.FunctionNameContext): void
 
-    enterFuncname(context: TspParser.FuncnameContext): void
-    exitFuncname(context: TspParser.FuncnameContext): void
+    enterVariableList(context: TspParser.VariableListContext): void
+    exitVariableList(context: TspParser.VariableListContext): void
 
-    enterVarlist(context: TspParser.VarlistContext): void
-    exitVarlist(context: TspParser.VarlistContext): void
+    enterNameList(context: TspParser.NameListContext): void
+    exitNameList(context: TspParser.NameListContext): void
 
-    enterNamelist(context: TspParser.NamelistContext): void
-    exitNamelist(context: TspParser.NamelistContext): void
+    enterExpressionList(context: TspParser.ExpressionListContext): void
+    exitExpressionList(context: TspParser.ExpressionListContext): void
 
-    enterExplist(context: TspParser.ExplistContext): void
-    exitExplist(context: TspParser.ExplistContext): void
+    enterValue(context: TspParser.ValueContext): void
+    exitValue(context: TspParser.ValueContext): void
 
-    enterExp(context: TspParser.ExpContext): void
-    exitExp(context: TspParser.ExpContext): void
+    enterExpression(context: TspParser.ExpressionContext): void
+    exitExpression(context: TspParser.ExpressionContext): void
 
-    enterPrefixexp(context: TspParser.PrefixexpContext): void
-    exitPrefixexp(context: TspParser.PrefixexpContext): void
+    enterPrefix(context: TspParser.PrefixContext): void
+    exitPrefix(context: TspParser.PrefixContext): void
 
-    enterFunctioncall(context: TspParser.FunctioncallContext): void
-    exitFunctioncall(context: TspParser.FunctioncallContext): void
+    enterSuffix(context: TspParser.SuffixContext): void
+    exitSuffix(context: TspParser.SuffixContext): void
 
-    enterVarOrExp(context: TspParser.VarOrExpContext): void
-    exitVarOrExp(context: TspParser.VarOrExpContext): void
+    enterCall(context: TspParser.CallContext): void
+    exitCall(context: TspParser.CallContext): void
+
+    enterIndex(context: TspParser.IndexContext): void
+    exitIndex(context: TspParser.IndexContext): void
 
     enterVariable(context: TspParser.VariableContext): void
     exitVariable(context: TspParser.VariableContext): void
 
-    enterVarSuffix(context: TspParser.VarSuffixContext): void
-    exitVarSuffix(context: TspParser.VarSuffixContext): void
+    enterFunctionCall(context: TspParser.FunctionCallContext): void
+    exitFunctionCall(context: TspParser.FunctionCallContext): void
 
-    enterNameAndArgs(context: TspParser.NameAndArgsContext): void
-    exitNameAndArgs(context: TspParser.NameAndArgsContext): void
+    enterArguments(context: TspParser.ArgumentsContext): void
+    exitArguments(context: TspParser.ArgumentsContext): void
 
-    enterArgs(context: TspParser.ArgsContext): void
-    exitArgs(context: TspParser.ArgsContext): void
+    enterFunctionDefinition(context: TspParser.FunctionDefinitionContext): void
+    exitFunctionDefinition(context: TspParser.FunctionDefinitionContext): void
 
-    enterFunctiondef(context: TspParser.FunctiondefContext): void
-    exitFunctiondef(context: TspParser.FunctiondefContext): void
+    enterFunctionBody(context: TspParser.FunctionBodyContext): void
+    exitFunctionBody(context: TspParser.FunctionBodyContext): void
 
-    enterFuncbody(context: TspParser.FuncbodyContext): void
-    exitFuncbody(context: TspParser.FuncbodyContext): void
+    enterParameterList(context: TspParser.ParameterListContext): void
+    exitParameterList(context: TspParser.ParameterListContext): void
 
-    enterParlist(context: TspParser.ParlistContext): void
-    exitParlist(context: TspParser.ParlistContext): void
+    enterTableConstructor(context: TspParser.TableConstructorContext): void
+    exitTableConstructor(context: TspParser.TableConstructorContext): void
 
-    enterTableconstructor(context: TspParser.TableconstructorContext): void
-    exitTableconstructor(context: TspParser.TableconstructorContext): void
-
-    enterFieldlist(context: TspParser.FieldlistContext): void
-    exitFieldlist(context: TspParser.FieldlistContext): void
+    enterFieldList(context: TspParser.FieldListContext): void
+    exitFieldList(context: TspParser.FieldListContext): void
 
     enterField(context: TspParser.FieldContext): void
     exitField(context: TspParser.FieldContext): void
 
-    enterFieldsep(context: TspParser.FieldsepContext): void
-    exitFieldsep(context: TspParser.FieldsepContext): void
+    enterFieldSeparator(context: TspParser.FieldSeparatorContext): void
+    exitFieldSeparator(context: TspParser.FieldSeparatorContext): void
 
     enterOperatorOr(context: TspParser.OperatorOrContext): void
     exitOperatorOr(context: TspParser.OperatorOrContext): void
@@ -116,8 +116,17 @@ export declare class TspListener implements ParseTreeListener {
     enterOperatorMulDiv(context: TspParser.OperatorMulDivContext): void
     exitOperatorMulDiv(context: TspParser.OperatorMulDivContext): void
 
-    enterOperatorBitwise(context: TspParser.OperatorBitwiseContext): void
-    exitOperatorBitwise(context: TspParser.OperatorBitwiseContext): void
+    enterOperatorBitwiseAnd(context: TspParser.OperatorBitwiseAndContext): void
+    exitOperatorBitwiseAnd(context: TspParser.OperatorBitwiseAndContext): void
+
+    enterOperatorBitwiseOr(context: TspParser.OperatorBitwiseOrContext): void
+    exitOperatorBitwiseOr(context: TspParser.OperatorBitwiseOrContext): void
+
+    enterOperatorBitwiseXor(context: TspParser.OperatorBitwiseXorContext): void
+    exitOperatorBitwiseXor(context: TspParser.OperatorBitwiseXorContext): void
+
+    enterOperatorBitwiseShift(context: TspParser.OperatorBitwiseShiftContext): void
+    exitOperatorBitwiseShift(context: TspParser.OperatorBitwiseShiftContext): void
 
     enterOperatorUnary(context: TspParser.OperatorUnaryContext): void
     exitOperatorUnary(context: TspParser.OperatorUnaryContext): void
