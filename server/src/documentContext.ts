@@ -39,9 +39,9 @@ export class DocumentContext extends TspListener {
         this.update(content)
     }
 
-    exitAssignment(context: TspParser.AssignmentContext): void {
+    exitStatement(context: TspParser.StatementContext): void {
         // Add global variable completions.
-        const varlist = context.varlist()
+        const varlist = context.variableList()
 
         if (varlist === null) {
             return
@@ -56,11 +56,9 @@ export class DocumentContext extends TspListener {
                 return
             }
 
-            // If we have varSuffixes that have nameAndArgs, then skip this variable
-            for (const varsuffix of variable.varSuffix()) {
-                if (varsuffix.nameAndArgs().length > 0) {
-                    return
-                }
+            // If we have a prefix or suffix or index, then skip this variable
+            if (variable.prefix() !== null || variable.suffix().length !== 0 || variable.index() !== null) {
+                return
             }
 
             newGlobals.set(name.getText(), {
