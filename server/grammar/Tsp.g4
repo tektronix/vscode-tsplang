@@ -92,8 +92,7 @@ expressionList
 
 value
     : NIL
-    | 'false'
-    | 'true'
+    | BOOLEAN
     | number
     | string
     | functionDefinition
@@ -231,6 +230,11 @@ string
 
 NIL
     : 'nil'
+    ;
+
+BOOLEAN
+    : 'true'
+    | 'false'
     ;
 
 LOCAL

@@ -65,9 +65,8 @@ export declare class TspParser extends Parser {
     static T__44: number
     static T__45: number
     static T__46: number
-    static T__47: number
-    static T__48: number
     static NIL: number
+    static BOOLEAN: number
     static LOCAL: number
     static VARARG: number
     static NAME: number
@@ -249,6 +248,7 @@ export namespace TspParser {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         NIL(): TerminalNode | null
+        BOOLEAN(): TerminalNode | null
         number(): NumberContext | null
         string(): StringContext | null
         functionDefinition(): FunctionDefinitionContext | null
