@@ -98,7 +98,7 @@ export declare class TspParser extends Parser {
     static RULE_index: number
     static RULE_variable: number
     static RULE_functionCall: number
-    static RULE_arguments: number
+    static RULE_args: number
     static RULE_functionDefinition: number
     static RULE_functionBody: number
     static RULE_parameterList: number
@@ -145,7 +145,7 @@ export declare class TspParser extends Parser {
     index(): TspParser.IndexContext
     variable(): TspParser.VariableContext
     functionCall(): TspParser.FunctionCallContext
-    arguments(): TspParser.ArgumentsContext
+    args(): TspParser.ArgsContext
     functionDefinition(): TspParser.FunctionDefinitionContext
     functionBody(): TspParser.FunctionBodyContext
     parameterList(): TspParser.ParameterListContext
@@ -300,7 +300,7 @@ export namespace TspParser {
     export class CallContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        arguments(): ArgumentsContext | null
+        args(): ArgsContext | null
         NAME(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
@@ -336,7 +336,7 @@ export namespace TspParser {
         exitRule(listener: ParseTreeListener)
     }
 
-    export class ArgumentsContext extends ParserRuleContext {
+    export class ArgsContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         expressionList(): ExpressionListContext | null

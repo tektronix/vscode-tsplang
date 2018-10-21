@@ -1,4 +1,4 @@
-// Generated from C:\Source\vscode-tsplang\server\grammar\Tsp.g4 by ANTLR 4.7.1
+// Generated from ./Tsp.g4 by ANTLR 4.7.1
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 var TspListener = require('./TspListener').TspListener;
@@ -309,7 +309,7 @@ var symbolicNames = [ null, null, null, null, null, null, null, null, null,
 var ruleNames =  [ "chunk", "block", "statement", "returnStatement", "functionName", 
                    "variableList", "nameList", "expressionList", "value", 
                    "expression", "prefix", "suffix", "call", "index", "variable", 
-                   "functionCall", "arguments", "functionDefinition", "functionBody", 
+                   "functionCall", "args", "functionDefinition", "functionBody", 
                    "parameterList", "tableConstructor", "fieldList", "field", 
                    "fieldSeparator", "operatorOr", "operatorAnd", "operatorComparison", 
                    "operatorStrcat", "operatorAddSub", "operatorMulDiv", 
@@ -416,7 +416,7 @@ TspParser.RULE_call = 12;
 TspParser.RULE_index = 13;
 TspParser.RULE_variable = 14;
 TspParser.RULE_functionCall = 15;
-TspParser.RULE_arguments = 16;
+TspParser.RULE_args = 16;
 TspParser.RULE_functionDefinition = 17;
 TspParser.RULE_functionBody = 18;
 TspParser.RULE_parameterList = 19;
@@ -1852,8 +1852,8 @@ function CallContext(parser, parent, invokingState) {
 CallContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 CallContext.prototype.constructor = CallContext;
 
-CallContext.prototype.arguments = function() {
-    return this.getTypedRuleContext(ArgumentsContext,0);
+CallContext.prototype.args = function() {
+    return this.getTypedRuleContext(ArgsContext,0);
 };
 
 CallContext.prototype.NAME = function() {
@@ -1895,7 +1895,7 @@ TspParser.prototype.call = function() {
         }
 
         this.state = 287;
-        this.arguments();
+        this.args();
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2188,7 +2188,7 @@ TspParser.prototype.functionCall = function() {
     return localctx;
 };
 
-function ArgumentsContext(parser, parent, invokingState) {
+function ArgsContext(parser, parent, invokingState) {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2197,46 +2197,46 @@ function ArgumentsContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspParser.RULE_arguments;
+    this.ruleIndex = TspParser.RULE_args;
     return this;
 }
 
-ArgumentsContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-ArgumentsContext.prototype.constructor = ArgumentsContext;
+ArgsContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+ArgsContext.prototype.constructor = ArgsContext;
 
-ArgumentsContext.prototype.expressionList = function() {
+ArgsContext.prototype.expressionList = function() {
     return this.getTypedRuleContext(ExpressionListContext,0);
 };
 
-ArgumentsContext.prototype.tableConstructor = function() {
+ArgsContext.prototype.tableConstructor = function() {
     return this.getTypedRuleContext(TableConstructorContext,0);
 };
 
-ArgumentsContext.prototype.string = function() {
+ArgsContext.prototype.string = function() {
     return this.getTypedRuleContext(StringContext,0);
 };
 
-ArgumentsContext.prototype.enterRule = function(listener) {
+ArgsContext.prototype.enterRule = function(listener) {
     if(listener instanceof TspListener ) {
-        listener.enterArguments(this);
+        listener.enterArgs(this);
 	}
 };
 
-ArgumentsContext.prototype.exitRule = function(listener) {
+ArgsContext.prototype.exitRule = function(listener) {
     if(listener instanceof TspListener ) {
-        listener.exitArguments(this);
+        listener.exitArgs(this);
 	}
 };
 
 
 
 
-TspParser.ArgumentsContext = ArgumentsContext;
+TspParser.ArgsContext = ArgsContext;
 
-TspParser.prototype.arguments = function() {
+TspParser.prototype.args = function() {
 
-    var localctx = new ArgumentsContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 32, TspParser.RULE_arguments);
+    var localctx = new ArgsContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 32, TspParser.RULE_args);
     var _la = 0; // Token type
     try {
         this.state = 325;

@@ -1,4 +1,4 @@
-// Generated from C:\Source\vscode-tsplang\server\grammar\Tsp.g4 by ANTLR 4.7.1
+// Generated from ./Tsp.g4 by ANTLR 4.7.1
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 
@@ -155,12 +155,12 @@ TspListener.prototype.exitFunctionCall = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#arguments.
-TspListener.prototype.enterArguments = function(ctx) {
+// Enter a parse tree produced by TspParser#args.
+TspListener.prototype.enterArgs = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#arguments.
-TspListener.prototype.exitArguments = function(ctx) {
+// Exit a parse tree produced by TspParser#args.
+TspListener.prototype.exitArgs = function(ctx) {
 };
 
 

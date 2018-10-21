@@ -74,8 +74,8 @@ export declare class TspListener implements ParseTreeListener {
     enterFunctionCall(context: TspParser.FunctionCallContext): void
     exitFunctionCall(context: TspParser.FunctionCallContext): void
 
-    enterArguments(context: TspParser.ArgumentsContext): void
-    exitArguments(context: TspParser.ArgumentsContext): void
+    enterArgs(context: TspParser.ArgsContext): void
+    exitArgs(context: TspParser.ArgsContext): void
 
     enterFunctionDefinition(context: TspParser.FunctionDefinitionContext): void
     exitFunctionDefinition(context: TspParser.FunctionDefinitionContext): void

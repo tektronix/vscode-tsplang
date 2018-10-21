@@ -1,4 +1,4 @@
-// Generated from C:\Source\vscode-tsplang\server\grammar\Tsp.g4 by ANTLR 4.7.1
+// Generated from ./Tsp.g4 by ANTLR 4.7.1
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 

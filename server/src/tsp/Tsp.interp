@@ -147,7 +147,7 @@ call
 index
 variable
 functionCall
-arguments
+args
 functionDefinition
 functionBody
 parameterList

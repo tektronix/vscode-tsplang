@@ -129,7 +129,7 @@ suffix
     ;
 
 call
-    : (':' NAME)? arguments
+    : (':' NAME)? args
     ;
 
 index
@@ -146,7 +146,7 @@ functionCall
     : prefix suffix* call
     ;
 
-arguments
+args
     : '(' expressionList? ')'
     | tableConstructor
     | string
