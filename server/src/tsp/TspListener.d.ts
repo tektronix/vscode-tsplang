@@ -62,8 +62,8 @@ export declare class TspListener implements ParseTreeListener {
     enterSuffix(context: TspParser.SuffixContext): void
     exitSuffix(context: TspParser.SuffixContext): void
 
-    enterCall(context: TspParser.CallContext): void
-    exitCall(context: TspParser.CallContext): void
+    enterObjectCall(context: TspParser.ObjectCallContext): void
+    exitObjectCall(context: TspParser.ObjectCallContext): void
 
     enterIndex(context: TspParser.IndexContext): void
     exitIndex(context: TspParser.IndexContext): void

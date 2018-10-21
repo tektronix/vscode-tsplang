@@ -308,14 +308,14 @@ var symbolicNames = [ null, null, null, null, null, null, null, null, null,
 
 var ruleNames =  [ "chunk", "block", "statement", "returnStatement", "functionName", 
                    "variableList", "nameList", "expressionList", "value", 
-                   "expression", "prefix", "suffix", "call", "index", "variable", 
-                   "functionCall", "args", "functionDefinition", "functionBody", 
-                   "parameterList", "tableConstructor", "fieldList", "field", 
-                   "fieldSeparator", "operatorOr", "operatorAnd", "operatorComparison", 
-                   "operatorStrcat", "operatorAddSub", "operatorMulDiv", 
-                   "operatorBitwiseAnd", "operatorBitwiseOr", "operatorBitwiseXor", 
-                   "operatorBitwiseShift", "operatorUnary", "operatorPower", 
-                   "number", "string" ];
+                   "expression", "prefix", "suffix", "objectCall", "index", 
+                   "variable", "functionCall", "args", "functionDefinition", 
+                   "functionBody", "parameterList", "tableConstructor", 
+                   "fieldList", "field", "fieldSeparator", "operatorOr", 
+                   "operatorAnd", "operatorComparison", "operatorStrcat", 
+                   "operatorAddSub", "operatorMulDiv", "operatorBitwiseAnd", 
+                   "operatorBitwiseOr", "operatorBitwiseXor", "operatorBitwiseShift", 
+                   "operatorUnary", "operatorPower", "number", "string" ];
 
 function TspParser (input) {
 	antlr4.Parser.call(this, input);
@@ -412,7 +412,7 @@ TspParser.RULE_value = 8;
 TspParser.RULE_expression = 9;
 TspParser.RULE_prefix = 10;
 TspParser.RULE_suffix = 11;
-TspParser.RULE_call = 12;
+TspParser.RULE_objectCall = 12;
 TspParser.RULE_index = 13;
 TspParser.RULE_variable = 14;
 TspParser.RULE_functionCall = 15;
@@ -1770,8 +1770,8 @@ function SuffixContext(parser, parent, invokingState) {
 SuffixContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 SuffixContext.prototype.constructor = SuffixContext;
 
-SuffixContext.prototype.call = function() {
-    return this.getTypedRuleContext(CallContext,0);
+SuffixContext.prototype.objectCall = function() {
+    return this.getTypedRuleContext(ObjectCallContext,0);
 };
 
 SuffixContext.prototype.index = function() {
@@ -1811,7 +1811,7 @@ TspParser.prototype.suffix = function() {
         case TspParser.LONGSTRING:
             this.enterOuterAlt(localctx, 1);
             this.state = 279;
-            this.call();
+            this.objectCall();
             break;
         case TspParser.T__17:
         case TspParser.T__24:
@@ -1836,7 +1836,7 @@ TspParser.prototype.suffix = function() {
     return localctx;
 };
 
-function CallContext(parser, parent, invokingState) {
+function ObjectCallContext(parser, parent, invokingState) {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -1845,42 +1845,42 @@ function CallContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspParser.RULE_call;
+    this.ruleIndex = TspParser.RULE_objectCall;
     return this;
 }
 
-CallContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-CallContext.prototype.constructor = CallContext;
+ObjectCallContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+ObjectCallContext.prototype.constructor = ObjectCallContext;
 
-CallContext.prototype.args = function() {
+ObjectCallContext.prototype.args = function() {
     return this.getTypedRuleContext(ArgsContext,0);
 };
 
-CallContext.prototype.NAME = function() {
+ObjectCallContext.prototype.NAME = function() {
     return this.getToken(TspParser.NAME, 0);
 };
 
-CallContext.prototype.enterRule = function(listener) {
+ObjectCallContext.prototype.enterRule = function(listener) {
     if(listener instanceof TspListener ) {
-        listener.enterCall(this);
+        listener.enterObjectCall(this);
 	}
 };
 
-CallContext.prototype.exitRule = function(listener) {
+ObjectCallContext.prototype.exitRule = function(listener) {
     if(listener instanceof TspListener ) {
-        listener.exitCall(this);
+        listener.exitObjectCall(this);
 	}
 };
 
 
 
 
-TspParser.CallContext = CallContext;
+TspParser.ObjectCallContext = ObjectCallContext;
 
-TspParser.prototype.call = function() {
+TspParser.prototype.objectCall = function() {
 
-    var localctx = new CallContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 24, TspParser.RULE_call);
+    var localctx = new ObjectCallContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 24, TspParser.RULE_objectCall);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
@@ -2119,8 +2119,8 @@ FunctionCallContext.prototype.prefix = function() {
     return this.getTypedRuleContext(PrefixContext,0);
 };
 
-FunctionCallContext.prototype.call = function() {
-    return this.getTypedRuleContext(CallContext,0);
+FunctionCallContext.prototype.objectCall = function() {
+    return this.getTypedRuleContext(ObjectCallContext,0);
 };
 
 FunctionCallContext.prototype.suffix = function(i) {
@@ -2173,7 +2173,7 @@ TspParser.prototype.functionCall = function() {
         }
 
         this.state = 316;
-        this.call();
+        this.objectCall();
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;

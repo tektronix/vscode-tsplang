@@ -124,11 +124,11 @@ prefix
     ;
 
 suffix
-    : call
+    : objectCall
     | index
     ;
 
-call
+objectCall
     : (':' NAME)? args
     ;
 
@@ -143,7 +143,7 @@ variable
     ;
 
 functionCall
-    : prefix suffix* call
+    : prefix suffix* objectCall
     ;
 
 args

@@ -119,12 +119,12 @@ TspListener.prototype.exitSuffix = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#call.
-TspListener.prototype.enterCall = function(ctx) {
+// Enter a parse tree produced by TspParser#objectCall.
+TspListener.prototype.enterObjectCall = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#call.
-TspListener.prototype.exitCall = function(ctx) {
+// Exit a parse tree produced by TspParser#objectCall.
+TspListener.prototype.exitObjectCall = function(ctx) {
 };
 
 

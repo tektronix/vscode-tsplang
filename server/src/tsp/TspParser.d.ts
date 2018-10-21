@@ -94,7 +94,7 @@ export declare class TspParser extends Parser {
     static RULE_expression: number
     static RULE_prefix: number
     static RULE_suffix: number
-    static RULE_call: number
+    static RULE_objectCall: number
     static RULE_index: number
     static RULE_variable: number
     static RULE_functionCall: number
@@ -141,7 +141,7 @@ export declare class TspParser extends Parser {
     expression(): TspParser.ExpressionContext
     prefix(): TspParser.PrefixContext
     suffix(): TspParser.SuffixContext
-    call(): TspParser.CallContext
+    objectCall(): TspParser.ObjectCallContext
     index(): TspParser.IndexContext
     variable(): TspParser.VariableContext
     functionCall(): TspParser.FunctionCallContext
@@ -291,13 +291,13 @@ export namespace TspParser {
     export class SuffixContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        call(): CallContext | null
+        call(): ObjectCallContext | null
         index(): IndexContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
     }
 
-    export class CallContext extends ParserRuleContext {
+    export class ObjectCallContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         args(): ArgsContext | null
@@ -330,7 +330,7 @@ export namespace TspParser {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         prefix(): PrefixContext | null
-        call(): CallContext | null
+        call(): ObjectCallContext | null
         suffix(): SuffixContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
