@@ -262,6 +262,7 @@ export namespace TspParser {
     export class ExpressionContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
+        value(): ValueContext | null
         operatorOr(): OperatorOrContext | null
         expression(): ExpressionContext | null
         operatorAnd(): OperatorAndContext | null

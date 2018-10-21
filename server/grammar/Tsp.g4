@@ -104,7 +104,8 @@ value
     ;
 
 expression
-    : value operatorOr expression
+    : value
+    | value operatorOr expression
     | value operatorAnd expression
     | value operatorComparison expression
     | value operatorBitwiseOr expression
