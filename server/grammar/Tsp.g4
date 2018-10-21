@@ -95,7 +95,6 @@ value
     | BOOLEAN
     | number
     | string
-    | functionDefinition
     | variable
     | functionCall
     | tableConstructor
@@ -104,6 +103,7 @@ value
 
 expression
     : value
+    | functionDefinition
     | value operatorOr expression
     | value operatorAnd expression
     | value operatorComparison expression

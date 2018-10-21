@@ -251,7 +251,6 @@ export namespace TspParser {
         BOOLEAN(): TerminalNode | null
         number(): NumberContext | null
         string(): StringContext | null
-        functionDefinition(): FunctionDefinitionContext | null
         variable(): VariableContext | null
         functionCall(): FunctionCallContext | null
         tableConstructor(): TableConstructorContext | null
@@ -264,6 +263,7 @@ export namespace TspParser {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         value(): ValueContext | null
+        functionDefinition(): FunctionDefinitionContext | null
         operatorOr(): OperatorOrContext | null
         expression(): ExpressionContext | null
         operatorAnd(): OperatorAndContext | null
