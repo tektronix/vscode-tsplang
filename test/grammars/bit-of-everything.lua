@@ -1,7 +1,7 @@
 a = 'local,.' b, c = 2, 3
 function func() return end
 local function lclfunc() end
-local d = 4
+local d = true
 local e, f = 5, 6
 b, c = 1 == 2, nil
 g = {}
