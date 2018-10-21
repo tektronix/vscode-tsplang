@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-/* tslint:disable: no-var-requires no-require-imports */
 'use strict'
 
 export { TspLexer } from './TspLexer'
