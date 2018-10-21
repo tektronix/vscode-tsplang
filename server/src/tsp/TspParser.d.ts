@@ -322,7 +322,7 @@ export namespace TspParser {
 
         prefix(): PrefixContext | null
         index(): IndexContext | null
-        suffix(): SuffixContext | null
+        suffix(i?: number): SuffixContext[]
         NAME(): TerminalNode | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
