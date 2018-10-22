@@ -293,7 +293,7 @@ export namespace TspParser {
     export class SuffixContext extends ParserRuleContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        call(): ObjectCallContext | null
+        objectCall(): ObjectCallContext | null
         index(): IndexContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
@@ -332,7 +332,7 @@ export namespace TspParser {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         prefix(): PrefixContext | null
-        call(): ObjectCallContext | null
+        objectCall(): ObjectCallContext | null
         suffix(): SuffixContext | null
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)
