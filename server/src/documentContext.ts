@@ -29,14 +29,24 @@ export class DocumentContext extends TspListener {
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
+    private scopeDepth: number
 
     constructor(uri: string, content: string) {
         super()
 
         this.uri = uri
         this.globals = new Map()
+        this.scopeDepth = 0
 
         this.update(content)
+    }
+
+    enterBlock(context: TspParser.BlockContext): void {
+        this.scopeDepth++
+    }
+
+    exitBlock(context: TspParser.BlockContext): void {
+        this.scopeDepth--
     }
 
     exitStatement(context: TspParser.StatementContext): void {
