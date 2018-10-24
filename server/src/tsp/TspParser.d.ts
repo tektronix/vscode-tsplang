@@ -169,24 +169,28 @@ export declare class TspParser extends Parser {
 }
 
 export namespace TspParser {
-    export class ChunkContext extends ParserRuleContext {
+    class BaseContext extends ParserRuleContext {
+        children: Array<ParserRuleContext | TerminalNode>
+        parser: TspParser
+        ruleIndex: number
+        enterRule(listener: ParseTreeListener)
+        exitRule(listener: ParseTreeListener)
+    }
+
+    export class ChunkContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         block(): BlockContext
         EOF(): TerminalNode
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class BlockContext extends ParserRuleContext {
+    export class BlockContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         statement(i?: number): StatementContext[]
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class StatementContext extends ParserRuleContext {
+    export class StatementContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         variableList(): VariableListContext | null
@@ -200,51 +204,39 @@ export namespace TspParser {
         functionName(): FunctionNameContext | null
         functionBody(): FunctionBodyContext | null
         LOCAL(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ReturnStatementContext extends ParserRuleContext {
+    export class ReturnStatementContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         expressionList(): ExpressionListContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FunctionNameContext extends ParserRuleContext {
+    export class FunctionNameContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         NAME(i?: number): TerminalNode[]
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class VariableListContext extends ParserRuleContext {
+    export class VariableListContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         variable(i?: number): VariableContext[]
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class NameListContext extends ParserRuleContext {
+    export class NameListContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         NAME(i?: number): TerminalNode[]
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ExpressionListContext extends ParserRuleContext {
+    export class ExpressionListContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         exp(i?: number): ExpressionContext[]
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ValueContext extends ParserRuleContext {
+    export class ValueContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         NIL(): TerminalNode | null
@@ -255,11 +247,9 @@ export namespace TspParser {
         functionCall(): FunctionCallContext | null
         tableConstructor(): TableConstructorContext | null
         expression(): ExpressionContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ExpressionContext extends ParserRuleContext {
+    export class ExpressionContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         value(): ValueContext | null
@@ -277,237 +267,166 @@ export namespace TspParser {
         operatorMulDiv(): OperatorMulDivContext | null
         operatorUnary(): OperatorUnaryContext | null
         operatorPower(): OperatorPowerContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class PrefixContext extends ParserRuleContext {
+    export class PrefixContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         expression(): ExpressionContext | null
         NAME(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class SuffixContext extends ParserRuleContext {
+    export class SuffixContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         objectCall(): ObjectCallContext | null
         index(): IndexContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ObjectCallContext extends ParserRuleContext {
+    export class ObjectCallContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         args(): ArgsContext | null
         NAME(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class IndexContext extends ParserRuleContext {
+    export class IndexContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         expression(): ExpressionContext | null
         NAME(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class VariableContext extends ParserRuleContext {
+    export class VariableContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         prefix(): PrefixContext | null
         index(): IndexContext | null
         suffix(i?: number): SuffixContext[]
         NAME(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FunctionCallContext extends ParserRuleContext {
+    export class FunctionCallContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         prefix(): PrefixContext | null
         objectCall(): ObjectCallContext | null
         suffix(): SuffixContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ArgsContext extends ParserRuleContext {
+    export class ArgsContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         expressionList(): ExpressionListContext | null
         tableConstructor(): TableConstructorContext | null
         string(): StringContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FunctionDefinitionContext extends ParserRuleContext {
+    export class FunctionDefinitionContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         functionBody(): FunctionBodyContext
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FunctionBodyContext extends ParserRuleContext {
+    export class FunctionBodyContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         block(): BlockContext
         parameterList(): ParameterListContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class ParameterListContext extends ParserRuleContext {
+    export class ParameterListContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         nameList(): NameListContext | null
         VARARG(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class TableConstructorContext extends ParserRuleContext {
+    export class TableConstructorContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         fieldList(): FieldListContext | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FieldListContext extends ParserRuleContext {
+    export class FieldListContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         field(i?: number): FieldContext[]
         fieldSeparator(i?: number): FieldSeparatorContext[]
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FieldContext extends ParserRuleContext {
+    export class FieldContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         expression(i?: number): ExpressionContext[]
         NAME(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class FieldSeparatorContext extends ParserRuleContext {
+    export class FieldSeparatorContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorOrContext extends ParserRuleContext {
+    export class OperatorOrContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorAndContext extends ParserRuleContext {
+    export class OperatorAndContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorComparisonContext extends ParserRuleContext {
+    export class OperatorComparisonContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorStrcatContext extends ParserRuleContext {
+    export class OperatorStrcatContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorAddSubContext extends ParserRuleContext {
+    export class OperatorAddSubContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorMulDivContext extends ParserRuleContext {
+    export class OperatorMulDivContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorBitwiseAndContext extends ParserRuleContext {
+    export class OperatorBitwiseAndContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorBitwiseOrContext extends ParserRuleContext {
+    export class OperatorBitwiseOrContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorBitwiseXorContext extends ParserRuleContext {
+    export class OperatorBitwiseXorContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorBitwiseShiftContext extends ParserRuleContext {
+    export class OperatorBitwiseShiftContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorUnaryContext extends ParserRuleContext {
+    export class OperatorUnaryContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class OperatorPowerContext extends ParserRuleContext {
+    export class OperatorPowerContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
-
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class NumberContext extends ParserRuleContext {
+    export class NumberContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         INT(): TerminalNode | null
         HEX(): TerminalNode | null
         FLOAT(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 
-    export class StringContext extends ParserRuleContext {
+    export class StringContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
         NORMALSTRING(): TerminalNode | null
         CHARSTRING(): TerminalNode | null
         LONGSTRING(): TerminalNode | null
-        enterRule(listener: ParseTreeListener)
-        exitRule(listener: ParseTreeListener)
     }
 }
