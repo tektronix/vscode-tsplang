@@ -109,8 +109,12 @@ export class ContentHandler {
 
             // Add this document's user completion items
             if (tspItem.context !== undefined) {
-                const userCompletions = tspItem.context.getCompletionItems()
-                results.push(...userCompletions)
+                for (const userCompletion of tspItem.context.getCompletionItems()) {
+                    // Only match against completions without a "data" property
+                    if (userCompletion.data === undefined) {
+                        results.push(userCompletion)
+                    }
+                }
             }
 
             return results

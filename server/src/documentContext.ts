@@ -25,7 +25,7 @@ import { TspLexer, TspListener, TspParser } from './tsp'
 export class DocumentContext extends TspListener {
     readonly uri: string
     private content: string
-    private globals: Map<string, CompletionItem>
+    private globals: Map<string, Array<CompletionItem>>
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
@@ -50,39 +50,19 @@ export class DocumentContext extends TspListener {
     }
 
     exitStatement(context: TspParser.StatementContext): void {
-        // Add global variable completions.
-        const varlist = context.variableList()
-
-        if (varlist === null) {
+        if (context.exception !== null) {
             return
         }
 
-        const newGlobals = new Map<string, CompletionItem>()
-        const variables = varlist.variable()
-        variables.forEach((variable: TspParser.VariableContext): void => {
-            const name = variable.NAME()
-
-            if (name === null) {
-                return
-            }
-
-            // If we have a prefix or suffix or index, then skip this variable
-            if (variable.prefix() !== null || variable.suffix().length !== 0 || variable.index() !== null) {
-                return
-            }
-
-            newGlobals.set(name.getText(), {
-                kind: CompletionItemKind.Variable,
-                label: name.getText()
-            })
-        })
-
-        this.globals = new Map([...this.globals, ...newGlobals])
+        this.globals = this.getCompletionsFromContext(context)
     }
 
     getCompletionItems(): Array<CompletionItem> {
         const result = new Array<CompletionItem>()
-        result.push(...this.getGlobalCompletionItems())
+
+        for (const completions of this.globals.values()) {
+            result.push(...completions)
+        }
 
         return result
     }
@@ -102,15 +82,15 @@ export class DocumentContext extends TspListener {
         ParseTreeWalker.DEFAULT.walk(this, this.parseTree)
     }
 
-    private getCompletionsFromContext = (context: ParserRuleContext): Array<CompletionItem> => {
-        const result = new Array<CompletionItem>()
+    private getCompletionsFromContext = (context: ParserRuleContext): Map<string, Array<CompletionItem>> => {
+        const result = new Map<string, Array<CompletionItem>>()
 
         const getCompletionsRecursive = (node: ParserRuleContext | TerminalNode): void => {
             if (node instanceof TerminalNode && node.symbol.type === TspLexer.NAME) {
-                result.push({
+                result.set(node.symbol.text, [{
                     kind: CompletionItemKind.Variable,
                     label: node.symbol.text
-                })
+                }])
             }
 
             for (let i = 0; i < node.getChildCount(); i++) {
@@ -120,9 +100,13 @@ export class DocumentContext extends TspListener {
                     continue
                 }
 
-                if (child instanceof TspParser.SuffixContext) {
+                if (child instanceof TspParser.VariableContext) {
+                    const prefixSuffix = this.getPrefixSuffixCompletions(child)
 
-                    continue
+                    if (prefixSuffix.completions.length > 0) {
+                        result.set(prefixSuffix.name, prefixSuffix.completions)
+                        continue
+                    }
                 }
 
                 getCompletionsRecursive(child)
@@ -133,21 +117,36 @@ export class DocumentContext extends TspListener {
         return result
     }
 
-    private getGlobalCompletionItems(): Array<CompletionItem> {
-        return Array.from(this.globals.values())
-    }
+    private getPrefixSuffixCompletions = (context: TspParser.VariableContext): {
+        completions: Array<CompletionItem>;
+        name: string;
+    } => {
+        // TODO: need to perform a lookup to see if the prefixName already exists
+        //  in the global map.
+        //  If it does, then update that entry accordingly instead of blasting
+        //  away the previous group.
+        //  Test Code:
+        //      a.b = 1
+        //      a.c = 2
+        //      a.<COMPLETION REQUEST>
+        //  Should provide both b and c.
 
-    private getPrefixSuffixCompletions = (context: TspParser.VariableContext): Array<CompletionItem> => {
         const result = new Array<CompletionItem>()
 
         const prefix = context.prefix()
         if (prefix === null) {
-            return []
+            return {
+                completions: [],
+                name: ''
+            }
         }
 
         const prefixName = prefix.NAME()
         if (prefixName === null) {
-            return []
+            return {
+                completions: [],
+                name: ''
+            }
         }
 
         result.push({
@@ -162,11 +161,15 @@ export class DocumentContext extends TspListener {
             // control keyword.
             i++
 
-            // result is guaranteed to have an item
+            // Result is guaranteed to have an item
             const lastItem = result.pop()
 
             if (lastItem === undefined) {
-                break
+                // Catastrophic failure
+                return {
+                    completions: [],
+                    name: ''
+                }
             }
 
             // Create this suffix's namespace
@@ -212,11 +215,54 @@ export class DocumentContext extends TspListener {
                 // If this is not the last suffix then it is a table.
                 kind: (i !== (suffix.length - 1)) ?
                     CompletionItemKind.Module :
-                    CompletionItemKind.Variable,
+                    CompletionItemKind.Field,
                 label: indexName.symbol.text
             })
         }
 
-        return result
+        const finalIndex = context.index()
+        if (finalIndex === null) {
+            return {
+                completions: [],
+                name: ''
+            }
+        }
+
+        const finalIndexName = finalIndex.NAME()
+        if (finalIndexName === null) {
+            return {
+                completions: result,
+                name: prefixName.symbol.text
+            }
+        }
+
+        // Result is guaranteed to have an item
+        const penultimateItem = result.pop()
+
+        if (penultimateItem === undefined) {
+            // Catastrophic failure
+            return {
+                completions: [],
+                name: ''
+            }
+        }
+
+        // Create this index's namespace
+        const finalData = new Array<string>(penultimateItem.label)
+        if (penultimateItem.data !== undefined) {
+            finalData.push(...penultimateItem.data)
+        }
+
+        result.push(penultimateItem)
+        result.push({
+            data: finalData,
+            kind: CompletionItemKind.Field,
+            label: finalIndexName.symbol.text
+        })
+
+        return {
+            completions: result,
+            name: prefixName.symbol.text
+        }
     }
 }
