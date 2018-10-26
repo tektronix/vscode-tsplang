@@ -121,17 +121,44 @@ export class DocumentContext extends TspListener {
         completions: Array<CompletionItem>;
         name: string;
     } => {
-        // TODO: need to perform a lookup to see if the prefixName already exists
-        //  in the global map.
-        //  If it does, then update that entry accordingly instead of blasting
-        //  away the previous group.
-        //  Test Code:
-        //      a.b = 1
-        //      a.c = 2
-        //      a.<COMPLETION REQUEST>
-        //  Should provide both b and c.
+        const getMatchingCompletionIndex = function(
+            search: Array<CompletionItem>,
+            label: string,
+            data: Array<string>,
+            root: boolean = false
+        ): number {
+            return search.findIndex((value: CompletionItem): boolean => {
+                if (root) {
+                    // Root namespace items match the prefix text AND have no data items.
+                    return (value.label.localeCompare(label) === 0 && value.data === undefined)
+                }
 
-        const result = new Array<CompletionItem>()
+                // Check that the labels match
+                if (value.label.localeCompare(label) !== 0) {
+                    return false
+                }
+
+                // Perform quick data field comparisons
+                if (value.data === undefined
+                        || ! (value.data instanceof Array)
+                        || value.data.length !== data.length) {
+                    return false
+                }
+
+                // Compare each item.
+                for (let j = 0; j < data.length; j++) {
+                    const valueDataItem = value.data[j]
+                    if (typeof valueDataItem !== 'string'
+                            && valueDataItem.localeCompare(data[j]) !== 0) {
+                        return false
+                    }
+                }
+
+                return true
+            })
+        }
+
+        let result: Array<CompletionItem> | undefined
 
         const prefix = context.prefix()
         if (prefix === null) {
@@ -149,10 +176,26 @@ export class DocumentContext extends TspListener {
             }
         }
 
-        result.push({
-            kind: CompletionItemKind.Module,
-            label: prefixName.symbol.text
-        })
+        result = this.globals.get(prefixName.symbol.text)
+
+        if (result === undefined) {
+            result = new Array()
+        }
+
+        const existingRootIndex = getMatchingCompletionIndex(result, prefixName.symbol.text, [], true)
+
+        // If we have a root namespace in the array...
+        if (existingRootIndex !== -1) {
+            // ...then update the completion kind to be a "table".
+            result[existingRootIndex].kind = CompletionItemKind.Module
+        }
+        else {
+            // ...else create a new root namespace item.
+            result.push({
+                kind: CompletionItemKind.Module,
+                label: prefixName.symbol.text
+            })
+        }
 
         let i = -1
         const suffix = context.suffix()
@@ -162,7 +205,7 @@ export class DocumentContext extends TspListener {
             i++
 
             // Result is guaranteed to have an item
-            const lastItem = result.pop()
+            const lastItem = (i === 0 && existingRootIndex !== -1) ? result[existingRootIndex] : result.pop()
 
             if (lastItem === undefined) {
                 // Catastrophic failure
@@ -182,23 +225,43 @@ export class DocumentContext extends TspListener {
             if (objectCall !== null) {
                 const callName = objectCall.NAME()
                 if (callName !== null) {
-                    result.push(lastItem)
-                    result.push({
-                        data,
-                        kind: CompletionItemKind.Function,
-                        label: callName.symbol.text
-                    })
+                    if (i !== 0) {
+                        result.push(lastItem)
+                    }
+
+                    const existingCallItemIndex = getMatchingCompletionIndex(result, callName.symbol.text, data)
+
+                    // If we found a matching completion...
+                    if (existingCallItemIndex !== -1) {
+                        // ...then update the existing completion to be a function.
+                        result[existingCallItemIndex].kind = CompletionItemKind.Function
+                    }
+                    else {
+                        // ...else create a new function call suffix item.
+                        result.push({
+                            data,
+                            kind: CompletionItemKind.Function,
+                            label: callName.symbol.text
+                        })
+                    }
                 }
                 else {
                     lastItem.kind = CompletionItemKind.Function
-                    result.push(lastItem)
+                    if (i === 0 && existingRootIndex !== -1) {
+                        result[existingRootIndex].kind = lastItem.kind
+                    }
+                    else {
+                        result.push(lastItem)
+                    }
                 }
 
                 // Do not process any more suffixes/indices.
                 break
             }
 
-            result.push(lastItem)
+            if (i !== 0) {
+                result.push(lastItem)
+            }
 
             const index = suffixItem.index()
             if (index === null) {
@@ -210,14 +273,26 @@ export class DocumentContext extends TspListener {
                 continue
             }
 
-            result.push({
-                data,
-                // If this is not the last suffix then it is a table.
-                kind: (i !== (suffix.length - 1)) ?
-                    CompletionItemKind.Module :
-                    CompletionItemKind.Field,
-                label: indexName.symbol.text
-            })
+            // If this is not the last suffix of if there is a final index then it is a table.
+            const kind = (i !== (suffix.length - 1) || context.index() !== null)
+                ? CompletionItemKind.Module
+                : CompletionItemKind.Field
+
+            const existingSuffixItemIndex = getMatchingCompletionIndex(result, indexName.symbol.text, data)
+
+            // If we found a matching completion...
+            if (existingSuffixItemIndex !== -1) {
+                // ...then update the existing completion.
+                result[existingSuffixItemIndex].kind = kind
+            }
+            else {
+                // ...else create a new suffix item.
+                result.push({
+                    data,
+                    kind,
+                    label: indexName.symbol.text
+                })
+            }
         }
 
         const finalIndex = context.index()
@@ -248,17 +323,30 @@ export class DocumentContext extends TspListener {
         }
 
         // Create this index's namespace
-        const finalData = new Array<string>(penultimateItem.label)
+        const finalData = (penultimateItem.kind === CompletionItemKind.Module)
+            ? new Array<string>(penultimateItem.label)
+            : new Array<string>()
         if (penultimateItem.data !== undefined) {
             finalData.push(...penultimateItem.data)
         }
 
         result.push(penultimateItem)
-        result.push({
-            data: finalData,
-            kind: CompletionItemKind.Field,
-            label: finalIndexName.symbol.text
-        })
+
+        const existingFinalIndexItemIndex = getMatchingCompletionIndex(result, finalIndexName.symbol.text, finalData)
+
+        // If we found a matching completion...
+        if (existingFinalIndexItemIndex !== -1) {
+            // ...then update the existing completion to be a field.
+            result[existingFinalIndexItemIndex].kind = CompletionItemKind.Field
+        }
+        else {
+            // ...else create a new index item.
+            result.push({
+                data: finalData,
+                kind: CompletionItemKind.Field,
+                label: finalIndexName.symbol.text
+            })
+        }
 
         return {
             completions: result,
