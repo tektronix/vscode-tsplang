@@ -22,8 +22,17 @@ export interface CommandDocumentation {
     toString(spec: InstrumentSpec): string
 }
 
+export interface CompletionItemData {
+    domains: Array<string>
+    types?: Array<BaseApiSpec>
+}
+
 export interface FormattableSignatureInformation extends SignatureInformation {
     getFormattedParameters(spec: InstrumentSpec): Array<ParameterInformation>
+}
+
+export interface InstrumentCompletionItem extends CompletionItem {
+    data?: CompletionItemData
 }
 
 /**
