@@ -93,36 +93,6 @@ export const completions: Array<InstrumentCompletionItem> = [
     {
         data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
-        label: 'BUTTONS_NONE'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'BUTTONS_OK'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'BUTTONS_CANCEL'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'BUTTONS_OKCANCEL'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'BUTTONS_YESNO'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'BUTTONS_YESNOCANCEL'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
         label: 'FORMAT_EXPONENT'
     },
     {
@@ -130,6 +100,36 @@ export const completions: Array<InstrumentCompletionItem> = [
         kind: CompletionItemKind.EnumMember,
         label: 'FORMAT_PREFIX'
     },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'BUTTONS_NONE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'BUTTONS_OK'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'BUTTONS_CANCEL'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'BUTTONS_OKCANCEL'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'BUTTONS_YESNO'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'BUTTONS_YESNOCANCEL'
+    // },
     {
         data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
@@ -150,74 +150,74 @@ export const completions: Array<InstrumentCompletionItem> = [
         kind: CompletionItemKind.EnumMember,
         label: 'NFORMAT_PREFIX'
     },
-    {
-        data: { domains: ['display'] },
-        documentation: {
-            kind: MarkupKind.Markdown,
-            value: '*deprecated* — use display.SCREEN_READING_TABLE'
-        },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_DATASHEET'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_GRAPH'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_GRAPH_SWIPE'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_HISTOGRAM'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_HOME'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_HOME_LARGE_READING'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_READING_TABLE'
-    },
-    {
-        data: { domains: ['display'] },
-        documentation: {
-            kind: MarkupKind.Markdown,
-            value: '*deprecated* — use display.SCREEN_GRAPH_SWIPE'
-        },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_PLOT_SWIPE'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_SETTINGS_SWIPE'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_SOURCE_SWIPE'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_STATS_SWIPE'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SCREEN_USER_SWIPE'
-    },
+    // {
+    //     data: { domains: ['display'] },
+    //     documentation: {
+    //         kind: MarkupKind.Markdown,
+    //         value: '*deprecated* — use display.SCREEN_READING_TABLE'
+    //     },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_DATASHEET'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_GRAPH'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_GRAPH_SWIPE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_HISTOGRAM'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_HOME'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_HOME_LARGE_READING'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_READING_TABLE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     documentation: {
+    //         kind: MarkupKind.Markdown,
+    //         value: '*deprecated* — use display.SCREEN_GRAPH_SWIPE'
+    //     },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_PLOT_SWIPE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_SETTINGS_SWIPE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_SOURCE_SWIPE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_STATS_SWIPE'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SCREEN_USER_SWIPE'
+    // },
     {
         data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
@@ -263,14 +263,14 @@ export const completions: Array<InstrumentCompletionItem> = [
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_BLACKOUT'
     },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'TEXT1'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'TEXT2'
-    },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'TEXT1'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'TEXT2'
+    // },
 ]

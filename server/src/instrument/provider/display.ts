@@ -30,7 +30,7 @@ export const completions: Array<InstrumentCompletionItem> = [
         data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nfunction changescreen(screenName)\n```\n\ndisplay.changescreen(display.SCREEN_\\*)\n\
+            value: '```lua\nfunction changescreen(screenName)\n```\n\
 \n\
 Change the currently displayed front-panel screen.'
         },
@@ -114,8 +114,6 @@ This setting persists through reset() and power cycles.'
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction settext(position, userDisplayText)\n```\n\
 \n\
-display.settext(display.TEXT\\*, userDisplayText)\n\
-\n\
 Set USER_SWIPE screen messages.\n\
 \n\
 Entering too many characters will cause a warning to be logged and the given text to be shortened to fit the screen.'
@@ -144,22 +142,61 @@ This command waits until a user responds to a front‑panel prompt that was crea
 
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
+        data: {
+            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
+                [
+                    0,
+                    [
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_HOME'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_HOME_LARGE_READING'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_READING_TABLE'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_GRAPH'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_HISTOGRAM'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_GRAPH_SWIPE'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_SETTINGS_SWIPE'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_SOURCE_SWIPE'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_STATS_SWIPE'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.SCREEN_USER_SWIPE'
+                        },
+                    ]
+                ]
+            ])
+        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.changescreen(screenName)',
         parameters: [
             {
-                documentation: 'One of:\n\
-display.SCREEN_HOME\n\
-display.SCREEN_HOME_LARGE_READING\n\
-display.SCREEN_READING_TABLE\n\
-display.SCREEN_GRAPH\n\
-display.SCREEN_HISTOGRAM\n\
-display.SCREEN_GRAPH_SWIPE\n\
-display.SCREEN_SETTINGS_SWIPE\n\
-display.SCREEN_SOURCE_SWIPE\n\
-display.SCREEN_STATS_SWIPE\n\
-display.SCREEN_USER_SWIPE',
+                documentation: 'Some display.SCREEN_*.',
                 label: 'screenName',
             },
         ],
@@ -176,18 +213,45 @@ display.SCREEN_USER_SWIPE',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
+                [
+                    0,
+                    [
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.BUTTONS_NONE'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.BUTTONS_OK'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.BUTTONS_CANCEL'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.BUTTONS_OKCANCEL'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.BUTTONS_YESNO'
+                        },
+                        {
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.BUTTONS_YESNOCANCEL'
+                        },
+                    ]
+                ]
+            ])
+        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.prompt(buttonSet, promptText)',
         parameters: [
             {
-                documentation: 'One of:\n\
-display.BUTTONS_NONE\n\
-display.BUTTONS_OK\n\
-display.BUTTONS_CANCEL\n\
-display.BUTTONS_OKCANCEL\n\
-display.BUTTONS_YESNO\n\
-display.BUTTONS_YESNOCANCEL',
+                documentation: 'Some display.BUTTONS_*.',
                 label: 'buttonSet',
             },
             {
@@ -197,6 +261,31 @@ display.BUTTONS_YESNOCANCEL',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
+                [
+                    0,
+                    [
+                        {
+                            documentation: {
+                                kind: MarkupKind.PlainText,
+                                value: 'Places text on the top line.'
+                            },
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.TEXT1'
+                        },
+                        {
+                            documentation: {
+                                kind: MarkupKind.PlainText,
+                                value: 'Places text on the bottom line.'
+                            },
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'display.TEXT2'
+                        },
+                    ]
+                ]
+            ])
+        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.settext(position, userDisplayText)',
