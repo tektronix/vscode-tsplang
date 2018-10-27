@@ -24,10 +24,15 @@ export interface CommandDocumentation {
 
 export interface CompletionItemData {
     domains: Array<string>
-    types?: Array<BaseApiSpec>
+    types?: Array<InstrumentCompletionItem>
+}
+
+export interface SignatureData {
+    parameterTypes: Map<number, Array<InstrumentCompletionItem>>
 }
 
 export interface InstrumentSignatureInformation extends SignatureInformation {
+    data?: SignatureData
     getFormattedParameters(spec: InstrumentSpec): Array<ParameterInformation>
 }
 
@@ -89,7 +94,7 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
 
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
     let resultCompletions: Array<InstrumentCompletionItem> = new Array()
-    let unformattedSignatures: Array<SignatureInformation> = new Array()
+    let unformattedSignatures: Array<InstrumentSignatureInformation> = new Array()
 
     cmds.forEach((cmdItem: ApiSpec) => {
         // filter completion documentation
@@ -129,6 +134,7 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
     const resultSignatures: Array<InstrumentSignatureInformation> = new Array()
     unformattedSignatures.forEach((value: InstrumentSignatureInformation) => {
         resultSignatures.push({
+            data: value.data,
             documentation: value.documentation,
             getFormattedParameters: (): Array<ParameterInformation> => new Array(),
             label: value.label,

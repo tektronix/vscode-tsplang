@@ -23,6 +23,10 @@ import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspManager'
 
+export interface InstrumentSignatureHelp extends SignatureHelp {
+    signatures: Array<InstrumentSignatureInformation>
+}
+
 export class ContentHandler {
     lastCompletionUri?: string
 
@@ -142,7 +146,7 @@ export class ContentHandler {
         return results
     }
 
-    getSignatures(uri: string, position: Position, tspItem: TspItem): SignatureHelp | undefined {
+    getSignatures(uri: string, position: Position, tspItem: TspItem): InstrumentSignatureHelp | undefined {
         // We cannot provide signatures if none exist
         if (tspItem.commandSet.signatures.length === 0) {
             return

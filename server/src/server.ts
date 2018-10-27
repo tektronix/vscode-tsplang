@@ -18,6 +18,8 @@
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
 import { ContentHandler } from './contentHandler'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from './instrument/provider'
+import { getActiveParameter } from './signatureProcessor'
 import { TspManager } from './tspManager'
 
 const manager: TspManager = new TspManager()
@@ -91,6 +93,32 @@ connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionIt
 
     if (tspItem === undefined) {
         return
+    }
+
+    const signatureHelp = parser.getSignatures(params.textDocument.uri, params.position, tspItem)
+    if (signatureHelp !== undefined) {
+        const availableParameterCompletions = new Array<InstrumentCompletionItem>()
+        signatureHelp.signatures.forEach(
+            (value: InstrumentSignatureInformation): void => {
+                if (value.data === undefined) {
+                    return
+                }
+
+                if (signatureHelp.activeParameter === null) {
+                    return
+                }
+
+                const parameterTypes = value.data.parameterTypes.get(signatureHelp.activeParameter)
+
+                if (parameterTypes === undefined) {
+                    return
+                }
+
+                availableParameterCompletions.push(...parameterTypes)
+            }
+        )
+
+        return availableParameterCompletions
     }
 
     return parser.getCompletions(params.textDocument.uri, params.position, tspItem)
