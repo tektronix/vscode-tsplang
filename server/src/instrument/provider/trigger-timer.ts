@@ -15,15 +15,15 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available trigger timers. Indexed from 1 to 4.'
@@ -32,7 +32,7 @@ export const completions: Array<CompletionItem> = [
         label: 'timer'
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -43,7 +43,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
         label: 'clear',
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].count\n```\n\
@@ -63,7 +63,7 @@ values expected in the trigger model.'
         label: 'count',
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].delay\n```\n\
@@ -78,7 +78,7 @@ paced correctly.'
         label: 'delay',
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].delaylist\n```\n\
@@ -96,7 +96,7 @@ equal to +50e-6.'
         label: 'delaylist',
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].enable\n```\n\
@@ -116,7 +116,7 @@ timer start time in seconds and fractional seconds for the desired alarm time.'
         label: 'enable',
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n\
@@ -137,7 +137,7 @@ It also clears "trigger.timer[N].overrun".'
         label: 'reset',
     },
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.timer[N].wait(timeout) -> boolean\n\

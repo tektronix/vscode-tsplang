@@ -15,16 +15,16 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     // No scriptVar namespace
     {
-        data: ['scriptVar'],
+        data: { domains: ['scriptVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction run()\n```\n\
@@ -35,7 +35,7 @@ Execute the script object.'
         label: 'run',
     },
     {
-        data: ['scriptVar'],
+        data: { domains: ['scriptVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction save(fileName)\n```\n\nscriptVar.save([fileName])\n\
@@ -49,7 +49,7 @@ An error will be logged if fileName ends with a file extension that is not ".tsp
         label: 'save',
     },
     {
-        data: ['scriptVar'],
+        data: { domains: ['scriptVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nscriptVar.source\n```\n\nscriptVar.source -> string\n\

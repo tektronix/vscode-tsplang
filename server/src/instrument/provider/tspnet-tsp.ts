@@ -15,20 +15,20 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         kind: CompletionItemKind.Module,
         label: 'tsp'
     },
     {
-        data: ['tsp', 'tspnet'],
+        data: { domains: ['tsp', 'tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction abort(connectionID)\n```\n\ntspnet.tsp.abort(connectionID)\n\
@@ -41,7 +41,7 @@ Causes all other connected interfaces to close.'
         label: 'abort',
     },
     {
-        data: ['tsp', 'tspnet'],
+        data: { domains: ['tsp', 'tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntspnet.tsp.abortonconnect\n```\n\ntspnet.tsp.abortonconnect -> 0 | 1\n\
@@ -55,7 +55,7 @@ subsequent reads or executes until an abort command is sent.'
         label: 'abortonconnect',
     },
     {
-        data: ['tsp', 'tspnet'],
+        data: { domains: ['tsp', 'tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction rbtablecopy(connectionID, name, startIndex, endIndex)\n```\n\
@@ -74,7 +74,7 @@ Limited to transferring 50,000 readings at a time.'
         label: 'rbtablecopy',
     },
     {
-        data: ['tsp', 'tspnet'],
+        data: { domains: ['tsp', 'tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction runscript(connectionID, name, script)\n```\n\

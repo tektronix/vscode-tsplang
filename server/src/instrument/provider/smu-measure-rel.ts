@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation } from '.'
+import { CommandDocumentation, InstrumentCompletionItem } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -50,14 +50,14 @@ This attribute is saved with the active function and retained until the next ins
     ],
 ])
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'rel'
     },
     {
-        data: ['rel', 'measure', 'smu'],
+        data: { domains: ['rel', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction acquire()\n```\n\nsmu.measure.rel.acquire() -> number | nil\n\
@@ -72,7 +72,7 @@ The acquired relative offset measurement is only applied to the present measurem
         label: 'acquire',
     },
     {
-        data: ['rel', 'measure', 'smu'],
+        data: { domains: ['rel', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.rel.enable\n```\n\
@@ -90,7 +90,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'enable',
     },
     {
-        data: ['rel', 'measure', 'smu'],
+        data: { domains: ['rel', 'measure', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'level',
     },

@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'script'
     },
     {
-        data: ['script'],
+        data: { domains: ['script'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(scriptName)\n```\n\nscript.delete(scriptName)\n\
@@ -41,7 +41,7 @@ calling this function is necessary if you wish to reuse the variable name.'
         label: 'delete',
     },
     {
-        data: ['script'],
+        data: { domains: ['script'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction load(fileName)\n```\n\nscript.load(fileName) -> scriptVar\n\

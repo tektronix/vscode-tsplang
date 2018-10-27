@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'dataqueue'
     },
     {
-        data: ['dataqueue'],
+        data: { domains: ['dataqueue'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction add(value, timeout)\n```\n\ndataqueue.add(value[, timeout]) -> boolean\n\
@@ -47,7 +47,7 @@ while adding data to the local data queue).'
         label: 'add',
     },
     {
-        data: ['dataqueue'],
+        data: { domains: ['dataqueue'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndataqueue.CAPACITY\n```\n\ndataqueue.CAPACITY -> number\n\
@@ -58,7 +58,7 @@ Returns the maximum number of entries that can be stored in the data queue.'
         label: 'CAPACITY',
     },
     {
-        data: ['dataqueue'],
+        data: { domains: ['dataqueue'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\nDelete all data from the data queue.\n\
@@ -69,7 +69,7 @@ Forces all in-progress dataqueue.add() commands to time out.'
         label: 'clear',
     },
     {
-        data: ['dataqueue'],
+        data: { domains: ['dataqueue'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndataqueue.count\n```\n\ndataqueue.count -> number\n\
@@ -80,7 +80,7 @@ Returns the current number of items in the data queue.'
         label: 'count',
     },
     {
-        data: ['dataqueue'],
+        data: { domains: ['dataqueue'] },
         detail: 'This function removes the next entry from the data queue.',
         documentation: {
             kind: MarkupKind.Markdown,

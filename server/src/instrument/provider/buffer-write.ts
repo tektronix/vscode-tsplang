@@ -15,22 +15,22 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         kind: CompletionItemKind.Module,
         label: 'write'
     },
     {
-        data: ['write', 'buffer'],
+        data: { domains: ['write', 'buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction format(bufferVar, units, displayDigits, extraUnits, extraDigits)\n```\n\
@@ -46,7 +46,7 @@ shown in the reading buffer and what is shown on the front‑panel Home, Histogr
         label: 'format'
     },
     {
-        data: ['write', 'buffer'],
+        data: { domains: ['write', 'buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reading(bufferVar, readingValue, seconds, fractionalSeconds, status)\n```\n\

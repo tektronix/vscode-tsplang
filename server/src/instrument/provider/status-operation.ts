@@ -15,20 +15,20 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         kind: CompletionItemKind.Module,
         label: 'operation'
     },
     {
-        data: ['operation', 'status'],
+        data: { domains: ['operation', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.operation.condition\n```\n\nstatus.operation.condition -> number\n\
@@ -42,7 +42,7 @@ When a mapped event occurs, its associated bit in the Operation Condition Regist
         label: 'condition',
     },
     {
-        data: ['operation', 'status'],
+        data: { domains: ['operation', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.operation.enable\n```\n\
@@ -57,7 +57,7 @@ Operation Summary Bit (OSB) of the Status Byte (STB) register is also set.'
         label: 'enable',
     },
     {
-        data: ['operation', 'status'],
+        data: { domains: ['operation', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.operation.event\n```\n\nstatus.operation.event -> number\n\
@@ -69,7 +69,7 @@ set in the register.'
         label: 'event',
     },
     {
-        data: ['operation', 'status'],
+        data: { domains: ['operation', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getmap(bitNumber)\n```\n\nstatus.operation.getmap(bitNumber) -> number, number\n\
@@ -83,7 +83,7 @@ If either is 0, then that event is not mapped.'
         label: 'getmap',
     },
     {
-        data: ['operation', 'status'],
+        data: { domains: ['operation', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction setmap(bitNumber, setEvent, clearEvent)\n```\n\

@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation } from '.'
+import { CommandDocumentation, InstrumentCompletionItem } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -41,14 +41,14 @@ than ±%{2}V will generate an error message; otherwise all voltage ranges are av
     ],
 ])
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.Module,
         label: 'interlock'
     },
     {
-        data: ['interlock', 'smu'],
+        data: { domains: ['interlock', 'smu'] },
         kind: CompletionItemKind.Constant,
         label: 'tripped',
     },

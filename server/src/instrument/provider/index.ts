@@ -48,12 +48,12 @@ function labelToModuleName(label: string, getEnums: boolean = false): string {
     return (getEnums) ? result.concat('-enums') : result
 }
 
-export function resolveCompletionNamespace(item: CompletionItem): string {
+export function resolveCompletionNamespace(item: InstrumentCompletionItem): string {
     if (item.data === undefined) {
         return item.label
     }
 
-    return [item.label].concat(item.data).reverse().join('.')
+    return [item.label].concat(item.data.domains).reverse().join('.')
 }
 
 export function resolveSignatureNamespace(item: SignatureInformation): string | undefined {
@@ -88,7 +88,7 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
     }
 
     const resultCompletionDocs: Map<string, CommandDocumentation> = new Map()
-    let resultCompletions: Array<CompletionItem> = new Array()
+    let resultCompletions: Array<InstrumentCompletionItem> = new Array()
     let unformattedSignatures: Array<SignatureInformation> = new Array()
 
     cmds.forEach((cmdItem: ApiSpec) => {
@@ -104,7 +104,7 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
 
         // filter completion items
         resultCompletions = resultCompletions.concat(set.completions.filter(
-            (value: CompletionItem) => {
+            (value: InstrumentCompletionItem) => {
                 return cmdItem.label.localeCompare(resolveCompletionNamespace(value)) === 0
             })
         )

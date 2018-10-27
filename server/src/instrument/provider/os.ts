@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'os'
     },
     {
-        data: ['os'],
+        data: { domains: ['os'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clock()\n```\n\nos.clock() -> number\n\
@@ -38,7 +38,7 @@ Returns an approximation of the total CPU time used by the calling program, in s
         label: 'clock'
     },
     {
-        data: ['os'],
+        data: { domains: ['os'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction date(format, time)\n```\n\nos.date([format[, time]]) -> string | table\n\
@@ -57,7 +57,7 @@ Tables returned from this function contain the fields year (four digits), month 
         label: 'date'
     },
     {
-        data: ['os'],
+        data: { domains: ['os'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction difftime(t1, t2)\n```\n\nos.difftime(t1, t2) -> number\n\
@@ -68,7 +68,7 @@ Returns the number of seconds from time t1 to time t2.'
         label: 'difftime'
     },
     {
-        data: ['os'],
+        data: { domains: ['os'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction rename(source, destination)\n```\n\
@@ -82,7 +82,7 @@ otherwise nothing is returned.'
         label: 'rename'
     },
     {
-        data: ['os'],
+        data: { domains: ['os'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction time(t)\n```\n\nos.time(t) -> number\n\

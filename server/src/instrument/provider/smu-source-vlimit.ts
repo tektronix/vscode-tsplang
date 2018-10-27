@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation } from '.'
+import { CommandDocumentation, InstrumentCompletionItem } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -49,19 +49,19 @@ Values that can be set for this attribute are limited by the overvoltage protect
     ],
 ])
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'vlimit'
     },
     {
-        data: ['vlimit', 'source', 'smu'],
+        data: { domains: ['vlimit', 'source', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'level',
     },
     {
-        data: ['vlimit', 'source', 'smu'],
+        data: { domains: ['vlimit', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.vlimit.tripped\n```\n\nsmu.source.vlimit.tripped -> smu.OFF | smu.ON | nil\n\

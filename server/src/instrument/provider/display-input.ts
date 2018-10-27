@@ -15,20 +15,20 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.Module,
         label: 'input'
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction number(dialogTitle, numberFormat, defaultValue, minimumValue, maximumValue)\n\
@@ -45,7 +45,7 @@ The prompt is displayed until it has been responded to.'
         label: 'number',
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\n\
@@ -68,7 +68,7 @@ The prompt is displayed until it has been responded to.'
         label: 'option',
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction prompt(buttonSet, dialogTitle)\n```\n\
@@ -84,7 +84,7 @@ The prompt is displayed until it has been responded to by the user.'
         label: 'prompt',
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction string(dialogTitle, textFormat)\n```\n\

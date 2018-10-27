@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'lan'
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction ipconfig(method, ipV4Address, subnetMask, gateway)\n```\n\
@@ -53,7 +53,7 @@ The previous settings are used if method is set lan.MODE_MANUAL and no other arg
         label: 'ipconfig',
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlan.lxidomain\n```\n\
@@ -67,7 +67,7 @@ they have the specified domain number.'
         label: 'lxidomain',
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlan.macaddress\n```\n\

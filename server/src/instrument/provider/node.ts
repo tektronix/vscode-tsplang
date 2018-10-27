@@ -15,13 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         documentation: {
             kind: MarkupKind.PlainText,
@@ -31,7 +31,7 @@ export const completions: Array<CompletionItem> = [
         label: 'node'
     },
     {
-        data: ['node'],
+        data: { domains: ['node'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction execute(scriptCode)\n```\n\nnode[N].execute(scriptCode)\n\
@@ -47,7 +47,7 @@ Can only be called when the group number of the target node is different than th
         label: 'execute',
     },
     {
-        data: ['node'],
+        data: { domains: ['node'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getglobal(name)\n```\n\nnode[N].getglobal(name) -> any\n\
@@ -58,7 +58,7 @@ Get the value of a global variable on a subordinate node from the TSP-Link maste
         label: 'getglobal',
     },
     {
-        data: ['node'],
+        data: { domains: ['node'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction setglobal(name, value)\n```\n\nnode[N].setglobal(name, value)\n\

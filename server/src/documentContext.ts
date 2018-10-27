@@ -18,14 +18,15 @@
 import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
 
+import { InstrumentCompletionItem } from './instrument/provider'
 import { TspLexer, TspListener, TspParser } from './tsp'
 
 export class DocumentContext extends TspListener {
     readonly uri: string
     private content: string
-    private globals: Map<string, Array<CompletionItem>>
+    private globals: Map<string, Array<InstrumentCompletionItem>>
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
@@ -57,8 +58,8 @@ export class DocumentContext extends TspListener {
         this.globals = this.getCompletionsFromContext(context)
     }
 
-    getCompletionItems(): Array<CompletionItem> {
-        const result = new Array<CompletionItem>()
+    getCompletionItems(): Array<InstrumentCompletionItem> {
+        const result = new Array<InstrumentCompletionItem>()
 
         for (const completions of this.globals.values()) {
             result.push(...completions)
@@ -82,8 +83,8 @@ export class DocumentContext extends TspListener {
         ParseTreeWalker.DEFAULT.walk(this, this.parseTree)
     }
 
-    private getCompletionsFromContext = (context: ParserRuleContext): Map<string, Array<CompletionItem>> => {
-        const result = new Map<string, Array<CompletionItem>>()
+    private getCompletionsFromContext = (context: ParserRuleContext): Map<string, Array<InstrumentCompletionItem>> => {
+        const result = new Map<string, Array<InstrumentCompletionItem>>()
 
         const getCompletionsRecursive = (node: ParserRuleContext | TerminalNode): void => {
             if (node instanceof TerminalNode && node.symbol.type === TspLexer.NAME) {
@@ -118,18 +119,18 @@ export class DocumentContext extends TspListener {
     }
 
     private getPrefixSuffixCompletions = (context: TspParser.VariableContext): {
-        completions: Array<CompletionItem>;
+        completions: Array<InstrumentCompletionItem>;
         name: string;
     } => {
         const getMatchingCompletionIndex = function(
-            search: Array<CompletionItem>,
+            search: Array<InstrumentCompletionItem>,
             label: string,
-            data: Array<string>,
+            domains: Array<string>,
             root: boolean = false
         ): number {
-            return search.findIndex((value: CompletionItem): boolean => {
+            return search.findIndex((value: InstrumentCompletionItem): boolean => {
                 if (root) {
-                    // Root namespace items match the prefix text AND have no data items.
+                    // Root namespace items match the prefix text AND have no data.
                     return (value.label.localeCompare(label) === 0 && value.data === undefined)
                 }
 
@@ -140,16 +141,14 @@ export class DocumentContext extends TspListener {
 
                 // Perform quick data field comparisons
                 if (value.data === undefined
-                        || ! (value.data instanceof Array)
-                        || value.data.length !== data.length) {
+                        || value.data.domains.length !== domains.length) {
                     return false
                 }
 
                 // Compare each item.
-                for (let j = 0; j < data.length; j++) {
-                    const valueDataItem = value.data[j]
-                    if (typeof valueDataItem !== 'string'
-                            && valueDataItem.localeCompare(data[j]) !== 0) {
+                for (let j = 0; j < domains.length; j++) {
+                    const valueDomainItem = value.data.domains[j]
+                    if (valueDomainItem.localeCompare(domains[j]) !== 0) {
                         return false
                     }
                 }
@@ -158,7 +157,7 @@ export class DocumentContext extends TspListener {
             })
         }
 
-        let result: Array<CompletionItem> | undefined
+        let result: Array<InstrumentCompletionItem> | undefined
 
         const prefix = context.prefix()
         if (prefix === null) {
@@ -216,9 +215,9 @@ export class DocumentContext extends TspListener {
             }
 
             // Create this suffix's namespace
-            const data = new Array<string>(lastItem.label)
+            const domains = new Array<string>(lastItem.label)
             if (lastItem.data !== undefined) {
-                data.push(...lastItem.data)
+                domains.push(...lastItem.data.domains)
             }
 
             const objectCall = suffixItem.objectCall()
@@ -229,7 +228,7 @@ export class DocumentContext extends TspListener {
                         result.push(lastItem)
                     }
 
-                    const existingCallItemIndex = getMatchingCompletionIndex(result, callName.symbol.text, data)
+                    const existingCallItemIndex = getMatchingCompletionIndex(result, callName.symbol.text, domains)
 
                     // If we found a matching completion...
                     if (existingCallItemIndex !== -1) {
@@ -239,7 +238,7 @@ export class DocumentContext extends TspListener {
                     else {
                         // ...else create a new function call suffix item.
                         result.push({
-                            data,
+                            data: { domains },
                             kind: CompletionItemKind.Function,
                             label: callName.symbol.text
                         })
@@ -278,7 +277,7 @@ export class DocumentContext extends TspListener {
                 ? CompletionItemKind.Module
                 : CompletionItemKind.Field
 
-            const existingSuffixItemIndex = getMatchingCompletionIndex(result, indexName.symbol.text, data)
+            const existingSuffixItemIndex = getMatchingCompletionIndex(result, indexName.symbol.text, domains)
 
             // If we found a matching completion...
             if (existingSuffixItemIndex !== -1) {
@@ -288,8 +287,8 @@ export class DocumentContext extends TspListener {
             else {
                 // ...else create a new suffix item.
                 result.push({
-                    data,
                     kind,
+                    data: { domains },
                     label: indexName.symbol.text
                 })
             }
@@ -323,16 +322,16 @@ export class DocumentContext extends TspListener {
         }
 
         // Create this index's namespace
-        const finalData = (penultimateItem.kind === CompletionItemKind.Module)
+        const finalDomains = (penultimateItem.kind === CompletionItemKind.Module)
             ? new Array<string>(penultimateItem.label)
             : new Array<string>()
         if (penultimateItem.data !== undefined) {
-            finalData.push(...penultimateItem.data)
+            finalDomains.push(...penultimateItem.data.domains)
         }
 
         result.push(penultimateItem)
 
-        const existingFinalIndexItemIndex = getMatchingCompletionIndex(result, finalIndexName.symbol.text, finalData)
+        const existingFinalIndexItemIndex = getMatchingCompletionIndex(result, finalIndexName.symbol.text, finalDomains)
 
         // If we found a matching completion...
         if (existingFinalIndexItemIndex !== -1) {
@@ -342,7 +341,7 @@ export class DocumentContext extends TspListener {
         else {
             // ...else create a new index item.
             result.push({
-                data: finalData,
+                data: { domains: finalDomains },
                 kind: CompletionItemKind.Field,
                 label: finalIndexName.symbol.text
             })

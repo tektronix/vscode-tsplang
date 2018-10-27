@@ -15,9 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
         detail: 'This function stops a script that is presently running.',
         documentation: {

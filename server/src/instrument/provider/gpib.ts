@@ -15,15 +15,17 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'gpib'
     },
     {
-        data: ['gpib'],
+        data: { domains: ['gpib'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ngpib.address\n```\n\

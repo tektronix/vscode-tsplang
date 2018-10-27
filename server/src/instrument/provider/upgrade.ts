@@ -15,15 +15,17 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'upgrade',
     },
     {
-        data: ['upgrade'],
+        data: { domains: ['upgrade'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction previous()\n```\n\
@@ -37,7 +39,7 @@ An error is logged if no suitable firmware file is found.'
         label: 'previous',
     },
     {
-        data: ['upgrade'],
+        data: { domains: ['upgrade'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction unit()\n```\n\

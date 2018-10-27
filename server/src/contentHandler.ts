@@ -15,10 +15,10 @@
  */
 'use strict'
 
-import { CompletionItem, Position, SignatureHelp, SignatureInformation, TextDocuments } from 'vscode-languageserver'
+import { Position, SignatureHelp, SignatureInformation, TextDocuments } from 'vscode-languageserver'
 
 import { isPartialMatch } from './completionProcessor'
-import { resolveCompletionNamespace } from './instrument/provider'
+import { InstrumentCompletionItem, resolveCompletionNamespace } from './instrument/provider'
 import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspManager'
@@ -34,8 +34,8 @@ export class ContentHandler {
         this.documents = documents
     }
 
-    getCompletionDoc = (item: CompletionItem, tspItem: TspItem): CompletionItem => {
-        const result: CompletionItem = item
+    getCompletionDoc = (item: InstrumentCompletionItem, tspItem: TspItem): InstrumentCompletionItem => {
+        const result: InstrumentCompletionItem = item
 
         // We cannot provide completion documentation if none exist
         if (tspItem.commandSet.completionDocs.size === 0) {
@@ -59,7 +59,7 @@ export class ContentHandler {
         return result
     }
 
-    getCompletions(uri: string, position: Position, tspItem: TspItem): Array<CompletionItem> | undefined {
+    getCompletions(uri: string, position: Position, tspItem: TspItem): Array<InstrumentCompletionItem> | undefined {
         // Save the last uri that asked us for a list of completions
         this.lastCompletionUri = uri
 
@@ -94,7 +94,7 @@ export class ContentHandler {
             return
         }
 
-        const results: Array<CompletionItem> = new Array()
+        const results: Array<InstrumentCompletionItem> = new Array()
 
         const firstMatch = reverseMatches.shift()
 

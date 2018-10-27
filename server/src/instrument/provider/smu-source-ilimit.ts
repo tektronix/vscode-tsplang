@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation } from '.'
+import { CommandDocumentation, InstrumentCompletionItem } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -43,19 +43,19 @@ to an invalid level, the instrument will use the nearest valid level and log a w
     ],
 ])
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'ilimit'
     },
     {
-        data: ['ilimit', 'source', 'smu'],
+        data: { domains: ['ilimit', 'source', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'level',
     },
     {
-        data: ['ilimit', 'source', 'smu'],
+        data: { domains: ['ilimit', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.ilimit.tripped\n```\n\nsmu.source.ilimit.tripped -> smu.OFF | smu.ON | nil\n\

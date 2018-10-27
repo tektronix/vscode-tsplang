@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'display'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction changescreen(screenName)\n```\n\ndisplay.changescreen(display.SCREEN_\\*)\n\
@@ -38,7 +38,7 @@ Change the currently displayed front-panel screen.'
         label: 'changescreen',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -49,7 +49,7 @@ Clear the text from the front-panel USER_SWIPE screen.'
         label: 'clear',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(promptID)\n```\n\ndisplay.delete(promptID)\n\
@@ -60,7 +60,7 @@ Remove the given prompt reference from the front-panel dispay.'
         label: 'delete',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.lightstate\n```\n\
@@ -74,7 +74,7 @@ a power cycle.'
         label: 'lightstate',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction prompt(buttonSet, promptText)\n```\n\
@@ -93,7 +93,7 @@ To capture return values, use the display.waitevent() command.'
         label: 'prompt',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.readingformat\n```\n\
@@ -109,7 +109,7 @@ This setting persists through reset() and power cycles.'
         label: 'readingformat',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction settext(position, userDisplayText)\n```\n\
@@ -124,7 +124,7 @@ Entering too many characters will cause a warning to be logged and the given tex
         label: 'settext',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction waitevent()\n```\n\

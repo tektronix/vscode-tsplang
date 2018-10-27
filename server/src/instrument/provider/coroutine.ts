@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'coroutine'
     },
     {
-        data: ['coroutine'],
+        data: { domains: ['coroutine'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction create(f)\n```\n\ncoroutine.create(f) -> thread\n\
@@ -38,7 +38,7 @@ Creates and returns a new coroutine whose body is the given function f.'
         label: 'create'
     },
     {
-        data: ['coroutine'],
+        data: { domains: ['coroutine'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction resume(co, ...)\n```\n\
@@ -57,7 +57,7 @@ those passed to the yield function.'
         label: 'resume'
     },
     {
-        data: ['coroutine'],
+        data: { domains: ['coroutine'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction status(co)\n```\n\ncoroutine.status(co) -> string\n\
@@ -68,7 +68,7 @@ Returns the status of the given coroutine co as a string. Possible statuses are 
         label: 'status'
     },
     {
-        data: ['coroutine'],
+        data: { domains: ['coroutine'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wrap(f)\n```\n\ncoroutine.wrap(f) -> function\n\
@@ -83,7 +83,7 @@ resulting function do not include an error status boolean.'
         label: 'wrap'
     },
     {
-        data: ['coroutine'],
+        data: { domains: ['coroutine'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction yield(...)\n```\n\ncoroutine.yield(...)\n\

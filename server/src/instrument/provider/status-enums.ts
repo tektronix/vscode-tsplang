@@ -15,47 +15,49 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.MSB: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'MSB'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.EAV: 4',
         kind: CompletionItemKind.EnumMember,
         label: 'EAV'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.QSB: 8',
         kind: CompletionItemKind.EnumMember,
         label: 'QSB'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.MAV: 16',
         kind: CompletionItemKind.EnumMember,
         label: 'MAV'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.ESB: 32',
         kind: CompletionItemKind.EnumMember,
         label: 'ESB'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.MSS: 64',
         kind: CompletionItemKind.EnumMember,
         label: 'MSS'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         detail: 'status.OSB: 128',
         kind: CompletionItemKind.EnumMember,
         label: 'OSB'

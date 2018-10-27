@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'trigger'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -38,7 +38,7 @@ Clear any pending command triggers and discard the trigger event history.'
         label: 'clear',
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.wait(timeout) -> boolean\n\

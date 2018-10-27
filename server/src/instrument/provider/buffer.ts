@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'buffer'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clearstats(bufferVar)\n```\n\nbuffer.clearstats([bufferVar])\n\
@@ -38,7 +38,7 @@ Clear the statistical information associated with the specified buffer without c
         label: 'clearstats'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(bufferName)\n```\n\nbuffer.delete(bufferName)\n\
@@ -51,7 +51,7 @@ You cannot delete the default reading buffers, defbuffer1 and defbuffer2.'
         label: 'delete'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getstats(bufferVar)\n```\n\
@@ -78,7 +78,7 @@ statistics include the data that was overwritten.'
         label: 'getstats'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction make(bufferSize, style)\n```\n\
@@ -98,7 +98,7 @@ You cannot assign user-defined reading buffers the name defbuffer1 and defbuffer
         label: 'make'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction save(bufferVar, fileName, timeFormat, start, end)\n```\n\
@@ -116,7 +116,7 @@ Verify that you are using a unique name to avoid overwriting any existing .csv f
         label: 'save'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction saveappend(bufferVar, fileName, timeFormat, start, end)\n```\n\

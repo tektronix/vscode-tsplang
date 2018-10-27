@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available digital I/O lines. Indexed from 1 to 6.'
@@ -28,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'digout'
     },
     {
-        data: ['digout', 'trigger'],
+        data: { domains: ['digout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction assert()\n```\n\
@@ -39,7 +41,7 @@ Assert a trigger pulse on the currently indexed digital I/O line, returning befo
         label: 'assert',
     },
     {
-        data: ['digout', 'trigger'],
+        data: { domains: ['digout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digout[N].logic\n```\n\
@@ -54,7 +56,7 @@ ignored.'
         label: 'logic',
     },
     {
-        data: ['digout', 'trigger'],
+        data: { domains: ['digout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digout[N].pulsewidth\n```\n\
@@ -68,7 +70,7 @@ When set to 0, the line is asserted until the release function is called.'
         label: 'pulsewidth',
     },
     {
-        data: ['digout', 'trigger'],
+        data: { domains: ['digout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction release()\n```\n\
@@ -80,7 +82,7 @@ in response to receiving a synchronous mode trigger. Only the currently indexed 
         label: 'release',
     },
     {
-        data: ['digout', 'trigger'],
+        data: { domains: ['digout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digout[N].stimulus\n```\n\

@@ -15,9 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Keyword,
         label: 'break'

@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_AUTO'
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_MANUAL'
     },

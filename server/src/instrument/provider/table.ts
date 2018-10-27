@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'table'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction concat(t, sep, start, end)\n```\n\
@@ -42,7 +42,7 @@ the start index defaults to 1, and the end index defaults to the size of the tab
         label: 'concat'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction insert(t, index, v)\n```\n\ntable.insert(t[, index], v)\n\
@@ -54,7 +54,7 @@ table.'
         label: 'insert'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction remove(t, index)\n```\n\ntable.remove(t[, index]) -> any\n\
@@ -65,7 +65,7 @@ Remove and return the element of table t at the index. If index is omitted, then
         label: 'remove'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sort(t, f)\n```\n\ntable.sort(t[, f])\n\

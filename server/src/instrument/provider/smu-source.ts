@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation, FormattableSignatureInformation } from '.'
+import { CommandDocumentation, FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -81,14 +81,14 @@ This attribute is saved with the active function and retained until the next ins
     ],
 ])
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.Module,
         label: 'source'
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.autodelay\n```\n\
@@ -103,7 +103,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'autodelay',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.autorange\n```\n\
@@ -123,7 +123,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'autorange',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.delay\n```\n\
@@ -139,7 +139,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'delay',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.func\n```\n\
@@ -152,7 +152,7 @@ When the active source function is changed, settings that are retained on a per-
         label: 'func',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.highc\n```\n\
@@ -166,12 +166,12 @@ any overshoot, ringing, or instability.'
         label: 'highc',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'level',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.offmode\n```\n\
@@ -182,7 +182,7 @@ Get or set the instrument state when output is turned off to smu.OFFMODE_\\*. De
         label: 'offmode',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.output\n```\n\
@@ -193,12 +193,12 @@ Get or set the present source output state to smu.ON or OFF. Defaults to smu.OFF
         label: 'output',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'range',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.readback\n```\n\
@@ -215,7 +215,7 @@ recorded in the buffer alongside each measurement.'
         label: 'readback',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplinear(configListName, start, stop, points, delay, count, rangeType, \
@@ -233,7 +233,7 @@ the trigger model to start the sweep.'
         label: 'sweeplinear',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplinearstep(configListName, start, stop, step, delay, count, rangeType, \
@@ -251,7 +251,7 @@ uniform series of ascending or descending output steps. Initiate the trigger mod
         label: 'sweeplinearstep',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplist(configListName, index, delay, count, failAbort, bufferName)\n```\n\
@@ -267,7 +267,7 @@ model. Initiate the trigger model to start the sweep.'
         label: 'sweeplist',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplog(configListName, start, stop, points, delay, count, rangeType, \
@@ -285,7 +285,7 @@ the trigger model to start the sweep.'
         label: 'sweeplog',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.userdelay[N]\n```\n\

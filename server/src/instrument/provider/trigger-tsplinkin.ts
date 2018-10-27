@@ -15,15 +15,15 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available TSP-Link trigger lines. Indexed from 1 to 3.'
@@ -32,7 +32,7 @@ export const completions: Array<CompletionItem> = [
         label: 'tsplinkin'
     },
     {
-        data: ['tsplinkin', 'trigger'],
+        data: { domains: ['tsplinkin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -43,7 +43,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
         label: 'clear',
     },
     {
-        data: ['tsplinkin', 'trigger'],
+        data: { domains: ['tsplinkin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.tsplinkin[N].edge\n```\n\
@@ -60,7 +60,7 @@ ignored.'
         label: 'edge',
     },
     {
-        data: ['tsplinkin', 'trigger'],
+        data: { domains: ['tsplinkin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.tsplinkin[N].overrun\n```\n\ntrigger.tsplinkin[N].overrun -> boolean\n\
@@ -71,7 +71,7 @@ Returns true if an event was ignored because the event detector was already in t
         label: 'overrun',
     },
     {
-        data: ['tsplinkin', 'trigger'],
+        data: { domains: ['tsplinkin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.tsplinkin[N].wait(timeout) -> boolean\n\

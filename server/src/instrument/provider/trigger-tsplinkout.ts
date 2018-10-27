@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available TSP-Link trigger lines. Indexed from 1 to 3.'
@@ -28,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'tsplinkout'
     },
     {
-        data: ['tsplinkout', 'trigger'],
+        data: { domains: ['tsplinkout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction assert()\n```\n\
@@ -39,7 +41,7 @@ Assert a trigger event on the currently indexed TSP-Link trigger, returning befo
         label: 'assert',
     },
     {
-        data: ['tsplinkout', 'trigger'],
+        data: { domains: ['tsplinkout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.tsplinkout[N].logic\n```\n\
@@ -54,7 +56,7 @@ ignored.'
         label: 'logic',
     },
     {
-        data: ['tsplinkout', 'trigger'],
+        data: { domains: ['tsplinkout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.tsplinkout[N].pulsewidth\n```\n\
@@ -68,7 +70,7 @@ When set to 0, the line is asserted until the release function is called.'
         label: 'pulsewidth',
     },
     {
-        data: ['tsplinkout', 'trigger'],
+        data: { domains: ['tsplinkout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction release()\n```\n\
@@ -80,7 +82,7 @@ in response to receiving a synchronous mode trigger. Only the currently indexed 
         label: 'release',
     },
     {
-        data: ['tsplinkout', 'trigger'],
+        data: { domains: ['tsplinkout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.tsplinkout[N].stimulus\n```\n\

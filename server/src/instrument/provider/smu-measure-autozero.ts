@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'autozero'
     },
     {
-        data: ['autozero', 'measure', 'smu'],
+        data: { domains: ['autozero', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.autozero.enable\n```\n\
@@ -43,7 +45,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'enable',
     },
     {
-        data: ['autozero', 'measure', 'smu'],
+        data: { domains: ['autozero', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction once()\n```\n\

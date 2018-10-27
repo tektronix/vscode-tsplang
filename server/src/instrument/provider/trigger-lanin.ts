@@ -15,15 +15,15 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available LAN events. Indexed from 1 to 8.'
@@ -32,7 +32,7 @@ export const completions: Array<CompletionItem> = [
         label: 'lanin'
     },
     {
-        data: ['lanin', 'trigger'],
+        data: { domains: ['lanin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -43,7 +43,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
         label: 'clear',
     },
     {
-        data: ['lanin', 'trigger'],
+        data: { domains: ['lanin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanin[N].edge\n```\n\
@@ -59,7 +59,7 @@ rising edge have a positive state.'
         label: 'edge',
     },
     {
-        data: ['lanin', 'trigger'],
+        data: { domains: ['lanin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanin[N].overrun\n```\n\ntrigger.lanin[N].overrun -> boolean\n\
@@ -70,7 +70,7 @@ Returns true if an event was ignored because the event detector was already in t
         label: 'overrun',
     },
     {
-        data: ['lanin', 'trigger'],
+        data: { domains: ['lanin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.lanin[N].wait(timeout) -> boolean\n\

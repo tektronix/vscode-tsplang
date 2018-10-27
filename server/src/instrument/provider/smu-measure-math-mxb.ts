@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['math', 'measure', 'smu'],
+        data: { domains: ['math', 'measure', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'mxb'
     },
     {
-        data: ['mxb', 'math', 'measure', 'smu'],
+        data: { domains: ['mxb', 'math', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.math.mxb.bfactor\n```\n\
@@ -43,7 +45,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'bfactor',
     },
     {
-        data: ['mxb', 'math', 'measure', 'smu'],
+        data: { domains: ['mxb', 'math', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.math.mxb.mfactor\n```\n\

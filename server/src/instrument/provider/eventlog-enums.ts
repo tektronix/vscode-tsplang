@@ -15,29 +15,31 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         detail: 'eventlog.SEV_ERROR: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'SEV_ERROR'
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         detail: 'eventlog.SEV_WARN: 2',
         kind: CompletionItemKind.EnumMember,
         label: 'SEV_WARN'
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         detail: 'eventlog.SEV_INFO: 4',
         kind: CompletionItemKind.EnumMember,
         label: 'SEV_INFO'
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         detail: 'eventlog.SEV_ALL: 7',
         documentation: {
             kind: MarkupKind.Markdown,

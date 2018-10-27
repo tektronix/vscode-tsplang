@@ -15,15 +15,17 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'smu'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\

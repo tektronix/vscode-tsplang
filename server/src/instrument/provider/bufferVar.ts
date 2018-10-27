@@ -15,12 +15,14 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     // No bufferVar namespace
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.capacity\n```\n\
@@ -32,7 +34,7 @@ lost.'
         label: 'capacity',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -43,7 +45,7 @@ Clear all readings and statistics from the buffer.'
         label: 'clear',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.dates\n```\n\nbufferVar.dates -> {string, ...}\n\
@@ -58,7 +60,7 @@ This is not available if the reading buffer style is set to COMPACT.'
         label: 'dates',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.endindex\n```\n\nbufferVar.endindex -> number\n\
@@ -69,7 +71,7 @@ Returns the ending index of the buffer.'
         label: 'endindex',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.fillmode\n```\n\
@@ -85,7 +87,7 @@ When a buffer is set to FILL_CONTINUOUS, the oldest data is overwritten by the n
         label: 'fillmode',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.formattedreadings\n```\n\nbufferVar.formattedreadings -> {string, ...}\n\
@@ -96,7 +98,7 @@ Returns, as an array, a string for each reading in the buffer as it would appear
         label: 'formattedreadings',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.fractionalseconds\n```\n\nbufferVar.fractionalseconds -> {number, ...}\n\
@@ -108,7 +110,7 @@ buffer.'
         label: 'fractionalseconds',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.logstate\n```\n\
@@ -120,7 +122,7 @@ If set to buffer.OFF, no events are reported.'
         label: 'logstate',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.n\n```\n\nbufferVar.n -> number\n\
@@ -131,7 +133,7 @@ Returns the number of readings in the buffer.'
         label: 'n',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.readings\n```\n\nbufferVar.readings -> {any, ...}\n\
@@ -142,7 +144,7 @@ Returns an array of readings stored in the buffer.'
         label: 'readings',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.relativetimestamps\n```\n\nbufferVar.relativetimestamps -> {number, ...}\n\
@@ -155,7 +157,7 @@ Each seconds value is relative to the timestamp of the first entry in the readin
         label: 'relativetimestamps',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.seconds\n```\n\nbufferVar.seconds -> {number, ...}\n\
@@ -168,7 +170,7 @@ Each value is the number of seconds since January 1, 1970.'
         label: 'seconds',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.sourceformattedvalues\n```\n\nbufferVar.sourceformattedvalues -> {string, ...}\n\
@@ -180,7 +182,7 @@ on the front-panel display.'
         label: 'sourceformattedvalues',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.sourcestatuses\n```\n\nbufferVar.sourcestatuses -> {number, ...}\n\
@@ -197,7 +199,7 @@ or "buffer.STAT_OUTPUT" (output was on) for each reading in the buffer.'
         label: 'sourcestatuses',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.sourceunits\n```\n\nbufferVar.sourceunits -> {string, ...}\n\
@@ -208,7 +210,7 @@ Returns, as an array, a string indicating the source level unit for each reading
         label: 'sourceunits',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.sourcevalues\n```\n\nbufferVar.sourcevalues -> {number, ...}\n\
@@ -219,7 +221,7 @@ Returns, as an array, a number indicating the source level being output for each
         label: 'sourcevalues',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.startindex\n```\n\nbufferVar.startindex -> number\n\
@@ -230,7 +232,7 @@ Returns the starting index of the buffer.'
         label: 'startindex',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.statuses\n```\n\nbufferVar.statuses -> {number, ...}\n\
@@ -251,7 +253,7 @@ Not available for COMPACT buffers.'
         label: 'statuses',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.times\n```\n\nbufferVar.times -> {string, ...}\n\
@@ -264,7 +266,7 @@ Time strings follow the format "%H:%M:%S"; e.g. 23:59:59.'
         label: 'times',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.timestamps\n```\n\nbufferVar.timestamps -> {string, ...}\n\
@@ -277,7 +279,7 @@ Timestamp strings follow the format "%m/%d/%Y %H:%M:%S.%N"; e.g. 01/31/1970 23:5
         label: 'timestamps',
     },
     {
-        data: ['bufferVar'],
+        data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nbufferVar.units\n```\n\nbufferVar.units -> {string, ...}\n\

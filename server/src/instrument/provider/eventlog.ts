@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'eventlog'
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -38,7 +38,7 @@ Remove all events from the event log, including front‑panel entries.'
         label: 'clear',
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getcount(eventType)\n```\n\neventlog.getcount([eventlog.SEV_\\*]) -> number\n\
@@ -52,7 +52,7 @@ If localnode.showevents is enabled, then this function will always return 0.'
         label: 'getcount',
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction next(eventType)\n```\n\
@@ -75,7 +75,7 @@ Once an event is read, it can no longer be accessed remotely. However, can still
         label: 'next',
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction post(message, eventType)\n```\n\neventlog.post(message[, eventlog.SEV_\\*])\n\
@@ -86,7 +86,7 @@ Log a custom event with the given severity to the eventlog. Severity defaults to
         label: 'post',
     },
     {
-        data: ['eventlog'],
+        data: { domains: ['eventlog'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction save(filename, eventType)\n```\n\neventlog.save(filename[, eventlog.SEV_\\*])\n\

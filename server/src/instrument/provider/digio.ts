@@ -15,19 +15,19 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'digio'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction readport()\n```\n\ndigio.readport() -> number\n\
@@ -42,7 +42,7 @@ All six lines must be configured as digital control lines or an error will be lo
         label: 'readport',
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction writeport(data)\n```\n\ndigio.writeport(data)\n\

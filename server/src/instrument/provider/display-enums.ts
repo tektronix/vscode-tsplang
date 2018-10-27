@@ -15,141 +15,143 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_CANCEL'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_NO'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OK'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_YES'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION1'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION2'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION3'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION4'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION5'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION6'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION7'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION8'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION9'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION10'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTONS_NONE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTONS_OK'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTONS_CANCEL'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTONS_OKCANCEL'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTONS_YESNO'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTONS_YESNOCANCEL'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FORMAT_EXPONENT'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FORMAT_PREFIX'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'NFORMAT_DECIMAL'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'NFORMAT_EXPONENT'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'NFORMAT_INTEGER'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'NFORMAT_PREFIX'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '*deprecated* — use display.SCREEN_READING_TABLE'
@@ -158,37 +160,37 @@ export const completions: Array<CompletionItem> = [
         label: 'SCREEN_DATASHEET'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_GRAPH'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_GRAPH_SWIPE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_HISTOGRAM'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_HOME'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_HOME_LARGE_READING'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_READING_TABLE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '*deprecated* — use display.SCREEN_GRAPH_SWIPE'
@@ -197,77 +199,77 @@ export const completions: Array<CompletionItem> = [
         label: 'SCREEN_PLOT_SWIPE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_SETTINGS_SWIPE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_SOURCE_SWIPE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_STATS_SWIPE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SCREEN_USER_SWIPE'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SFORMAT_ANY'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SFORMAT_UPPER'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SFORMAT_UPPER_LOWER'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_100'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_75'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_50'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_25'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_OFF'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_BLACKOUT'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TEXT1'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TEXT2'
     },

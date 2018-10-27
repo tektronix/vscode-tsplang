@@ -15,141 +15,143 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ALWAYS'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_COUNTER'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_DELTA'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_LIMIT_CONSTANT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_LIMIT_DYNAMIC'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ON_EVENT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ONCE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ONCE_EXCLUDED'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BUFFER_CLEAR'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_CONFIG_NEXT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_CONFIG_PREV'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_CONFIG_RECALL'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_DELAY_CONSTANT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_DELAY_DYNAMIC'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_DIGITAL_IO'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_LOG_EVENT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_MEASURE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_NOP'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_NOTIFY'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_RESET_BRANCH_COUNT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_SOURCE_OUTPUT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_WAIT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'CLEAR_ENTER'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'CLEAR_NEVER'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'COUNT_INFINITE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'COUNT_STOP'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Detects rising- or falling-edge triggers as input when the line is configured as an input or open \
@@ -159,7 +161,7 @@ drain.'
         label: 'EDGE_EITHER'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Detects falling-edge triggers as input when the line is configured as an input or open drain.'
@@ -168,7 +170,7 @@ drain.'
         label: 'EDGE_FALLING'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Detects rising-edge triggers as input when the line is configured as an open drain.'
@@ -177,7 +179,7 @@ drain.'
         label: 'EDGE_RISING'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger event blender 1.'
@@ -186,7 +188,7 @@ drain.'
         label: 'EVENT_BLENDER1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger event blender 2.'
@@ -195,7 +197,7 @@ drain.'
         label: 'EVENT_BLENDER2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'If the active interface is GPIB, then trigger upon receiving a GET command. On VXI-11, trigger \
@@ -206,7 +208,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_COMMAND'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on digital input line 1.'
@@ -215,7 +217,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DIGIO1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on digital input line 2.'
@@ -224,7 +226,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DIGIO2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on digital input line 3.'
@@ -233,7 +235,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DIGIO3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on digital input line 4.'
@@ -242,7 +244,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DIGIO4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on digital input line 5.'
@@ -251,7 +253,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DIGIO5'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on digital input line 6.'
@@ -260,7 +262,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DIGIO6'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Front-panel TRIGGER key press.'
@@ -269,7 +271,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_DISPLAY'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 1.'
@@ -278,7 +280,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 2.'
@@ -287,7 +289,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 3.'
@@ -296,7 +298,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 4.'
@@ -305,7 +307,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 5.'
@@ -314,7 +316,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN5'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 6.'
@@ -323,7 +325,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN6'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 7.'
@@ -332,7 +334,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN7'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger upon receiving an LXI trigger packet on LAN trigger 8.'
@@ -341,7 +343,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_LAN8'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'No trigger event.'
@@ -350,7 +352,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NONE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 1 is executed by the trigger model.'
@@ -359,7 +361,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 2 is executed by the trigger model.'
@@ -368,7 +370,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 3 is executed by the trigger model.'
@@ -377,7 +379,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 4 is executed by the trigger model.'
@@ -386,7 +388,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 5 is executed by the trigger model.'
@@ -395,7 +397,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY5'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 6 is executed by the trigger model.'
@@ -404,7 +406,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY6'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 7 is executed by the trigger model.'
@@ -413,7 +415,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY7'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when Notify Block 8 is executed by the trigger model.'
@@ -422,7 +424,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_NOTIFY8'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when a source limit condition occurs.'
@@ -431,7 +433,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_SOURCE_LIMIT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when timer 1 expires.'
@@ -440,7 +442,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TIMER1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when timer 2 expires.'
@@ -449,7 +451,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TIMER2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when timer 3 expires.'
@@ -458,7 +460,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TIMER3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when timer 4 expires.'
@@ -467,7 +469,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TIMER4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on TSP-Link synchronization line 1.'
@@ -476,7 +478,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TSPLINK1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on TSP-Link synchronization line 2.'
@@ -485,7 +487,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TSPLINK2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Trigger when the configured edge is detected on TSP-Link synchronization line 3.'
@@ -494,92 +496,92 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'EVENT_TSPLINK3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_ABOVE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_BELOW'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_INSIDE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_OUTSIDE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN_ABORT'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Assert a transistor-transistor logic high pulse.'
@@ -588,7 +590,7 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'LOGIC_NEGATIVE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Assert a transistor-transistor logic low pulse.'
@@ -597,112 +599,112 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         label: 'LOGIC_POSITIVE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'OFF'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ON'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_ABORTED'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_ABORTING'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_BUILDING'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_EMPTY'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_FAILED'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_IDLE'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_RUNNING'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_WAITING'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M5'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S1'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S2'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S3'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S4'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S5'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'WAIT_AND'
     },
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'WAIT_OR'
     },

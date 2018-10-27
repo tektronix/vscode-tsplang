@@ -13,20 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CompletionItem, SignatureInformation } from 'vscode-languageserver'
+import { SignatureInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '.'
-import { CommandDocumentation, FormattableSignatureInformation } from './provider'
+import { CommandDocumentation, FormattableSignatureInformation, InstrumentCompletionItem } from './provider'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, CommandDocumentation>
-    completions: Array<CompletionItem>
+    completions: Array<InstrumentCompletionItem>
     signatures?: Array<SignatureInformation | FormattableSignatureInformation>
 }
 
 export class CommandSet implements CommandSetInterface {
     readonly completionDocs: Map<string, CommandDocumentation>
-    readonly completions: Array<CompletionItem>
+    readonly completions: Array<InstrumentCompletionItem>
     readonly signatures: Array<SignatureInformation>
     readonly specification: InstrumentSpec
 
@@ -46,7 +46,7 @@ export class CommandSet implements CommandSetInterface {
         }
 
         // merge completion items
-        set.completions.forEach((value: CompletionItem) => {
+        set.completions.forEach((value: InstrumentCompletionItem) => {
             this.completions.push(value)
         })
 

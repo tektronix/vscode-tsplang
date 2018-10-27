@@ -15,20 +15,20 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation } from '.'
+import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         kind: CompletionItemKind.Module,
         label: 'model'
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction abort()\n```\n\
@@ -39,7 +39,7 @@ Stop all trigger model commands.'
         label: 'abort',
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getblocklist()\n```\n\ntrigger.model.getblocklist() -> string\n\
@@ -50,7 +50,7 @@ Returns the present blocks in the trigger model as a string.'
         label: 'getblocklist',
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getbranchcount(blockNumber)\n```\n\
@@ -64,7 +64,7 @@ block, then a 0 is returned.'
         label: 'getbranchcount',
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction initiate()\n```\n\
@@ -75,7 +75,7 @@ Start the trigger model.'
         label: 'initiate',
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction load(typeString, typeParam, ...)\n```\n\
@@ -86,7 +86,7 @@ Load a predefined trigger model configuration.'
         label: 'load',
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction setblock(blockNumber, trigger.BLOCK_*, blockParams, ...)\n```\n\
@@ -97,7 +97,7 @@ Add a block to the trigger model.'
         label: 'setblock',
     },
     {
-        data: ['model', 'trigger'],
+        data: { domains: ['model', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction state()\n```\n\

@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-export const completions: Array<CompletionItem> = [
+import { InstrumentCompletionItem } from '.'
+
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available limits. Indexed from 1 to 2.'
@@ -28,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'limit'
     },
     {
-        data: ['limit', 'measure', 'smu'],
+        data: { domains: ['limit', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.limit[Y].audible\n```\n\
@@ -44,7 +46,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'audible',
     },
     {
-        data: ['limit', 'measure', 'smu'],
+        data: { domains: ['limit', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.limit[Y].autoclear\n```\n\
@@ -64,7 +66,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'autoclear',
     },
     {
-        data: ['limit', 'measure', 'smu'],
+        data: { domains: ['limit', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -75,7 +77,7 @@ Clear the limit fail attribute for the present limit.'
         label: 'clear',
     },
     {
-        data: ['limit', 'measure', 'smu'],
+        data: { domains: ['limit', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.limit[Y].enable\n```\n\
@@ -90,7 +92,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'enable',
     },
     {
-        data: ['limit', 'measure', 'smu'],
+        data: { domains: ['limit', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.limit[Y].fail\n```\n\

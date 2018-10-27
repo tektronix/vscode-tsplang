@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation, FormattableSignatureInformation } from '.'
+import { CommandDocumentation, FormattableSignatureInformation, InstrumentCompletionItem } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -125,14 +125,14 @@ This attribute is saved with the active function and retained until the next ins
     ],
 ])
 
-export const completions: Array<CompletionItem> = [
+export const completions: Array<InstrumentCompletionItem> = [
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.Module,
         label: 'measure'
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.autorange\n```\n\
@@ -151,17 +151,17 @@ This attribute is saved with the active function and retained until the next ins
         label: 'autorange',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'autorangehigh',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'autorangelow',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.count\n```\n\
@@ -180,7 +180,7 @@ Does not affect the trigger model.'
         label: 'count',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.displaydigits\n```\n\
@@ -197,7 +197,7 @@ reading.'
         label: 'displaydigits',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.func\n```\n\
@@ -210,7 +210,7 @@ When the active measurement function is changed, settings that are retained on a
         label: 'func',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.nplc\n```\n\
@@ -228,7 +228,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'nplc',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.offsetcompensation\n```\n\
@@ -242,12 +242,12 @@ with the resistance function and retained until the next instrument reset or pow
         label: 'offsetcompensation',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'range',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction read(bufferName)\n```\n\nsmu.measure.read([bufferName]) -> number\n\
@@ -260,7 +260,7 @@ readings, then only the last reading is returned.'
         label: 'read',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction readwithtime(bufferName)\n```\n\
@@ -279,7 +279,7 @@ then only the last reading is returned.'
         label: 'readwithtime',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.sense\n```\n\
@@ -296,7 +296,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'sense',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.terminals\n```\n\
@@ -309,7 +309,7 @@ Output is turned off before switching active terminals.'
         label: 'terminals',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.unit\n```\n\
@@ -330,7 +330,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'unit',
     },
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.userdelay[N]\n```\n\

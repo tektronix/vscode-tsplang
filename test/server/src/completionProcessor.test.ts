@@ -16,16 +16,16 @@
 // tslint:disable:no-implicit-dependencies no-magic-numbers prefer-function-over-method
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
-import { CompletionItem } from 'vscode-languageclient'
 
 import { isPartialMatch } from '../../../server/src/completionProcessor'
+import { InstrumentCompletionItem } from '../../../server/src/instrument/provider'
 
-function toString(completion: CompletionItem): string {
+function toString(completion: InstrumentCompletionItem): string {
     let result = '{label: "' + completion.label + '"'
 
     if (completion.data !== undefined) {
         result += ', data: ['
-        completion.data.forEach((item: string) => {
+        completion.data.domains.forEach((item: string) => {
             result += '"' + item + '", '
         })
         // Remove the trailing ", "
@@ -40,7 +40,7 @@ function toString(completion: CompletionItem): string {
     @test('isPartialMatch')
     isPartialMatchTest(): void {
         let testString = ''
-        let testCompletion: CompletionItem = {
+        let testCompletion: InstrumentCompletionItem = {
             label: 'a'
         }
         assert(
@@ -49,7 +49,7 @@ function toString(completion: CompletionItem): string {
         )
 
         testCompletion = {
-            data: ['b'],
+            data: { domains: ['b'] },
             label: 'a'
         }
         assert(
@@ -67,7 +67,7 @@ function toString(completion: CompletionItem): string {
         )
 
         testCompletion = {
-            data: ['a'],
+            data: { domains: ['a'] },
             label: 'b'
         }
         assert(
@@ -85,7 +85,7 @@ function toString(completion: CompletionItem): string {
         )
 
         testCompletion = {
-            data: ['a'],
+            data: { domains: ['a'] },
             label: 'b'
         }
         assert(
@@ -94,7 +94,7 @@ function toString(completion: CompletionItem): string {
         )
 
         testCompletion = {
-            data: ['b'],
+            data: { domains: ['b'] },
             label: 'partial'
         }
         assert(
@@ -103,7 +103,7 @@ function toString(completion: CompletionItem): string {
         )
 
         testCompletion = {
-            data: ['a'],
+            data: { domains: ['a'] },
             label: 'partial'
         }
         assert(
@@ -116,7 +116,7 @@ function toString(completion: CompletionItem): string {
     @test('isPartialMatch Unescaped Regexp')
     isPartialMatchUnescapedRegexpTest(): void {
         let testStrings: Array<string> = ['(', '[', 'a(', 'a[']
-        let testCompletion: CompletionItem = {
+        let testCompletion: InstrumentCompletionItem = {
             label: 'a'
         }
         try {
@@ -147,7 +147,7 @@ function toString(completion: CompletionItem): string {
 
         testStrings = ['a.b(', 'a.b[']
         testCompletion = {
-            data: ['a'],
+            data: { domains: ['a'] },
             label: 'b'
         }
         try {
