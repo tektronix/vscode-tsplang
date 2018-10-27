@@ -127,9 +127,9 @@ Entering too many characters will cause a warning to be logged and the given tex
         data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nfunction waitevent()\n```\n\
+            value: '```lua\nfunction waitevent(timeout)\n```\n\
 \n\
-display.waitevent() -> number, display.BUTTON_YES | BUTTON_NO | BUTTON_OK | BUTTON_CANCEL\n\
+display.waitevent([timeout]) -> number, display.BUTTON_YES | BUTTON_NO | BUTTON_OK | BUTTON_CANCEL\n\
 \n\
 Returns `promptID, buttonReturned` where \
 *promptID* is a reference to the prompt object \
@@ -223,11 +223,6 @@ characters are available.',
                 documentation: 'The amount of time to wait before timing out; time is 0 to 300 s, where 0 (default) \
 waits indefinitely.',
                 label: 'timeout',
-            },
-            {
-                documentation: 'The returned value after a button is pressed on the front panel. One of \
-display.BUTTON_YES, BUTTON_NO, BUTTON_OK, or BUTTON_CANCEL.',
-                label: 'subID',
             },
         ],
     },
