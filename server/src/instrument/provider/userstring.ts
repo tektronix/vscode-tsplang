@@ -19,7 +19,7 @@ import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-lan
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -72,7 +72,7 @@ Returns a string if the given name exists; otherwise nil is returned and an erro
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),

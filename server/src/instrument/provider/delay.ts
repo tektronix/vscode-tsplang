@@ -19,7 +19,7 @@ import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-lan
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -36,7 +36,7 @@ However, the processing time may cause the instrument to delay 5μs to 10μs mor
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),

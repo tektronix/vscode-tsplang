@@ -19,7 +19,7 @@ import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-lan
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
@@ -64,7 +64,7 @@ you entered.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),

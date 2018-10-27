@@ -19,7 +19,7 @@ import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-lan
 
 import { InstrumentSpec } from '..'
 
-import { FormattableSignatureInformation, InstrumentCompletionItem } from '.'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -38,7 +38,7 @@ Once created, the script that contains the settings can be run and edited like a
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),

@@ -27,7 +27,7 @@ export interface CompletionItemData {
     types?: Array<BaseApiSpec>
 }
 
-export interface FormattableSignatureInformation extends SignatureInformation {
+export interface InstrumentSignatureInformation extends SignatureInformation {
     getFormattedParameters(spec: InstrumentSpec): Array<ParameterInformation>
 }
 
@@ -112,7 +112,7 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
         // filter signatures
         if (set.signatures !== undefined) {
             unformattedSignatures = unformattedSignatures.concat(set.signatures.filter(
-                (value: FormattableSignatureInformation) => {
+                (value: InstrumentSignatureInformation) => {
                     const signaNamespace = resolveSignatureNamespace(value)
 
                     if (signaNamespace === undefined) {
@@ -126,10 +126,11 @@ function filter(cmd: ApiSpec, spec: InstrumentSpec, isEnum: boolean, set: Comman
     })
 
     // format signatures
-    const resultSignatures: Array<SignatureInformation> = new Array()
-    unformattedSignatures.forEach((value: FormattableSignatureInformation) => {
+    const resultSignatures: Array<InstrumentSignatureInformation> = new Array()
+    unformattedSignatures.forEach((value: InstrumentSignatureInformation) => {
         resultSignatures.push({
             documentation: value.documentation,
+            getFormattedParameters: (): Array<ParameterInformation> => new Array(),
             label: value.label,
             parameters: (value.parameters === undefined) ?
                 value.getFormattedParameters(spec) :

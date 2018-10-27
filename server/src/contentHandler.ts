@@ -15,10 +15,10 @@
  */
 'use strict'
 
-import { Position, SignatureHelp, SignatureInformation, TextDocuments } from 'vscode-languageserver'
+import { Position, SignatureHelp, TextDocuments } from 'vscode-languageserver'
 
 import { isPartialMatch } from './completionProcessor'
-import { InstrumentCompletionItem, resolveCompletionNamespace } from './instrument/provider'
+import { InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace } from './instrument/provider'
 import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspManager'
@@ -198,7 +198,7 @@ export class ContentHandler {
         // Un-reverse the string and remove digits inside of table indexers
         const unreversed = this.reverse(firstMatch).replace(this.tableIndexRegexp, '[]')
 
-        const results: Array<SignatureInformation> = new Array()
+        const results: Array<InstrumentSignatureInformation> = new Array()
 
         for (const fullSignature of tspItem.commandSet.signatures) {
             // Get the namespace of the signature before the first open-parenthesis

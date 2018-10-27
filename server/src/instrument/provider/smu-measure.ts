@@ -19,7 +19,7 @@ import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-lan
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation, FormattableSignatureInformation, InstrumentCompletionItem } from '.'
+import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [
@@ -347,7 +347,7 @@ This attribute is saved with the active function and retained until the next ins
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),

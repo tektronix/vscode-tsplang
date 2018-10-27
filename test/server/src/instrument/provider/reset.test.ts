@@ -18,7 +18,7 @@ import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 import { ParameterInformation } from 'vscode-languageclient'
 
-import { FormattableSignatureInformation } from '../../../../../server/src/instrument/provider'
+import { InstrumentSignatureInformation } from '../../../../../server/src/instrument/provider'
 import * as Namespace from '../../../../../server/src/instrument/provider/reset'
 import { emptySpec } from '../emptySpec'
 
@@ -49,7 +49,7 @@ import { emptySpec } from '../emptySpec'
 
     @test('Signatures formatted properly')
     signaturesFormattedProperly(): void {
-        Namespace.signatures.forEach((element: FormattableSignatureInformation) => {
+        Namespace.signatures.forEach((element: InstrumentSignatureInformation) => {
             const formattedParams = element.getFormattedParameters(emptySpec)
 
             if (formattedParams.length === 0) {
