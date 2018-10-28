@@ -233,7 +233,7 @@ export namespace TspParser {
     export class ExpressionListContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        exp(i?: number): ExpressionContext[]
+        expression(i?: number): ExpressionContext[]
     }
 
     export class ValueContext extends BaseContext {
