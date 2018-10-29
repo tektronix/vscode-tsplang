@@ -25,6 +25,48 @@ import { getVariableCompletions } from './rule-handler'
 import { TspLexer, TspListener, TspParser } from './tsp'
 
 /**
+ * Determines if suggesting TSP enumerations would make sense for the given statement context.
+ */
+function tspEnumSuggestionCandidate(context: TspParser.StatementContext): boolean {
+    //  statement  --{0}-->  variableList
+    const varlistContext = context.variableList()
+    if (varlistContext === null) {
+        return false
+    }
+
+    //  statement  --{0}-->  expressionList
+    const expListContext = context.expressionList()
+    if (expListContext === null) {
+        return false
+    }
+
+    // Find the index of the first exception in the expression list.
+    let index = 0
+    const expressions = expListContext.expression()
+    for (; index < expressions.length; index++) {
+        const expr = expressions[index]
+
+        if (expr.exception !== null) {
+            break
+        }
+    }
+
+    const candidate = varlistContext.variable()[index]
+
+    if (candidate === undefined) {
+        return false
+    }
+
+    // Candidates should have at least a prefix and an index contexts.
+    if (candidate.prefix() === null || candidate.index() === null) {
+        return false
+    }
+
+    // TODO: perform a lookup against available instrument completions to see if we can find a match.
+    return false
+}
+
+/**
  * The merge strategy is to accept all incoming changes.
  */
 function mergeCompletions(
