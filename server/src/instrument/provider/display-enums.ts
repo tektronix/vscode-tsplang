@@ -90,16 +90,6 @@ export const completions: Array<InstrumentCompletionItem> = [
         kind: CompletionItemKind.EnumMember,
         label: 'BUTTON_OPTION10'
     },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'FORMAT_EXPONENT'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'FORMAT_PREFIX'
-    },
     // {
     //     data: { domains: ['display'] },
     //     kind: CompletionItemKind.EnumMember,
@@ -129,6 +119,16 @@ export const completions: Array<InstrumentCompletionItem> = [
     //     data: { domains: ['display'] },
     //     kind: CompletionItemKind.EnumMember,
     //     label: 'BUTTONS_YESNOCANCEL'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'FORMAT_EXPONENT'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'FORMAT_PREFIX'
     // },
     {
         data: { domains: ['display'] },
@@ -233,36 +233,36 @@ export const completions: Array<InstrumentCompletionItem> = [
         kind: CompletionItemKind.EnumMember,
         label: 'SFORMAT_UPPER_LOWER'
     },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'STATE_LCD_100'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'STATE_LCD_75'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'STATE_LCD_50'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'STATE_LCD_25'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'STATE_LCD_OFF'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'STATE_BLACKOUT'
-    },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'STATE_LCD_100'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'STATE_LCD_75'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'STATE_LCD_50'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'STATE_LCD_25'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'STATE_LCD_OFF'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'STATE_BLACKOUT'
+    // },
     // {
     //     data: { domains: ['display'] },
     //     kind: CompletionItemKind.EnumMember,

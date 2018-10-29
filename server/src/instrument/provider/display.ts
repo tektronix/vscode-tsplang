@@ -60,7 +60,35 @@ Remove the given prompt reference from the front-panel dispay.'
         label: 'delete',
     },
     {
-        data: { domains: ['display'] },
+        data: {
+            domains: ['display'],
+            types: [
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.STATE_LCD_100'
+                },
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.STATE_LCD_75'
+                },
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.STATE_LCD_50'
+                },
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.STATE_LCD_25'
+                },
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.STATE_LCD_OFF'
+                },
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.STATE_BLACKOUT'
+                },
+            ]
+        },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.lightstate\n```\n\
@@ -93,7 +121,19 @@ To capture return values, use the display.waitevent() command.'
         label: 'prompt',
     },
     {
-        data: { domains: ['display'] },
+        data: {
+            domains: ['display'],
+            types: [
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.FORMAT_EXPONENT'
+                },
+                {
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'display.FORMAT_PREFIX'
+                },
+            ]
+        },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.readingformat\n```\n\
