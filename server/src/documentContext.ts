@@ -21,7 +21,43 @@ import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { CompletionItemKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem } from './instrument/provider'
+import { getVariableCompletions } from './rule-handler'
 import { TspLexer, TspListener, TspParser } from './tsp'
+
+/**
+ * The merge strategy is to accept all incoming changes.
+ */
+function mergeCompletions(
+    incoming: Array<InstrumentCompletionItem>,
+    current?: Array<InstrumentCompletionItem>,
+): Array<InstrumentCompletionItem> {
+    if (current === undefined) {
+        return incoming
+    }
+
+    // Instantiate a new array object from incoming so our search cost won't increase as we add items.
+    const result = new Array<InstrumentCompletionItem>(...incoming)
+
+    // for each item in current that's not in incoming, add it to incoming
+    while (current.length > 0) {
+        const item = current.shift()
+
+        // Skip empty array items.
+        if (item === undefined) {
+            continue
+        }
+
+        const index = incoming.findIndex((value: InstrumentCompletionItem): boolean =>
+            InstrumentCompletionItem.namespacesEqual(item, value)
+        )
+
+        if (index === -1) {
+            result.push(item)
+        }
+    }
+
+    return result
+}
 
 export class DocumentContext extends TspListener {
     readonly uri: string
@@ -50,12 +86,13 @@ export class DocumentContext extends TspListener {
         this.scopeDepth--
     }
 
+    // tslint:disable-next-line:prefer-function-over-method
     exitStatement(context: TspParser.StatementContext): void {
         if (context.exception !== null) {
             return
         }
 
-        this.globals = this.getCompletionsFromContext(context)
+        // this.globals = this.getCompletionsFromContext(context)
     }
 
     getCompletionItems(): Array<InstrumentCompletionItem> {
@@ -102,10 +139,17 @@ export class DocumentContext extends TspListener {
                 }
 
                 if (child instanceof TspParser.VariableContext) {
-                    const prefixSuffix = this.getPrefixSuffixCompletions(child)
+                    const variableCompletions = getVariableCompletions(child)
 
-                    if (prefixSuffix.completions.length > 0) {
-                        result.set(prefixSuffix.name, prefixSuffix.completions)
+                    if (variableCompletions.length > 0) {
+                        const completion = variableCompletions[0]
+
+                        if (completion === undefined) {
+                            continue
+                        }
+
+                        const globalName = completion.label
+                        result.set(globalName, mergeCompletions(variableCompletions, this.globals.get(globalName)))
                         continue
                     }
                 }
@@ -116,240 +160,5 @@ export class DocumentContext extends TspListener {
         getCompletionsRecursive(context)
 
         return result
-    }
-
-    private getPrefixSuffixCompletions = (context: TspParser.VariableContext): {
-        completions: Array<InstrumentCompletionItem>;
-        name: string;
-    } => {
-        const getMatchingCompletionIndex = function(
-            search: Array<InstrumentCompletionItem>,
-            label: string,
-            domains: Array<string>,
-            root: boolean = false
-        ): number {
-            return search.findIndex((value: InstrumentCompletionItem): boolean => {
-                if (root) {
-                    // Root namespace items match the prefix text AND have no data.
-                    return (value.label.localeCompare(label) === 0 && value.data === undefined)
-                }
-
-                // Check that the labels match
-                if (value.label.localeCompare(label) !== 0) {
-                    return false
-                }
-
-                // Perform quick data field comparisons
-                if (value.data === undefined
-                        || value.data.domains.length !== domains.length) {
-                    return false
-                }
-
-                // Compare each item.
-                for (let j = 0; j < domains.length; j++) {
-                    const valueDomainItem = value.data.domains[j]
-                    if (valueDomainItem.localeCompare(domains[j]) !== 0) {
-                        return false
-                    }
-                }
-
-                return true
-            })
-        }
-
-        let result: Array<InstrumentCompletionItem> | undefined
-
-        const prefix = context.prefix()
-        if (prefix === null) {
-            return {
-                completions: [],
-                name: ''
-            }
-        }
-
-        const prefixName = prefix.NAME()
-        if (prefixName === null) {
-            return {
-                completions: [],
-                name: ''
-            }
-        }
-
-        result = this.globals.get(prefixName.symbol.text)
-
-        if (result === undefined) {
-            result = new Array()
-        }
-
-        const existingRootIndex = getMatchingCompletionIndex(result, prefixName.symbol.text, [], true)
-
-        // If we have a root namespace in the array...
-        if (existingRootIndex !== -1) {
-            // ...then update the completion kind to be a "table".
-            result[existingRootIndex].kind = CompletionItemKind.Module
-        }
-        else {
-            // ...else create a new root namespace item.
-            result.push({
-                kind: CompletionItemKind.Module,
-                label: prefixName.symbol.text
-            })
-        }
-
-        let i = -1
-        const suffix = context.suffix()
-        for (const suffixItem of suffix) {
-            // Located at the start of the loop so it do not have to appear before every loop
-            // control keyword.
-            i++
-
-            // Result is guaranteed to have an item
-            const lastItem = (i === 0 && existingRootIndex !== -1) ? result[existingRootIndex] : result.pop()
-
-            if (lastItem === undefined) {
-                // Catastrophic failure
-                return {
-                    completions: [],
-                    name: ''
-                }
-            }
-
-            // Create this suffix's namespace
-            const domains = new Array<string>(lastItem.label)
-            if (lastItem.data !== undefined) {
-                domains.push(...lastItem.data.domains)
-            }
-
-            const objectCall = suffixItem.objectCall()
-            if (objectCall !== null) {
-                const callName = objectCall.NAME()
-                if (callName !== null) {
-                    if (i !== 0) {
-                        result.push(lastItem)
-                    }
-
-                    const existingCallItemIndex = getMatchingCompletionIndex(result, callName.symbol.text, domains)
-
-                    // If we found a matching completion...
-                    if (existingCallItemIndex !== -1) {
-                        // ...then update the existing completion to be a function.
-                        result[existingCallItemIndex].kind = CompletionItemKind.Function
-                    }
-                    else {
-                        // ...else create a new function call suffix item.
-                        result.push({
-                            data: { domains },
-                            kind: CompletionItemKind.Function,
-                            label: callName.symbol.text
-                        })
-                    }
-                }
-                else {
-                    lastItem.kind = CompletionItemKind.Function
-                    if (i === 0 && existingRootIndex !== -1) {
-                        result[existingRootIndex].kind = lastItem.kind
-                    }
-                    else {
-                        result.push(lastItem)
-                    }
-                }
-
-                // Do not process any more suffixes/indices.
-                break
-            }
-
-            if (i !== 0) {
-                result.push(lastItem)
-            }
-
-            const index = suffixItem.index()
-            if (index === null) {
-                continue
-            }
-
-            const indexName = index.NAME()
-            if (indexName === null) {
-                continue
-            }
-
-            // If this is not the last suffix of if there is a final index then it is a table.
-            const kind = (i !== (suffix.length - 1) || context.index() !== null)
-                ? CompletionItemKind.Module
-                : CompletionItemKind.Field
-
-            const existingSuffixItemIndex = getMatchingCompletionIndex(result, indexName.symbol.text, domains)
-
-            // If we found a matching completion...
-            if (existingSuffixItemIndex !== -1) {
-                // ...then update the existing completion.
-                result[existingSuffixItemIndex].kind = kind
-            }
-            else {
-                // ...else create a new suffix item.
-                result.push({
-                    kind,
-                    data: { domains },
-                    label: indexName.symbol.text
-                })
-            }
-        }
-
-        const finalIndex = context.index()
-        if (finalIndex === null) {
-            return {
-                completions: [],
-                name: ''
-            }
-        }
-
-        const finalIndexName = finalIndex.NAME()
-        if (finalIndexName === null) {
-            return {
-                completions: result,
-                name: prefixName.symbol.text
-            }
-        }
-
-        // Result is guaranteed to have an item
-        const penultimateItem = result.pop()
-
-        if (penultimateItem === undefined) {
-            // Catastrophic failure
-            return {
-                completions: [],
-                name: ''
-            }
-        }
-
-        // Create this index's namespace
-        const finalDomains = (penultimateItem.kind === CompletionItemKind.Module)
-            ? new Array<string>(penultimateItem.label)
-            : new Array<string>()
-        if (penultimateItem.data !== undefined) {
-            finalDomains.push(...penultimateItem.data.domains)
-        }
-
-        result.push(penultimateItem)
-
-        const existingFinalIndexItemIndex = getMatchingCompletionIndex(result, finalIndexName.symbol.text, finalDomains)
-
-        // If we found a matching completion...
-        if (existingFinalIndexItemIndex !== -1) {
-            // ...then update the existing completion to be a field.
-            result[existingFinalIndexItemIndex].kind = CompletionItemKind.Field
-        }
-        else {
-            // ...else create a new index item.
-            result.push({
-                data: { domains: finalDomains },
-                kind: CompletionItemKind.Field,
-                label: finalIndexName.symbol.text
-            })
-        }
-
-        return {
-            completions: result,
-            name: prefixName.symbol.text
-        }
     }
 }
