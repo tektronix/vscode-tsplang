@@ -8,7 +8,8 @@
             "name": "Run Parser",
             "input": "test/grammars/bit-of-everything.lua",
             "startRule": "chunk",
-            "visualParseTree": true
+            "visualParseTree": true,
+            "grammar": "server/grammar/Tsp.g4"
         },
         {
             "name": "Launch Client",
