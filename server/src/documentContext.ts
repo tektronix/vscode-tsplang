@@ -18,67 +18,139 @@
 import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
-import { CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem } from './instrument/provider'
+import { isPartialMatch } from './completionProcessor'
+import { CommandSet } from './instrument'
+import { InstrumentCompletionItem, resolveCompletionNamespace } from './instrument/provider'
 import { getVariableCompletions } from './rule-handler'
 import { TspLexer, TspListener, TspParser } from './tsp'
 
+export interface DocumentCompletionContext {
+    completion: InstrumentCompletionItem
+    position: Position
+}
+
+interface ExclusiveContext {
+    completions: Array<InstrumentCompletionItem>
+    text?: string
+}
+
 /**
- * Determines if suggesting TSP enumerations would make sense for the given statement context.
+ * Returns the first matching completion or undefined should no match exist.
  */
-function tspEnumSuggestionCandidate(context: TspParser.StatementContext): boolean {
+function getExclusiveCompletions(
+    context: TspParser.StatementContext,
+    commandSet: CommandSet
+): Map<number, ExclusiveContext> | undefined {
     //  statement  --{0}-->  variableList
     const varlistContext = context.variableList()
     if (varlistContext === null) {
-        return false
+        return
     }
 
     //  statement  --{0}-->  expressionList
     const expListContext = context.expressionList()
     if (expListContext === null) {
-        return false
+        return
     }
 
-    // Find the index of the first exception in the expression list.
-    let index = 0
-    const expressions = expListContext.expression()
-    for (; index < expressions.length; index++) {
-        const expr = expressions[index]
+    const result = new Map<number, ExclusiveContext>()
 
-        if (expr.exception !== null) {
-            break
+    const variables = varlistContext.variable()
+    for (let i = 0; i < variables.length; i++) {
+        const candidate = variables[i]
+
+        // Empty array item check.
+        if (candidate === undefined) {
+            continue
+        }
+
+        // Candidates should have at least a prefix and an index contexts.
+        if (candidate.prefix() === null || candidate.index() === null) {
+            continue
+        }
+
+        const candidateText = candidate.getText()
+
+        const itemDataTypes = new Array<InstrumentCompletionItem>()
+
+        for (const item of commandSet.completions) {
+            const completionText = resolveCompletionNamespace(item)
+
+            // If the candidate matches an instrument completion item.
+            if (candidateText.localeCompare(completionText) === 0) {
+                // The item should have a data.types property.
+                if (item.data !== undefined && item.data.types !== undefined) {
+                    itemDataTypes.push(...item.data.types)
+                    break
+                }
+            }
+        }
+
+        if (itemDataTypes.length === 0) {
+            continue
+        }
+
+        const expressions = expListContext.expression()
+
+        // Get the document offset of the location where exclusive completions can be requested.
+
+        // If there is one expression per variable.
+        if (variables.length === expressions.length) {
+            const expression = expressions[i]
+
+            // Empty array item check.
+            if (expression === undefined) {
+                continue
+            }
+
+            result.set(expression.stop.stop + 1, {
+                completions: itemDataTypes,
+                text: expression.getText()
+            })
+            continue
+        }
+        // Else use whatever expression follows comma i+1.
+        else {
+            let commaCount = 0
+            for (const item of expressions) {
+                if (commaCount === i) {
+                    const exclusiveContext: ExclusiveContext = {
+                        completions: itemDataTypes
+                    }
+
+                    if (item instanceof ParserRuleContext) {
+                        exclusiveContext.text = item.getText()
+                    }
+
+                    result.set(item.stop.stop + 1, exclusiveContext)
+                    break
+                }
+
+                if (item instanceof TerminalNode && item.getText().localeCompare(',') === 0) {
+                    commaCount++
+                }
+            }
         }
     }
 
-    const candidate = varlistContext.variable()[index]
-
-    if (candidate === undefined) {
-        return false
-    }
-
-    // Candidates should have at least a prefix and an index contexts.
-    if (candidate.prefix() === null || candidate.index() === null) {
-        return false
-    }
-
-    // TODO: perform a lookup against available instrument completions to see if we can find a match.
-    return false
+    return (result.size !== 0) ? result : undefined
 }
 
 /**
  * The merge strategy is to accept all incoming changes.
  */
 function mergeCompletions(
-    incoming: Array<InstrumentCompletionItem>,
-    current?: Array<InstrumentCompletionItem>,
-): Array<InstrumentCompletionItem> {
+    incoming: Array<DocumentCompletionContext>,
+    current?: Array<DocumentCompletionContext>,
+): Array<DocumentCompletionContext> {
     if (current === undefined) {
         return incoming
     }
 
     // Instantiate a new array object from incoming so our search cost won't increase as we add items.
-    const result = new Array<InstrumentCompletionItem>(...incoming)
+    const result = new Array<DocumentCompletionContext>(...incoming)
 
     // for each item in current that's not in incoming, add it to incoming
     while (current.length > 0) {
@@ -89,8 +161,8 @@ function mergeCompletions(
             continue
         }
 
-        const index = incoming.findIndex((value: InstrumentCompletionItem): boolean =>
-            InstrumentCompletionItem.namespacesEqual(item, value)
+        const index = incoming.findIndex((value: DocumentCompletionContext): boolean =>
+            InstrumentCompletionItem.namespacesEqual(item.completion, value.completion)
         )
 
         if (index === -1) {
@@ -102,53 +174,92 @@ function mergeCompletions(
 }
 
 export class DocumentContext extends TspListener {
-    readonly uri: string
+    readonly commandSet: CommandSet
     private content: string
-    private globals: Map<string, Array<InstrumentCompletionItem>>
+    /** Map<offset, [exclusive completions]> */
+    private exclusives: Map<number, ExclusiveContext>
+    private globals: Map<string, Array<DocumentCompletionContext>>
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
-    private scopeDepth: number
 
-    constructor(uri: string, content: string) {
+    constructor(commandSet: CommandSet, content?: string) {
         super()
 
-        this.uri = uri
-        this.globals = new Map()
-        this.scopeDepth = 0
+        this.commandSet = commandSet
 
         this.update(content)
     }
 
-    enterBlock(context: TspParser.BlockContext): void {
-        this.scopeDepth++
-    }
-
-    exitBlock(context: TspParser.BlockContext): void {
-        this.scopeDepth--
-    }
-
     // tslint:disable-next-line:prefer-function-over-method
     exitStatement(context: TspParser.StatementContext): void {
+        const newExclusives = getExclusiveCompletions(context, this.commandSet)
+
+        if (newExclusives !== undefined) {
+            for (const entry of newExclusives) {
+                this.exclusives.set(...entry)
+            }
+
+            return
+        }
+
         if (context.exception !== null) {
             return
         }
 
-        // this.globals = this.getCompletionsFromContext(context)
+        this.globals = this.getCompletionsFromContext(context)
     }
 
-    getCompletionItems(): Array<InstrumentCompletionItem> {
+    getCompletionItems(document: TextDocument, cursor: Position): Array<InstrumentCompletionItem> {
+        const offset = document.offsetAt(cursor)
+        // Recalculate this Position without trailing whitespace.
+        const currentLineText = document.getText({
+            end: cursor,
+            start: { character: 0, line: cursor.line }
+        })
+        const trimmedLine = currentLineText.trim()
+        const trimmedOffset = document.offsetAt(Position.create(cursor.line, trimmedLine.length))
+
+        // Get available exclusive completion items.
+        const exclusiveContext = this.exclusives.get(trimmedOffset)
+
+        if (exclusiveContext !== undefined) {
+            const exclusiveResult = new Array<InstrumentCompletionItem>()
+
+            if (exclusiveContext.text !== undefined) {
+                for (const completion of exclusiveContext.completions) {
+                    if (isPartialMatch(exclusiveContext.text, completion)) {
+                        exclusiveResult.push(completion)
+                    }
+                }
+            }
+
+            if (exclusiveResult.length > 0) {
+                return exclusiveResult
+            }
+        }
+
         const result = new Array<InstrumentCompletionItem>()
 
-        for (const completions of this.globals.values()) {
-            result.push(...completions)
+        // Add globals to the list of available completions.
+        for (const context of this.globals.values()) {
+            for (const completion of context) {
+                // If this completion is located before the cursor.
+                if (document.offsetAt(completion.position) < document.offsetAt(cursor)) {
+                    result.push(completion.completion)
+                }
+            }
         }
+
+        // Add the instrument command set to the list of available completions.
+        result.push(...this.commandSet.completions)
 
         return result
     }
 
-    update(content: string): void {
-        this.content = content
+    update(content?: string): void {
+        this.content = (content === undefined) ? '' : content
+        this.exclusives = new Map()
         this.globals = new Map()
 
         this.lexer = new TspLexer(new InputStream(this.content))
@@ -162,14 +273,17 @@ export class DocumentContext extends TspListener {
         ParseTreeWalker.DEFAULT.walk(this, this.parseTree)
     }
 
-    private getCompletionsFromContext = (context: ParserRuleContext): Map<string, Array<InstrumentCompletionItem>> => {
-        const result = new Map<string, Array<InstrumentCompletionItem>>()
+    private getCompletionsFromContext = (context: ParserRuleContext): Map<string, Array<DocumentCompletionContext>> => {
+        const result = new Map<string, Array<DocumentCompletionContext>>()
 
         const getCompletionsRecursive = (node: ParserRuleContext | TerminalNode): void => {
             if (node instanceof TerminalNode && node.symbol.type === TspLexer.NAME) {
                 result.set(node.symbol.text, [{
-                    kind: CompletionItemKind.Variable,
-                    label: node.symbol.text
+                    completion: {
+                        kind: CompletionItemKind.Variable,
+                        label: node.symbol.text
+                    },
+                    position: Position.create(node.symbol.line, node.symbol.stop)
                 }])
             }
 
@@ -190,7 +304,7 @@ export class DocumentContext extends TspListener {
                             continue
                         }
 
-                        const globalName = completion.label
+                        const globalName = completion.completion.label
                         result.set(globalName, mergeCompletions(variableCompletions, this.globals.get(globalName)))
                         continue
                     }

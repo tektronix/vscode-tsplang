@@ -26,8 +26,7 @@ import { Shebang } from './shebang'
 import { PoolEntry, TspPool } from './tspPool'
 
 export interface TspItem {
-    commandSet: CommandSet
-    context?: DocumentContext
+    context: DocumentContext
     node?: Map<number, CommandSet>
     rawShebang?: string
     shebang?: Array<Shebang.ShebangToken>
@@ -71,7 +70,7 @@ export class TspManager {
                 // use valid shebang to populate model-specific items
                 item = await this.getPoolItems(item)
 
-                item.context = new DocumentContext(document.uri, document.text)
+                item.context.update(document.text)
                 item.context.walk()
 
                 this.dict.set(document.uri, item)
@@ -155,8 +154,11 @@ export class TspManager {
                 return
             }
 
-            // if the shebang has not changed, then no update is needed
+            // If the shebang has not changed, then just update this document's context.
             if (oldItem.rawShebang !== undefined && oldItem.rawShebang.localeCompare(shebangLine) === 0) {
+                oldItem.context.update(document.text)
+                oldItem.context.walk()
+
                 resolve()
 
                 return
@@ -192,13 +194,12 @@ export class TspManager {
                 return
             }
 
-            // use valid shebang to populate completion items
+            // Populate the command set from the TspPool.
             item = await this.getPoolItems(item)
 
-            if (item.context === undefined) {
-                item.context = new DocumentContext(document.uri, document.text)
-                item.context.walk()
-            }
+            // Update this item's context.
+            item.context.update(document.text)
+            item.context.walk()
 
             this.dict.set(document.uri, item)
 
@@ -226,7 +227,7 @@ export class TspManager {
                     })
 
                 const basicTspItem: TspItem = {
-                    commandSet: await generateCommandSet(apiLua, specLua)
+                    context: new DocumentContext(await generateCommandSet(apiLua, specLua))
                 }
 
                 if (shebangLine !== undefined) {
@@ -287,7 +288,7 @@ export class TspManager {
 
                 // if element has no node number, then assume master model
                 if (token.node === undefined) {
-                    result.commandSet = entry.commandSet
+                    result.context = new DocumentContext(entry.commandSet)
                 }
                 else {
                     if (result.node === undefined) {

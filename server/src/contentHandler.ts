@@ -42,13 +42,13 @@ export class ContentHandler {
         const result: InstrumentCompletionItem = item
 
         // We cannot provide completion documentation if none exist
-        if (tspItem.commandSet.completionDocs.size === 0) {
+        if (tspItem.context.commandSet.completionDocs.size === 0) {
             return result
         }
 
         // Only service those CompletionItems whose "documentation" property is undefined
         if (result.documentation === undefined) {
-            const commandDoc = tspItem.commandSet.completionDocs.get(resolveCompletionNamespace(result))
+            const commandDoc = tspItem.context.commandSet.completionDocs.get(resolveCompletionNamespace(result))
 
             if (commandDoc === undefined) {
                 return result
@@ -56,7 +56,7 @@ export class ContentHandler {
 
             result.documentation = {
                 kind: commandDoc.kind,
-                value: commandDoc.toString(tspItem.commandSet.specification)
+                value: commandDoc.toString(tspItem.context.commandSet.specification)
             }
         }
 
@@ -68,7 +68,7 @@ export class ContentHandler {
         this.lastCompletionUri = uri
 
         // We cannot provide completions if none exist
-        if (tspItem.commandSet.completions.length === 0) {
+        if (tspItem.context.commandSet.completions.length === 0) {
             return
         }
 
@@ -84,10 +84,10 @@ export class ContentHandler {
         const offset: number = content.offsetAt(position)
 
         // Update the current document state in preparation for suggesting any user completions
-        if (tspItem.context !== undefined) {
-            tspItem.context.update(contentText.slice(0, offset))
-            tspItem.context.walk()
-        }
+        // if (tspItem.context !== undefined) {
+        //     tspItem.context.update(contentText)
+        //     tspItem.context.walk()
+        // }
 
         // Get all text before the cursor offset, reverse it, and match against it.
         // Reversing allows for a simpler regular expression since the match
@@ -104,16 +104,16 @@ export class ContentHandler {
 
         // Show root namespace completions if we did not match against a namespace
         if (firstMatch === undefined || firstMatch === '') {
-            for (const completion of tspItem.commandSet.completions) {
-                // Root namespaces have an undefined "data" property
-                if (completion.data === undefined) {
-                    results.push(completion)
-                }
-            }
+            // for (const completion of tspItem.context.commandSet.completions) {
+            //     // Root namespaces have an undefined "data" property
+            //     if (completion.data === undefined) {
+            //         results.push(completion)
+            //     }
+            // }
 
             // Add this document's user completion items
             if (tspItem.context !== undefined) {
-                for (const userCompletion of tspItem.context.getCompletionItems()) {
+                for (const userCompletion of tspItem.context.getCompletionItems(content, position)) {
                     // Only match against completions without a "data" property
                     if (userCompletion.data === undefined) {
                         results.push(userCompletion)
@@ -128,7 +128,7 @@ export class ContentHandler {
         const unreversed = this.reverse(firstMatch.replace(this.tableIndexRegexp, ''))
 
         // Attempt to partial match against the current command set.
-        for (const completion of tspItem.commandSet.completions) {
+        for (const completion of tspItem.context.commandSet.completions) {
             if (isPartialMatch(unreversed, completion)) {
                 results.push(completion)
             }
@@ -136,7 +136,7 @@ export class ContentHandler {
 
         if (tspItem.context !== undefined) {
             // Attempt to partial match against the current user completion items.
-            for (const completion of tspItem.context.getCompletionItems()) {
+            for (const completion of tspItem.context.getCompletionItems(content, position)) {
                 if (isPartialMatch(unreversed, completion)) {
                     results.push(completion)
                 }
@@ -148,7 +148,7 @@ export class ContentHandler {
 
     getSignatures(uri: string, position: Position, tspItem: TspItem): InstrumentSignatureHelp | undefined {
         // We cannot provide signatures if none exist
-        if (tspItem.commandSet.signatures.length === 0) {
+        if (tspItem.context.commandSet.signatures.length === 0) {
             return
         }
 
@@ -204,7 +204,7 @@ export class ContentHandler {
 
         const results: Array<InstrumentSignatureInformation> = new Array()
 
-        for (const fullSignature of tspItem.commandSet.signatures) {
+        for (const fullSignature of tspItem.context.commandSet.signatures) {
             // Get the namespace of the signature before the first open-parenthesis
             const signature: string = fullSignature.label.slice(0, fullSignature.label.indexOf('('))
 

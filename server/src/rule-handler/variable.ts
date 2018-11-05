@@ -15,12 +15,12 @@
  */
 'use strict'
 
-import { CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind, Position } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem } from '../instrument/provider'
+import { DocumentCompletionContext } from '../documentContext'
 import { TspParser } from '../tsp'
 
-export function getVariableCompletions(context: TspParser.VariableContext): Array<InstrumentCompletionItem> {
+export function getVariableCompletions(context: TspParser.VariableContext): Array<DocumentCompletionContext> {
     // Only handle cases where variables are on the left-hand side of a statement.
     // The context.parent.parent check serves as protection against any future grammar changes.
     if (! (context.parentCtx instanceof TspParser.VariableListContext)
@@ -32,12 +32,16 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
     const nameContext = context.NAME()
     if (nameContext !== null) {
         return [{
-            kind: CompletionItemKind.Variable,
-            label: nameContext.symbol.text
+            completion: {
+                kind: CompletionItemKind.Variable,
+                label: nameContext.symbol.text
+            },
+            // Only suggest variables on the line after their declaration.
+            position: Position.create(nameContext.symbol.line + 1, 0)
         }]
     }
 
-    const result = new Array<InstrumentCompletionItem>()
+    const result = new Array<DocumentCompletionContext>()
 
     //  variable  --{0}-->  prefix
     const prefixContext = context.prefix()
@@ -55,10 +59,14 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
         return []
     }
 
-    let lastCompletion: InstrumentCompletionItem = {
-        // Because is this a prefix, it is guaranteed to have indices, thus making it a table.
-        kind: CompletionItemKind.Module,
-        label: prefixNameTerminal.symbol.text
+    let lastCompletion: DocumentCompletionContext = {
+        completion: {
+            // Because is this a prefix, it is guaranteed to have indices, thus making it a table.
+            kind: CompletionItemKind.Module,
+            label: prefixNameTerminal.symbol.text
+        },
+        // Only suggest variables on the line after their declaration.
+        position: Position.create(prefixNameTerminal.symbol.line + 1, 0)
     }
     result.push(lastCompletion)
 
@@ -74,10 +82,10 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
         }
 
         // Create this suffix's domain starting from the previous label.
-        const suffixDomains = new Array<string>(lastCompletion.label)
+        const suffixDomains = new Array<string>(lastCompletion.completion.label)
         // If the last completion item has data, then we want that too.
-        if (lastCompletion.data !== undefined) {
-            suffixDomains.push(...lastCompletion.data.domains)
+        if (lastCompletion.completion.data !== undefined) {
+            suffixDomains.push(...lastCompletion.completion.data.domains)
         }
 
         //  variable  -{1,n}->  suffix  --{1}-->  objectCall
@@ -93,9 +101,13 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
                 //  a:b'arg'.c = 1
 
                 lastCompletion = {
-                    data: { domains: suffixDomains },
-                    kind: CompletionItemKind.Function,
-                    label: objectCallNameTerminal.symbol.text
+                    completion: {
+                        data: { domains: suffixDomains },
+                        kind: CompletionItemKind.Function,
+                        label: objectCallNameTerminal.symbol.text
+                    },
+                    // Only suggest variables on the line after their declaration.
+                    position: Position.create(objectCallNameTerminal.symbol.line + 1, 0)
                 }
                 result.push(lastCompletion)
             }
@@ -108,7 +120,7 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
                 //  a.b{}.c = 1
                 //  a.b'arg'.c = 1
 
-                result[result.length - 1].kind = CompletionItemKind.Function
+                result[result.length - 1].completion.kind = CompletionItemKind.Function
             }
 
             // Don't process anything after a function call since it doesn't apply to this context.
@@ -139,9 +151,13 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
             : CompletionItemKind.Field
 
         lastCompletion = {
-            data: { domains: suffixDomains },
-            kind: suffixIndexKind,
-            label: suffixIndexNameTerminal.symbol.text
+            completion: {
+                data: { domains: suffixDomains },
+                kind: suffixIndexKind,
+                label: suffixIndexNameTerminal.symbol.text
+            },
+            // Only suggest variables on the line after their declaration.
+            position: Position.create(suffixIndexNameTerminal.symbol.line + 1, 0)
         }
         result.push(lastCompletion)
     }
@@ -164,18 +180,22 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
     }
 
     // Create this index's domain starting from the previous label (if the last completion was a table).
-    const indexDomains: Array<string> = (lastCompletion.kind === CompletionItemKind.Module)
-        ? new Array(lastCompletion.label)
+    const indexDomains: Array<string> = (lastCompletion.completion.kind === CompletionItemKind.Module)
+        ? new Array(lastCompletion.completion.label)
         : new Array()
     // If the last completion item has data, then we want that too.
-    if (lastCompletion.data !== undefined) {
-        indexDomains.push(...lastCompletion.data.domains)
+    if (lastCompletion.completion.data !== undefined) {
+        indexDomains.push(...lastCompletion.completion.data.domains)
     }
 
     result.push({
-        data: { domains: indexDomains },
-        kind: CompletionItemKind.Field,
-        label: indexNameTerminal.symbol.text
+        completion: {
+            data: { domains: indexDomains },
+            kind: CompletionItemKind.Field,
+            label: indexNameTerminal.symbol.text
+        },
+        // Only suggest variables on the line after their declaration.
+        position: Position.create(indexNameTerminal.symbol.line + 1, 0)
     })
 
     return result

@@ -75,7 +75,7 @@ documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
     }
     // if document is unregistered, then register
     else {
-            manager.register(docItem)
+        manager.register(docItem)
     }
 })
 
@@ -94,6 +94,12 @@ connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionIt
     if (tspItem === undefined) {
         return
     }
+
+    // TODO: exclude completions
+    //
+    //  1) if we should be providing exclusive completions
+    //      a) provide exclusive completions until the text no longer partially matches any exclusive completion
+    //      b) if the user text no longer partially matches any exclusive completion, then provide other completions
 
     const signatureHelp = parser.getSignatures(params.textDocument.uri, params.position, tspItem)
     if (signatureHelp !== undefined) {
