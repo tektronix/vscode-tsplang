@@ -200,3 +200,28 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
 
     return result
 }
+
+/**
+ * Returns undefined when an invalid context occurs.
+ */
+export function isVariableMultiline(context: TspParser.VariableContext): boolean | undefined {
+    //  variable  --{1}-->  NAME
+    const nameContext = context.NAME()
+    if (nameContext !== null) {
+        return false
+    }
+
+    //  variable  --{0}-->  prefix
+    const prefixContext = context.prefix()
+    if (prefixContext === null) {
+        return
+    }
+
+    //  variable  --{0}-->  index
+    const indexContext = context.index()
+    if (indexContext === null) {
+        return
+    }
+
+    return prefixContext.start.line !== indexContext.stop.line
+}

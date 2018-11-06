@@ -64,28 +64,38 @@ Remove the given prompt reference from the front-panel dispay.'
             domains: ['display'],
             types: [
                 {
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'display.STATE_LCD_100'
+                    kind: CompletionItemKind.Module,
+                    label: 'display'
                 },
                 {
+                    data: { domains: ['display'] },
                     kind: CompletionItemKind.EnumMember,
-                    label: 'display.STATE_LCD_75'
+                    label: 'STATE_LCD_100'
                 },
                 {
+                    data: { domains: ['display'] },
                     kind: CompletionItemKind.EnumMember,
-                    label: 'display.STATE_LCD_50'
+                    label: 'STATE_LCD_75'
                 },
                 {
+                    data: { domains: ['display'] },
                     kind: CompletionItemKind.EnumMember,
-                    label: 'display.STATE_LCD_25'
+                    label: 'STATE_LCD_50'
                 },
                 {
+                    data: { domains: ['display'] },
                     kind: CompletionItemKind.EnumMember,
-                    label: 'display.STATE_LCD_OFF'
+                    label: 'STATE_LCD_25'
                 },
                 {
+                    data: { domains: ['display'] },
                     kind: CompletionItemKind.EnumMember,
-                    label: 'display.STATE_BLACKOUT'
+                    label: 'STATE_LCD_OFF'
+                },
+                {
+                    data: { domains: ['display'] },
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'STATE_BLACKOUT'
                 },
             ]
         },

@@ -127,12 +127,12 @@ export class ContentHandler {
         // Un-reverse the string and remove any table indexers
         const unreversed = this.reverse(firstMatch.replace(this.tableIndexRegexp, ''))
 
-        // Attempt to partial match against the current command set.
-        for (const completion of tspItem.context.commandSet.completions) {
-            if (isPartialMatch(unreversed, completion)) {
-                results.push(completion)
-            }
-        }
+        // // Attempt to partial match against the current command set.
+        // for (const completion of tspItem.context.commandSet.completions) {
+        //     if (isPartialMatch(unreversed, completion)) {
+        //         results.push(completion)
+        //     }
+        // }
 
         if (tspItem.context !== undefined) {
             // Attempt to partial match against the current user completion items.

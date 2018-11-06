@@ -1,7 +1,11 @@
 --#!2450
-a, b = 1, 2
-test, display.lightstate, e = 4,         , 5
+--display.lightstate = 
+--a = 1
+display.lightstate = display.
+test, display.lightstate = 4, 
+test, display.lightstate, e = 4,       , 5
 local c = 3
+
 
 -- A={
 -- 	b=function(self, str)
