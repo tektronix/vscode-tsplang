@@ -36,6 +36,10 @@ interface ExclusiveContext {
     text?: string
 }
 
+function getStartLine(node: ParserRuleContext | TerminalNode): number {
+    return (node instanceof ParserRuleContext) ? node.start.line : node.symbol.line
+}
+
 /**
  * Handles the +1 when returning the start offset from the tree item.
  */
@@ -141,6 +145,10 @@ function getExclusiveCompletions(
                     return expressions[i - 1]
                 }
             }
+            else {
+                // Descend until we hit a TerminalNode or an ErrorNode.
+                return getPrevious(from.getChild(0))
+            }
         }
 
         // If there is one expression per variable.
@@ -220,54 +228,11 @@ function getExclusiveCompletions(
             result.set(getStopOffset(node), {
                 completions: itemDataTypes
             })
-
-            // // If the first child of the expression is an ErrorNode,
-            // // then use the ending position of the last expression.
-            // if (expression.children[0] instanceof ErrorNodeImpl) {
-            //     let offset: number | undefined
-
-            //     // If i is zero, then get the equals sign from context
-            //     // instead of the last expression.
-            //     if (i === 0) {
-            //         context.children.forEach((value: ParserRuleContext | TerminalNode): void => {
-            //             // The equals sign is the first TerminalNode child of a StatementContext.
-            //             if (value instanceof TerminalNode) {
-            //                 offset = value.symbol.stop + 1
-            //             }
-            //         })
-            //     }
-            //     else {
-            //         const lastExpression = expressions[i - 1]
-
-            //         // Empty array item check.
-            //         if (lastExpression === undefined) {
-            //             continue
-            //         }
-
-            //         offset = lastExpression.stop.stop + 1
-            //     }
-
-            //     if (offset === undefined) {
-            //         continue
-            //     }
-
-            //     result.set(offset, {
-            //         completions: itemDataTypes
-            //     })
-
-            //     continue
-            // }
-
-            // result.set(expression.stop.stop + 1, {
-            //     completions: itemDataTypes,
-            //     text: expression.getText()
-            // })
-
-            // continue
         }
         // Else use whatever expression follows comma i+1.
         else {
             let commaCount = 0
+            let previousTerminal: TerminalNode | undefined
             for (const item of expListContext.children) {
                 if (commaCount === i) {
                     // If this is a context, then ensure that we're not about to run
@@ -279,11 +244,24 @@ function getExclusiveCompletions(
                         if (node !== undefined) {
                             result.set(getStopOffset(node), {
                                 completions: itemDataTypes,
-                                text: node.getText()
+                                // text: node.getText()
                             })
 
                             break
                         }
+                    }
+
+                    // Covers the case where...
+                    //  a, display.lightstate = 1,<COMPLETION REQUEST>
+                    //  b = 2
+                    // becomes...
+                    //                 --{1}-->  expression  --{1}-->  value  --{1}-->  number   = 1
+                    // expressionList  --{1}-->  ','
+                    //                 --{1}-->  expression  --{1}-->  value  --{1}-->  variable = b
+                    if (previousTerminal !== undefined && previousTerminal.symbol.line !== getStartLine(item)) {
+                        result.set(previousTerminal.symbol.stop + 1, {
+                            completions: itemDataTypes
+                        })
                     }
 
                     let invalidVariable = false
@@ -340,9 +318,14 @@ function getExclusiveCompletions(
                     // break
                 }
 
-                if (item instanceof TerminalNode && item.getText().localeCompare(',') === 0) {
-                    commaCount++
+                if (item instanceof TerminalNode) {
+                    previousTerminal = item
+
+                    if (item.getText().localeCompare(',') === 0) {
+                        commaCount++
+                    }
                 }
+
             }
         }
     }

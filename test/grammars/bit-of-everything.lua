@@ -1,10 +1,13 @@
 --#!2450
 --display.lightstate = 
 --a = 1
-display.lightstate = display.
-test, display.lightstate = 4, 
-test, display.lightstate, e = 4,       , 5
-local c = 3
+--display.lightstate = display.
+b, display.lightstate = [[
+
+]], 
+c = 3
+--test, display.lightstate, e = 4,       , 5
+--local c = 3
 
 
 -- A={
