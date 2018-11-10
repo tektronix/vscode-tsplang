@@ -36,6 +36,28 @@ interface ExclusiveContext {
     text?: string
 }
 
+function getTerminals(context: ParserRuleContext): Array<TerminalNode> {
+    const recurse = (current: ParserRuleContext, terminals: Array<TerminalNode>): Array<TerminalNode> => {
+        let result = new Array<TerminalNode>(...terminals)
+
+        for (let i = 0; i < current.getChildCount(); i++) {
+            const child = current.getChild(i)
+
+            if (child instanceof TerminalNode) {
+                result.push(child)
+            }
+
+            if (child instanceof ParserRuleContext) {
+                result = recurse(child, result)
+            }
+        }
+
+        return result
+    }
+
+    return recurse(context, [])
+}
+
 function getStartLine(node: ParserRuleContext | TerminalNode): number {
     return (node instanceof ParserRuleContext) ? node.start.line : node.symbol.line
 }
@@ -388,6 +410,8 @@ export class DocumentContext extends TspListener {
 
     // tslint:disable-next-line:prefer-function-over-method
     exitStatement(context: TspParser.StatementContext): void {
+        const terminalarray = getTerminals(context)
+
         const newExclusives = getExclusiveCompletions(context, this.commandSet)
 
         if (newExclusives !== undefined) {
