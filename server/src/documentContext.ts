@@ -16,6 +16,7 @@
 'use strict'
 
 import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
+import { TspLexer, TspListener, TspParser } from 'antlr4-tsplang'
 // tslint:disable-next-line:no-submodule-imports
 import { ErrorNodeImpl, ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
@@ -24,7 +25,6 @@ import { isPartialMatch } from './completionProcessor'
 import { CommandSet } from './instrument'
 import { InstrumentCompletionItem, resolveCompletionNamespace } from './instrument/provider'
 import { getVariableCompletions, isVariableMultiline } from './rule-handler'
-import { TspLexer, TspListener, TspParser } from './tsp'
 
 export interface DocumentCompletionContext {
     completion: InstrumentCompletionItem

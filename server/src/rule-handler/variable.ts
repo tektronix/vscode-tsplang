@@ -15,10 +15,10 @@
  */
 'use strict'
 
+import { TspParser } from 'antlr4-tsplang'
 import { CompletionItemKind, Position } from 'vscode-languageserver'
 
 import { DocumentCompletionContext } from '../documentContext'
-import { TspParser } from '../tsp'
 
 export function getVariableCompletions(context: TspParser.VariableContext): Array<DocumentCompletionContext> {
     // Only handle cases where variables are on the left-hand side of a statement.
