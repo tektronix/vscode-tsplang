@@ -391,8 +391,8 @@ export class DocumentContext extends TspListener {
         const newExclusives = getExclusiveCompletions(context, this.commandSet)
 
         if (newExclusives !== undefined) {
-            for (const entry of newExclusives) {
-                this.exclusives.set(...entry)
+            for (const [k, v] of newExclusives) {
+                this.exclusives.set(k, v)
             }
 
             return
