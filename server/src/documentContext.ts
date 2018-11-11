@@ -16,10 +16,11 @@
 'use strict'
 
 import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
-import { TspLexer, TspListener, TspParser } from 'antlr4-tsplang'
 // tslint:disable-next-line:no-submodule-imports
 import { ErrorNodeImpl, ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
+
+import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
 import { isPartialMatch } from './completionProcessor'
 import { CommandSet } from './instrument'

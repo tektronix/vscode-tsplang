@@ -15,8 +15,9 @@
  */
 'use strict'
 
-import { TspParser } from 'antlr4-tsplang'
 import { CompletionItemKind, Position } from 'vscode-languageserver'
+
+import { TspParser } from '../../antlr4-tsplang'
 
 import { DocumentCompletionContext } from '../documentContext'
 
