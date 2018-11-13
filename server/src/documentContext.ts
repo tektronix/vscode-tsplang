@@ -37,7 +37,10 @@ interface ExclusiveContext {
     text?: string
 }
 
-function getTerminals(context: ParserRuleContext): Array<TerminalNode> {
+function getTerminals(
+    context: ParserRuleContext,
+    predicate?: (value: TerminalNode, matches: Array<TerminalNode>) => boolean
+): Array<TerminalNode> {
     const recurse = (current: ParserRuleContext, terminals: Array<TerminalNode>): Array<TerminalNode> => {
         let result = new Array<TerminalNode>(...terminals)
 
@@ -45,7 +48,9 @@ function getTerminals(context: ParserRuleContext): Array<TerminalNode> {
             const child = current.getChild(i)
 
             if (child instanceof TerminalNode) {
-                result.push(child)
+                if (predicate === undefined || predicate(child, new Array(...result))) {
+                    result.push(child)
+                }
             }
 
             if (child instanceof ParserRuleContext) {
@@ -98,6 +103,10 @@ function getExclusiveCompletions(
 
     const result = new Map<number, ExclusiveContext>()
 
+    // Keyed on the index of the variable with completions from the command set.
+    // Think of it like partial results.
+    const candidates = new Map<number, ExclusiveContext>()
+
     const variables = varlistContext.variable()
     for (let i = 0; i < variables.length; i++) {
         const candidate = variables[i]
@@ -114,244 +123,275 @@ function getExclusiveCompletions(
 
         const candidateText = candidate.getText()
 
-        const itemDataTypes = new Array<InstrumentCompletionItem>()
+    //     const itemDataTypes = new Array<InstrumentCompletionItem>()
 
         for (const item of commandSet.completions) {
-            const completionText = resolveCompletionNamespace(item)
-
             // If the candidate matches an instrument completion item.
-            if (candidateText.localeCompare(completionText) === 0) {
-                // The item should have a data.types property.
-                if (item.data !== undefined && item.data.types !== undefined) {
-                    itemDataTypes.push(...item.data.types)
-                    break
-                }
-            }
-        }
-
-        if (itemDataTypes.length === 0) {
-            continue
-        }
-
-        const expressions = expListContext.expression()
-
-        // Get the document offset of the location where exclusive completions can be requested.
-
-        // const commaStopOffsets = new Array<number>()
-        // expListContext.children.forEach((value: ParserRuleContext | TerminalNode): void => {
-        //     if (value instanceof TerminalNode && value.getText().localeCompare(',') === 0) {
-        //         commaStopOffsets.push(value.symbol.stop + 1)
-        //     }
-        // })
-
-        /**
-         * Only returns the previous parse tree item if there is an ErrorNode in the given context.
-         */
-        const getPrevious = (
-            from: ParserRuleContext
-        ): ParserRuleContext | TerminalNode | undefined => {
-            if (from.getChildCount() === 0) {
-                return
-            }
-
-            // If the first child of the expression is an ErrorNode
-            if (from.getChild(0) instanceof ErrorNodeImpl) {
-                // If i is zero, then get the equals sign from context
-                // instead of the last expression.
-                if (i === 0) {
-                    return context.children.find(
-                        (value: ParserRuleContext | TerminalNode) => value instanceof TerminalNode
-                    )
-                }
-                // Use the ending position of the last expression.
-                else {
-                    return expressions[i - 1]
-                }
-            }
-            else {
-                // Descend until we hit a TerminalNode or an ErrorNode.
-                return getPrevious(from.getChild(0))
-            }
-        }
-
-        // If there is one expression per variable.
-        if (variables.length === 1 || variables.length === expressions.length) {
-            const expression = expressions[i]
-
-            // Empty array item check.
-            if (expression === undefined) {
-                continue
-            }
-
-            const node = getPrevious(expression)
-
-            if (node === undefined) {
-                // If there is only 1 variable, then check to see that the expression starts
-                // on the same line as the variable.
-                if (variables.length === 1) {
-                    const variable = variables[0]
-
-                    // Empty array item check.
-                    if (variable === undefined) {
-                        continue
-                    }
-
-                    let invalidVariable = false
-                    // expression  --{1}-->  value  --{1}-->  variable
-                    const valueContext = expression.value()
-                    if (valueContext !== null) {
-                        const variableContext = valueContext.variable()
-                        if (variableContext !== null) {
-                            const multilineResult = isVariableMultiline(variableContext)
-                            invalidVariable = (multilineResult || multilineResult === undefined)
-                        }
-                    }
-
-                    if (expression.start.line === variable.stop.line) {
-                        // Covers the case where...
-                        //  display.lightstate = display.<COMPLETION REQUEST>
-                        //  a = 1
-                        // becomes...
-                        // expression  --{1}-->  value  --{1}-->  variable  --{1}-->  prefix = display
-                        //                                                  --{1}-->  index  = a
-                        let partialText = expression.getText().split('.').shift()
-                        if (partialText !== undefined) {
-                            partialText = partialText.concat('.')
-                        }
-
-                        const offset = (partialText !== undefined)
-                            ? getStartOffset(expression) + (partialText.length - 1)
-                            : getStopOffset(expression)
-
-                        // Just use the current expression and its text.
-                        result.set(offset, {
-                            completions: itemDataTypes,
-                            text: (invalidVariable && partialText !== undefined) ? partialText : expression.getText()
-                        })
-                    }
-                    else {
-                        // Use the equal sign from context instead of the last expression.
-                        const equals = context.children.find(
-                            (value: ParserRuleContext | TerminalNode) => value instanceof TerminalNode
-                        )
-
-                        if (equals === undefined) {
-                            continue
-                        }
-
-                        result.set(getStopOffset(equals), {
-                            completions: itemDataTypes
-                        })
-                    }
-                }
-
-                continue
-            }
-
-            result.set(getStopOffset(node), {
-                completions: itemDataTypes
-            })
-        }
-        // Else use whatever expression follows comma i+1.
-        else {
-            let commaCount = 0
-            let previousTerminal: TerminalNode | undefined
-            for (const item of expListContext.children) {
-                if (commaCount === i) {
-                    // If this is a context, then ensure that we're not about to run
-                    // into an ErrorNode.
-                    // If there is an ErrorNode, then try to get the last tree item.
-                    if (item instanceof ParserRuleContext) {
-                        const node = getPrevious(item)
-
-                        if (node !== undefined) {
-                            result.set(getStopOffset(node), {
-                                completions: itemDataTypes,
-                                // text: node.getText()
-                            })
-
-                            break
-                        }
-                    }
-
-                    // Covers the case where...
-                    //  a, display.lightstate = 1,<COMPLETION REQUEST>
-                    //  b = 2
-                    // becomes...
-                    //                 --{1}-->  expression  --{1}-->  value  --{1}-->  number   = 1
-                    // expressionList  --{1}-->  ','
-                    //                 --{1}-->  expression  --{1}-->  value  --{1}-->  variable = b
-                    if (previousTerminal !== undefined && previousTerminal.symbol.line !== getStartLine(item)) {
-                        result.set(previousTerminal.symbol.stop + 1, {
-                            completions: itemDataTypes
-                        })
-                    }
-
-                    let invalidVariable = false
-                    if (item instanceof TspParser.ExpressionContext) {
-                        // item  --{1}-->  value  --{1}-->  variable
-                        const valueContext = item.value()
-                        if (valueContext !== null) {
-                            const variableContext = valueContext.variable()
-                            if (variableContext !== null) {
-                                const multilineResult = isVariableMultiline(variableContext)
-                                invalidVariable = (multilineResult || multilineResult === undefined)
-                            }
-                        }
-                    }
-
-                    // Covers the case where...
-                    //  display.lightstate = display.<COMPLETION REQUEST>
-                    //  a = 1
-                    // becomes...
-                    // item  --{1}-->  value  --{1}-->  variable  --{1}-->  prefix = display
-                    //                                            --{1}-->  index  = a
-                    let partialText = item.getText().split('.').shift()
-                    if (partialText !== undefined) {
-                        partialText = partialText.concat('.')
-                    }
-
-                    const offset = (partialText !== undefined)
-                        ? getStartOffset(item) + (partialText.length - 1)
-                        : getStopOffset(item)
-
-                    result.set(offset, {
-                        completions: itemDataTypes,
-                        text: (invalidVariable && partialText !== undefined) ? partialText : item.getText()
+            if (candidateText.localeCompare(resolveCompletionNamespace(item)) === 0) {
+    //           // The item should have a data.types property.
+    //           if (item.data !== undefined && item.data.types !== undefined) {
+    //               itemDataTypes.push(...item.data.types)
+    //               break
+    //           }
+                // The item should have a data.types property with content.
+                if (item.data !== undefined
+                        && item.data.types !== undefined
+                        && item.data.types.length > 0) {
+                    candidates.set(i, {
+                        completions: item.data.types
                     })
-
                     break
-
-                    // const exclusiveContext: ExclusiveContext = {
-                    //     completions: itemDataTypes
-                    // }
-
-                    // let position: number
-                    // if (item instanceof ParserRuleContext) {
-                    //     exclusiveContext.text = item.getText()
-                    //     // TODO: we may have to dive into item.children to figure
-                    //     // out where the first ErrorNode ends. (ErrorNode.symbol.stop)
-                    //     position = item.stop.stop + 1
-                    // }
-                    // else {
-                    //     position = item.symbol.stop + 1
-                    // }
-
-                    // result.set(position, exclusiveContext)
-                    // break
                 }
-
-                if (item instanceof TerminalNode) {
-                    previousTerminal = item
-
-                    if (item.getText().localeCompare(',') === 0) {
-                        commaCount++
-                    }
-                }
-
             }
         }
     }
+
+    const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
+        return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
+    })
+
+    // Give up if our predicate is undefined or a ParserRuleContext.
+    if (assignmentTerminal === undefined || assignmentTerminal instanceof ParserRuleContext) {
+        return
+    }
+
+    const expListTerminals = getTerminals(expListContext, (value: TerminalNode, matches: Array<TerminalNode>) => {
+        const last = matches.pop()
+
+        // The first TerminalNode must be on the same line as the assignment operator.
+        if (last === undefined) {
+            return value.symbol.line === assignmentTerminal.symbol.line
+        }
+
+        // TODO:    return true if:
+        //              the last symbol is on the same line
+        //              AND
+        //              the current symbol is on the same line
+        // TODO:    return true if:
+        //              the last symbol text starts with [[ and ends with ]]
+        //              AND
+        //              the current symbol is a comma
+    })
+
+    //     const expressions = expListContext.expression()
+
+    //     // Get the document offset of the location where exclusive completions can be requested.
+
+    //     // const commaStopOffsets = new Array<number>()
+    //     // expListContext.children.forEach((value: ParserRuleContext | TerminalNode): void => {
+    //     //     if (value instanceof TerminalNode && value.getText().localeCompare(',') === 0) {
+    //     //         commaStopOffsets.push(value.symbol.stop + 1)
+    //     //     }
+    //     // })
+
+    //     /**
+    //      * Only returns the previous parse tree item if there is an ErrorNode in the given context.
+    //      */
+    //     const getPrevious = (
+    //         from: ParserRuleContext
+    //     ): ParserRuleContext | TerminalNode | undefined => {
+    //         if (from.getChildCount() === 0) {
+    //             return
+    //         }
+
+    //         // If the first child of the expression is an ErrorNode
+    //         if (from.getChild(0) instanceof ErrorNodeImpl) {
+    //             // If i is zero, then get the equals sign from context
+    //             // instead of the last expression.
+    //             if (i === 0) {
+    //                 return context.children.find(
+    //                     (value: ParserRuleContext | TerminalNode) => value instanceof TerminalNode
+    //                 )
+    //             }
+    //             // Use the ending position of the last expression.
+    //             else {
+    //                 return expressions[i - 1]
+    //             }
+    //         }
+    //         else {
+    //             // Descend until we hit a TerminalNode or an ErrorNode.
+    //             return getPrevious(from.getChild(0))
+    //         }
+    //     }
+
+    //     // If there is one expression per variable.
+    //     if (variables.length === 1 || variables.length === expressions.length) {
+    //         const expression = expressions[i]
+
+    //         // Empty array item check.
+    //         if (expression === undefined) {
+    //             continue
+    //         }
+
+    //         const node = getPrevious(expression)
+
+    //         if (node === undefined) {
+    //             // If there is only 1 variable, then check to see that the expression starts
+    //             // on the same line as the variable.
+    //             if (variables.length === 1) {
+    //                 const variable = variables[0]
+
+    //                 // Empty array item check.
+    //                 if (variable === undefined) {
+    //                     continue
+    //                 }
+
+    //                 let invalidVariable = false
+    //                 // expression  --{1}-->  value  --{1}-->  variable
+    //                 const valueContext = expression.value()
+    //                 if (valueContext !== null) {
+    //                     const variableContext = valueContext.variable()
+    //                     if (variableContext !== null) {
+    //                         const multilineResult = isVariableMultiline(variableContext)
+    //                         invalidVariable = (multilineResult || multilineResult === undefined)
+    //                     }
+    //                 }
+
+    //                 if (expression.start.line === variable.stop.line) {
+    //                     // Covers the case where...
+    //                     //  display.lightstate = display.<COMPLETION REQUEST>
+    //                     //  a = 1
+    //                     // becomes...
+    //                     // expression  --{1}-->  value  --{1}-->  variable  --{1}-->  prefix = display
+    //                     //                                                  --{1}-->  index  = a
+    //                     let partialText = expression.getText().split('.').shift()
+    //                     if (partialText !== undefined) {
+    //                         partialText = partialText.concat('.')
+    //                     }
+
+    //                     const offset = (partialText !== undefined)
+    //                         ? getStartOffset(expression) + (partialText.length - 1)
+    //                         : getStopOffset(expression)
+
+    //                     // Just use the current expression and its text.
+    //                     result.set(offset, {
+    //                         completions: itemDataTypes,
+    //                         text: (invalidVariable && partialText !== undefined) ? partialText : expression.getText()
+    //                     })
+    //                 }
+    //                 else {
+    //                     // Use the equal sign from context instead of the last expression.
+    //                     const equals = context.children.find(
+    //                         (value: ParserRuleContext | TerminalNode) => value instanceof TerminalNode
+    //                     )
+
+    //                     if (equals === undefined) {
+    //                         continue
+    //                     }
+
+    //                     result.set(getStopOffset(equals), {
+    //                         completions: itemDataTypes
+    //                     })
+    //                 }
+    //             }
+
+    //             continue
+    //         }
+
+    //         result.set(getStopOffset(node), {
+    //             completions: itemDataTypes
+    //         })
+    //     }
+    //     // Else use whatever expression follows comma i+1.
+    //     else {
+    //         let commaCount = 0
+    //         let previousTerminal: TerminalNode | undefined
+    //         for (const item of expListContext.children) {
+    //             if (commaCount === i) {
+    //                 // If this is a context, then ensure that we're not about to run
+    //                 // into an ErrorNode.
+    //                 // If there is an ErrorNode, then try to get the last tree item.
+    //                 if (item instanceof ParserRuleContext) {
+    //                     const node = getPrevious(item)
+
+    //                     if (node !== undefined) {
+    //                         result.set(getStopOffset(node), {
+    //                             completions: itemDataTypes,
+    //                             // text: node.getText()
+    //                         })
+
+    //                         break
+    //                     }
+    //                 }
+
+    //                 // Covers the case where...
+    //                 //  a, display.lightstate = 1,<COMPLETION REQUEST>
+    //                 //  b = 2
+    //                 // becomes...
+    //                 //                 --{1}-->  expression  --{1}-->  value  --{1}-->  number   = 1
+    //                 // expressionList  --{1}-->  ','
+    //                 //                 --{1}-->  expression  --{1}-->  value  --{1}-->  variable = b
+    //                 if (previousTerminal !== undefined && previousTerminal.symbol.line !== getStartLine(item)) {
+    //                     result.set(previousTerminal.symbol.stop + 1, {
+    //                         completions: itemDataTypes
+    //                     })
+    //                 }
+
+    //                 let invalidVariable = false
+    //                 if (item instanceof TspParser.ExpressionContext) {
+    //                     // item  --{1}-->  value  --{1}-->  variable
+    //                     const valueContext = item.value()
+    //                     if (valueContext !== null) {
+    //                         const variableContext = valueContext.variable()
+    //                         if (variableContext !== null) {
+    //                             const multilineResult = isVariableMultiline(variableContext)
+    //                             invalidVariable = (multilineResult || multilineResult === undefined)
+    //                         }
+    //                     }
+    //                 }
+
+    //                 // Covers the case where...
+    //                 //  display.lightstate = display.<COMPLETION REQUEST>
+    //                 //  a = 1
+    //                 // becomes...
+    //                 // item  --{1}-->  value  --{1}-->  variable  --{1}-->  prefix = display
+    //                 //                                            --{1}-->  index  = a
+    //                 let partialText = item.getText().split('.').shift()
+    //                 if (partialText !== undefined) {
+    //                     partialText = partialText.concat('.')
+    //                 }
+
+    //                 const offset = (partialText !== undefined)
+    //                     ? getStartOffset(item) + (partialText.length - 1)
+    //                     : getStopOffset(item)
+
+    //                 result.set(offset, {
+    //                     completions: itemDataTypes,
+    //                     text: (invalidVariable && partialText !== undefined) ? partialText : item.getText()
+    //                 })
+
+    //                 break
+
+    //                 // const exclusiveContext: ExclusiveContext = {
+    //                 //     completions: itemDataTypes
+    //                 // }
+
+    //                 // let position: number
+    //                 // if (item instanceof ParserRuleContext) {
+    //                 //     exclusiveContext.text = item.getText()
+    //                 //     // TODO: we may have to dive into item.children to figure
+    //                 //     // out where the first ErrorNode ends. (ErrorNode.symbol.stop)
+    //                 //     position = item.stop.stop + 1
+    //                 // }
+    //                 // else {
+    //                 //     position = item.symbol.stop + 1
+    //                 // }
+
+    //                 // result.set(position, exclusiveContext)
+    //                 // break
+    //             }
+
+    //             if (item instanceof TerminalNode) {
+    //                 previousTerminal = item
+
+    //                 if (item.getText().localeCompare(',') === 0) {
+    //                     commaCount++
+    //                 }
+    //             }
+
+    //         }
+    //     }
+    // } // end for
 
     return (result.size !== 0) ? result : undefined
 }

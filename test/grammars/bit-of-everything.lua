@@ -4,7 +4,9 @@
 --display.lightstate = display.
 b, display.lightstate = [[
 
-]], 
+]], --[[
+
+]] 2
 c = 3
 --test, display.lightstate, e = 4,       , 5
 --local c = 3
