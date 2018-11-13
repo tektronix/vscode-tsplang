@@ -22,8 +22,6 @@ import { InstrumentCompletionItem, InstrumentSignatureInformation } from './inst
 import { getActiveParameter } from './signatureProcessor'
 import { TspManager } from './tspManager'
 
-const manager: TspManager = new TspManager()
-
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
     new IPCMessageReader(process),
@@ -33,6 +31,9 @@ const connection: IConnection = createConnection(
 // Create a simple text document manager. The text document manager supports full document sync
 // only
 const documents: TextDocuments = new TextDocuments()
+
+// Create a TSP Manager to provide command set completions.
+const manager: TspManager = new TspManager(documents)
 
 // Create a content parser to provide regular-expression based document parsing
 const parser: ContentHandler = new ContentHandler(documents)
@@ -62,20 +63,13 @@ connection.onInitialize((params: InitializedParams): InitializeResult => {
 // The content of a text document has changed. This event is emitted when the text document first
 // opened or when its content has changed.
 documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
-    const docItem: TextDocumentItem = {
-        languageId: change.document.languageId,
-        text: change.document.getText(),
-        uri: change.document.uri,
-        version: change.document.version
-    }
-
     // if document is registered, then update
-    if (manager.has(docItem.uri)) {
-        manager.update(docItem)
+    if (manager.has(change.document.uri)) {
+        manager.update(change.document.uri)
     }
     // if document is unregistered, then register
     else {
-        manager.register(docItem)
+        manager.register(change.document.uri)
     }
 })
 

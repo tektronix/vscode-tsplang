@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { TextDocumentItem } from 'vscode-languageserver'
+import { TextDocument, TextDocuments } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
 import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
@@ -34,9 +34,11 @@ export interface TspItem {
 
 export class TspManager {
     private dict: Map<string, TspItem>
+    private readonly documents: TextDocuments
     private pool: TspPool
 
-    constructor() {
+    constructor(documents: TextDocuments) {
+        this.documents = documents
         this.dict = new Map()
         this.pool = new TspPool()
     }
@@ -49,28 +51,38 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    async register(document: TextDocumentItem): Promise<void> {
+    async register(uri: string): Promise<void> {
         return new Promise<void>(async (
             resolve: (value?: void) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
             // check if the doc has already been registered
-            if (this.dict.has(document.uri)) {
+            if (this.dict.has(uri)) {
                 reject(new Error('Document already registered'))
 
                 return
             }
 
-            const shebangLine = this.getShebangLine(document)
+            const document = this.documents.get(uri)
+
+            if (document === undefined) {
+                reject(new Error('Error fetching document from document manager.'))
+
+                return
+            }
+
+            const content = document.getText()
+
+            const shebangLine = this.getShebangLine(content)
 
             try {
                 // try to make a new entry item for this document
-                let item = await this.generateBasicItem(shebangLine)
+                let item = await this.generateLuaItem(shebangLine, document)
 
                 // use valid shebang to populate model-specific items
                 item = await this.getPoolItems(item)
 
-                item.context.update(document.text)
+                item.context.update(content)
                 item.context.walk()
 
                 this.dict.set(document.uri, item)
@@ -105,19 +117,29 @@ export class TspManager {
         return this.dict.delete(uri)
     }
 
-    async update(document: TextDocumentItem): Promise<void> {
+    async update(uri: string): Promise<void> {
         return new Promise<void>(async (
             resolve: (value?: void) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
             // check if the doc has not been registered
-            if (!this.dict.has(document.uri)) {
+            if (!this.dict.has(uri)) {
                 reject(new Error('Document is not registered'))
 
                 return
             }
 
-            const shebangLine = this.getShebangLine(document)
+            const document = this.documents.get(uri)
+
+            if (document === undefined) {
+                reject(new Error('Error fetching document from document manager.'))
+
+                return
+            }
+
+            const content = document.getText()
+
+            const shebangLine = this.getShebangLine(content)
 
             // if the shebang is no longer valid, then un-register
             if (shebangLine === undefined) {
@@ -156,7 +178,7 @@ export class TspManager {
 
             // If the shebang has not changed, then just update this document's context.
             if (oldItem.rawShebang !== undefined && oldItem.rawShebang.localeCompare(shebangLine) === 0) {
-                oldItem.context.update(document.text)
+                oldItem.context.update(content)
                 oldItem.context.walk()
 
                 resolve()
@@ -165,9 +187,9 @@ export class TspManager {
             }
 
             // try to make a new entry item for this document
-            let item = await this.generateBasicItem(shebangLine)
+            let item = await this.generateLuaItem(shebangLine, document)
 
-            // if document shebang is invalid
+            // if document shebang is invalid, then un-register
             if (item === undefined) {
                 const tspCompletion = this.dict.get(document.uri)
 
@@ -198,7 +220,7 @@ export class TspManager {
             item = await this.getPoolItems(item)
 
             // Update this item's context.
-            item.context.update(document.text)
+            item.context.update(content)
             item.context.walk()
 
             this.dict.set(document.uri, item)
@@ -207,7 +229,7 @@ export class TspManager {
         })
     }
 
-    private generateBasicItem = async (shebangLine: string | undefined): Promise<TspItem> => {
+    private generateLuaItem = async (shebangLine: string | undefined, document: TextDocument): Promise<TspItem> => {
         return new Promise<TspItem>(async (
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
@@ -227,7 +249,7 @@ export class TspManager {
                     })
 
                 const basicTspItem: TspItem = {
-                    context: new DocumentContext(await generateCommandSet(apiLua, specLua))
+                    context: new DocumentContext(await generateCommandSet(apiLua, specLua), document)
                 }
 
                 if (shebangLine !== undefined) {
@@ -288,7 +310,7 @@ export class TspManager {
 
                 // if element has no node number, then assume master model
                 if (token.node === undefined) {
-                    result.context = new DocumentContext(entry.commandSet)
+                    result.context = new DocumentContext(entry.commandSet, item.context.document)
                 }
                 else {
                     if (result.node === undefined) {
@@ -308,9 +330,9 @@ export class TspManager {
         })
     }
 
-    private getShebangLine = (document: TextDocumentItem): string | undefined => {
+    private getShebangLine = (content: string): string | undefined => {
         // get the entire shebang line
-        const matches = document.text.match(
+        const matches = content.match(
             (Shebang.prefix).concat('.*')
         )
 

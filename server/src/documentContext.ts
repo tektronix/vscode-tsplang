@@ -87,7 +87,8 @@ function getStopOffset(node: ParserRuleContext | TerminalNode): number {
  */
 function getExclusiveCompletions(
     context: TspParser.StatementContext,
-    commandSet: CommandSet
+    commandSet: CommandSet,
+    document: TextDocument
 ): Map<number, ExclusiveContext> | undefined {
     //  statement  --{0}-->  variableList
     const varlistContext = context.variableList()
@@ -163,14 +164,24 @@ function getExclusiveCompletions(
             return value.symbol.line === assignmentTerminal.symbol.line
         }
 
-        // TODO:    return true if:
-        //              the last symbol is on the same line
-        //              AND
-        //              the current symbol is on the same line
+        // Accept any TerminalNode that resides on the same line as the last item.
+        if (value.symbol.line === last.symbol.line) {
+            return true
+        }
+
+        if (last.symbol.text.startsWith('[[') && last.symbol.text.endsWith(']]')) {
+            const endingLine = document.positionAt(last.symbol.stop + 1).line
+            if (value.symbol.line === endingLine) {
+                return true
+            }
+        }
+
         // TODO:    return true if:
         //              the last symbol text starts with [[ and ends with ]]
         //              AND
         //              the current symbol is a comma
+
+        return false
     })
 
     //     const expressions = expListContext.expression()
@@ -433,6 +444,7 @@ function mergeCompletions(
 
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
+    private readonly _document: TextDocument
     private content: string
     /** Map<offset, [exclusive completions]> */
     private exclusives: Map<number, ExclusiveContext>
@@ -441,19 +453,24 @@ export class DocumentContext extends TspListener {
     private parser: TspParser
     private parseTree: ParserRuleContext
 
-    constructor(commandSet: CommandSet, content?: string) {
+    constructor(commandSet: CommandSet, document: TextDocument) {
         super()
 
         this.commandSet = commandSet
+        this._document = document
 
-        this.update(content)
+        this.update('')
+    }
+
+    get document(): TextDocument {
+        return this._document
     }
 
     // tslint:disable-next-line:prefer-function-over-method
     exitStatement(context: TspParser.StatementContext): void {
         const terminalarray = getTerminals(context)
 
-        const newExclusives = getExclusiveCompletions(context, this.commandSet)
+        const newExclusives = getExclusiveCompletions(context, this.commandSet, this._document)
 
         if (newExclusives !== undefined) {
             for (const [k, v] of newExclusives) {
@@ -517,8 +534,8 @@ export class DocumentContext extends TspListener {
         return result
     }
 
-    update(content?: string): void {
-        this.content = (content === undefined) ? '' : content
+    update(content: string): void {
+        this.content = content
         this.exclusives = new Map()
         this.globals = new Map()
 
