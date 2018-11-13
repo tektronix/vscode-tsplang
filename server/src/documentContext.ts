@@ -156,6 +156,7 @@ function getExclusiveCompletions(
         return
     }
 
+    // Create an array of TerminalNodes containing only those we care about.
     const expListTerminals = getTerminals(expListContext, (value: TerminalNode, matches: Array<TerminalNode>) => {
         const last = matches.pop()
 
@@ -169,17 +170,19 @@ function getExclusiveCompletions(
             return true
         }
 
+        // Accept any LONGSTRING that ends on the same line if this value is an expression
+        // list separator (,).
         if (last.symbol.text.startsWith('[[') && last.symbol.text.endsWith(']]')) {
-            const endingLine = document.positionAt(last.symbol.stop + 1).line
-            if (value.symbol.line === endingLine) {
+            const endingLine = document.positionAt(last.symbol.stop).line + 1
+            if (value.symbol.line === endingLine && value.symbol.text.localeCompare(',') === 0) {
                 return true
             }
         }
 
-        // TODO:    return true if:
-        //              the last symbol text starts with [[ and ends with ]]
-        //              AND
-        //              the current symbol is a comma
+        /* TODO
+            Doesn't support Lua code with multi-line comments in the middle
+            of expression lists.
+        */
 
         return false
     })
