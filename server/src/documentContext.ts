@@ -102,8 +102,6 @@ function getExclusiveCompletions(
         return
     }
 
-    const result = new Map<number, ExclusiveContext>()
-
     // Keyed on the index of the variable with completions from the command set.
     // Think of it like partial results.
     const candidates = new Map<number, ExclusiveContext>()
@@ -186,6 +184,74 @@ function getExclusiveCompletions(
 
         return false
     })
+
+    // Keyed on the index of the expressionList where the TerminalNodes were found.
+    const terminalSets = new Map<number, Array<TerminalNode>>()
+
+    let commaCount = 0
+    expListTerminals.forEach((value: TerminalNode, index: number, array: Array<TerminalNode>) => {
+        if (value.symbol.text.localeCompare(',') !== 0) {
+            const currentSet = terminalSets.get(commaCount) || new Array<TerminalNode>()
+            currentSet.push(value)
+            terminalSets.set(commaCount, currentSet)
+        }
+        else {
+            // If this comma is the last TerminalNode, then add this comma.
+            if (index + 1 === array.length) {
+                terminalSets.set(commaCount, new Array(value))
+            }
+
+            // If this comma is immediately followed by another comma, then add this comma.
+            const nextValue = array[index + 1]
+            if (nextValue !== undefined && nextValue.symbol.text.localeCompare(',') === 0) {
+                terminalSets.set(commaCount, new Array(value))
+            }
+
+            commaCount++
+        }
+    })
+
+    // Drop all TerminalNode sets whose keys don't appear in the set of completion candidates.
+    for (const key of terminalSets.keys()) {
+        if (!candidates.has(key)) {
+            terminalSets.delete(key)
+        }
+    }
+
+    const result = new Map<number, ExclusiveContext>()
+
+    // Complete any partial candidate results.
+    for (const [key, partial] of candidates.entries()) {
+        // Try to get all terminals within the same comma offset as our variable candidate.
+        const terminals = terminalSets.get(key)
+        if (terminals === undefined) {
+            continue
+        }
+
+        // If the only terminal is a comma, then use its stop offset.
+        if (terminals.length === 1 && terminals[0].symbol.text.localeCompare(',') === 0) {
+            // Don't bother adding existing text to the ExclusiveContext because there isn't any.
+            result.set(terminals[0].symbol.stop, partial)
+            continue
+        }
+
+        // Concatenate the text of all TerminalNodes in this set.
+        let terminalText = ''
+        terminals.forEach((value: TerminalNode) => {
+            terminalText += value.symbol.text
+        })
+
+        // Try to get the last TerminalNode so we can use its stop offset.
+        const lastTerminal = terminals.pop()
+        if (lastTerminal === undefined) {
+            continue
+        }
+
+        // Keep the text undefined if the string is empty.
+        partial.text = (terminalText.length === 0) ? undefined : terminalText
+
+        result.set(lastTerminal.symbol.stop, partial)
+    }
 
     //     const expressions = expListContext.expression()
 
