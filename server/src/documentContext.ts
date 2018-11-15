@@ -64,6 +64,30 @@ function getTerminals(
     return recurse(context, [])
 }
 
+function getFuzzyOffsets(document: TextDocument, fromOffset: number): Array<number> {
+    // Excluding the given offset, match all horizontal whitespace.
+    const forwardMatches = document.getText().slice(fromOffset).match(/^[ \t]+/)
+
+    // No matches were found.
+    if (forwardMatches === null) {
+        return new Array<number>()
+    }
+
+    const match = forwardMatches.shift()
+
+    if (match === undefined) {
+        return new Array<number>()
+    }
+
+    const result = new Array<number>()
+
+    for (let i = 0; i < match.length; i++) {
+        result.push(fromOffset + i + 1)
+    }
+
+    return result
+}
+
 function getStartLine(node: ParserRuleContext | TerminalNode): number {
     return (node instanceof ParserRuleContext) ? node.start.line : node.symbol.line
 }
@@ -122,16 +146,9 @@ function getExclusiveCompletions(
 
         const candidateText = candidate.getText()
 
-    //     const itemDataTypes = new Array<InstrumentCompletionItem>()
-
         for (const item of commandSet.completions) {
             // If the candidate matches an instrument completion item.
             if (candidateText.localeCompare(resolveCompletionNamespace(item)) === 0) {
-    //           // The item should have a data.types property.
-    //           if (item.data !== undefined && item.data.types !== undefined) {
-    //               itemDataTypes.push(...item.data.types)
-    //               break
-    //           }
                 // The item should have a data.types property with content.
                 if (item.data !== undefined
                         && item.data.types !== undefined
@@ -185,6 +202,18 @@ function getExclusiveCompletions(
         return false
     })
 
+    // An empty array of expressionList TerminalNodes means we only have an equals sign.
+    if (expListTerminals.length === 0) {
+        // Try to get the value of the first mapped key.
+        const exclusiveContext = candidates.get(candidates.keys().next().value)
+
+        if (exclusiveContext === undefined) {
+            return
+        }
+
+        return new Map([[assignmentTerminal.symbol.stop + 1, exclusiveContext]])
+    }
+
     // Keyed on the index of the expressionList where the TerminalNodes were found.
     const terminalSets = new Map<number, Array<TerminalNode>>()
 
@@ -196,6 +225,8 @@ function getExclusiveCompletions(
             terminalSets.set(commaCount, currentSet)
         }
         else {
+            commaCount++
+
             // If this comma is the last TerminalNode, then add this comma.
             if (index + 1 === array.length) {
                 terminalSets.set(commaCount, new Array(value))
@@ -206,8 +237,6 @@ function getExclusiveCompletions(
             if (nextValue !== undefined && nextValue.symbol.text.localeCompare(',') === 0) {
                 terminalSets.set(commaCount, new Array(value))
             }
-
-            commaCount++
         }
     })
 
@@ -231,7 +260,7 @@ function getExclusiveCompletions(
         // If the only terminal is a comma, then use its stop offset.
         if (terminals.length === 1 && terminals[0].symbol.text.localeCompare(',') === 0) {
             // Don't bother adding existing text to the ExclusiveContext because there isn't any.
-            result.set(terminals[0].symbol.stop, partial)
+            result.set(terminals[0].symbol.stop + 1, partial)
             continue
         }
 
@@ -250,228 +279,8 @@ function getExclusiveCompletions(
         // Keep the text undefined if the string is empty.
         partial.text = (terminalText.length === 0) ? undefined : terminalText
 
-        result.set(lastTerminal.symbol.stop, partial)
+        result.set(lastTerminal.symbol.stop + 1, partial)
     }
-
-    //     const expressions = expListContext.expression()
-
-    //     // Get the document offset of the location where exclusive completions can be requested.
-
-    //     // const commaStopOffsets = new Array<number>()
-    //     // expListContext.children.forEach((value: ParserRuleContext | TerminalNode): void => {
-    //     //     if (value instanceof TerminalNode && value.getText().localeCompare(',') === 0) {
-    //     //         commaStopOffsets.push(value.symbol.stop + 1)
-    //     //     }
-    //     // })
-
-    //     /**
-    //      * Only returns the previous parse tree item if there is an ErrorNode in the given context.
-    //      */
-    //     const getPrevious = (
-    //         from: ParserRuleContext
-    //     ): ParserRuleContext | TerminalNode | undefined => {
-    //         if (from.getChildCount() === 0) {
-    //             return
-    //         }
-
-    //         // If the first child of the expression is an ErrorNode
-    //         if (from.getChild(0) instanceof ErrorNodeImpl) {
-    //             // If i is zero, then get the equals sign from context
-    //             // instead of the last expression.
-    //             if (i === 0) {
-    //                 return context.children.find(
-    //                     (value: ParserRuleContext | TerminalNode) => value instanceof TerminalNode
-    //                 )
-    //             }
-    //             // Use the ending position of the last expression.
-    //             else {
-    //                 return expressions[i - 1]
-    //             }
-    //         }
-    //         else {
-    //             // Descend until we hit a TerminalNode or an ErrorNode.
-    //             return getPrevious(from.getChild(0))
-    //         }
-    //     }
-
-    //     // If there is one expression per variable.
-    //     if (variables.length === 1 || variables.length === expressions.length) {
-    //         const expression = expressions[i]
-
-    //         // Empty array item check.
-    //         if (expression === undefined) {
-    //             continue
-    //         }
-
-    //         const node = getPrevious(expression)
-
-    //         if (node === undefined) {
-    //             // If there is only 1 variable, then check to see that the expression starts
-    //             // on the same line as the variable.
-    //             if (variables.length === 1) {
-    //                 const variable = variables[0]
-
-    //                 // Empty array item check.
-    //                 if (variable === undefined) {
-    //                     continue
-    //                 }
-
-    //                 let invalidVariable = false
-    //                 // expression  --{1}-->  value  --{1}-->  variable
-    //                 const valueContext = expression.value()
-    //                 if (valueContext !== null) {
-    //                     const variableContext = valueContext.variable()
-    //                     if (variableContext !== null) {
-    //                         const multilineResult = isVariableMultiline(variableContext)
-    //                         invalidVariable = (multilineResult || multilineResult === undefined)
-    //                     }
-    //                 }
-
-    //                 if (expression.start.line === variable.stop.line) {
-    //                     // Covers the case where...
-    //                     //  display.lightstate = display.<COMPLETION REQUEST>
-    //                     //  a = 1
-    //                     // becomes...
-    //                     // expression  --{1}-->  value  --{1}-->  variable  --{1}-->  prefix = display
-    //                     //                                                  --{1}-->  index  = a
-    //                     let partialText = expression.getText().split('.').shift()
-    //                     if (partialText !== undefined) {
-    //                         partialText = partialText.concat('.')
-    //                     }
-
-    //                     const offset = (partialText !== undefined)
-    //                         ? getStartOffset(expression) + (partialText.length - 1)
-    //                         : getStopOffset(expression)
-
-    //                     // Just use the current expression and its text.
-    //                     result.set(offset, {
-    //                         completions: itemDataTypes,
-    //                         text: (invalidVariable && partialText !== undefined) ? partialText : expression.getText()
-    //                     })
-    //                 }
-    //                 else {
-    //                     // Use the equal sign from context instead of the last expression.
-    //                     const equals = context.children.find(
-    //                         (value: ParserRuleContext | TerminalNode) => value instanceof TerminalNode
-    //                     )
-
-    //                     if (equals === undefined) {
-    //                         continue
-    //                     }
-
-    //                     result.set(getStopOffset(equals), {
-    //                         completions: itemDataTypes
-    //                     })
-    //                 }
-    //             }
-
-    //             continue
-    //         }
-
-    //         result.set(getStopOffset(node), {
-    //             completions: itemDataTypes
-    //         })
-    //     }
-    //     // Else use whatever expression follows comma i+1.
-    //     else {
-    //         let commaCount = 0
-    //         let previousTerminal: TerminalNode | undefined
-    //         for (const item of expListContext.children) {
-    //             if (commaCount === i) {
-    //                 // If this is a context, then ensure that we're not about to run
-    //                 // into an ErrorNode.
-    //                 // If there is an ErrorNode, then try to get the last tree item.
-    //                 if (item instanceof ParserRuleContext) {
-    //                     const node = getPrevious(item)
-
-    //                     if (node !== undefined) {
-    //                         result.set(getStopOffset(node), {
-    //                             completions: itemDataTypes,
-    //                             // text: node.getText()
-    //                         })
-
-    //                         break
-    //                     }
-    //                 }
-
-    //                 // Covers the case where...
-    //                 //  a, display.lightstate = 1,<COMPLETION REQUEST>
-    //                 //  b = 2
-    //                 // becomes...
-    //                 //                 --{1}-->  expression  --{1}-->  value  --{1}-->  number   = 1
-    //                 // expressionList  --{1}-->  ','
-    //                 //                 --{1}-->  expression  --{1}-->  value  --{1}-->  variable = b
-    //                 if (previousTerminal !== undefined && previousTerminal.symbol.line !== getStartLine(item)) {
-    //                     result.set(previousTerminal.symbol.stop + 1, {
-    //                         completions: itemDataTypes
-    //                     })
-    //                 }
-
-    //                 let invalidVariable = false
-    //                 if (item instanceof TspParser.ExpressionContext) {
-    //                     // item  --{1}-->  value  --{1}-->  variable
-    //                     const valueContext = item.value()
-    //                     if (valueContext !== null) {
-    //                         const variableContext = valueContext.variable()
-    //                         if (variableContext !== null) {
-    //                             const multilineResult = isVariableMultiline(variableContext)
-    //                             invalidVariable = (multilineResult || multilineResult === undefined)
-    //                         }
-    //                     }
-    //                 }
-
-    //                 // Covers the case where...
-    //                 //  display.lightstate = display.<COMPLETION REQUEST>
-    //                 //  a = 1
-    //                 // becomes...
-    //                 // item  --{1}-->  value  --{1}-->  variable  --{1}-->  prefix = display
-    //                 //                                            --{1}-->  index  = a
-    //                 let partialText = item.getText().split('.').shift()
-    //                 if (partialText !== undefined) {
-    //                     partialText = partialText.concat('.')
-    //                 }
-
-    //                 const offset = (partialText !== undefined)
-    //                     ? getStartOffset(item) + (partialText.length - 1)
-    //                     : getStopOffset(item)
-
-    //                 result.set(offset, {
-    //                     completions: itemDataTypes,
-    //                     text: (invalidVariable && partialText !== undefined) ? partialText : item.getText()
-    //                 })
-
-    //                 break
-
-    //                 // const exclusiveContext: ExclusiveContext = {
-    //                 //     completions: itemDataTypes
-    //                 // }
-
-    //                 // let position: number
-    //                 // if (item instanceof ParserRuleContext) {
-    //                 //     exclusiveContext.text = item.getText()
-    //                 //     // TODO: we may have to dive into item.children to figure
-    //                 //     // out where the first ErrorNode ends. (ErrorNode.symbol.stop)
-    //                 //     position = item.stop.stop + 1
-    //                 // }
-    //                 // else {
-    //                 //     position = item.symbol.stop + 1
-    //                 // }
-
-    //                 // result.set(position, exclusiveContext)
-    //                 // break
-    //             }
-
-    //             if (item instanceof TerminalNode) {
-    //                 previousTerminal = item
-
-    //                 if (item.getText().localeCompare(',') === 0) {
-    //                     commaCount++
-    //                 }
-    //             }
-
-    //         }
-    //     }
-    // } // end for
 
     return (result.size !== 0) ? result : undefined
 }
@@ -513,10 +322,12 @@ function mergeCompletions(
 
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
-    private readonly _document: TextDocument
+    readonly document: TextDocument
     private content: string
     /** Map<offset, [exclusive completions]> */
     private exclusives: Map<number, ExclusiveContext>
+    /** Map<valid exclusive offset, exclusives offset key> */
+    private fuzzyOffsets: Map<number, number>
     private globals: Map<string, Array<DocumentCompletionContext>>
     private lexer: TspLexer
     private parser: TspParser
@@ -526,20 +337,24 @@ export class DocumentContext extends TspListener {
         super()
 
         this.commandSet = commandSet
-        this._document = document
+        this.document = document
 
         this.update('')
-    }
-
-    get document(): TextDocument {
-        return this._document
     }
 
     // tslint:disable-next-line:prefer-function-over-method
     exitStatement(context: TspParser.StatementContext): void {
         const terminalarray = getTerminals(context)
 
-        const newExclusives = getExclusiveCompletions(context, this.commandSet, this._document)
+        const newExclusives = getExclusiveCompletions(context, this.commandSet, this.document)
+
+        if (newExclusives !== undefined) {
+            for (const key of newExclusives.keys()) {
+                getFuzzyOffsets(this.document, key).forEach((value: number) => {
+                    this.fuzzyOffsets.set(value, key)
+                })
+            }
+        }
 
         if (newExclusives !== undefined) {
             for (const [k, v] of newExclusives) {
@@ -556,18 +371,15 @@ export class DocumentContext extends TspListener {
         this.globals = this.getCompletionsFromContext(context)
     }
 
-    getCompletionItems(document: TextDocument, cursor: Position): Array<InstrumentCompletionItem> {
-        const offset = document.offsetAt(cursor) - 1
-        // Recalculate this Position without trailing whitespace.
-        const currentLineText = document.getText({
-            end: cursor,
-            start: { character: 0, line: cursor.line }
-        })
-        const trimmedLine = currentLineText.trim()
-        const trimmedOffset = document.offsetAt(Position.create(cursor.line, trimmedLine.length))
+    getCompletionItems(cursor: Position): Array<InstrumentCompletionItem> {
+        let offset = this.document.offsetAt(cursor)
+
+        if (!this.exclusives.has(offset)) {
+            offset = this.fuzzyOffsets.get(offset) || offset
+        }
 
         // Get available exclusive completion items.
-        const exclusiveContext = this.exclusives.get(trimmedOffset)
+        const exclusiveContext = this.exclusives.get(offset)
 
         if (exclusiveContext !== undefined) {
             const exclusiveResult = new Array<InstrumentCompletionItem>()
@@ -594,7 +406,7 @@ export class DocumentContext extends TspListener {
         for (const context of this.globals.values()) {
             for (const completion of context) {
                 // If this completion is located before the cursor.
-                if (document.offsetAt(completion.position) < document.offsetAt(cursor)) {
+                if (this.document.offsetAt(completion.position) < this.document.offsetAt(cursor)) {
                     result.push(completion.completion)
                 }
             }
@@ -606,6 +418,7 @@ export class DocumentContext extends TspListener {
     update(content: string): void {
         this.content = content
         this.exclusives = new Map()
+        this.fuzzyOffsets = new Map()
         this.globals = new Map()
 
         this.lexer = new TspLexer(new InputStream(this.content))

@@ -113,7 +113,7 @@ export class ContentHandler {
 
             // Add this document's user completion items
             if (tspItem.context !== undefined) {
-                for (const userCompletion of tspItem.context.getCompletionItems(content, position)) {
+                for (const userCompletion of tspItem.context.getCompletionItems(position)) {
                     // Only match against completions without a "data" property
                     if (userCompletion.data === undefined) {
                         results.push(userCompletion)
@@ -136,7 +136,7 @@ export class ContentHandler {
 
         if (tspItem.context !== undefined) {
             // Attempt to partial match against the current user completion items.
-            for (const completion of tspItem.context.getCompletionItems(content, position)) {
+            for (const completion of tspItem.context.getCompletionItems(position)) {
                 if (isPartialMatch(unreversed, completion)) {
                     results.push(completion)
                 }
