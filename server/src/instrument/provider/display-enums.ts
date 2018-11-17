@@ -130,26 +130,26 @@ export const completions: Array<InstrumentCompletionItem> = [
     //     kind: CompletionItemKind.EnumMember,
     //     label: 'FORMAT_PREFIX'
     // },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'NFORMAT_DECIMAL'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'NFORMAT_EXPONENT'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'NFORMAT_INTEGER'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'NFORMAT_PREFIX'
-    },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'NFORMAT_DECIMAL'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'NFORMAT_EXPONENT'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'NFORMAT_INTEGER'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'NFORMAT_PREFIX'
+    // },
     // {
     //     data: { domains: ['display'] },
     //     documentation: {
@@ -218,21 +218,26 @@ export const completions: Array<InstrumentCompletionItem> = [
     //     kind: CompletionItemKind.EnumMember,
     //     label: 'SCREEN_USER_SWIPE'
     // },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SFORMAT_ANY'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SFORMAT_UPPER'
-    },
-    {
-        data: { domains: ['display'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'SFORMAT_UPPER_LOWER'
-    },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SFORMAT_ANY'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SFORMAT_UPPER'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SFORMAT_UPPER_LOWER'
+    // },
+    // {
+    //     data: { domains: ['display'] },
+    //     kind: CompletionItemKind.EnumMember,
+    //     label: 'SFORMAT_BUFFER_NAME'
+    // },
     // {
     //     data: { domains: ['display'] },
     //     kind: CompletionItemKind.EnumMember,

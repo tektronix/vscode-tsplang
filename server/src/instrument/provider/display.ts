@@ -135,12 +135,18 @@ To capture return values, use the display.waitevent() command.'
             domains: ['display'],
             types: [
                 {
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'display.FORMAT_EXPONENT'
+                    kind: CompletionItemKind.Module,
+                    label: 'display'
                 },
                 {
+                    data: { domains: ['display'] },
                     kind: CompletionItemKind.EnumMember,
-                    label: 'display.FORMAT_PREFIX'
+                    label: 'FORMAT_EXPONENT'
+                },
+                {
+                    data: { domains: ['display'] },
+                    kind: CompletionItemKind.EnumMember,
+                    label: 'FORMAT_PREFIX'
                 },
             ]
         },
@@ -198,44 +204,58 @@ export const signatures: Array<InstrumentSignatureInformation> = [
                     0,
                     [
                         {
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_HOME'
+                            kind: CompletionItemKind.Module,
+                            label: 'display'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_HOME_LARGE_READING'
+                            label: 'SCREEN_HOME'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_READING_TABLE'
+                            label: 'SCREEN_HOME_LARGE_READING'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_GRAPH'
+                            label: 'SCREEN_READING_TABLE'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_HISTOGRAM'
+                            label: 'SCREEN_GRAPH'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_GRAPH_SWIPE'
+                            label: 'SCREEN_HISTOGRAM'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_SETTINGS_SWIPE'
+                            label: 'SCREEN_GRAPH_SWIPE'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_SOURCE_SWIPE'
+                            label: 'SCREEN_SETTINGS_SWIPE'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_STATS_SWIPE'
+                            label: 'SCREEN_SOURCE_SWIPE'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.SCREEN_USER_SWIPE'
+                            label: 'SCREEN_STATS_SWIPE'
+                        },
+                        {
+                            data: { domains: ['display'] },
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'SCREEN_USER_SWIPE'
                         },
                     ]
                 ]
@@ -269,28 +289,38 @@ export const signatures: Array<InstrumentSignatureInformation> = [
                     0,
                     [
                         {
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'display.BUTTONS_NONE'
+                            kind: CompletionItemKind.Module,
+                            label: 'display'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.BUTTONS_OK'
+                            label: 'BUTTONS_NONE'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.BUTTONS_CANCEL'
+                            label: 'BUTTONS_OK'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.BUTTONS_OKCANCEL'
+                            label: 'BUTTONS_CANCEL'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.BUTTONS_YESNO'
+                            label: 'BUTTONS_OKCANCEL'
                         },
                         {
+                            data: { domains: ['display'] },
                             kind: CompletionItemKind.EnumMember,
-                            label: 'display.BUTTONS_YESNOCANCEL'
+                            label: 'BUTTONS_YESNO'
+                        },
+                        {
+                            data: { domains: ['display'] },
+                            kind: CompletionItemKind.EnumMember,
+                            label: 'BUTTONS_YESNOCANCEL'
                         },
                     ]
                 ]
@@ -317,6 +347,11 @@ export const signatures: Array<InstrumentSignatureInformation> = [
                     0,
                     [
                         {
+                            kind: CompletionItemKind.Module,
+                            label: 'display'
+                        },
+                        {
+                            data: { domains: ['display'] },
                             documentation: {
                                 kind: MarkupKind.PlainText,
                                 value: 'Places text on the top line.'
@@ -325,6 +360,7 @@ export const signatures: Array<InstrumentSignatureInformation> = [
                             label: 'display.TEXT1'
                         },
                         {
+                            data: { domains: ['display'] },
                             documentation: {
                                 kind: MarkupKind.PlainText,
                                 value: 'Places text on the bottom line.'
