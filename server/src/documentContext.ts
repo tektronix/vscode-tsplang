@@ -17,7 +17,7 @@
 
 import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
-import { ErrorNodeImpl, ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
+import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
@@ -25,7 +25,7 @@ import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 import { isPartialMatch } from './completionProcessor'
 import { CommandSet } from './instrument'
 import { InstrumentCompletionItem, resolveCompletionNamespace } from './instrument/provider'
-import { getVariableCompletions, isVariableMultiline } from './rule-handler'
+import { getVariableCompletions } from './rule-handler'
 
 export interface DocumentCompletionContext {
     completion: InstrumentCompletionItem
@@ -88,26 +88,13 @@ function getFuzzyOffsets(document: TextDocument, fromOffset: number): Array<numb
     return result
 }
 
-function getStartLine(node: ParserRuleContext | TerminalNode): number {
-    return (node instanceof ParserRuleContext) ? node.start.line : node.symbol.line
-}
-
 /**
- * Handles the +1 when returning the start offset from the tree item.
- */
-function getStartOffset(node: ParserRuleContext | TerminalNode): number {
-    return ((node instanceof ParserRuleContext) ? node.start.start : node.symbol.start) + 1
-}
-
-/**
- * Handles the +1 when returning the stop offset from the tree item.
- */
-function getStopOffset(node: ParserRuleContext | TerminalNode): number {
-    return ((node instanceof ParserRuleContext) ? node.stop.stop : node.symbol.stop) + 1
-}
-
-/**
- * Returns the first matching completion or undefined should no match exist.
+ * Get an Exclusive Completion offset Map for the given context and command set.
+ * @param context The StatementContext to parse for Exclusive Completions.
+ * @param commandSet The set of available commands to match variables against.
+ * @param document The current document. Used to perform manual RegExp parsing
+ * and offset conversion.
+ * @returns An Exclusive Completion offset Map of <offset, ExclusiveContext>.
  */
 function getExclusiveCompletions(
     context: TspParser.StatementContext,
@@ -194,13 +181,15 @@ function getExclusiveCompletions(
             }
         }
 
-        /* TODO
+        /* NOTE
             Doesn't support Lua code with multi-line comments in the middle
             of expression lists.
         */
 
         return false
     })
+
+    const validTextRegexp = new RegExp(/^[ \t]*[a-zA-Z0-9\[\].]+/)
 
     // An empty array of expressionList TerminalNodes means we only have an equals sign.
     if (expListTerminals.length === 0) {
@@ -211,7 +200,25 @@ function getExclusiveCompletions(
             return
         }
 
-        return new Map([[assignmentTerminal.symbol.stop + 1, exclusiveContext]])
+        let exclusiveOffset = assignmentTerminal.symbol.stop + 1
+
+        // Get any text following the equals sign that didn't make it into this
+        // expression due to an EOF.
+        // Example:
+        //      display.lightstate = display.<EOF>
+        const remainingText = document.getText().slice(exclusiveOffset)
+        const matches = remainingText.match(validTextRegexp)
+
+        if (matches !== null) {
+            const orphanedText = matches.shift()
+
+            if (orphanedText !== undefined) {
+                exclusiveOffset += orphanedText.length
+                exclusiveContext.text = orphanedText.trim()
+            }
+        }
+
+        return new Map([[exclusiveOffset, exclusiveContext]])
     }
 
     // Keyed on the index of the expressionList where the TerminalNodes were found.
@@ -257,10 +264,27 @@ function getExclusiveCompletions(
             continue
         }
 
-        // If the only terminal is a comma, then use its stop offset.
+        // If the only terminal is a comma.
         if (terminals.length === 1 && terminals[0].symbol.text.localeCompare(',') === 0) {
-            // Don't bother adding existing text to the ExclusiveContext because there isn't any.
-            result.set(terminals[0].symbol.stop + 1, partial)
+            let exclusiveOffset = terminals[0].symbol.stop + 1
+
+            // Get any text following the comma that didn't make it into this
+            // expression due to an EOF.
+            // Example:
+            //      a, display.lightstate = 1, display.<EOF>
+            const remainingText = document.getText().slice(exclusiveOffset)
+            const matches = remainingText.match(validTextRegexp)
+
+            if (matches !== null) {
+                const orphanedText = matches.shift()
+
+                if (orphanedText !== undefined) {
+                    exclusiveOffset += orphanedText.length
+                    partial.text = orphanedText.trim()
+                }
+            }
+
+            result.set(exclusiveOffset, partial)
             continue
         }
 
@@ -342,10 +366,7 @@ export class DocumentContext extends TspListener {
         this.update('')
     }
 
-    // tslint:disable-next-line:prefer-function-over-method
     exitStatement(context: TspParser.StatementContext): void {
-        const terminalarray = getTerminals(context)
-
         const newExclusives = getExclusiveCompletions(context, this.commandSet, this.document)
 
         if (newExclusives !== undefined) {
