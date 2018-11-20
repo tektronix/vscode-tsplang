@@ -60,45 +60,7 @@ Remove the given prompt reference from the front-panel dispay.'
         label: 'delete',
     },
     {
-        data: {
-            domains: ['display'],
-            types: [
-                {
-                    kind: CompletionItemKind.Module,
-                    label: 'display'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'STATE_LCD_100'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'STATE_LCD_75'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'STATE_LCD_50'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'STATE_LCD_25'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'STATE_LCD_OFF'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'STATE_BLACKOUT'
-                },
-            ]
-        },
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.lightstate\n```\n\
@@ -131,25 +93,7 @@ To capture return values, use the display.waitevent() command.'
         label: 'prompt',
     },
     {
-        data: {
-            domains: ['display'],
-            types: [
-                {
-                    kind: CompletionItemKind.Module,
-                    label: 'display'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'FORMAT_EXPONENT'
-                },
-                {
-                    data: { domains: ['display'] },
-                    kind: CompletionItemKind.EnumMember,
-                    label: 'FORMAT_PREFIX'
-                },
-            ]
-        },
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.readingformat\n```\n\
@@ -198,69 +142,6 @@ This command waits until a user responds to a front‑panel prompt that was crea
 
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
-        data: {
-            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
-                [
-                    0,
-                    [
-                        {
-                            kind: CompletionItemKind.Module,
-                            label: 'display'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_HOME'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_HOME_LARGE_READING'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_READING_TABLE'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_GRAPH'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_HISTOGRAM'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_GRAPH_SWIPE'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_SETTINGS_SWIPE'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_SOURCE_SWIPE'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_STATS_SWIPE'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SCREEN_USER_SWIPE'
-                        },
-                    ]
-                ]
-            ])
-        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.changescreen(screenName)',
@@ -283,49 +164,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
         ],
     },
     {
-        data: {
-            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
-                [
-                    0,
-                    [
-                        {
-                            kind: CompletionItemKind.Module,
-                            label: 'display'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_NONE'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_OK'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_CANCEL'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_OKCANCEL'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_YESNO'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_YESNOCANCEL'
-                        },
-                    ]
-                ]
-            ])
-        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.prompt(buttonSet, promptText)',
@@ -341,37 +179,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
         ],
     },
     {
-        data: {
-            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
-                [
-                    0,
-                    [
-                        {
-                            kind: CompletionItemKind.Module,
-                            label: 'display'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            documentation: {
-                                kind: MarkupKind.PlainText,
-                                value: 'Places text on the top line.'
-                            },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'display.TEXT1'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            documentation: {
-                                kind: MarkupKind.PlainText,
-                                value: 'Places text on the bottom line.'
-                            },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'display.TEXT2'
-                        },
-                    ]
-                ]
-            ])
-        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.settext(position, userDisplayText)',

@@ -26,8 +26,22 @@ export interface BaseApiSpec {
     label: string
 }
 
+export interface ExclusiveCompletionApiSpec extends BaseApiSpec {
+    preselect?: boolean
+}
+
+export interface SignatureDataApiSpec {
+    parameters: Map<number, Array<ExclusiveCompletionApiSpec>>
+    qualifier?: number
+}
+
+export interface ChildApiSpec extends BaseApiSpec {
+    assignmentExclusives?: Array<ExclusiveCompletionApiSpec>
+    signatureExclusives?: Array<SignatureDataApiSpec>
+}
+
 export interface ApiSpec extends BaseApiSpec {
-    children?: Array<BaseApiSpec>
+    children?: Array<ChildApiSpec>
     enums?: Array<BaseApiSpec>
 }
 

@@ -95,6 +95,10 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 0
+        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
@@ -123,6 +127,10 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 1
+        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',

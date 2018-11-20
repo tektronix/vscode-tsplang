@@ -13,9 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+// tslint:disable:no-magic-numbers
 'use strict'
 
-import { ApiSpec, InstrumentSpec } from '..'
+import { ApiSpec, ExclusiveCompletionApiSpec, InstrumentSpec } from '..'
 import { getLuaApiSpec } from '../lua'
 
 const beeper: ApiSpec = {
@@ -25,10 +26,83 @@ const beeper: ApiSpec = {
     label: 'beeper'
 }
 
+const bufferEnumDigits: Array<ExclusiveCompletionApiSpec> = [
+    { label: 'buffer.DIGITS_3_5' },
+    { label: 'buffer.DIGITS_4_5' },
+    { label: 'buffer.DIGITS_5_5' },
+    { label: 'buffer.DIGITS_6_5' },
+    { label: 'buffer.DIGITS_7_5' },
+    { label: 'buffer.DIGITS_3_5' },
+]
+const bufferEnumStat: Array<ExclusiveCompletionApiSpec> = [
+    { label: 'buffer.STAT_LIMIT' },
+    { label: 'buffer.STAT_LIMIT1_HIGH' },
+    { label: 'buffer.STAT_LIMIT1_LOW' },
+    { label: 'buffer.STAT_LIMIT2_HIGH' },
+    { label: 'buffer.STAT_LIMIT2_LOW' },
+    { label: 'buffer.STAT_ORIGIN' },
+    { label: 'buffer.STAT_OUTPUT' },
+    { label: 'buffer.STAT_OVER_TEMP' },
+    { label: 'buffer.STAT_PROTECTION' },
+    { label: 'buffer.STAT_QUESTIONABLE' },
+    { label: 'buffer.STAT_READBACK' },
+    { label: 'buffer.STAT_SENSE' },
+    { label: 'buffer.STAT_START_GROUP' },
+    { label: 'buffer.STAT_TERMINAL' },
+]
+const bufferEnumUnit: Array<ExclusiveCompletionApiSpec> = [
+    { label: 'buffer.UNIT_AMP' },
+    { label: 'buffer.UNIT_AMP_AC' },
+    { label: 'buffer.UNIT_CELSIUS' },
+    { label: 'buffer.UNIT_DECIBEL' },
+    { label: 'buffer.UNIT_FAHRENHEIT' },
+    { label: 'buffer.UNIT_FARAD' },
+    { label: 'buffer.UNIT_HERTZ' },
+    { label: 'buffer.UNIT_KELVIN' },
+    { label: 'buffer.UNIT_NONE' },
+    { label: 'buffer.UNIT_OHM' },
+    { label: 'buffer.UNIT_PERCENT' },
+    { label: 'buffer.UNIT_RATIO' },
+    { label: 'buffer.UNIT_RECIPROCAL' },
+    { label: 'buffer.UNIT_SECOND' },
+    { label: 'buffer.UNIT_VOLT' },
+    { label: 'buffer.UNIT_VOLT_AC' },
+    { label: 'buffer.UNIT_WATT' },
+    { label: 'buffer.UNIT_X' },
+]
+
 const bufferWrite: ApiSpec = {
     children: [
-        { label: 'buffer.write.format' },
-        { label: 'buffer.write.reading' },
+        {
+            label: 'buffer.write.format',
+            signatureExclusives: [
+                {
+                    parameters: new Map([
+                        [ 1, bufferEnumUnit ],
+                        [ 2, bufferEnumDigits ],
+                        [ 3, bufferEnumUnit ],
+                        [ 4, bufferEnumDigits ],
+                    ])
+                }
+            ]
+        },
+        {
+            label: 'buffer.write.reading',
+            signatureExclusives: [
+                {
+                    parameters: new Map([
+                        [ 4, bufferEnumStat ],
+                    ]),
+                    qualifier: 0
+                },
+                {
+                    parameters: new Map([
+                        [ 5, bufferEnumStat ],
+                    ]),
+                    qualifier: 1
+                },
+            ]
+        },
     ],
     label: 'buffer.write'
 }
@@ -43,12 +117,7 @@ const buffer: ApiSpec = {
         { label: 'buffer.saveappend' },
     ],
     enums: [
-        { label: 'buffer.DIGITS_3_5' },
-        { label: 'buffer.DIGITS_4_5' },
-        { label: 'buffer.DIGITS_5_5' },
-        { label: 'buffer.DIGITS_6_5' },
-        { label: 'buffer.DIGITS_7_5' },
-        { label: 'buffer.DIGITS_3_5' },
+        ...bufferEnumDigits,
         { label: 'buffer.FILL_CONTINUOUS' },
         { label: 'buffer.FILL_ONCE' },
         { label: 'buffer.OFF' },
@@ -57,43 +126,13 @@ const buffer: ApiSpec = {
         { label: 'buffer.SAVE_RAW_TIME' },
         { label: 'buffer.SAVE_RELATIVE_TIME' },
         { label: 'buffer.SAVE_TIMESTAMP_TIME' },
-        { label: 'buffer.STAT_LIMIT' },
-        { label: 'buffer.STAT_LIMIT1_HIGH' },
-        { label: 'buffer.STAT_LIMIT1_LOW' },
-        { label: 'buffer.STAT_LIMIT2_HIGH' },
-        { label: 'buffer.STAT_LIMIT2_LOW' },
-        { label: 'buffer.STAT_ORIGIN' },
-        { label: 'buffer.STAT_OUTPUT' },
-        { label: 'buffer.STAT_OVER_TEMP' },
-        { label: 'buffer.STAT_PROTECTION' },
-        { label: 'buffer.STAT_QUESTIONABLE' },
-        { label: 'buffer.STAT_READBACK' },
-        { label: 'buffer.STAT_SENSE' },
-        { label: 'buffer.STAT_START_GROUP' },
-        { label: 'buffer.STAT_TERMINAL' },
+        ...bufferEnumStat,
         { label: 'buffer.STYLE_COMPACT' },
         { label: 'buffer.STYLE_FULL' },
         { label: 'buffer.STYLE_STANDARD' },
         { label: 'buffer.STYLE_WRITABLE' },
         { label: 'buffer.STYLE_WRITABLE_FULL' },
-        { label: 'buffer.UNIT_AMP' },
-        { label: 'buffer.UNIT_AMP_AC' },
-        { label: 'buffer.UNIT_CELSIUS' },
-        { label: 'buffer.UNIT_DECIBEL' },
-        { label: 'buffer.UNIT_FAHRENHEIT' },
-        { label: 'buffer.UNIT_FARAD' },
-        { label: 'buffer.UNIT_HERTZ' },
-        { label: 'buffer.UNIT_KELVIN' },
-        { label: 'buffer.UNIT_NONE' },
-        { label: 'buffer.UNIT_OHM' },
-        { label: 'buffer.UNIT_PERCENT' },
-        { label: 'buffer.UNIT_RATIO' },
-        { label: 'buffer.UNIT_RECIPROCAL' },
-        { label: 'buffer.UNIT_SECOND' },
-        { label: 'buffer.UNIT_VOLT' },
-        { label: 'buffer.UNIT_VOLT_AC' },
-        { label: 'buffer.UNIT_WATT' },
-        { label: 'buffer.UNIT_X' },
+        ...bufferEnumUnit,
     ],
     label: 'buffer'
 }
@@ -142,54 +181,32 @@ const digio: ApiSpec = {
     label: 'digio'
 }
 
-const displayInput: ApiSpec = {
-    children: [
-        { label: 'display.input.number' },
-        { label: 'display.input.option' },
-        { label: 'display.input.prompt' },
-        { label: 'display.input.string' },
-    ],
-    label: 'display.input'
-}
-
-const display: ApiSpec = {
-    children: [
-        { label: 'display.changescreen' },
-        { label: 'display.clear' },
-        { label: 'display.delete' },
-        { label: 'display.lightstate' },
-        { label: 'display.prompt' },
-        { label: 'display.readingformat' },
-        { label: 'display.settext' },
-        { label: 'display.waitevent' },
-    ],
-    enums: [
-        { label: 'display.BUTTON_CANCEL' },
-        { label: 'display.BUTTON_NO' },
-        { label: 'display.BUTTON_OK' },
-        { label: 'display.BUTTON_YES' },
-        { label: 'display.BUTTON_OPTION1' },
-        { label: 'display.BUTTON_OPTION2' },
-        { label: 'display.BUTTON_OPTION3' },
-        { label: 'display.BUTTON_OPTION4' },
-        { label: 'display.BUTTON_OPTION5' },
-        { label: 'display.BUTTON_OPTION6' },
-        { label: 'display.BUTTON_OPTION7' },
-        { label: 'display.BUTTON_OPTION8' },
-        { label: 'display.BUTTON_OPTION9' },
-        { label: 'display.BUTTON_OPTION10' },
-        { label: 'display.BUTTONS_NONE' },
+namespace Display {
+    const displayEnumButtons: Array<ExclusiveCompletionApiSpec> = [
         { label: 'display.BUTTONS_OK' },
         { label: 'display.BUTTONS_CANCEL' },
         { label: 'display.BUTTONS_OKCANCEL' },
         { label: 'display.BUTTONS_YESNO' },
         { label: 'display.BUTTONS_YESNOCANCEL' },
+    ]
+    const displayEnumButtonsWithNone: Array<ExclusiveCompletionApiSpec> = [
+        ...displayEnumButtons,
+        { label: 'display.BUTTONS_NONE' },
+    ]
+    const displayEnumFormat: Array<ExclusiveCompletionApiSpec> = [
         { label: 'display.FORMAT_EXPONENT' },
         { label: 'display.FORMAT_PREFIX' },
+    ]
+    const displayEnumNformat: Array<ExclusiveCompletionApiSpec> = [
         { label: 'display.NFORMAT_DECIMAL' },
         { label: 'display.NFORMAT_EXPONENT' },
-        { label: 'display.NFORMAT_INTEGER' },
+        {
+            label: 'display.NFORMAT_INTEGER',
+            preselect: true
+        },
         { label: 'display.NFORMAT_PREFIX' },
+    ]
+    const displayEnumScreen: Array<ExclusiveCompletionApiSpec> = [
         { label: 'display.SCREEN_DATASHEET' },
         { label: 'display.SCREEN_GRAPH' },
         { label: 'display.SCREEN_GRAPH_SWIPE' },
@@ -202,19 +219,134 @@ const display: ApiSpec = {
         { label: 'display.SCREEN_SOURCE_SWIPE' },
         { label: 'display.SCREEN_STATS_SWIPE' },
         { label: 'display.SCREEN_USER_SWIPE' },
-        { label: 'display.SFORMAT_ANY' },
+    ]
+    const displayEnumSformat: Array<ExclusiveCompletionApiSpec> = [
+        {
+            label: 'display.SFORMAT_ANY',
+            preselect: true
+        },
         { label: 'display.SFORMAT_UPPER' },
         { label: 'display.SFORMAT_UPPER_LOWER' },
+    ]
+    const displayEnumState: Array<ExclusiveCompletionApiSpec> = [
         { label: 'display.STATE_LCD_100' },
         { label: 'display.STATE_LCD_75' },
         { label: 'display.STATE_LCD_50' },
         { label: 'display.STATE_LCD_25' },
         { label: 'display.STATE_LCD_OFF' },
         { label: 'display.STATE_BLACKOUT' },
+    ]
+    const displayEnumText: Array<ExclusiveCompletionApiSpec> = [
         { label: 'display.TEXT1' },
         { label: 'display.TEXT2' },
-    ],
-    label: 'display'
+    ]
+
+    export const displayInput: ApiSpec = {
+        children: [
+            {
+                label: 'display.input.number',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [1, displayEnumNformat]
+                        ])
+                    }
+                ]
+            },
+            { label: 'display.input.option' },
+            {
+                label: 'display.input.prompt',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [0, displayEnumButtons]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'display.input.string',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [1, displayEnumSformat]
+                        ])
+                    }
+                ]
+            },
+        ],
+        label: 'display.input'
+    }
+
+    export const display: ApiSpec = {
+        children: [
+            {
+                label: 'display.changescreen',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [0, displayEnumScreen]
+                        ])
+                    }
+                ]
+            },
+            { label: 'display.clear' },
+            { label: 'display.delete' },
+            {
+                assignmentExclusives: displayEnumState,
+                label: 'display.lightstate'
+            },
+            {
+                label: 'display.prompt',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [0, displayEnumButtonsWithNone]
+                        ])
+                    }
+                ]
+            },
+            {
+                assignmentExclusives: displayEnumFormat,
+                label: 'display.readingformat'
+            },
+            {
+                label: 'display.settext',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [0, displayEnumText]
+                        ])
+                    }
+                ]
+            },
+            { label: 'display.waitevent' },
+        ],
+        enums: [
+            { label: 'display.BUTTON_CANCEL' },
+            { label: 'display.BUTTON_NO' },
+            { label: 'display.BUTTON_OK' },
+            { label: 'display.BUTTON_YES' },
+            { label: 'display.BUTTON_OPTION1' },
+            { label: 'display.BUTTON_OPTION2' },
+            { label: 'display.BUTTON_OPTION3' },
+            { label: 'display.BUTTON_OPTION4' },
+            { label: 'display.BUTTON_OPTION5' },
+            { label: 'display.BUTTON_OPTION6' },
+            { label: 'display.BUTTON_OPTION7' },
+            { label: 'display.BUTTON_OPTION8' },
+            { label: 'display.BUTTON_OPTION9' },
+            { label: 'display.BUTTON_OPTION10' },
+            ...displayEnumButtonsWithNone,
+            ...displayEnumFormat,
+            ...displayEnumNformat,
+            ...displayEnumScreen,
+            ...displayEnumSformat,
+            ...displayEnumState,
+            ...displayEnumText,
+        ],
+        label: 'display'
+    }
 }
 
 const eventlog: ApiSpec = {
@@ -951,8 +1083,8 @@ export function getApiSpec(): Array<ApiSpec> {
         delay,
         digioLine,
         digio,
-        displayInput,
-        display,
+        Display.displayInput,
+        Display.display,
         eventlog,
         exit,
         file,
@@ -1031,7 +1163,6 @@ export function getInstrumentSpec(): InstrumentSpec {
             },
             source: {
                 rangeDefault: 1e-8,
-                // tslint:disable-next-line:no-magic-numbers
                 ranges: [10e-9, 100e-9, 1e-6, 10e-6, 100e-6, 1e-3, 10e-3, 100e-3, 1]
             }
         },
@@ -1075,7 +1206,6 @@ export function getInstrumentSpec(): InstrumentSpec {
             },
             source: {
                 rangeDefault: 2e-2,
-                // tslint:disable-next-line:no-magic-numbers
                 ranges: [20e-3, 200e-3, 2, 20, 200]
             }
         }

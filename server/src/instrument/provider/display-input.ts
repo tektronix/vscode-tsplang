@@ -102,44 +102,6 @@ The prompt is displayed until it has been responded to.'
 
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
-        data: {
-            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
-                [
-                    1,
-                    [
-                        {
-                            kind: CompletionItemKind.Module,
-                            label: 'display'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            documentation: {
-                                kind: MarkupKind.PlainText,
-                                value: 'Default input format.'
-                            },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'NFORMAT_INTEGER',
-                            preselect: true
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'NFORMAT_DECIMAL'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'NFORMAT_EXPONENT'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'NFORMAT_PREFIX'
-                        },
-                    ]
-                ]
-            ])
-        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',
@@ -225,44 +187,6 @@ front-panel display; can be up to 32 characters.',
         ],
     },
     {
-        data: {
-            parameterTypes: new Map<number, Array<InstrumentCompletionItem>>([
-                [
-                    0,
-                    [
-                        {
-                            kind: CompletionItemKind.Module,
-                            label: 'display'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_OK'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_CANCEL'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_OKCANCEL'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_YESNO'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'BUTTONS_YESNOCANCEL'
-                        },
-                    ]
-                ]
-            ])
-        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.prompt(buttonSet[, dialogTitle])',
@@ -279,44 +203,6 @@ front-panel display; can be up to 127 characters.',
         ],
     },
     {
-        data: {
-            parameterTypes: new Map([
-                [
-                    1,
-                    [
-                        {
-                            kind: CompletionItemKind.Module,
-                            label: 'display'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            documentation: {
-                                kind: MarkupKind.PlainText,
-                                value: 'Default input format.'
-                            },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SFORMAT_ANY',
-                            preselect: true
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SFORMAT_UPPER_LOWER'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SFORMAT_UPPER'
-                        },
-                        {
-                            data: { domains: ['display'] },
-                            kind: CompletionItemKind.EnumMember,
-                            label: 'SFORMAT_BUFFER_NAME'
-                        },
-                    ]
-                ]
-            ])
-        },
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.string(dialogTitle[, textFormat])',
