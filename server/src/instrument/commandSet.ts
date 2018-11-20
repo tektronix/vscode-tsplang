@@ -14,12 +14,47 @@
  *  limitations under the License.
  */
 import { InstrumentSpec } from '.'
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from './provider'
+import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from './provider'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, CommandDocumentation>
     completions: Array<InstrumentCompletionItem>
     signatures?: Array<InstrumentSignatureInformation>
+}
+export namespace CommandSetInterface {
+    export function getCompletionMap(
+        completions: Array<InstrumentCompletionItem>
+    ): Map<string, Array<InstrumentCompletionItem>> {
+        const result = new Map<string, Array<InstrumentCompletionItem>>()
+
+        completions.forEach((value: InstrumentCompletionItem) => {
+            const namespace = resolveCompletionNamespace(value)
+
+            const item = result.get(namespace) || new Array<InstrumentCompletionItem>()
+            item.push(value)
+
+            result.set(namespace, item)
+        })
+
+        return result
+    }
+
+    export function getSignatureMap(
+        signatures: Array<InstrumentSignatureInformation>
+    ): Map<string, Array<InstrumentSignatureInformation>> {
+        const result = new Map<string, Array<InstrumentSignatureInformation>>()
+
+        signatures.forEach((value: InstrumentSignatureInformation) => {
+            const namespace = resolveSignatureNamespace(value)
+
+            const item = result.get(namespace) || new Array<InstrumentSignatureInformation>()
+            item.push(value)
+
+            result.set(namespace, item)
+        })
+
+        return result
+    }
 }
 
 export class CommandSet implements CommandSetInterface {

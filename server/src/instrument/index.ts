@@ -32,6 +32,7 @@ export interface ExclusiveCompletionApiSpec extends BaseApiSpec {
 
 export interface SignatureDataApiSpec {
     parameters: Map<number, Array<ExclusiveCompletionApiSpec>>
+    /** TODO: Implement this in the provider. */
     qualifier?: number
 }
 
@@ -42,7 +43,7 @@ export interface ChildApiSpec extends BaseApiSpec {
 
 export interface ApiSpec extends BaseApiSpec {
     children?: Array<ChildApiSpec>
-    enums?: Array<BaseApiSpec>
+    enums?: Array<ExclusiveCompletionApiSpec>
 }
 
 export interface BeeperSpec {

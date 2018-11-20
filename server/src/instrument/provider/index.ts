@@ -47,16 +47,16 @@ export interface InstrumentCompletionItem extends CompletionItem {
 }
 export namespace InstrumentCompletionItem {
     /**
-     * Creates InstrumentCompletionItems of kind Module based on the given BaseApiSpec.
-     * @param spec The BaseApiSpec whose label will generate the root items.
+     * Creates InstrumentCompletionItems of kind Module based on the given string.
+     * @param label The label whose namespaces will become root completions items.
      * @param excludeLast Whether the last item of the namespace should be included in the results.
      * @returns An array of generated root namespaces or undefined if nothing could be generated.
      */
     export function createRootItems(
-        spec: BaseApiSpec,
+        label: string,
         excludeLast: boolean
     ): Array<InstrumentCompletionItem> | undefined {
-        const namespaces = spec.label.split('.')
+        const namespaces = label.split('.')
 
         if (excludeLast) {
             // Remove the last element of the namespace.
@@ -160,11 +160,11 @@ export function resolveCompletionNamespace(item: InstrumentCompletionItem): stri
     return [item.label].concat(item.data.domains).reverse().join('.')
 }
 
-export function resolveSignatureNamespace(item: SignatureInformation): string | undefined {
+export function resolveSignatureNamespace(item: SignatureInformation): string {
     const openParamIndex: number = item.label.indexOf('(')
 
     if (openParamIndex === -1) {
-        return
+        throw new Error('Signature label does not contain an open parenthesis.')
     }
 
     return item.label.slice(0, openParamIndex).replace(new RegExp(/\[\]/, 'g'), '')
@@ -177,174 +177,249 @@ export function resolveSignatureNamespace(item: SignatureInformation): string | 
 function filter(
     namespace: ApiSpec,
     providerModule: CommandSetInterface,
+    enumerations: Array<InstrumentCompletionItem>
 ): CommandSetInterface {
-    const results: CommandSetInterface = { completions: new Array() }
+    // Create an object of Maps whose keys will match against ApiSpec labels.
+    const providerMap = {
+        completionDocs: new Map<string, CommandDocumentation>(),
+        completions: CommandSetInterface.getCompletionMap(providerModule.completions),
+        signatures: new Map<string, Array<InstrumentSignatureInformation>>()
+    }
+
+    // Re-instantiate the completionDoc property with content if this module has completionDocs.
+    if (providerModule.completionDocs !== undefined) {
+        providerMap.completionDocs = providerModule.completionDocs
+    }
+
+    // Re-instantiate the signatures property with content if this module has signatures.
+    if (providerModule.signatures !== undefined) {
+        providerMap.signatures = CommandSetInterface.getSignatureMap(providerModule.signatures)
+    }
+
+    const filteredModule: CommandSetInterface = {
+        completions: new Array()
+    }
 
     // The following labels are not to be treated as root namespaces.
     if (namespace.label.localeCompare('keywords') !== 0
         && namespace.label.localeCompare('functions') !== 0) {
-        // Add root namespaces to the results.
-        results.completions.push(...providerModule.completions.filter(
-            (value: InstrumentCompletionItem) => {
-                return value.label.localeCompare(namespace.label) === 0
-            }
-        ))
+        // If this module contains a completion with the namespace label.
+        if (providerMap.completions.has(namespace.label)) {
+            // Add root namespaces to the results.
+            filteredModule.completions.push(...providerMap.completions[namespace.label])
+        }
     }
 
-    // Add any child elements to the results.
     if (namespace.children !== undefined) {
-        namespace.children.forEach((value: ChildApiSpec) => {
-            // Get all completionDocs for this child.
-            if (providerModule.completionDocs !== undefined) {
-                const completionDocs = filterChildCompletionDoc(value, providerModule.completionDocs)
-
-                if (completionDocs.size > 0) {
-                    if (results.completionDocs === undefined) {
-                        results.completionDocs = new Map()
-                    }
-
-                    results.completionDocs = new Map([
-                        ...results.completionDocs.entries(),
-                        ...completionDocs.entries()
-                    ])
+        namespace.children.forEach((child: ChildApiSpec) => {
+            // Get any completionDocs for this child.
+            if (providerMap.completionDocs.has(child.label)) {
+                // Instantiate the property if we have yet to do so.
+                if (filteredModule.completionDocs === undefined) {
+                    filteredModule.completionDocs = new Map()
                 }
+
+                const completionDoc = providerMap.completionDocs.get(child.label)
+
+                if (completionDoc === undefined) {
+                    throw new Error(`Filter Error: no completion documentation with the label "${child.label}".`)
+                }
+
+                filteredModule.completionDocs.set(child.label, completionDoc)
             }
 
-            // Get all completions for this child.
-            results.completions.push(...filterChildCompletion(value, providerModule.completions))
+            // Get any completions for this child.
+            if (providerMap.completions.has(child.label)) {
+                let completions = providerMap.completions.get(child.label)
 
-            // Get all signatures for this child.
-            if (providerModule.signatures !== undefined) {
-                const signatures = filterChildSignature(value, providerModule.signatures)
-
-                if (signatures.length > 0) {
-                    if (results.signatures === undefined) {
-                        results.signatures = new Array()
-                    }
-
-                    results.signatures.push(...signatures)
+                if (completions === undefined) {
+                    throw new Error(`Filter Error: no completions found with the label "${child.label}".`)
                 }
+
+                if (child.assignmentExclusives !== undefined) {
+                    completions = addAssignmentExclusives(
+                        child.assignmentExclusives,
+                        completions,
+                        enumerations
+                    )
+                }
+
+                filteredModule.completions.push(...completions)
+            }
+
+            // Get any signatures for this child.
+            if (providerMap.signatures.has(child.label)) {
+                // Instantiate the property if we have yet to do so.
+                if (filteredModule.signatures === undefined) {
+                    filteredModule.signatures = new Array()
+                }
+
+                let signatures = providerMap.signatures.get(child.label)
+
+                if (signatures === undefined) {
+                    throw new Error(`Filter Error: no signatures found with the label "${child.label}".`)
+                }
+
+                if (child.signatureExclusives !== undefined) {
+                    signatures = addSignatureExclusives(
+                        child.signatureExclusives,
+                        signatures,
+                        enumerations
+                    )
+                }
+
+                filteredModule.signatures.push(...signatures)
             }
         })
     }
 
-    return results
+    return filteredModule
 }
 
 /**
- * Gets the completions from the given array that match the ChildApiSpec.
+ * Returns all Enumeration elements of the CommandSetInterface that can be found in the ApiSpec.
  */
-function filterChildCompletion(
-    child: ChildApiSpec,
-    completions: Array<InstrumentCompletionItem>
-): Array<InstrumentCompletionItem> {
-    return completions.filter((value: InstrumentCompletionItem) => {
-        return resolveCompletionNamespace(value).localeCompare(child.label) === 0
-    })
-}
-
-/**
- * Gets all completionDocs from the given map whose keys match the given ChildApiSpec.
- */
-function filterChildCompletionDoc(
-    child: ChildApiSpec,
-    completionDocs: Map<string, CommandDocumentation>
-): Map<string, CommandDocumentation> {
-    const resultMap = new Map<string, CommandDocumentation>()
-    completionDocs.forEach((value: CommandDocumentation, key: string) => {
-        if (key.localeCompare(child.label) === 0) {
-            resultMap.set(key, value)
-        }
-    })
-
-    return resultMap
-}
-
-/**
- * Gets the signatures from the given array that match the ChildApiSpec.
- */
-function filterChildSignature(
-    child: ChildApiSpec,
-    signatures: Array<InstrumentSignatureInformation>
-): Array<InstrumentSignatureInformation> {
-    return signatures.filter((value: InstrumentSignatureInformation) => {
-        const label = resolveSignatureNamespace(value)
-
-        if (label === undefined) {
-            throw new Error('Unable to resolve namespace for signature ' + child.label)
-        }
-
-        return label.localeCompare(child.label) === 0
-    })
-}
-
-function resolveExclusiveCompletions(
+function filterEnums(
     namespace: ApiSpec,
-    filteredModule: CommandSetInterface,
-    enumCompletions: Array<InstrumentCompletionItem>
-): CommandSetInterface {
-    if (namespace.children === undefined) {
-        return filteredModule
-    }
+    enumModule: CommandSetInterface
+): Array<InstrumentCompletionItem> {
+    // Create an object of Maps whose keys will match against ApiSpec labels.
+    const completionMap = CommandSetInterface.getCompletionMap(enumModule.completions)
 
-    const result: CommandSetInterface = {
-        completionDocs: filteredModule.completionDocs,
-        completions: filteredModule.completions,
-        signatures: filteredModule.signatures
-    }
+    const filteredEnumerations = new Array<InstrumentCompletionItem>()
 
-    namespace.children.forEach((value: ChildApiSpec) => {
-        if (value.assignmentExclusives !== undefined) {
-            const assignmentTargets = new Map<number, InstrumentCompletionItem>()
+    if (namespace.enums !== undefined) {
+        namespace.enums.forEach((enumeration: BaseApiSpec) => {
+            // Get any completions for this enumeration.
+            if (completionMap.has(enumeration.label)) {
+                const enumerations = completionMap.get(enumeration.label)
 
-            result.completions.forEach((completion: InstrumentCompletionItem, index: number) => {
-                if (resolveCompletionNamespace(completion).localeCompare(value.label) === 0) {
-                    // TODO: for each assignment target, get the matching enum from the list
-                    // of available enums.
-                    //  TODO: translate the fields of the matching enum object into the appropriate
-                    //  thing. Add the thing to the InstrumentCompletionItem.data.types property.
-
-                    assignmentTargets.set(index, completion)
+                if (enumerations === undefined) {
+                    throw new Error(`Filter Error: no enumerations found with the label "${enumeration.label}".`)
                 }
-            })
+
+                filteredEnumerations.push(...enumerations)
+            }
+        })
+    }
+
+    return filteredEnumerations
+}
+
+function addAssignmentExclusives(
+    exclusives: Array<ExclusiveCompletionApiSpec>,
+    completions: Array<InstrumentCompletionItem>,
+    enumerations: Array<InstrumentCompletionItem>
+): Array<InstrumentCompletionItem> {
+    // Modify each completion item.
+    const modifiedCompletions = completions.map((completion: InstrumentCompletionItem) => {
+        // Return an unmodified completion item if it is a root namespace.
+        if (completion.data === undefined) {
+            return completion
         }
 
-        const signatureTargets = new Map<number, InstrumentSignatureInformation>()
+        // Collect an array of enumerations as listed in the assignment completion spec.
+        const enumApiSpec: ApiSpec = { enums: exclusives, label: '' }
+        const enumModule: CommandSetInterface = { completions: enumerations }
 
-        if (value.signatureExclusives !== undefined) {
-            if (result.signatures === undefined) {
-                throw new Error('ApiSpec defines signature completions but no signatures exist.')
+        const filteredEnums = filterEnums(enumApiSpec, enumModule)
+
+        // Something went wrong if we are here but have nothing to show for it.
+        if (filteredEnums.length === 0) {
+            throw new Error('Exclusive Resolution Error: no assignment completions available.')
+        }
+
+        const rootItems = InstrumentCompletionItem.createRootItems(filteredEnums[0].label, true)
+
+        if (rootItems === undefined) {
+            throw new Error('Exclusive Resolution Error: unable to generate root assignment completions.')
+        }
+
+        filteredEnums.push(...rootItems)
+
+        completion.data.types = filteredEnums
+
+        return completion
+    })
+
+    return modifiedCompletions
+}
+
+function addSignatureExclusives(
+    exclusives: Array<SignatureDataApiSpec>,
+    signatures: Array<InstrumentSignatureInformation>,
+    enumerations: Array<InstrumentCompletionItem>
+): Array<InstrumentSignatureInformation> {
+    // Modify each signature.
+    const modifiedSignatures = signatures.map((signature: InstrumentSignatureInformation) => {
+        // Resulting exclusive parameter completion map.
+        const parameterMap = new Map<number, Array<InstrumentCompletionItem>>()
+
+        // Initialize signature data to something easier to work with if undefined.
+        if (signature.data === undefined) {
+            signature.data = { parameterTypes: new Map(), qualifier: 0 }
+        }
+
+        // For each exclusive signature spec.
+        exclusives.forEach((spec: SignatureDataApiSpec) => {
+            let specQualifier = spec.qualifier
+
+            // Initialize the qualifier of the signature spec to something easier to work with if undefined.
+            if (specQualifier === undefined) {
+                specQualifier = 0
             }
 
-            // Get the signatures that need exclusive completions
-            result.signatures.forEach((signature: InstrumentSignatureInformation, index: number) => {
-                const signatureNamespace = resolveSignatureNamespace(signature)
+            if (signature.data === undefined) {
+                return
+            }
 
-                if (signatureNamespace === undefined) {
+            if (signature.data.qualifier !== specQualifier) {
+                return
+            }
+
+            // Collect an array of enumerations as listed in each parameter completion spec of the
+            // current signature spec.
+            spec.parameters.forEach((paramCompletionSpec: Array<ExclusiveCompletionApiSpec>, key: number) => {
+                const enumApiSpec: ApiSpec = { enums: paramCompletionSpec, label: '' }
+                const enumModule: CommandSetInterface = { completions: enumerations }
+
+                const filteredEnums = filterEnums(enumApiSpec, enumModule)
+
+                if (filteredEnums.length === 0) {
                     return
                 }
 
-                if (signatureNamespace.localeCompare(value.label) === 0) {
-                    // TODO: for each assignment target, get the matching enum from the list
-                    // of available enums.
-                    //  TODO: translate the fields of the matching enum object into the appropriate
-                    //  thing. Add the thing to the
-                    //  InstrumentSignatureInformation.data.parameterTypes property.
+                const rootItems = InstrumentCompletionItem.createRootItems(filteredEnums[0].label, true)
 
-                    signatureTargets.set(index, signature)
+                if (rootItems === undefined) {
+                    throw new Error('Exclusive Resolution Error: unable to generate root signature completions.')
                 }
+
+                filteredEnums.push(...rootItems)
+
+                parameterMap.set(key, filteredEnums)
             })
+        })
+
+        // Something went wrong if we are here but have nothing to show for it.
+        if (parameterMap.size === 0) {
+            throw new Error('Exclusive Resolution Error: no signature completions available.')
         }
+
+        signature.data.parameterTypes = parameterMap
+
+        return signature
     })
 
-    return result
+    return modifiedSignatures
 }
 
-function insertSignatureExclusiveCompletions(
-    exclusives: Array<SignatureDataApiSpec>,
-    signature: InstrumentSignatureInformation
-): InstrumentSignatureInformation {
-    throw new Error('TODO - Not implemented.')
+function dropExclusiveCompletions(
+    completions: Array<InstrumentCompletionItem>
+): Array<InstrumentCompletionItem> {
+    return completions.filter((completion: InstrumentCompletionItem) => {
+        return ! completion.exclusive
+    })
 }
 
 function formatSignatures(
@@ -374,27 +449,39 @@ export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: Instrum
         reject: (reason?: Error) => void
     ): void => {
         try {
-            const result: CommandSet = new CommandSet(spec)
-            const enums = new Map<string, CommandSetInterface>()
+            // Load all enumeration completions first to allow cross-namespace enumeration
+            // requests in the ApiSpec.
+            const enumerations = new Array<InstrumentCompletionItem>()
 
             apiSpecs.forEach((api: ApiSpec) => {
-                const cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
-
-                // any enums must be loaded speparately due to the command storage scheme
-                if (api.enums !== undefined) {
-                    const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
-
-                    const currentEnums: CommandSetInterface = {
-                        completions: enumModule.completions
-                    }
+                if (api.enums === undefined) {
+                    return
                 }
 
-                // TODO: filter
+                const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
 
-                // TODO: resolve exclusive completions
-
-                // TODO: format signatures
+                enumerations.push(...enumModule.completions)
             })
+
+            const result: CommandSet = new CommandSet(spec)
+
+            apiSpecs.forEach((api: ApiSpec) => {
+                let cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
+
+                // Filter and resolve exclusive completions.
+                cmdModule = filter(api, cmdModule, enumerations)
+
+                // Format signatures.
+                if (cmdModule.signatures !== undefined) {
+                    cmdModule.signatures = formatSignatures(spec, cmdModule.signatures)
+                }
+
+                // Add this command set interface to the final command set.
+                result.add(cmdModule)
+            })
+
+            // Add non-exclusive enumeration completions to the final command set.
+            result.add({ completions: dropExclusiveCompletions(enumerations) })
 
             resolve(result)
         } catch (e) {
