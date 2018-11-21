@@ -329,7 +329,10 @@ function addAssignmentExclusives(
             throw new Error('Exclusive Resolution Error: no assignment completions available.')
         }
 
-        const rootItems = InstrumentCompletionItem.createRootItems(filteredEnums[0].label, true)
+        const rootItems = InstrumentCompletionItem.createRootItems(
+            resolveCompletionNamespace(filteredEnums[0]),
+            true
+        )
 
         if (rootItems === undefined) {
             throw new Error('Exclusive Resolution Error: unable to generate root assignment completions.')
@@ -389,7 +392,10 @@ function addSignatureExclusives(
                     return
                 }
 
-                const rootItems = InstrumentCompletionItem.createRootItems(filteredEnums[0].label, true)
+                const rootItems = InstrumentCompletionItem.createRootItems(
+                    resolveCompletionNamespace(filteredEnums[0]),
+                    true
+                )
 
                 if (rootItems === undefined) {
                     throw new Error('Exclusive Resolution Error: unable to generate root signature completions.')
