@@ -311,7 +311,7 @@ export namespace TspParser {
 
         prefix(): PrefixContext
         objectCall(): ObjectCallContext
-        suffix(): SuffixContext | null
+        suffix(i?: number): SuffixContext[]
     }
 
     export class ArgsContext extends BaseContext {
