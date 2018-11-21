@@ -205,8 +205,14 @@ function filter(
         && namespace.label.localeCompare('functions') !== 0) {
         // If this module contains a completion with the namespace label.
         if (providerMap.completions.has(namespace.label)) {
+            const completions = providerMap.completions.get(namespace.label)
+
+            if (completions === undefined) {
+                throw new Error(`Filter Error: no completions found with the label "${namespace.label}".`)
+            }
+
             // Add root namespaces to the results.
-            filteredModule.completions.push(...providerMap.completions[namespace.label])
+            filteredModule.completions.push(...completions)
         }
     }
 
