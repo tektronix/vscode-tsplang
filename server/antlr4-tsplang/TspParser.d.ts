@@ -286,7 +286,7 @@ export namespace TspParser {
     export class ObjectCallContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        args(): ArgsContext | null
+        args(): ArgsContext
         NAME(): TerminalNode | null
     }
 
@@ -309,8 +309,8 @@ export namespace TspParser {
     export class FunctionCallContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
 
-        prefix(): PrefixContext | null
-        objectCall(): ObjectCallContext | null
+        prefix(): PrefixContext
+        objectCall(): ObjectCallContext
         suffix(): SuffixContext | null
     }
 
