@@ -404,22 +404,18 @@ export class DocumentContext extends TspListener {
     }
 
     exitStatement(context: TspParser.StatementContext): void {
-        const newExclusives = getExclusiveAssignmentCompletions(context, this.commandSet, this.document)
+        const newAssignmentExclusives = getExclusiveAssignmentCompletions(context, this.commandSet, this.document)
 
-        if (newExclusives !== undefined) {
-            for (const key of newExclusives.keys()) {
+        if (newAssignmentExclusives !== undefined) {
+            for (const key of newAssignmentExclusives.keys()) {
                 getFuzzyOffsets(this.document, key).forEach((value: number) => {
                     this.fuzzyOffsets.set(value, key)
                 })
             }
-        }
 
-        if (newExclusives !== undefined) {
-            for (const [k, v] of newExclusives) {
+            for (const [k, v] of newAssignmentExclusives) {
                 this.exclusives.set(k, v)
             }
-
-            return
         }
 
         if (context.exception !== null) {
