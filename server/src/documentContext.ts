@@ -24,7 +24,7 @@ import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
 import { isPartialMatch } from './completionProcessor'
 import { CommandSet } from './instrument'
-import { InstrumentCompletionItem, resolveCompletionNamespace } from './instrument/provider'
+import { InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from './instrument/provider'
 import { getVariableCompletions } from './rule-handler'
 
 export interface DocumentCompletionContext {
@@ -96,7 +96,7 @@ function getFuzzyOffsets(document: TextDocument, fromOffset: number): Array<numb
  * and offset conversion.
  * @returns An Exclusive Completion offset Map of <offset, ExclusiveContext>.
  */
-function getExclusiveCompletions(
+function getExclusiveAssignmentCompletions(
     context: TspParser.StatementContext,
     commandSet: CommandSet,
     document: TextDocument
@@ -309,6 +309,36 @@ function getExclusiveCompletions(
     return (result.size !== 0) ? result : undefined
 }
 
+function getExclusiveParameterCompletions(
+    context: TspParser.FunctionCallContext,
+    commandSet: CommandSet,
+    document: TextDocument
+): Map<number, ExclusiveContext> | undefined {
+    // No signatures means no exclusive completions.
+    if (commandSet.signatures.length === 0) {
+        return
+    }
+
+    //  functionCall  --{1}-->  objectCall  --{1}-->  ':' NAME
+    if (context.objectCall().NAME() !== null) {
+        return
+    }
+
+    const argsContext = context.objectCall().args()
+
+    //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  tableConstructor
+    if (argsContext.tableConstructor() !== null) {
+        return
+    }
+
+    //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  string
+    if (argsContext.string() !== null) {
+        return
+    }
+
+    // TODO: call getSignatures to get the signatures for this functionCall
+}
+
 /**
  * The merge strategy is to accept all incoming changes.
  */
@@ -367,7 +397,7 @@ export class DocumentContext extends TspListener {
     }
 
     exitStatement(context: TspParser.StatementContext): void {
-        const newExclusives = getExclusiveCompletions(context, this.commandSet, this.document)
+        const newExclusives = getExclusiveAssignmentCompletions(context, this.commandSet, this.document)
 
         if (newExclusives !== undefined) {
             for (const key of newExclusives.keys()) {
