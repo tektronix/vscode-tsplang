@@ -336,7 +336,14 @@ function getExclusiveParameterCompletions(
         return
     }
 
-    // TODO: call getSignatures to get the signatures for this functionCall
+    // TODO
+    //  1st Param: the stop offset of the open parenthesis.
+    //       text: the text of expression 1.
+    //  2nd Param: the stop offset of comma 1.
+    //       text: the text of expression 2.
+    //  ...
+    //  Nth Param: the stop offset of comma N-1 OR the start offset of the close parenthesis.
+    //       text: the text of expression N.
 }
 
 /**
@@ -417,6 +424,28 @@ export class DocumentContext extends TspListener {
 
         if (context.exception !== null) {
             return
+        }
+
+        //  statement  --{1}-->  functionCall
+        const functionCallContext = context.functionCall()
+        if (functionCallContext !== null) {
+            const newParameterExclusives = getExclusiveParameterCompletions(
+                functionCallContext,
+                this.commandSet,
+                this.document
+            )
+
+            if (newParameterExclusives !== undefined) {
+                for (const key of newParameterExclusives.keys()) {
+                    getFuzzyOffsets(this.document, key).forEach((value: number) => {
+                        this.fuzzyOffsets.set(value, key)
+                    })
+                }
+
+                for (const [k, v] of newParameterExclusives) {
+                    this.exclusives.set(k, v)
+                }
+            }
         }
 
         this.globals = this.getCompletionsFromContext(context)
