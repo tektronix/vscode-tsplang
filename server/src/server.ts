@@ -17,9 +17,7 @@
 
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
-import { ContentHandler } from './contentHandler'
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from './instrument/provider'
-import { getActiveParameter } from './signatureProcessor'
+import { getCompletions, getSignatureHelp, resolveCompletion } from './serverProvider'
 import { TspManager } from './tspManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
@@ -35,8 +33,9 @@ const documents: TextDocuments = new TextDocuments()
 // Create a TSP Manager to provide command set completions.
 const manager: TspManager = new TspManager(documents)
 
-// Create a content parser to provide regular-expression based document parsing
-const parser: ContentHandler = new ContentHandler(documents)
+// We need the last document URI to request a completion to prevent a bunch of
+// expensive completion lookups.
+let lastCompletionUri: string | undefined
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
@@ -83,60 +82,30 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 
 // This handler provides the initial list of completion items.
 connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
+    lastCompletionUri = params.textDocument.uri
+
     const tspItem = manager.get(params.textDocument.uri)
 
     if (tspItem === undefined) {
         return
     }
 
-    // TODO: exclude completions
-    //
-    //  1) if we should be providing exclusive completions
-    //      a) provide exclusive completions until the text no longer partially matches any exclusive completion
-    //      b) if the user text no longer partially matches any exclusive completion, then provide other completions
-
-    const signatureHelp = parser.getSignatures(params.textDocument.uri, params.position, tspItem)
-    if (signatureHelp !== undefined) {
-        const availableParameterCompletions = new Array<InstrumentCompletionItem>()
-        signatureHelp.signatures.forEach(
-            (value: InstrumentSignatureInformation): void => {
-                if (value.data === undefined) {
-                    return
-                }
-
-                if (signatureHelp.activeParameter === null) {
-                    return
-                }
-
-                const parameterTypes = value.data.parameterTypes.get(signatureHelp.activeParameter)
-
-                if (parameterTypes === undefined) {
-                    return
-                }
-
-                availableParameterCompletions.push(...parameterTypes)
-            }
-        )
-
-        return availableParameterCompletions
-    }
-
-    return parser.getCompletions(params.textDocument.uri, params.position, tspItem)
+    return getCompletions(params.position, tspItem)
 })
 
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    if (parser.lastCompletionUri === undefined) {
+    if (lastCompletionUri === undefined) {
         return item
     }
 
-    const tspItem = manager.get(parser.lastCompletionUri)
+    const tspItem = manager.get(lastCompletionUri)
 
     if (tspItem === undefined) {
         return item
     }
 
-    return parser.getCompletionDoc(item, tspItem)
+    return resolveCompletion(item, tspItem)
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
@@ -146,7 +115,7 @@ connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp |
         return
     }
 
-    return parser.getSignatures(params.textDocument.uri, params.position, tspItem)
+    return getSignatureHelp(params.position, tspItem)
 })
 
 // Make the text document manager listen on the connection for open, change and close text
