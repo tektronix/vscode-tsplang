@@ -88,6 +88,29 @@ function getFuzzyOffsets(document: TextDocument, fromOffset: number): Array<numb
     return result
 }
 
+function getCompletionsForParameter(
+    parameter: number,
+    signatures: Array<InstrumentSignatureInformation>
+): Array<InstrumentCompletionItem> {
+    const results = new Array<InstrumentCompletionItem>()
+
+    signatures.forEach((signature: InstrumentSignatureInformation) => {
+        if (signature.data === undefined) {
+            return
+        }
+
+        const completions = signature.data.parameterTypes.get(parameter)
+
+        if (completions === undefined) {
+            return
+        }
+
+        results.push(...completions)
+    })
+
+    return results
+}
+
 /**
  * Get an Exclusive Completion offset Map for the given context and command set.
  * @param context The StatementContext to parse for Exclusive Completions.
@@ -336,6 +359,14 @@ function getExclusiveParameterCompletions(
         return
     }
 
+    const signatureLabel = resolveSignatureNamespace({ label: context.getText() })
+
+    const signatures = commandSet.signatures.filter((signature: InstrumentSignatureInformation) => {
+        // We can drop any matching signatures that don't provide any exclusive completions.
+        return signature.data !== undefined
+            && resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
+    })
+
     // TODO
     //  1st Param: the stop offset of the open parenthesis.
     //       text: the text of expression 1.
@@ -344,6 +375,56 @@ function getExclusiveParameterCompletions(
     //  ...
     //  Nth Param: the stop offset of comma N-1 OR the start offset of the close parenthesis.
     //       text: the text of expression N.
+
+    const argsContextChildren = argsContext.children
+
+    //  functionCall  --{1}-->  objectCall  --{1}-->  args[0] === '('
+    const openParenthesis = argsContextChildren.shift()
+    if (!(openParenthesis instanceof TerminalNode) || openParenthesis.symbol.text.localeCompare('(') !== 0) {
+        throw new Error('Error parsing exclusive parameters: expected an open parenthesis.')
+    }
+
+    //  functionCall  --{1}-->  objectCall  --{1}-->  args[args.length - 1] === ')'
+    const closeParenthesis = argsContextChildren.pop()
+    if (!(closeParenthesis instanceof TerminalNode) || closeParenthesis.symbol.text.localeCompare(')') !== 0) {
+        throw new Error('Error parsing exclusive parameters: expected a closing parenthesis.')
+    }
+
+    //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{0}-->  expressionList
+    if (argsContextChildren.length === 0) {
+        const completions = getCompletionsForParameter(0, signatures)
+
+        if (completions.length === 0) {
+            throw new Error('Error parsing exclusive parameters: no exclusive completions available.')
+        }
+
+        // Provide just the offset of the open parenthesis without any partial text.
+        return new Map([
+            [
+                openParenthesis.symbol.stop + 1,
+                { completions }
+            ]
+        ])
+    }
+
+    const expressionListContext = argsContextChildren.pop()
+    if (!(expressionListContext instanceof TspParser.ExpressionListContext)) {
+        throw new Error('Error parsing exclusive parameters: expected a list of expressions.')
+    }
+
+    // Get all comma TerminalNodes from the expressionList.
+    const commaTerminals = expressionListContext.children.filter((child: ParserRuleContext | TerminalNode) => {
+        return child instanceof TerminalNode && child.symbol.text.localeCompare(',') === 0
+    })
+
+    // TODO: if there are no commaTerminals, then return a Map with the partial text of the expressionList.
+    // (offset = openParen.stop + 1 + text.length)
+
+    // TODO: loop through each item in the expression list.
+
+    const result = new Map<number, ExclusiveContext>()
+
+    return (result.size !== 0) ? result : undefined
 }
 
 /**
