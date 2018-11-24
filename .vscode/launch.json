@@ -5,11 +5,22 @@
         {
             "type": "antlr-debug",
             "request": "launch",
-            "name": "Run Parser",
+            "name": "Pretty Parse",
             "input": "test/grammars/bit-of-everything.lua",
             "startRule": "chunk",
             "visualParseTree": true,
             "grammar": "server/grammar/Tsp.g4"
+        },
+        {
+            "type": "antlr-debug",
+            "request": "launch",
+            "name": "Text Parse",
+            "input": "test/grammars/bit-of-everything.lua",
+            "startRule": "chunk",
+            "visualParseTree": false,
+            "grammar": "server/grammar/Tsp.g4",
+            "printParseTree": true,
+            "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "name": "Launch Client",
