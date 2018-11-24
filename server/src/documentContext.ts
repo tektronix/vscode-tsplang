@@ -548,8 +548,67 @@ export class DocumentContext extends TspListener {
         }
 
         if (context.exception !== null) {
+            // TODO pick up the slack when the parser chokes.
+
+            // Get the index of the token list at which the exception starts.
+            const tokenIndex = context.start.tokenIndex
+
+            // Get all tokens starting at the exception index.
+            const tokens = this.tokenStream.tokens.slice(tokenIndex)
+
+            // Grab all NAME types and namespace accessors ('.' only).
+            let signatureLabel: string | undefined
+            for (const t of tokens) {
+                if (t.type === TspLexer.NAME || t.text.localeCompare('.') === 0) {
+                    signatureLabel = (signatureLabel === undefined) ? t.text : signatureLabel + t.text
+
+                    continue
+                }
+
+                break
+            }
+
+            if (signatureLabel === undefined) {
+                return
+            }
+
+            const signatures = this.commandSet.signatures.filter((signature: InstrumentSignatureInformation) => {
+                // We can drop any matching signatures that don't provide any exclusive completions.
+                return signature.data !== undefined
+                    && resolveSignatureNamespace(signature).localeCompare(signatureLabel as string) === 0
+            })
+
+            if (signatures.length === 0) {
+                return
+            }
+
+            // TODO
+            // Given the following code variations:
+            //      b(1,)
+            //      b(1,,3)
+            //      b.c(1,)
+            //      b.c(1,,3)
+            //      etc.
+            // The statement structure will capture the opening parenthesis, closing parenthesis, and everything
+            // in-between. This includes string variations. All whitespace is handled properly.
+            // The children of the StatementContext will be ErrorNodes. One for each lexical item.
+            // The structure resembles the following for `(1,,3)`:
+            //   statement (
+            //     <Error>"("
+            //     <Error>"1"
+            //     <Error>","
+            //     <Error>","
+            //     <Error>"3"
+            //     <Error>")"
+            //   )
+            //
+            // This should trigger a manual search for exclusive parameter offsets.
+            //
+            // NOTE: this is false for nested signatures with empty parameters.
+
             return
         }
+
         this.globals = this.getCompletionsFromContext(context)
     }
 
