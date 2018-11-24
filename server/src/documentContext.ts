@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
+import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
@@ -334,8 +334,7 @@ function getExclusiveAssignmentCompletions(
 
 function getExclusiveParameterCompletions(
     context: TspParser.FunctionCallContext,
-    commandSet: CommandSet,
-    document: TextDocument
+    commandSet: CommandSet
 ): Map<number, ExclusiveContext> | undefined {
     // No signatures means no exclusive completions.
     if (commandSet.signatures.length === 0) {
@@ -367,38 +366,34 @@ function getExclusiveParameterCompletions(
             && resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
     })
 
-    // TODO
-    //  1st Param: the stop offset of the open parenthesis.
-    //       text: the text of expression 1.
-    //  2nd Param: the stop offset of comma 1.
-    //       text: the text of expression 2.
-    //  ...
-    //  Nth Param: the stop offset of comma N-1 OR the start offset of the close parenthesis.
-    //       text: the text of expression N.
-
     const argsContextChildren = argsContext.children
 
     //  functionCall  --{1}-->  objectCall  --{1}-->  args[0] === '('
     const openParenthesis = argsContextChildren.shift()
     if (!(openParenthesis instanceof TerminalNode) || openParenthesis.symbol.text.localeCompare('(') !== 0) {
-        throw new Error('Error parsing exclusive parameters: expected an open parenthesis.')
+        throw new Error('Exclusive Parameter Parser: expected an open parenthesis.')
     }
 
     //  functionCall  --{1}-->  objectCall  --{1}-->  args[args.length - 1] === ')'
     const closeParenthesis = argsContextChildren.pop()
     if (!(closeParenthesis instanceof TerminalNode) || closeParenthesis.symbol.text.localeCompare(')') !== 0) {
-        throw new Error('Error parsing exclusive parameters: expected a closing parenthesis.')
+        throw new Error('Exclusive Parameter Parser: expected a closing parenthesis.')
     }
 
     //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{0}-->  expressionList
-    if (argsContextChildren.length === 0) {
+    if (argsContextChildren.length === 0 || argsContext.expressionList() === null) {
         const completions = getCompletionsForParameter(0, signatures)
 
+        // Provide nothing if this parameter has no exclusive completions.
+        // Example:
+        //  buffer.write.format()
         if (completions.length === 0) {
-            throw new Error('Error parsing exclusive parameters: no exclusive completions available.')
+            return
         }
 
         // Provide just the offset of the open parenthesis without any partial text.
+        // Example:
+        //  display.prompt()
         return new Map([
             [
                 openParenthesis.symbol.stop + 1,
@@ -407,22 +402,55 @@ function getExclusiveParameterCompletions(
         ])
     }
 
+    //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  expressionList
     const expressionListContext = argsContextChildren.pop()
     if (!(expressionListContext instanceof TspParser.ExpressionListContext)) {
-        throw new Error('Error parsing exclusive parameters: expected a list of expressions.')
+        throw new Error('Exclusive Parameter Parser: expected a list of expressions.')
     }
 
-    // Get all comma TerminalNodes from the expressionList.
-    const commaTerminals = expressionListContext.children.filter((child: ParserRuleContext | TerminalNode) => {
-        return child instanceof TerminalNode && child.symbol.text.localeCompare(',') === 0
+    // Get all child comma TerminalNodes from the expressionList.
+    const commaTerminals = new Array<TerminalNode>()
+    expressionListContext.children.forEach((child: ParserRuleContext | TerminalNode) => {
+        if (child instanceof TerminalNode && child.symbol.text.localeCompare(',') === 0) {
+            commaTerminals.push(child)
+        }
     })
 
-    // TODO: if there are no commaTerminals, then return a Map with the partial text of the expressionList.
-    // (offset = openParen.stop + 1 + text.length)
+    // Get all child ParserRuleContext nodes from the expressionList.
+    const parameters = new Array<ParserRuleContext>()
+    expressionListContext.children.forEach((child: ParserRuleContext | TerminalNode) => {
+        if (child instanceof ParserRuleContext) {
+            parameters.push(child)
+        }
+    })
 
-    // TODO: loop through each item in the expression list.
-
+    // Start collecting the results.
     const result = new Map<number, ExclusiveContext>()
+
+    // NOTE: there will never be an empty parameter because they make the parser choke on
+    //  the entire statement context.
+    parameters.forEach((parameterContext: ParserRuleContext, index: number) => {
+        const completions = getCompletionsForParameter(index, signatures)
+
+        // If this parameter has no exclusive completions.
+        if (completions.length === 0) {
+            return
+        }
+
+        const lastTerminal = getTerminals(parameterContext).pop()
+
+        if (lastTerminal === undefined) {
+            throw new Error('Exclusive Parameter Parser: context contains no terminal nodes.')
+        }
+
+        result.set(
+            lastTerminal.symbol.stop + 1,
+            {
+                completions,
+                text: parameterContext.getText()
+            }
+        )
+    })
 
     return (result.size !== 0) ? result : undefined
 }
@@ -471,9 +499,11 @@ export class DocumentContext extends TspListener {
     /** Map<valid exclusive offset, exclusives offset key> */
     private fuzzyOffsets: Map<number, number>
     private globals: Map<string, Array<DocumentCompletionContext>>
+    private inputStream: InputStream
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
+    private tokenStream: CommonTokenStream
 
     constructor(commandSet: CommandSet, document: TextDocument) {
         super()
@@ -499,18 +529,10 @@ export class DocumentContext extends TspListener {
             }
         }
 
-        if (context.exception !== null) {
-            return
-        }
-
         //  statement  --{1}-->  functionCall
         const functionCallContext = context.functionCall()
         if (functionCallContext !== null) {
-            const newParameterExclusives = getExclusiveParameterCompletions(
-                functionCallContext,
-                this.commandSet,
-                this.document
-            )
+            const newParameterExclusives = getExclusiveParameterCompletions(functionCallContext, this.commandSet)
 
             if (newParameterExclusives !== undefined) {
                 for (const key of newParameterExclusives.keys()) {
@@ -525,6 +547,9 @@ export class DocumentContext extends TspListener {
             }
         }
 
+        if (context.exception !== null) {
+            return
+        }
         this.globals = this.getCompletionsFromContext(context)
     }
 
@@ -578,8 +603,10 @@ export class DocumentContext extends TspListener {
         this.fuzzyOffsets = new Map()
         this.globals = new Map()
 
-        this.lexer = new TspLexer(new InputStream(this.content))
-        this.parser = new TspParser(new CommonTokenStream(this.lexer))
+        this.inputStream = new InputStream(this.content)
+        this.lexer = new TspLexer(this.inputStream)
+        this.tokenStream = new CommonTokenStream(this.lexer)
+        this.parser = new TspParser(this.tokenStream)
         this.parser.buildParseTrees = true
 
         this.parseTree = this.parser.chunk()
