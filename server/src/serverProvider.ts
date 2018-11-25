@@ -17,7 +17,6 @@
 
 import { Position, SignatureHelp } from 'vscode-languageserver'
 
-import { isPartialMatch } from './completionProcessor'
 import { InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace } from './instrument/provider'
 import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
@@ -112,7 +111,7 @@ export function getCompletions(position: Position, tspItem: TspItem): Array<Inst
     if (tspItem.context !== undefined) {
         // Attempt to partial match against the current user completion items.
         for (const completion of tspItem.context.getCompletionItems(position)) {
-            if (isPartialMatch(unreversed, completion)) {
+            if (InstrumentCompletionItem.namespaceMatch(unreversed, completion)) {
                 results.push(completion)
             }
         }

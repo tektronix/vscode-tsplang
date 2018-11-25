@@ -22,7 +22,6 @@ import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserve
 
 import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
-import { isPartialMatch } from './completionProcessor'
 import { CommandSet } from './instrument'
 import { InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from './instrument/provider'
 import { getVariableCompletions } from './rule-handler'
@@ -627,7 +626,7 @@ export class DocumentContext extends TspListener {
 
             if (exclusiveContext.text !== undefined) {
                 for (const completion of exclusiveContext.completions) {
-                    if (isPartialMatch(exclusiveContext.text, completion)) {
+                    if (InstrumentCompletionItem.namespaceMatch(exclusiveContext.text, completion)) {
                         exclusiveResult.push(completion)
                     }
                 }
