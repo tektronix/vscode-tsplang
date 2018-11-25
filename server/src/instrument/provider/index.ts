@@ -98,8 +98,7 @@ export namespace InstrumentCompletionItem {
     }
 
     /**
-     * Compare the labels and data.domain properties of two items to determine their equality.
-     *
+     * Compare the labels and data.domains properties of two items to determine their equality.
      * @param a The first item.
      * @param b The second item.
      * @returns True if the two items match and false otherwise.
