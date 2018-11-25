@@ -23,8 +23,6 @@ import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspManager'
 
-let lastCompletionUri: string | undefined
-
 const namespaceRegexp = new RegExp(/^[a-zA-Z0-9\[\].]*/)
 const tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
@@ -70,8 +68,6 @@ export function resolveCompletion(item: InstrumentCompletionItem, tspItem: TspIt
 }
 
 export function getCompletions(position: Position, tspItem: TspItem): Array<InstrumentCompletionItem> | undefined {
-    lastCompletionUri = tspItem.context.document.uri
-
     // We cannot provide completions if none exist
     if (tspItem.context.commandSet.completions.length === 0) {
         return
