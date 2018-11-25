@@ -17,8 +17,8 @@
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
-import { CommandDocumentation } from '../../../../../server/src/instrument/provider'
 import * as Namespace from '../../../../../server/src/instrument/provider/smu-source-ilimit'
+import { CommandDocumentation } from '../../../../../server/src/wrapper'
 import { emptySpec } from '../emptySpec'
 
 @suite class SmuSourceIlimitTest {

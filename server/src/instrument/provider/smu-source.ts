@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
+import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
+import { InstrumentSpec } from '..'
 
 export const completionDocs: Map<string, CommandDocumentation> = new Map([
     [

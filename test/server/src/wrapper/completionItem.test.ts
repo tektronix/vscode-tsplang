@@ -17,8 +17,7 @@
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
-import { isPartialMatch } from '../../../server/src/completionProcessor'
-import { InstrumentCompletionItem } from '../../../server/src/instrument/provider'
+import { InstrumentCompletionItem } from '../../../../server/src/wrapper'
 
 function toString(completion: InstrumentCompletionItem): string {
     let result = '{label: "' + completion.label + '"'
@@ -36,15 +35,15 @@ function toString(completion: InstrumentCompletionItem): string {
     return result + '}'
 }
 
-@suite class CompletionProcessorTest {
-    @test('isPartialMatch')
-    isPartialMatchTest(): void {
+@suite class InstrumentCompletionItemTest {
+    @test('namespaceMatch')
+    namespaceMatchTest(): void {
         let testString = ''
         let testCompletion: InstrumentCompletionItem = {
             label: 'a'
         }
         assert(
-            isPartialMatch(testString, testCompletion),
+            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
         )
 
@@ -53,7 +52,7 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'a'
         }
         assert(
-            isPartialMatch(testString, testCompletion),
+            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
         )
 
@@ -62,7 +61,7 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'a'
         }
         assert(
-            ! isPartialMatch(testString, testCompletion),
+            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
         )
 
@@ -71,7 +70,7 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'b'
         }
         assert(
-            isPartialMatch(testString, testCompletion),
+            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
         )
 
@@ -80,7 +79,7 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'a'
         }
         assert(
-            ! isPartialMatch(testString, testCompletion),
+            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
         )
 
@@ -89,7 +88,7 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'b'
         }
         assert(
-            ! isPartialMatch(testString, testCompletion),
+            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
         )
 
@@ -98,7 +97,7 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'partial'
         }
         assert(
-            ! isPartialMatch(testString, testCompletion),
+            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
         )
 
@@ -107,21 +106,21 @@ function toString(completion: InstrumentCompletionItem): string {
             label: 'partial'
         }
         assert(
-            isPartialMatch(testString, testCompletion),
+            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
             '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
         )
     }
 
     // Issue #31 - Unescaped regular expression string input.
-    @test('isPartialMatch Unescaped Regexp')
-    isPartialMatchUnescapedRegexpTest(): void {
+    @test('namespaceMatch Unescaped Regexp')
+    namespaceMatchUnescapedRegexpTest(): void {
         let testStrings: Array<string> = ['(', '[', 'a(', 'a[']
         let testCompletion: InstrumentCompletionItem = {
             label: 'a'
         }
         try {
             testStrings.forEach((str: string) => {
-                isPartialMatch(str, testCompletion)
+                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
             })
         } catch (err) {
             assert(
@@ -136,7 +135,7 @@ function toString(completion: InstrumentCompletionItem): string {
         }
         try {
             testStrings.forEach((str: string) => {
-                isPartialMatch(str, testCompletion)
+                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
             })
         } catch (err) {
             assert(
@@ -152,7 +151,7 @@ function toString(completion: InstrumentCompletionItem): string {
         }
         try {
             testStrings.forEach((str: string) => {
-                isPartialMatch(str, testCompletion)
+                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
             })
         } catch (err) {
             assert(
@@ -167,7 +166,7 @@ function toString(completion: InstrumentCompletionItem): string {
         }
         try {
             testStrings.forEach((str: string) => {
-                isPartialMatch(str, testCompletion)
+                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
             })
         } catch (err) {
             assert(

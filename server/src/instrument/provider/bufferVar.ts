@@ -17,7 +17,7 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem } from '.'
+import { InstrumentCompletionItem } from '../../wrapper'
 
 export const completions: Array<InstrumentCompletionItem> = [
     // No bufferVar namespace

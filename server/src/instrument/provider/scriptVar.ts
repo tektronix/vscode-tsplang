@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
+import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     // No scriptVar namespace

@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '.'
+import { InstrumentSpec } from '..'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 

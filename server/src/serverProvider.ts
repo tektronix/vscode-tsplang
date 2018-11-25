@@ -15,31 +15,16 @@
  */
 'use strict'
 
-import { Position, SignatureHelp } from 'vscode-languageserver'
+import { Position } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace } from './instrument/provider'
+import { resolveCompletionNamespace } from './instrument/provider'
 import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspManager'
+import { InstrumentCompletionItem, InstrumentSignatureHelp, InstrumentSignatureInformation } from './wrapper'
 
 const namespaceRegexp = new RegExp(/^[a-zA-Z0-9\[\].]*/)
 const tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
-
-/**
- * Reverse the given string.
- * @param value - The string to reverse.
- * @returns The given string in reverse order.
- */
-function reverse(value: string): string {
-    // Convert the string to an array of characters,
-    // Reverse the array of characters
-    // Convert the array to a string
-    return value.split('').reverse().join('')
-}
-
-export interface InstrumentSignatureHelp extends SignatureHelp {
-    signatures: Array<InstrumentSignatureInformation>
-}
 
 export function resolveCompletion(item: InstrumentCompletionItem, tspItem: TspItem): InstrumentCompletionItem {
     const result = item
@@ -80,7 +65,7 @@ export function getCompletions(position: Position, tspItem: TspItem): Array<Inst
     // Get all text before the cursor offset, reverse it, and match against it.
     // Reversing allows for a simpler regular expression since the match
     // will start at the beginning of the string.
-    const reverseMatches = reverse(contentText.slice(0, offset)).match(namespaceRegexp)
+    const reverseMatches = contentText.slice(0, offset).split('').reverse().join('').match(namespaceRegexp)
 
     if (reverseMatches === null) {
         return
@@ -106,7 +91,7 @@ export function getCompletions(position: Position, tspItem: TspItem): Array<Inst
     }
 
     // Un-reverse the string and remove any table indexers
-    const unreversed = reverse(firstMatch.replace(tableIndexRegexp, ''))
+    const unreversed = firstMatch.replace(tableIndexRegexp, '').split('').reverse().join('')
 
     if (tspItem.context !== undefined) {
         // Attempt to partial match against the current user completion items.
@@ -153,7 +138,7 @@ export function getSignatureHelp(position: Position, tspItem: TspItem): Instrume
     }
 
     // Get all text before the open-parenthesis offset, reverse it, and remove leading horizontal spaces
-    const reversed = reverse(contentText.slice(0, openParenOffset)).replace(/^\s*/, '')
+    const reversed = contentText.slice(0, openParenOffset).split('').reverse().join('').replace(/^\s*/, '')
     // Match against the reversed string.
     const reverseMatches = reversed.match(namespaceRegexp)
 
@@ -168,7 +153,7 @@ export function getSignatureHelp(position: Position, tspItem: TspItem): Instrume
     }
 
     // Un-reverse the string and remove digits inside of table indexers
-    const unreversed = reverse(firstMatch).replace(tableIndexRegexp, '[]')
+    const unreversed = firstMatch.split('').reverse().join('').replace(tableIndexRegexp, '[]')
 
     const results: Array<InstrumentSignatureInformation> = new Array()
 

@@ -18,8 +18,8 @@ import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 import { ParameterInformation } from 'vscode-languageclient'
 
-import { InstrumentSignatureInformation } from '../../../../../server/src/instrument/provider'
 import * as Namespace from '../../../../../server/src/instrument/provider/eventlog'
+import { InstrumentSignatureInformation } from '../../../../../server/src/wrapper'
 import { emptySpec } from '../emptySpec'
 
 @suite class EventlogTest {

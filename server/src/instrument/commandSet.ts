@@ -13,8 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+'use strict'
+
+import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../wrapper'
+
 import { InstrumentSpec } from '.'
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from './provider'
+import { resolveCompletionNamespace, resolveSignatureNamespace } from './provider'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, CommandDocumentation>

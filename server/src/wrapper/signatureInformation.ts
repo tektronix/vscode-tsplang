@@ -15,19 +15,21 @@
  */
 'use strict'
 
-import { CompletionItemKind } from 'vscode-languageserver'
+import { ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem } from '../../wrapper'
+import { InstrumentSpec } from '../instrument'
 
-export const completions: Array<InstrumentCompletionItem> = [
-    {
-        data: { domains: ['lan'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'MODE_AUTO'
-    },
-    {
-        data: { domains: ['lan'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'MODE_MANUAL'
-    },
-]
+import { InstrumentCompletionItem } from '.'
+
+export interface SignatureData {
+    parameterTypes: Map<number, Array<InstrumentCompletionItem>>
+    /**
+     * Used to internally differentiate multiple signatures with the same label.
+     */
+    qualifier?: number
+}
+
+export interface InstrumentSignatureInformation extends SignatureInformation {
+    data?: SignatureData
+    getFormattedParameters(spec: InstrumentSpec): Array<ParameterInformation>
+}

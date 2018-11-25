@@ -15,19 +15,6 @@
  */
 'use strict'
 
-import { CompletionItemKind } from 'vscode-languageserver'
-
-import { InstrumentCompletionItem } from '../../wrapper'
-
-export const completions: Array<InstrumentCompletionItem> = [
-    {
-        data: { domains: ['lan'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'MODE_AUTO'
-    },
-    {
-        data: { domains: ['lan'] },
-        kind: CompletionItemKind.EnumMember,
-        label: 'MODE_MANUAL'
-    },
-]
+export * from './completionItem'
+export * from './signatureHelp'
+export * from './signatureInformation'

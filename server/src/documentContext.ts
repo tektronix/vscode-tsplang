@@ -23,8 +23,9 @@ import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserve
 import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
 import { CommandSet } from './instrument'
-import { InstrumentCompletionItem, InstrumentSignatureInformation, resolveCompletionNamespace, resolveSignatureNamespace } from './instrument/provider'
+import { resolveCompletionNamespace, resolveSignatureNamespace } from './instrument/provider'
 import { getVariableCompletions } from './rule-handler'
+import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
 
 export interface DocumentCompletionContext {
     completion: InstrumentCompletionItem
