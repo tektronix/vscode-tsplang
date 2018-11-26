@@ -106,7 +106,7 @@ export class TspPool {
             // All models need the Lua entry, except the Lua model.
             if (model !== Model.LUA) {
                 try {
-                    luaEntry = this.get(Model.LUA)
+                    luaEntry = await this.register(Model.LUA)
                 }
                 catch (e) {
                     reject(new Error('Load failure: ' + e.toString()))
