@@ -18,7 +18,7 @@
 import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
-import { CompletionItemKind, Position, TextDocument } from 'vscode-languageserver'
+import { CompletionItemKind, Position, Range, TextDocument } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
@@ -27,6 +27,7 @@ import { resolveSignatureNamespace } from './instrument/provider'
 import { ExclusiveMap, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { GlobalMap } from './language-comprehension/global-completion'
 import { getAssignmentCompletions, getGlobalCompletions, getParameterCompletions } from './language-comprehension/parser-context-handler'
+import { SignatureMap } from './language-comprehension/signature'
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
 
 export class DocumentContext extends TspListener {
@@ -39,6 +40,7 @@ export class DocumentContext extends TspListener {
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
+    private signatures: SignatureMap
     private tokenStream: CommonTokenStream
 
     constructor(commandSet: CommandSet, document: TextDocument) {
@@ -64,7 +66,13 @@ export class DocumentContext extends TspListener {
         //  statement  --{1}-->  functionCall
         const functionCallContext = context.functionCall()
         if (functionCallContext !== null) {
-            const newParameterExclusives = getParameterCompletions(functionCallContext, this.commandSet)
+            // TODO: we can also parse the range of each parameter since we're doing that in
+            // this method anyway.
+            const newParameterExclusives = getParameterCompletions(
+                functionCallContext,
+                this.commandSet,
+                this.registerSignatures.bind(this)
+            )
 
             if (newParameterExclusives !== undefined) {
                 this.fuzzyOffsets.fuzz(...newParameterExclusives.keys())
@@ -184,10 +192,25 @@ export class DocumentContext extends TspListener {
         return result
     }
 
+    registerSignatures(
+        open: TerminalNode,
+        close: TerminalNode,
+        signatures: Array<InstrumentSignatureInformation>
+    ): void {
+        this.signatures.set(open.symbol.stop + 1, {
+            signatures,
+            range: Range.create(
+                this.document.positionAt(open.symbol.stop + 1),
+                this.document.positionAt(close.symbol.start)
+            )
+        })
+    }
+
     update(): void {
         this.exclusives = new ExclusiveMap()
         this.fuzzyOffsets = new FuzzyOffsetMap(this.document.getText())
         this.globals = new GlobalMap()
+        this.signatures = new SignatureMap()
 
         this.inputStream = new InputStream(this.document.getText())
         this.lexer = new TspLexer(this.inputStream)

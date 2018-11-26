@@ -54,7 +54,12 @@ function getCompletionsForParameter(
 
 export function getParameterCompletions(
     context: TspParser.FunctionCallContext,
-    commandSet: CommandSet
+    commandSet: CommandSet,
+    registerSignatures: (
+        open: TerminalNode,
+        close: TerminalNode,
+        signatures: Array<InstrumentSignatureInformation>
+    ) => void
 ): ExclusiveMap | undefined {
     // No signatures means no exclusive completions.
     if (commandSet.signatures.length === 0) {
@@ -80,10 +85,13 @@ export function getParameterCompletions(
 
     const signatureLabel = resolveSignatureNamespace({ label: context.getText() })
 
-    const signatures = commandSet.signatures.filter((signature: InstrumentSignatureInformation) => {
+    const matchingSignatures = commandSet.signatures.filter((signature: InstrumentSignatureInformation) => {
+        return resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
+    })
+
+    const signatures = matchingSignatures.filter((signature: InstrumentSignatureInformation) => {
         // We can drop any matching signatures that don't provide any exclusive completions.
         return signature.data !== undefined
-            && resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
     })
 
     const argsContextChildren = argsContext.children
@@ -98,6 +106,11 @@ export function getParameterCompletions(
     const closeParenthesis = argsContextChildren.pop()
     if (!(closeParenthesis instanceof TerminalNode) || closeParenthesis.symbol.text.localeCompare(')') !== 0) {
         throw new Error('Exclusive Parameter Parser: expected a closing parenthesis.')
+    }
+
+    // If we have matching instrument signatures, then register them using the found parentheses
+    if (matchingSignatures.length > 0) {
+        registerSignatures(openParenthesis, closeParenthesis, matchingSignatures)
     }
 
     //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{0}-->  expressionList
