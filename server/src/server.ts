@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
 import { getCompletions, getSignatureHelp, resolveCompletion } from './serverProvider'
 import { TspManager } from './tspManager'

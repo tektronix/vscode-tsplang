@@ -38,20 +38,15 @@ export class TspPool {
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
-            const entry = this.pool.get(model)
+            // If the model has already been loaded.
+            if (this.pool.has(model)) {
+                resolve(this.get(model))
 
-            // if the model has already been loaded
-            if (entry !== undefined) {
-                entry.references++
-                // update the pool
-                this.pool.set(model, entry)
-
-                resolve(entry)
+                return
             }
 
-            let newEntry: PoolEntry
             try {
-                newEntry = await this.load(model)
+                const newEntry = await this.load(model)
                 // add new model to the current pool
                 this.pool.set(model, newEntry)
 
@@ -83,14 +78,45 @@ export class TspPool {
         }
     }
 
+    private get(model: Model): PoolEntry {
+        const entry = this.pool.get(model)
+
+        if (entry === undefined) {
+            throw new Error(`attempted to access the non-existant ${model} entry.`)
+        }
+
+        entry.references++
+        this.pool.set(model, entry)
+
+        // Update the Lua entry unless the given model is a Lua model.
+        if (model !== Model.LUA) {
+            this.pool.get(Model.LUA)
+        }
+
+        return entry
+    }
+
     private load = async (model: Model): Promise<PoolEntry> => {
         return new Promise<PoolEntry>(async (
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
         ) : Promise<void> => {
+            let luaEntry: PoolEntry | undefined
+
+            // All models need the Lua entry, except the Lua model.
+            if (model !== Model.LUA) {
+                try {
+                    luaEntry = this.get(Model.LUA)
+                }
+                catch (e) {
+                    reject(new Error('Load failure: ' + e.toString()))
+                }
+            }
+
             switch (model) {
                 case Model.KI2450:
                 case Model.KI2460:
+                case Model.LUA:
                     try {
                         const instrModule: InstrumentModule = require(`./instrument/${model}`)
 
@@ -98,6 +124,16 @@ export class TspPool {
                         const spec: InstrumentSpec = await instrModule.getInstrumentSpec()
 
                         const cmdSet: CommandSet = await generateCommandSet(api, spec)
+
+                        // If this is not a Lua model, then merge the Lua entry.
+                        if (luaEntry !== undefined) {
+                            api.push(...luaEntry.apiSpec)
+                            cmdSet.add({
+                                completionDocs: luaEntry.commandSet.completionDocs,
+                                completions: luaEntry.commandSet.completions,
+                                signatures: luaEntry.commandSet.signatures
+                            })
+                        }
 
                         resolve({
                             apiSpec: api,

@@ -150,7 +150,7 @@ const table: ApiSpec = {
     label: 'table'
 }
 
-export function getLuaApiSpec(): Array<ApiSpec> {
+export function getApiSpec(): Array<ApiSpec> {
     return [
         coroutine,
         functions,
@@ -162,7 +162,7 @@ export function getLuaApiSpec(): Array<ApiSpec> {
     ]
 }
 
-export function getLuaInstrumentSpec(): InstrumentSpec {
+export function getInstrumentSpec(): InstrumentSpec {
     return {
         beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
         current: {

@@ -17,11 +17,11 @@
 
 import { CompletionItemKind, Position } from 'vscode-languageserver'
 
-import { TspParser } from '../../antlr4-tsplang'
+import { TspParser } from '../../../../antlr4-tsplang'
 
-import { DocumentCompletionContext } from '../documentContext'
+import { GlobalContext } from '../../global-completion'
 
-export function getVariableCompletions(context: TspParser.VariableContext): Array<DocumentCompletionContext> {
+export function getVariableCompletions(context: TspParser.VariableContext): Array<GlobalContext> {
     // Only handle cases where variables are on the left-hand side of a statement.
     // The context.parent.parent check serves as protection against any future grammar changes.
     if (! (context.parentCtx instanceof TspParser.VariableListContext)
@@ -42,7 +42,7 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
         }]
     }
 
-    const result = new Array<DocumentCompletionContext>()
+    const result = new Array<GlobalContext>()
 
     //  variable  --{0}-->  prefix
     const prefixContext = context.prefix()
@@ -60,7 +60,7 @@ export function getVariableCompletions(context: TspParser.VariableContext): Arra
         return []
     }
 
-    let lastCompletion: DocumentCompletionContext = {
+    let lastCompletion: GlobalContext = {
         completion: {
             // Because is this a prefix, it is guaranteed to have indices, thus making it a table.
             kind: CompletionItemKind.Module,

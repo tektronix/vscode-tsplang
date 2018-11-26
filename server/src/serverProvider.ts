@@ -20,7 +20,7 @@ import { Position } from 'vscode-languageserver'
 import { resolveCompletionNamespace } from './instrument/provider'
 import { parentheses } from './lua/pair'
 import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
-import { TspItem } from './tspManager'
+import { TspItem } from './tspItem'
 import { InstrumentCompletionItem, InstrumentSignatureHelp, InstrumentSignatureInformation } from './wrapper'
 
 const namespaceRegexp = new RegExp(/^[a-zA-Z0-9\[\].]*/)

@@ -16,7 +16,6 @@
 'use strict'
 
 import { ApiSpec, InstrumentSpec } from '..'
-import { getLuaApiSpec } from '../lua'
 
 const beeper: ApiSpec = {
     children: [
@@ -942,7 +941,7 @@ const userstring: ApiSpec = {
 const waitcomplete: ApiSpec = { label: 'waitcomplete' }
 
 export function getApiSpec(): Array<ApiSpec> {
-    return getLuaApiSpec().concat([
+    return [
         beeper,
         bufferWrite,
         buffer,
@@ -1006,7 +1005,7 @@ export function getApiSpec(): Array<ApiSpec> {
         upgrade,
         userstring,
         waitcomplete
-    ])
+    ]
 }
 
 export function getInstrumentSpec(): InstrumentSpec {

@@ -26,9 +26,9 @@ import { emptySpec } from '../emptySpec'
     @test('Exports ApiSpec array')
     exportsCompletions(): void {
         // tslint:disable-next-line:no-magic-numbers
-        assert(Namespace.getLuaApiSpec().length === 7, 'Lua ApiSpec contains unknown namespaces')
+        assert(Namespace.getApiSpec().length === 7, 'Lua ApiSpec contains unknown namespaces')
 
-        Namespace.getLuaApiSpec().forEach((value: ApiSpec) => {
+        Namespace.getApiSpec().forEach((value: ApiSpec) => {
             switch (value.label) {
                 case 'coroutine':
                 case 'functions':
@@ -47,7 +47,7 @@ import { emptySpec } from '../emptySpec'
     @test('Exports empty InstrumentSpec')
     exportsEmptyInstrumentSpec(): void {
         assert(
-            isEqual(Namespace.getLuaInstrumentSpec(), emptySpec),
+            isEqual(Namespace.getInstrumentSpec(), emptySpec),
             'Lua InstrumentSpec is not an empty specification'
         )
     }

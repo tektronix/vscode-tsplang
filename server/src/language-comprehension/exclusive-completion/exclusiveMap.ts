@@ -15,4 +15,10 @@
  */
 'use strict'
 
-export * from './variable'
+import { ExclusiveContext } from './exclusiveContext'
+
+export class ExclusiveMap extends Map<number, ExclusiveContext> {
+    constructor(iterable?: Iterable<[number, ExclusiveContext]>) {
+        (iterable === undefined) ? super() : super(iterable)
+    }
+}
