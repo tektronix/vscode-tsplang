@@ -17,15 +17,15 @@
 import { assert } from 'chai'
 import { suite, test } from 'mocha-typescript'
 
-import { Shebang } from '../../../server/src/shebang'
+import { ShebangToken } from '../../../server/src/shebangToken'
 
 @suite class ShebangTest {
     @test('Error on invalid prefix')
     errorOnInvalidPrefix(): Promise<void> {
         const shebangLine = '--2450;'
 
-        return Shebang.tokenize(shebangLine).then(() => { return }).catch((error: Error) => {
-            assert(error.message === 'No \"' + Shebang.prefix + '\" detected on the first line of the file.')
+        return ShebangToken.tokenize(shebangLine).then(() => { return }).catch((error: Error) => {
+            assert(error.message === 'No \"' + ShebangToken.prefix + '\" detected on the first line of the file.')
         })
     }
 
@@ -33,7 +33,7 @@ import { Shebang } from '../../../server/src/shebang'
     errorOnUnknownModel(): Promise<void> {
         const shebangLine = '--#!Unknown;'
 
-        return Shebang.tokenize(shebangLine).then(() => { return }).catch((error: Error) => {
+        return ShebangToken.tokenize(shebangLine).then(() => { return }).catch((error: Error) => {
             assert(error.message === 'Model \"unknown\" is not a valid or supported model.')
         })
     }
@@ -42,7 +42,7 @@ import { Shebang } from '../../../server/src/shebang'
     ignoreDuplicateNodeAssignments(): Promise<void> {
         const shebangLine = '--#!2450; node[1] = 2450; node[1] = 6500; node[2] = 2460; node[2] = 6500'
 
-        return Shebang.tokenize(shebangLine).then((tokens: Array<Shebang.ShebangToken>): void => {
+        return ShebangToken.tokenize(shebangLine).then((tokens: Array<ShebangToken>): void => {
             assert(tokens.length === 3)
             assert(tokens[0].model === '2450')
 
@@ -60,7 +60,7 @@ import { Shebang } from '../../../server/src/shebang'
     ignoreInvalidNodeSyntax(): Promise<void> {
         const shebangLine = '--#!2450; GARBAGE!!!; node[0] = 2450; node[1] = Unknown; node[2] = 2461; node[65] = 6500'
 
-        return Shebang.tokenize(shebangLine).then((tokens: Array<Shebang.ShebangToken>): void => {
+        return ShebangToken.tokenize(shebangLine).then((tokens: Array<ShebangToken>): void => {
             assert(tokens.length === 2)
             assert(tokens[0].model === '2450')
 
@@ -75,7 +75,7 @@ import { Shebang } from '../../../server/src/shebang'
     parseModel(): Promise<void> {
         const shebangLine = '--#!2450;'
 
-        return Shebang.tokenize(shebangLine).then((tokens: Array<Shebang.ShebangToken>): void => {
+        return ShebangToken.tokenize(shebangLine).then((tokens: Array<ShebangToken>): void => {
             assert((tokens.length === 1))
             assert((tokens[0].model === '2450'))
         }).catch((error: Error) => {
@@ -87,7 +87,7 @@ import { Shebang } from '../../../server/src/shebang'
     parseMultipleNodes(): Promise<void> {
         const shebangLine = '--#!2450; node[1] = 2450; node[2] = 2460; node[5] = 2461; node[63] = 6500;'
 
-        return Shebang.tokenize(shebangLine).then((tokens: Array<Shebang.ShebangToken>): void => {
+        return ShebangToken.tokenize(shebangLine).then((tokens: Array<ShebangToken>): void => {
             assert(tokens.length === 5)
 
             assert(tokens[0].model === '2450')
@@ -112,7 +112,7 @@ import { Shebang } from '../../../server/src/shebang'
     parseSingleNode(): Promise<void> {
         const shebangLine = '--#!2450; node[1] = 2450;'
 
-        return Shebang.tokenize(shebangLine).then((tokens: Array<Shebang.ShebangToken>): void => {
+        return ShebangToken.tokenize(shebangLine).then((tokens: Array<ShebangToken>): void => {
             assert(tokens.length === 2)
             assert(tokens[0].model === '2450')
 

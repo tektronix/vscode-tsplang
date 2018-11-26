@@ -22,14 +22,14 @@ import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
 import { getLuaApiSpec, getLuaInstrumentSpec } from './instrument/lua'
 import { generateCommandSet } from './instrument/provider'
 import { Model } from './model'
-import { Shebang } from './shebang'
+import { ShebangToken } from './shebangToken'
 import { PoolEntry, TspPool } from './tspPool'
 
 export interface TspItem {
     context: DocumentContext
     node?: Map<number, CommandSet>
     rawShebang?: string
-    shebang?: Array<Shebang.ShebangToken>
+    shebang?: Array<ShebangToken>
 }
 
 export class TspManager {
@@ -234,18 +234,18 @@ export class TspManager {
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
-            let shebangTokens: Array<Shebang.ShebangToken>
+            let shebangTokens: Array<ShebangToken>
             try {
                 // get native Lua completions
                 const apiLua: Array<ApiSpec> = await getLuaApiSpec()
                 const specLua: InstrumentSpec = await getLuaInstrumentSpec()
 
                 // parse shebang tokens
-                shebangTokens = await Shebang.tokenize((shebangLine === undefined) ? '' : shebangLine)
+                shebangTokens = await ShebangToken.tokenize((shebangLine === undefined) ? '' : shebangLine)
                     .catch((reason: Error) => {
                         console.warn('Shebang Tokenizer: ' + reason.message)
 
-                        return new Array<Shebang.ShebangToken>()
+                        return new Array<ShebangToken>()
                     })
 
                 const basicTspItem: TspItem = {
@@ -268,9 +268,9 @@ export class TspManager {
         })
     }
 
-    private getModels = (tokens: Array<Shebang.ShebangToken>): Array<Model> => {
+    private getModels = (tokens: Array<ShebangToken>): Array<Model> => {
         const result: Array<Model> = new Array()
-        tokens.forEach((element: Shebang.ShebangToken) => {
+        tokens.forEach((element: ShebangToken) => {
             result.push(element.model)
         })
 
@@ -333,7 +333,7 @@ export class TspManager {
     private getShebangLine = (content: string): string | undefined => {
         // get the entire shebang line
         const matches = content.match(
-            (Shebang.prefix).concat('.*')
+            (ShebangToken.prefix).concat('.*')
         )
 
         if (matches === null) {

@@ -19,23 +19,19 @@ import { Model } from './model'
 
 /*
     Example valid shebang line:
-        --#!2450 node[1]=2636 node[11]=2461
+        --#!2450;node[1]=2636;node[11]=2461
 */
-export namespace Shebang {
+
+export interface ShebangToken {
+    model: Model
+    node?: number
+}
+export namespace ShebangToken {
     export const prefix = '--#!'
     export const maxNodeNumber = 64
     const separator = ';'
     const nodeAssignmentOp = '='
-
-    export interface ShebangToken {
-        model: Model
-        node?: number
-    }
-
-    const shebangRegexp: RegExp = new RegExp(
-        '^'.concat(prefix)
-    )
-
+    const shebangRegexp: RegExp = new RegExp('^'.concat(ShebangToken.prefix))
     const nodeRegexp: RegExp = new RegExp(
         '^\\s*node\\[[0-9]{1,2}\\]\\s*'.concat(
             nodeAssignmentOp,
