@@ -68,6 +68,11 @@ export class TspPool {
 
         entry.references--
 
+        // Call unregister for the Lua model unless the current model is a Lua model.
+        if (model !== Model.LUA) {
+            this.unregister(Model.LUA)
+        }
+
         // delete the pool if no document is referencing it
         if (entry.references === 0) {
             this.pool.delete(model)
