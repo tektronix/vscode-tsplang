@@ -15,7 +15,6 @@
  */
 'use strict'
 
-import { ParserRuleContext } from 'antlr4'
 // tslint:disable-next-line:no-submodule-imports
 import { TerminalNode } from 'antlr4/tree/Tree'
 import { TextDocument } from 'vscode-languageserver'
@@ -30,35 +29,27 @@ import { ExclusiveMap } from '../../exclusive-completion'
 import { getTerminals } from '../getTerminals'
 
 /**
- * Get an Exclusive Completion offset Map for the given context and command set.
- * @param context The StatementContext to parse for Exclusive Completions.
+ * Get an ExclusiveMap for the command set given the components of an assignment context.
+ * @param varListContext The variable list of an assignment.
+ * @param assignmentTerminal The assignment operator.
+ * @param expListContext The expressions being assigned.
  * @param commandSet The set of available commands to match variables against.
  * @param document The current document. Used to perform manual RegExp parsing
  * and offset conversion.
  * @returns An Exclusive Completion offset Map of <offset, ExclusiveContext>.
  */
 export function getAssignmentCompletions(
-    context: TspParser.StatementContext,
+    varListContext: TspParser.VariableListContext,
+    assignmentTerminal: TerminalNode,
+    expListContext: TspParser.ExpressionListContext,
     commandSet: CommandSet,
     document: TextDocument
 ): ExclusiveMap | undefined {
-    //  statement  --{0}-->  variableList
-    const varlistContext = context.variableList()
-    if (varlistContext === null) {
-        return
-    }
-
-    //  statement  --{0}-->  expressionList
-    const expListContext = context.expressionList()
-    if (expListContext === null) {
-        return
-    }
-
     // Keyed on the index of the variable with completions from the command set.
     // Think of it like partial results.
     const candidates = new ExclusiveMap()
 
-    const variables = varlistContext.variable()
+    const variables = varListContext.variable()
     for (let i = 0; i < variables.length; i++) {
         const candidate = variables[i]
 
@@ -88,15 +79,6 @@ export function getAssignmentCompletions(
                 }
             }
         }
-    }
-
-    const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
-        return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
-    })
-
-    // Give up if our predicate is undefined or a ParserRuleContext.
-    if (assignmentTerminal === undefined || assignmentTerminal instanceof ParserRuleContext) {
-        return
     }
 
     // Create an array of TerminalNodes containing only those we care about.

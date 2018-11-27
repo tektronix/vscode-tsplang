@@ -53,7 +53,28 @@ export class DocumentContext extends TspListener {
     }
 
     exitStatement(context: TspParser.StatementContext): void {
-        const newAssignmentExclusives = getAssignmentCompletions(context, this.commandSet, this.document)
+        // Context decompositions.
+        const variableList = context.variableList()
+        const expressionList = context.expressionList()
+
+        // Context TerminalNode filters.
+        const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
+            return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
+        })
+
+        let newAssignmentExclusives: ExclusiveMap | undefined
+        //  statement  --{1}-->  variableList
+        //             --{1}-->  '='
+        //             --{1}-->  expressionList
+        if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
+            newAssignmentExclusives = getAssignmentCompletions(
+                variableList,
+                assignmentTerminal,
+                expressionList,
+                this.commandSet,
+                this.document
+            )
+        }
 
         if (newAssignmentExclusives !== undefined) {
             this.fuzzyOffsets.fuzz(...newAssignmentExclusives.keys())
