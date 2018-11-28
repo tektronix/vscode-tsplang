@@ -15,20 +15,27 @@
  */
 'use strict'
 
-import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
-// tslint:disable-next-line:no-submodule-imports
+import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
+// tslint:disable:no-submodule-imports
+import { RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
+// tslint:enable:no-submodule-imports
 import { Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
 import { CommandSet } from './instrument'
 import { resolveSignatureNamespace } from './instrument/provider'
+import { TokenUtil } from './language-comprehension'
 import { ExclusiveMap, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { GlobalMap } from './language-comprehension/global-completion'
 import { getAssignmentCompletions, getGlobalCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext, SignatureMap } from './language-comprehension/signature'
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
+
+declare class CorrectRecogException extends RecognitionException {
+    startToken: Token
+}
 
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
@@ -122,30 +129,8 @@ export class DocumentContext extends TspListener {
                 this.document.positionAt.bind(this.document)
             )
 
-            // Fuzz the signature offset range.
-            this.fuzzySignatureOffsets.fuzzRange(this.document, signatureContext.range)
-
-            // Add this new signature context starting at the stop offset of the open
-            // parenthesis.
-            this.signatures.set(
-                openParenthesis.symbol.stop + 1,
-                signatureContext
-            )
-
-            // Fuzz parameters if they have completions and add them to the ExclusiveMap.
-            const allContent = this.document.getText()
-            signatureContext.parameters.forEach((value: ParameterContext, key: number) => {
-                // Continue if we don't have any completions
-                if (value.completions.length === 0) {
-                    return
-                }
-
-                this.fuzzyOffsets.fuzz(allContent, key)
-                this.exclusives.set(key, {
-                    completions: value.completions,
-                    text: this.document.getText(value.range).trim()
-                })
-            })
+            // Register this SignatureContext
+            this.registerSignatureContext(openParenthesis.symbol.stop + 1, signatureContext)
         }
     }
 
@@ -155,31 +140,99 @@ export class DocumentContext extends TspListener {
         const expressionList = context.expressionList()
 
         if (context.exception !== null) {
-            // TODO: pick up the slack when the parser chokes
+            // Get the index of the Token at which the exception starts.
+            const blameIndex = (context.exception as CorrectRecogException).startToken.tokenIndex
 
-            // TODO
-            // Given the following code variations:
-            //      b(1,)
-            //      b(1,,3)
-            //      b.c(1,)
-            //      b.c(1,,3)
-            //      etc.
-            // The statement structure will capture the opening parenthesis, closing parenthesis, and everything
-            // in-between. This includes string variations. All whitespace is handled properly.
-            // The children of the StatementContext will be ErrorNodes. One for each lexical item.
-            // The structure resembles the following for `(1,,3)`:
-            //   statement (
-            //     <Error>"("
-            //     <Error>"1"
-            //     <Error>","
-            //     <Error>","
-            //     <Error>"3"
-            //     <Error>")"
-            //   )
-            //
-            // This should trigger a manual search for exclusive parameter offsets.
-            //
-            // NOTE: this is false for nested signatures with empty parameters.
+            // Get all Tokens starting at the exception index.
+            const remainingTokens = this.tokenStream.tokens.slice(blameIndex)
+
+            // We need to track our progress through the Token array.
+            let index = 0
+
+            // Grab Tokens if they form a valid namespace.
+            // (NAME types, full-stop accessors, and array indexers only)
+            const namespaceTokens = new Array<Token>()
+            for (; index < remainingTokens.length; index++) {
+                const token = remainingTokens[index]
+
+                if (token.type === TspLexer.NAME || token.text.localeCompare('.') === 0) {
+                    namespaceTokens.push(token)
+
+                    continue
+                }
+
+                // Consume everything inside the array indexer.
+                if (token.text.localeCompare('[') === 0) {
+                    const startingIndex = index
+
+                    index = SignatureContext.consumePair(index, remainingTokens)
+
+                    // If we successfully consumed the array indexer.
+                    if (index !== startingIndex) {
+                        // Advance the index by 1.
+                        index++
+
+                        // Add the array indexer to the namespace tokens.
+                        namespaceTokens.push(...remainingTokens.slice(startingIndex, index))
+                    }
+
+                    continue
+                }
+
+                break
+            }
+
+            // Get the string representation of the namespace tokens.
+            const namespaceString = TokenUtil.getString(...namespaceTokens)
+
+            const matchingSignatures = new Array<InstrumentSignatureInformation>()
+
+            // If the leading tokens were a valid namespace.
+            if (namespaceString !== undefined) {
+                // Filter all matching signatures from the CommandSet
+                const signatureLabel = resolveSignatureNamespace({
+                    label: namespaceString.replace(this.tableIndexRegexp, '[]') + '('
+                })
+                matchingSignatures.push(...this.commandSet.signatures.filter(
+                    (signature: InstrumentSignatureInformation) => {
+                        return resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
+                    }
+                ))
+            }
+
+            // Try to process these tokens as a signature if there are signature matches.
+            if (matchingSignatures.length > 0) {
+                // If the next token is an open parenthesis.
+                if (index < remainingTokens.length && remainingTokens[index].text.localeCompare('(') === 0) {
+                    const openParenthesis = remainingTokens[index]
+
+                    // Try to reach the pairing close parenthesis.
+                    const closingIndex = SignatureContext.consumePair(index, remainingTokens)
+
+                    // If we found a close parenthesis.
+                    if (closingIndex !== index) {
+                        const closeParenthesis = remainingTokens[closingIndex]
+
+                        // Get all tokens between the parentheses.
+                        const midTokens = remainingTokens.slice(index + 1, closingIndex)
+
+                        // Advance to the token after the close parenthesis.
+                        index = closingIndex + 1
+
+                        // Create a SignatureContext.
+                        const signatureContext = SignatureContext.create(
+                            openParenthesis,
+                            midTokens,
+                            closeParenthesis,
+                            matchingSignatures,
+                            this.document.positionAt.bind(this.document)
+                        )
+
+                        // Register this signature context.
+                        this.registerSignatureContext(openParenthesis.stop + 1, signatureContext)
+                    }
+                }
+            }
 
             return
         }
@@ -290,6 +343,30 @@ export class DocumentContext extends TspListener {
             activeSignature: 0,
             signatures: context.signatures
         }
+    }
+
+    registerSignatureContext(offset: number, context: SignatureContext): void {
+        // Fuzz the signature offset range.
+        this.fuzzySignatureOffsets.fuzzRange(this.document, context.range)
+
+        // Add this new signature context starting at the stop offset of the open
+        // parenthesis.
+        this.signatures.set(offset, context)
+
+        // Fuzz parameters if they have completions and add them to the ExclusiveMap.
+        const allContent = this.document.getText()
+        context.parameters.forEach((value: ParameterContext, key: number) => {
+            // Continue if we don't have any completions
+            if (value.completions.length === 0) {
+                return
+            }
+
+            this.fuzzyOffsets.fuzz(allContent, key)
+            this.exclusives.set(key, {
+                completions: value.completions,
+                text: this.document.getText(value.range).trim()
+            })
+        })
     }
 
     update(): void {
