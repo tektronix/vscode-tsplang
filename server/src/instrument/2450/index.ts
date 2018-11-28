@@ -504,231 +504,327 @@ const script: ApiSpec = {
     label: 'script'
 }
 
-const smuInterlock: ApiSpec = {
-    children: [
-        { label: 'smu.interlock.tripped' },
-    ],
-    label: 'smu.interlock'
-}
-
-const smuMeasureAutozero: ApiSpec = {
-    children: [
-        { label: 'smu.measure.autozero.enable' },
-        { label: 'smu.measure.autozero.once' },
-    ],
-    label: 'smu.measure.autozero'
-}
-
-const smuMeasureConfiglist: ApiSpec = {
-    children: [
-        { label: 'smu.measure.configlist.catalog' },
-        { label: 'smu.measure.configlist.create' },
-        { label: 'smu.measure.configlist.delete' },
-        { label: 'smu.measure.configlist.query' },
-        { label: 'smu.measure.configlist.recall' },
-        { label: 'smu.measure.configlist.size' },
-        { label: 'smu.measure.configlist.store' },
-    ],
-    label: 'smu.measure.configlist'
-}
-
-const smuMeasureFilter: ApiSpec = {
-    children: [
-        { label: 'smu.measure.filter.count' },
-        { label: 'smu.measure.filter.enable' },
-        { label: 'smu.measure.filter.type' },
-    ],
-    label: 'smu.measure.filter'
-}
-
-const smuMeasureLimitHigh: ApiSpec = {
-    children: [
-        { label: 'smu.measure.limit.high.value' },
-    ],
-    label: 'smu.measure.limit.high'
-}
-
-const smuMeasureLimitLow: ApiSpec = {
-    children: [
-        { label: 'smu.measure.limit.low.value' },
-    ],
-    label: 'smu.measure.limit.low'
-}
-
-const smuMeasureLimit: ApiSpec = {
-    children: [
-        { label: 'smu.measure.limit.audible' },
-        { label: 'smu.measure.limit.autoclear' },
-        { label: 'smu.measure.limit.clear' },
-        { label: 'smu.measure.limit.enable' },
-        { label: 'smu.measure.limit.fail' },
-    ],
-    label: 'smu.measure.limit'
-}
-
-const smuMeasureMathMxb: ApiSpec = {
-    children: [
-        { label: 'smu.measure.math.mxb.bfactor' },
-        { label: 'smu.measure.math.mxb.mfactor' },
-    ],
-    label: 'smu.measure.math.mxb'
-}
-
-const smuMeasureMath: ApiSpec = {
-    children: [
-        { label: 'smu.measure.math.enable' },
-        { label: 'smu.measure.math.format' },
-        { label: 'smu.measure.math.percent' },
-    ],
-    label: 'smu.measure.math'
-}
-
-const smuMeasureRel: ApiSpec = {
-    children: [
-        { label: 'smu.measure.rel.acquire' },
-        { label: 'smu.measure.rel.enable' },
-        { label: 'smu.measure.rel.level' },
-    ],
-    label: 'smu.measure.rel'
-}
-
-const smuMeasure: ApiSpec = {
-    children: [
-        { label: 'smu.measure.autorange' },
-        { label: 'smu.measure.autorangehigh' },
-        { label: 'smu.measure.autorangelow' },
-        { label: 'smu.measure.count' },
-        { label: 'smu.measure.displaydigits' },
-        { label: 'smu.measure.func' },
-        { label: 'smu.measure.nplc' },
-        { label: 'smu.measure.offsetcompensation' },
-        { label: 'smu.measure.range' },
-        { label: 'smu.measure.read' },
-        { label: 'smu.measure.readwithtime' },
-        { label: 'smu.measure.sense' },
-        { label: 'smu.measure.terminals' },
-        { label: 'smu.measure.unit' },
-        { label: 'smu.measure.userdelay' },
-    ],
-    label: 'smu.measure'
-}
-
-const smuSourceConfiglist: ApiSpec = {
-    children: [
-        { label: 'smu.source.configlist.catalog' },
-        { label: 'smu.source.configlist.create' },
-        { label: 'smu.source.configlist.delete' },
-        { label: 'smu.source.configlist.query' },
-        { label: 'smu.source.configlist.recall' },
-        { label: 'smu.source.configlist.size' },
-        { label: 'smu.source.configlist.store' },
-    ],
-    label: 'smu.source.configlist'
-}
-
-const smuSourceIlimit: ApiSpec = {
-    children: [
-        { label: 'smu.source.ilimit.level' },
-        { label: 'smu.source.ilimit.tripped' },
-    ],
-    label: 'smu.source.ilimit'
-}
-
-const smuSourceProtect: ApiSpec = {
-    children: [
-        { label: 'smu.source.protect.level' },
-        { label: 'smu.source.protect.tripped' },
-    ],
-    label: 'smu.source.protect'
-}
-
-const smuSourceVlimit: ApiSpec = {
-    children: [
-        { label: 'smu.source.vlimit.level' },
-        { label: 'smu.source.vlimit.tripped' },
-    ],
-    label: 'smu.source.vlimit'
-}
-
-const smuSource: ApiSpec = {
-    children: [
-        { label: 'smu.source.autodelay' },
-        { label: 'smu.source.autorange' },
-        { label: 'smu.source.delay' },
-        { label: 'smu.source.func' },
-        { label: 'smu.source.highc' },
-        { label: 'smu.source.level' },
-        { label: 'smu.source.offmode' },
-        { label: 'smu.source.output' },
-        { label: 'smu.source.range' },
-        { label: 'smu.source.readback' },
-        { label: 'smu.source.sweeplinear' },
-        { label: 'smu.source.sweeplinearstep' },
-        { label: 'smu.source.sweeplist' },
-        { label: 'smu.source.sweeplog' },
-        { label: 'smu.source.userdelay' },
-    ],
-    label: 'smu.source'
-}
-
-const smu: ApiSpec = {
-    children: [
-        { label: 'smu.reset' },
-    ],
-    enums: [
-        { label: 'smu.AUDIBLE_FAIL' },
-        { label: 'smu.AUDIBLE_NONE' },
-        { label: 'smu.AUDIBLE_PASS' },
-        { label: 'smu.DELAY_AUTO' },
-        { label: 'smu.DIGITS_3_5' },
-        { label: 'smu.DIGITS_4_5' },
-        { label: 'smu.DIGITS_5_5' },
-        { label: 'smu.DIGITS_6_5' },
-        { label: 'smu.FAIL_BOTH' },
-        { label: 'smu.FAIL_HIGH' },
-        { label: 'smu.FAIL_LOW' },
-        { label: 'smu.FAIL_NONE' },
-        { label: 'smu.FILTER_MOVING_AVG' },
-        { label: 'smu.FILTER_REPEAT_AVG' },
-        { label: 'smu.FUNC_DC_CURRENT' },
-        { label: 'smu.FUNC_DC_VOLTAGE' },
-        { label: 'smu.FUNC_RESISTANCE' },
-        { label: 'smu.INFINITE' },
-        { label: 'smu.MATH_MXB' },
-        { label: 'smu.MATH_PERCENT' },
-        { label: 'smu.MATH_RECIPROCAL' },
-        { label: 'smu.OFF' },
+namespace Smu {
+    namespace Func {
+        export const DC_CURRENT: ExclusiveCompletionApiSpec = { label: 'smu.FUNC_DC_CURRENT' }
+        export const DC_VOLTAGE: ExclusiveCompletionApiSpec = { label: 'smu.FUNC_DC_VOLTAGE' }
+        export const RESISTANCE: ExclusiveCompletionApiSpec = { label: 'smu.FUNC_RESISTANCE' }
+    }
+    const smuEnumDelay: ExclusiveCompletionApiSpec = { label: 'smu.DELAY_AUTO' }
+    const smuEnumInfinite: ExclusiveCompletionApiSpec = { label: 'smu.INFINITE' }
+    const smuEnumOffmode: Array<ExclusiveCompletionApiSpec> = [
         { label: 'smu.OFFMODE_GUARD' },
         { label: 'smu.OFFMODE_HIGHZ' },
         { label: 'smu.OFFMODE_NORMAL' },
         { label: 'smu.OFFMODE_ZERO' },
-        { label: 'smu.ON' },
-        { label: 'smu.PROTECT_2V' },
-        { label: 'smu.PROTECT_5V' },
-        { label: 'smu.PROTECT_10V' },
-        { label: 'smu.PROTECT_20V' },
-        { label: 'smu.PROTECT_40V' },
-        { label: 'smu.PROTECT_60V' },
-        { label: 'smu.PROTECT_80V' },
-        { label: 'smu.PROTECT_100V' },
-        { label: 'smu.PROTECT_120V' },
-        { label: 'smu.PROTECT_140V' },
-        { label: 'smu.PROTECT_160V' },
-        { label: 'smu.PROTECT_180V' },
-        { label: 'smu.PROTECT_NONE' },
+    ]
+    const smuEnumMeasureFunc: Array<ExclusiveCompletionApiSpec> = [
+        Func.RESISTANCE
+    ]
+    const smuEnumRange: Array<ExclusiveCompletionApiSpec> = [
         { label: 'smu.RANGE_AUTO' },
         { label: 'smu.RANGE_BEST' },
         { label: 'smu.RANGE_FIXED' },
-        { label: 'smu.SENSE_2WIRE' },
-        { label: 'smu.SENSE_4WIRE' },
-        { label: 'smu.TERMINALS_FRONT' },
-        { label: 'smu.TERMINALS_REAR' },
-        { label: 'smu.UNIT_AMP' },
-        { label: 'smu.UNIT_OHM' },
-        { label: 'smu.UNIT_VOLT' },
-        { label: 'smu.UNIT_WATT' },
-    ],
-    label: 'smu'
+    ]
+    const smuEnumSourceFunc: Array<ExclusiveCompletionApiSpec> = [
+        Func.DC_CURRENT,
+        Func.DC_VOLTAGE
+    ]
+    export const smuEnumOnOff: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.OFF' },
+        { label: 'smu.ON' },
+    ]
+
+    export const smuInterlock: ApiSpec = {
+        children: [
+            { label: 'smu.interlock.tripped' },
+        ],
+        label: 'smu.interlock'
+    }
+
+    export const smuMeasureAutozero: ApiSpec = {
+        children: [
+            { label: 'smu.measure.autozero.enable' },
+            { label: 'smu.measure.autozero.once' },
+        ],
+        label: 'smu.measure.autozero'
+    }
+
+    export const smuMeasureConfiglist: ApiSpec = {
+        children: [
+            { label: 'smu.measure.configlist.catalog' },
+            { label: 'smu.measure.configlist.create' },
+            { label: 'smu.measure.configlist.delete' },
+            { label: 'smu.measure.configlist.query' },
+            { label: 'smu.measure.configlist.recall' },
+            { label: 'smu.measure.configlist.size' },
+            { label: 'smu.measure.configlist.store' },
+        ],
+        label: 'smu.measure.configlist'
+    }
+
+    export const smuMeasureFilter: ApiSpec = {
+        children: [
+            { label: 'smu.measure.filter.count' },
+            { label: 'smu.measure.filter.enable' },
+            { label: 'smu.measure.filter.type' },
+        ],
+        label: 'smu.measure.filter'
+    }
+
+    export const smuMeasureLimitHigh: ApiSpec = {
+        children: [
+            { label: 'smu.measure.limit.high.value' },
+        ],
+        label: 'smu.measure.limit.high'
+    }
+
+    export const smuMeasureLimitLow: ApiSpec = {
+        children: [
+            { label: 'smu.measure.limit.low.value' },
+        ],
+        label: 'smu.measure.limit.low'
+    }
+
+    export const smuMeasureLimit: ApiSpec = {
+        children: [
+            { label: 'smu.measure.limit.audible' },
+            { label: 'smu.measure.limit.autoclear' },
+            { label: 'smu.measure.limit.clear' },
+            { label: 'smu.measure.limit.enable' },
+            { label: 'smu.measure.limit.fail' },
+        ],
+        label: 'smu.measure.limit'
+    }
+
+    export const smuMeasureMathMxb: ApiSpec = {
+        children: [
+            { label: 'smu.measure.math.mxb.bfactor' },
+            { label: 'smu.measure.math.mxb.mfactor' },
+        ],
+        label: 'smu.measure.math.mxb'
+    }
+
+    export const smuMeasureMath: ApiSpec = {
+        children: [
+            { label: 'smu.measure.math.enable' },
+            { label: 'smu.measure.math.format' },
+            { label: 'smu.measure.math.percent' },
+        ],
+        label: 'smu.measure.math'
+    }
+
+    export const smuMeasureRel: ApiSpec = {
+        children: [
+            { label: 'smu.measure.rel.acquire' },
+            { label: 'smu.measure.rel.enable' },
+            { label: 'smu.measure.rel.level' },
+        ],
+        label: 'smu.measure.rel'
+    }
+
+    export const smuMeasure: ApiSpec = {
+        children: [
+            { label: 'smu.measure.autorange' },
+            { label: 'smu.measure.autorangehigh' },
+            { label: 'smu.measure.autorangelow' },
+            { label: 'smu.measure.count' },
+            { label: 'smu.measure.displaydigits' },
+            { label: 'smu.measure.func' },
+            { label: 'smu.measure.nplc' },
+            { label: 'smu.measure.offsetcompensation' },
+            { label: 'smu.measure.range' },
+            { label: 'smu.measure.read' },
+            { label: 'smu.measure.readwithtime' },
+            { label: 'smu.measure.sense' },
+            { label: 'smu.measure.terminals' },
+            { label: 'smu.measure.unit' },
+            { label: 'smu.measure.userdelay' },
+        ],
+        label: 'smu.measure'
+    }
+
+    export const smuSourceConfiglist: ApiSpec = {
+        children: [
+            { label: 'smu.source.configlist.catalog' },
+            { label: 'smu.source.configlist.create' },
+            { label: 'smu.source.configlist.delete' },
+            { label: 'smu.source.configlist.query' },
+            { label: 'smu.source.configlist.recall' },
+            { label: 'smu.source.configlist.size' },
+            { label: 'smu.source.configlist.store' },
+        ],
+        label: 'smu.source.configlist'
+    }
+
+    export const smuSourceIlimit: ApiSpec = {
+        children: [
+            { label: 'smu.source.ilimit.level' },
+            { label: 'smu.source.ilimit.tripped' },
+        ],
+        label: 'smu.source.ilimit'
+    }
+
+    export const smuSourceProtect: ApiSpec = {
+        children: [
+            { label: 'smu.source.protect.level' },
+            { label: 'smu.source.protect.tripped' },
+        ],
+        label: 'smu.source.protect'
+    }
+
+    export const smuSourceVlimit: ApiSpec = {
+        children: [
+            { label: 'smu.source.vlimit.level' },
+            { label: 'smu.source.vlimit.tripped' },
+        ],
+        label: 'smu.source.vlimit'
+    }
+
+    export const smuSource: ApiSpec = {
+        children: [
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.source.autodelay'
+            },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.source.autorange'
+            },
+            { label: 'smu.source.delay' },
+            {
+                assignmentExclusives: smuEnumSourceFunc,
+                label: 'smu.source.func'
+            },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.source.highc'
+            },
+            { label: 'smu.source.level' },
+            {
+                assignmentExclusives: smuEnumOffmode,
+                label: 'smu.source.offmode'
+            },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.source.output'
+            },
+            { label: 'smu.source.range' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.source.readback'
+            },
+            {
+                label: 'smu.source.sweeplinear',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 4, [smuEnumDelay] ],
+                            [ 5, [smuEnumInfinite] ],
+                            [ 6, smuEnumRange ],
+                            [ 7, smuEnumOnOff ],
+                            [ 8, smuEnumOnOff ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'smu.source.sweeplinearstep',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 4, [smuEnumDelay] ],
+                            [ 5, [smuEnumInfinite] ],
+                            [ 6, smuEnumRange ],
+                            [ 7, smuEnumOnOff ],
+                            [ 8, smuEnumOnOff ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'smu.source.sweeplist',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 3, [smuEnumInfinite] ],
+                            [ 4, smuEnumOnOff ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'smu.source.sweeplog',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 4, [smuEnumDelay] ],
+                            [ 5, [smuEnumInfinite] ],
+                            [ 6, smuEnumRange ],
+                            [ 7, smuEnumOnOff ],
+                            [ 8, smuEnumOnOff ]
+                        ])
+                    }
+                ]
+            },
+            { label: 'smu.source.userdelay' },
+        ],
+        label: 'smu.source'
+    }
+
+    export const smu: ApiSpec = {
+        children: [
+            { label: 'smu.reset' },
+        ],
+        enums: [
+            { label: 'smu.AUDIBLE_FAIL' },
+            { label: 'smu.AUDIBLE_NONE' },
+            { label: 'smu.AUDIBLE_PASS' },
+            smuEnumDelay,
+            { label: 'smu.DIGITS_3_5' },
+            { label: 'smu.DIGITS_4_5' },
+            { label: 'smu.DIGITS_5_5' },
+            { label: 'smu.DIGITS_6_5' },
+            { label: 'smu.FAIL_BOTH' },
+            { label: 'smu.FAIL_HIGH' },
+            { label: 'smu.FAIL_LOW' },
+            { label: 'smu.FAIL_NONE' },
+            { label: 'smu.FILTER_MOVING_AVG' },
+            { label: 'smu.FILTER_REPEAT_AVG' },
+            Func.DC_CURRENT,
+            Func.DC_VOLTAGE,
+            Func.RESISTANCE,
+            smuEnumInfinite,
+            { label: 'smu.MATH_MXB' },
+            { label: 'smu.MATH_PERCENT' },
+            { label: 'smu.MATH_RECIPROCAL' },
+            ...smuEnumOffmode,
+            ...smuEnumOnOff,
+            { label: 'smu.PROTECT_2V' },
+            { label: 'smu.PROTECT_5V' },
+            { label: 'smu.PROTECT_10V' },
+            { label: 'smu.PROTECT_20V' },
+            { label: 'smu.PROTECT_40V' },
+            { label: 'smu.PROTECT_60V' },
+            { label: 'smu.PROTECT_80V' },
+            { label: 'smu.PROTECT_100V' },
+            { label: 'smu.PROTECT_120V' },
+            { label: 'smu.PROTECT_140V' },
+            { label: 'smu.PROTECT_160V' },
+            { label: 'smu.PROTECT_180V' },
+            { label: 'smu.PROTECT_NONE' },
+            ...smuEnumRange,
+            { label: 'smu.SENSE_2WIRE' },
+            { label: 'smu.SENSE_4WIRE' },
+            { label: 'smu.TERMINALS_FRONT' },
+            { label: 'smu.TERMINALS_REAR' },
+            { label: 'smu.UNIT_AMP' },
+            { label: 'smu.UNIT_OHM' },
+            { label: 'smu.UNIT_VOLT' },
+            { label: 'smu.UNIT_WATT' },
+        ],
+        label: 'smu'
+    }
 }
 
 const statusOperation: ApiSpec = {
@@ -1132,23 +1228,23 @@ export function getApiSpec(): Array<ApiSpec> {
         printnumber,
         reset,
         script,
-        smuInterlock,
-        smuMeasureAutozero,
-        smuMeasureConfiglist,
-        smuMeasureFilter,
-        smuMeasureLimitHigh,
-        smuMeasureLimitLow,
-        smuMeasureLimit,
-        smuMeasureMath,
-        smuMeasureMathMxb,
-        smuMeasureRel,
-        smuMeasure,
-        smuSourceConfiglist,
-        smuSourceIlimit,
-        smuSourceProtect,
-        smuSourceVlimit,
-        smuSource,
-        smu,
+        Smu.smuInterlock,
+        Smu.smuMeasureAutozero,
+        Smu.smuMeasureConfiglist,
+        Smu.smuMeasureFilter,
+        Smu.smuMeasureLimitHigh,
+        Smu.smuMeasureLimitLow,
+        Smu.smuMeasureLimit,
+        Smu.smuMeasureMath,
+        Smu.smuMeasureMathMxb,
+        Smu.smuMeasureRel,
+        Smu.smuMeasure,
+        Smu.smuSourceConfiglist,
+        Smu.smuSourceIlimit,
+        Smu.smuSourceProtect,
+        Smu.smuSourceVlimit,
+        Smu.smuSource,
+        Smu.smu,
         statusOperation,
         statusQuestionable,
         statusStandard,
