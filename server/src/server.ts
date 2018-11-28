@@ -17,7 +17,7 @@
 
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
-import { getCompletions, getSignatureHelp, resolveCompletion } from './serverProvider'
+import { getCompletions, resolveCompletion } from './serverProvider'
 import { TspManager } from './tspManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport

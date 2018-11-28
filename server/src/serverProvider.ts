@@ -18,10 +18,8 @@
 import { Position } from 'vscode-languageserver'
 
 import { resolveCompletionNamespace } from './instrument/provider'
-import { parentheses } from './lua/pair'
-import { getActiveParameter, getOffsetOfUnmatched } from './signatureProcessor'
 import { TspItem } from './tspItem'
-import { InstrumentCompletionItem, InstrumentSignatureHelp, InstrumentSignatureInformation } from './wrapper'
+import { InstrumentCompletionItem } from './wrapper'
 
 const namespaceRegexp = new RegExp(/^[a-zA-Z0-9\[\].]*/)
 const tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
@@ -103,80 +101,4 @@ export function getCompletions(position: Position, tspItem: TspItem): Array<Inst
     }
 
     return results
-}
-
-export function getSignatureHelp(position: Position, tspItem: TspItem): InstrumentSignatureHelp | undefined {
-    // We cannot provide signatures if none exist
-    if (tspItem.context.commandSet.signatures.length === 0) {
-        return
-    }
-
-    const contentText = tspItem.context.document.getText()
-
-    // Convert the current Position to a zero-based offset
-    const offset: number = tspItem.context.document.offsetAt(position)
-
-    // Get the document offset of the nearest open-parenthesis to the left of the cursor offset
-    const openParenOffset = getOffsetOfUnmatched(contentText.slice(0, offset), parentheses, true)
-
-    if (openParenOffset === undefined) {
-        return
-    }
-
-    // Get the document offset of the nearest close-parenthesis to the right of the cursor offset
-    let closeParenOffset = getOffsetOfUnmatched(contentText.slice(offset), parentheses, false)
-
-    if (closeParenOffset === undefined) {
-        return
-    }
-
-    closeParenOffset = offset + closeParenOffset
-
-    // Do not provide signature help if the cursor moves outside of a parenthesis-pair
-    if (offset <= openParenOffset || offset > closeParenOffset) {
-        return
-    }
-
-    // Get all text before the open-parenthesis offset, reverse it, and remove leading horizontal spaces
-    const reversed = contentText.slice(0, openParenOffset).split('').reverse().join('').replace(/^\s*/, '')
-    // Match against the reversed string.
-    const reverseMatches = reversed.match(namespaceRegexp)
-
-    if (reverseMatches === null) {
-        return
-    }
-
-    const firstMatch = reverseMatches.shift()
-
-    if (firstMatch === undefined) {
-        return
-    }
-
-    // Un-reverse the string and remove digits inside of table indexers
-    const unreversed = firstMatch.split('').reverse().join('').replace(tableIndexRegexp, '[]')
-
-    const results: Array<InstrumentSignatureInformation> = new Array()
-
-    for (const fullSignature of tspItem.context.commandSet.signatures) {
-        // Get the namespace of the signature before the first open-parenthesis
-        const signature: string = fullSignature.label.slice(0, fullSignature.label.indexOf('('))
-
-        // Only add signatures if they are an exact match
-        if (signature.localeCompare(unreversed) === 0) {
-            results.push(fullSignature)
-        }
-    }
-
-    const activeParameter = getActiveParameter(
-        contentText,
-        offset,
-        openParenOffset,
-        closeParenOffset
-    )
-
-    return {
-        activeParameter,
-        activeSignature: 0,
-        signatures: results
-    }
 }
