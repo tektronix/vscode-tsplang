@@ -15,5 +15,15 @@
  */
 'use strict'
 
-export { getAssignmentCompletions } from './exclusive'
-export { getGlobalCompletions } from './global'
+import { ParameterContext } from './parameterContext'
+
+/**
+ * A type keyed to either an open parenthesis stop offset, a comma stop offset,
+ * or the stop offset of the last TerminalNode within the parameter. The
+ * associated key-value is a ParameterContext.
+ */
+export class ParameterMap extends Map<number, ParameterContext> {
+    constructor() {
+        super()
+    }
+}

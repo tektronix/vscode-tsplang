@@ -15,25 +15,26 @@
  */
 'use strict'
 
-export class FuzzyOffsetMap extends Map<number, number> {
-    private readonly content: string
+import { Range, TextDocument } from 'vscode-languageserver'
 
-    constructor(content: string) {
+export class FuzzyOffsetMap extends Map<number, number> {
+    private readonly horizontalSpaces: RegExp
+
+    constructor() {
         super()
 
-        this.content = content
+        // Compile a regular expression that matches all horizontal whitespace.
+        this.horizontalSpaces = new RegExp(/^[ \t]+/)
     }
 
     /**
      * Adds zero or more lexically equivalent (fuzzy) document offsets starting at each of the given offsets.
+     * @param content The string used to check for lexical equivalence.
      * @param offsets Offsets to fuzz.
      */
-    fuzz(...offsets: Array<number>): void {
-        // Compile a regular expression that matches all horizontal whitespace.
-        const horizontalSpaces = new RegExp(/^[ \t]+/)
-
+    fuzz(content: string, ...offsets: Array<number>): void {
         for (const offset of offsets) {
-            const matches = this.content.slice(offset).match(horizontalSpaces)
+            const matches = content.slice(offset).match(this.horizontalSpaces)
 
             // No matches were found.
             if (matches === null) {
@@ -48,6 +49,48 @@ export class FuzzyOffsetMap extends Map<number, number> {
 
             // For each horizontal whitespace character...
             for (let i = 0; i < match.length; i++) {
+                // ...add its offset as a key that points to the original offset.
+                this.set(offset + i + 1, offset)
+            }
+        }
+    }
+
+    /**
+     * Adds all document offsets in each range.
+     * @param document A TextDocument to use for Range conversions.
+     * @param ranges Ranges to fuzz.
+     */
+    fuzzRange(document: TextDocument, ...ranges: Array<Range>): void {
+        for (const range of ranges) {
+            // Recurse with each line as a distinct range if the Range spans multiple lines.
+            if (range.start.line !== range.end.line) {
+                // Range from the starting position to the end of the start line.
+                this.fuzzRange(document, Range.create(
+                    range.start.line,
+                    range.start.character,
+                    range.start.line,
+                    Number.MAX_VALUE
+                ))
+
+                for (let i = range.start.line + 1; i < range.end.line; i++) {
+                    // Range from the start of the line to the end of the line.
+                    this.fuzzRange(document, Range.create(i, 0, i, Number.MAX_VALUE))
+                }
+
+                // Range from the start of the end line to the ending position.
+                this.fuzzRange(document, Range.create(
+                    range.end.line,
+                    0,
+                    range.end.line,
+                    range.end.character
+                ))
+            }
+
+            const offset = document.offsetAt(range.start)
+            const length = document.getText(range).length
+
+            // For all characters except vertical whitespace characters...
+            for (let i = 0; i < length; i++) {
                 // ...add its offset as a key that points to the original offset.
                 this.set(offset + i + 1, offset)
             }

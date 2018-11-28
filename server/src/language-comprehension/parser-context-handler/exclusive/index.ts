@@ -16,4 +16,3 @@
 'use strict'
 
 export { getAssignmentCompletions } from './getAssignmentCompletions'
-export { getParameterCompletions } from './getParameterCompletions'

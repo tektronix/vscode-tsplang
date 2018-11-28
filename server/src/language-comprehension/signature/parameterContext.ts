@@ -15,5 +15,22 @@
  */
 'use strict'
 
-export { getAssignmentCompletions } from './exclusive'
-export { getGlobalCompletions } from './global'
+import { Token } from 'antlr4'
+import { Range } from 'vscode-languageserver'
+
+import { ExclusiveContext } from '../exclusive-completion'
+
+export interface ParameterContext extends ExclusiveContext {
+    /**
+     * The zero-based index of this parameter in the argument expression list.
+     */
+    index: number
+    /**
+     * The Range in which signature help should be provided for this parameter.
+     */
+    range: Range
+    /**
+     * Tokens comprising this parameter.
+     */
+    tokens: Array<Token>
+}

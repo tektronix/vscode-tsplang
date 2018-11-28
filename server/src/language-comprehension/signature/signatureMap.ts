@@ -17,6 +17,10 @@
 
 import { SignatureContext } from './signatureContext'
 
+/**
+ * A type keyed to the ending offset of a function call's open parenthesis.
+ * The associated key-value is a SignatureContext.
+ */
 export class SignatureMap extends Map<number, SignatureContext> {
     constructor() {
         super()

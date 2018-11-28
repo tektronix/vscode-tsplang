@@ -15,5 +15,7 @@
  */
 'use strict'
 
+export { ParameterContext } from './parameterContext'
+export { ParameterMap } from './parameterMap'
 export { SignatureContext } from './signatureContext'
 export { SignatureMap } from './signatureMap'

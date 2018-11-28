@@ -115,7 +115,7 @@ connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp |
         return
     }
 
-    return getSignatureHelp(params.position, tspItem)
+    return tspItem.context.getSignatureHelp(params.position)
 })
 
 // Make the text document manager listen on the connection for open, change and close text
