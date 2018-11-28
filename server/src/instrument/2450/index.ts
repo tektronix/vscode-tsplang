@@ -25,115 +25,150 @@ const beeper: ApiSpec = {
     label: 'beeper'
 }
 
-const bufferEnumDigits: Array<ExclusiveCompletionApiSpec> = [
-    { label: 'buffer.DIGITS_3_5' },
-    { label: 'buffer.DIGITS_4_5' },
-    { label: 'buffer.DIGITS_5_5' },
-    { label: 'buffer.DIGITS_6_5' },
-    { label: 'buffer.DIGITS_7_5' },
-    { label: 'buffer.DIGITS_3_5' },
-]
-const bufferEnumStat: Array<ExclusiveCompletionApiSpec> = [
-    { label: 'buffer.STAT_LIMIT' },
-    { label: 'buffer.STAT_LIMIT1_HIGH' },
-    { label: 'buffer.STAT_LIMIT1_LOW' },
-    { label: 'buffer.STAT_LIMIT2_HIGH' },
-    { label: 'buffer.STAT_LIMIT2_LOW' },
-    { label: 'buffer.STAT_ORIGIN' },
-    { label: 'buffer.STAT_OUTPUT' },
-    { label: 'buffer.STAT_OVER_TEMP' },
-    { label: 'buffer.STAT_PROTECTION' },
-    { label: 'buffer.STAT_QUESTIONABLE' },
-    { label: 'buffer.STAT_READBACK' },
-    { label: 'buffer.STAT_SENSE' },
-    { label: 'buffer.STAT_START_GROUP' },
-    { label: 'buffer.STAT_TERMINAL' },
-]
-const bufferEnumUnit: Array<ExclusiveCompletionApiSpec> = [
-    { label: 'buffer.UNIT_AMP' },
-    { label: 'buffer.UNIT_AMP_AC' },
-    { label: 'buffer.UNIT_CELSIUS' },
-    { label: 'buffer.UNIT_DECIBEL' },
-    { label: 'buffer.UNIT_FAHRENHEIT' },
-    { label: 'buffer.UNIT_FARAD' },
-    { label: 'buffer.UNIT_HERTZ' },
-    { label: 'buffer.UNIT_KELVIN' },
-    { label: 'buffer.UNIT_NONE' },
-    { label: 'buffer.UNIT_OHM' },
-    { label: 'buffer.UNIT_PERCENT' },
-    { label: 'buffer.UNIT_RATIO' },
-    { label: 'buffer.UNIT_RECIPROCAL' },
-    { label: 'buffer.UNIT_SECOND' },
-    { label: 'buffer.UNIT_VOLT' },
-    { label: 'buffer.UNIT_VOLT_AC' },
-    { label: 'buffer.UNIT_WATT' },
-    { label: 'buffer.UNIT_X' },
-]
-
-const bufferWrite: ApiSpec = {
-    children: [
-        {
-            label: 'buffer.write.format',
-            signatureExclusives: [
-                {
-                    parameters: new Map([
-                        [ 1, bufferEnumUnit ],
-                        [ 2, bufferEnumDigits ],
-                        [ 3, bufferEnumUnit ],
-                        [ 4, bufferEnumDigits ],
-                    ])
-                }
-            ]
-        },
-        {
-            label: 'buffer.write.reading',
-            signatureExclusives: [
-                {
-                    parameters: new Map([
-                        [ 4, bufferEnumStat ],
-                    ]),
-                    qualifier: 0
-                },
-                {
-                    parameters: new Map([
-                        [ 5, bufferEnumStat ],
-                    ]),
-                    qualifier: 1
-                },
-            ]
-        },
-    ],
-    label: 'buffer.write'
-}
-
-const buffer: ApiSpec = {
-    children: [
-        { label: 'buffer.clearstats' },
-        { label: 'buffer.delete' },
-        { label: 'buffer.getstats' },
-        { label: 'buffer.make' },
-        { label: 'buffer.save' },
-        { label: 'buffer.saveappend' },
-    ],
-    enums: [
-        ...bufferEnumDigits,
-        { label: 'buffer.FILL_CONTINUOUS' },
-        { label: 'buffer.FILL_ONCE' },
-        { label: 'buffer.OFF' },
-        { label: 'buffer.ON' },
+namespace Buffer {
+    const bufferEnumDigits: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'buffer.DIGITS_3_5' },
+        { label: 'buffer.DIGITS_4_5' },
+        { label: 'buffer.DIGITS_5_5' },
+        { label: 'buffer.DIGITS_6_5' },
+        { label: 'buffer.DIGITS_7_5' },
+        { label: 'buffer.DIGITS_3_5' },
+    ]
+    const bufferEnumSave: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.SAVE_FORMAT_TIME' },
         { label: 'buffer.SAVE_RAW_TIME' },
         { label: 'buffer.SAVE_RELATIVE_TIME' },
         { label: 'buffer.SAVE_TIMESTAMP_TIME' },
-        ...bufferEnumStat,
+    ]
+    const bufferEnumStat: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'buffer.STAT_LIMIT' },
+        { label: 'buffer.STAT_LIMIT1_HIGH' },
+        { label: 'buffer.STAT_LIMIT1_LOW' },
+        { label: 'buffer.STAT_LIMIT2_HIGH' },
+        { label: 'buffer.STAT_LIMIT2_LOW' },
+        { label: 'buffer.STAT_ORIGIN' },
+        { label: 'buffer.STAT_OUTPUT' },
+        { label: 'buffer.STAT_OVER_TEMP' },
+        { label: 'buffer.STAT_PROTECTION' },
+        { label: 'buffer.STAT_QUESTIONABLE' },
+        { label: 'buffer.STAT_READBACK' },
+        { label: 'buffer.STAT_SENSE' },
+        { label: 'buffer.STAT_START_GROUP' },
+        { label: 'buffer.STAT_TERMINAL' },
+    ]
+    const bufferEnumStyle: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.STYLE_COMPACT' },
         { label: 'buffer.STYLE_FULL' },
         { label: 'buffer.STYLE_STANDARD' },
         { label: 'buffer.STYLE_WRITABLE' },
         { label: 'buffer.STYLE_WRITABLE_FULL' },
-        ...bufferEnumUnit,
-    ],
-    label: 'buffer'
+    ]
+    const bufferEnumUnit: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'buffer.UNIT_AMP' },
+        { label: 'buffer.UNIT_AMP_AC' },
+        { label: 'buffer.UNIT_CELSIUS' },
+        { label: 'buffer.UNIT_DECIBEL' },
+        { label: 'buffer.UNIT_FAHRENHEIT' },
+        { label: 'buffer.UNIT_FARAD' },
+        { label: 'buffer.UNIT_HERTZ' },
+        { label: 'buffer.UNIT_KELVIN' },
+        { label: 'buffer.UNIT_NONE' },
+        { label: 'buffer.UNIT_OHM' },
+        { label: 'buffer.UNIT_PERCENT' },
+        { label: 'buffer.UNIT_RATIO' },
+        { label: 'buffer.UNIT_RECIPROCAL' },
+        { label: 'buffer.UNIT_SECOND' },
+        { label: 'buffer.UNIT_VOLT' },
+        { label: 'buffer.UNIT_VOLT_AC' },
+        { label: 'buffer.UNIT_WATT' },
+        { label: 'buffer.UNIT_X' },
+    ]
+
+    export const bufferWrite: ApiSpec = {
+        children: [
+            {
+                label: 'buffer.write.format',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, bufferEnumUnit ],
+                            [ 2, bufferEnumDigits ],
+                            [ 3, bufferEnumUnit ],
+                            [ 4, bufferEnumDigits ],
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'buffer.write.reading',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 4, bufferEnumStat ],
+                        ]),
+                        qualifier: 0
+                    },
+                    {
+                        parameters: new Map([
+                            [ 5, bufferEnumStat ],
+                        ]),
+                        qualifier: 1
+                    },
+                ]
+            },
+        ],
+        label: 'buffer.write'
+    }
+
+    export const buffer: ApiSpec = {
+        children: [
+            { label: 'buffer.clearstats' },
+            { label: 'buffer.delete' },
+            { label: 'buffer.getstats' },
+            {
+                label: 'buffer.make',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, bufferEnumStyle ],
+                        ]),
+                    }
+                ]
+            },
+            {
+                label: 'buffer.save',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 2, bufferEnumSave ],
+                        ]),
+                    }
+                ]
+            },
+            {
+                label: 'buffer.saveappend',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 2, bufferEnumSave ],
+                        ]),
+                    }
+                ]
+            },
+        ],
+        enums: [
+            ...bufferEnumDigits,
+            { label: 'buffer.FILL_CONTINUOUS' },
+            { label: 'buffer.FILL_ONCE' },
+            { label: 'buffer.OFF' },
+            { label: 'buffer.ON' },
+            ...bufferEnumSave,
+            ...bufferEnumStat,
+            ...bufferEnumStyle,
+            ...bufferEnumUnit,
+        ],
+        label: 'buffer'
+    }
 }
 
 const createconfigscript: ApiSpec = { label: 'createconfigscript' }
@@ -1075,8 +1110,8 @@ const waitcomplete: ApiSpec = { label: 'waitcomplete' }
 export function getApiSpec(): Array<ApiSpec> {
     return [
         beeper,
-        bufferWrite,
-        buffer,
+        Buffer.bufferWrite,
+        Buffer.buffer,
         createconfigscript,
         dataqueue,
         delay,
