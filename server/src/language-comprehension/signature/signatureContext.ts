@@ -44,7 +44,7 @@ export namespace SignatureContext {
      * The original index is returned if a partner character was not found before
      * the end of the given token array or if the given token is not pairable.
      */
-    function consumePair(index: number, tokens: Array<Token>): number {
+    export function consumePair(index: number, tokens: Array<Token>): number {
         if (index > tokens.length) {
             throw new Error(`Index ${index} is greater than the length of the given array (${tokens.length}).`)
         }
