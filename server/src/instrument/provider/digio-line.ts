@@ -35,7 +35,7 @@ export const completions: Array<InstrumentCompletionItem> = [
             kind: MarkupKind.Markdown,
             value: '```lua\ndigio.line[N].mode\n```\n\
 \n\
-Get or set the digital I/O line to digio.MODE_\\*. Defaults to digio.MODE_IN.'
+Get or set the digital I/O line to digio.MODE_\\*. Defaults to digio.MODE_DIGITAL_IN.'
         },
         kind: CompletionItemKind.Property,
         label: 'mode',
