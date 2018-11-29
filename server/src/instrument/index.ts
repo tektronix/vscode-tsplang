@@ -27,6 +27,7 @@ export interface BaseApiSpec {
 }
 
 export interface ExclusiveCompletionApiSpec extends BaseApiSpec {
+    /** TODO: use this fill-in CompletionItem.preselect to hightlight the default value. */
     preselect?: boolean
 }
 
