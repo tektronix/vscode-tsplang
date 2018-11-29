@@ -33,7 +33,6 @@ export interface ExclusiveCompletionApiSpec extends BaseApiSpec {
 
 export interface SignatureDataApiSpec {
     parameters: Map<number, Array<ExclusiveCompletionApiSpec>>
-    /** TODO: Implement this in the provider. */
     qualifier?: number
 }
 
