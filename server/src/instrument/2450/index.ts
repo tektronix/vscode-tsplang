@@ -186,21 +186,8 @@ const dataqueue: ApiSpec = {
 
 const delay: ApiSpec = { label: 'delay' }
 
-const digioLine: ApiSpec = {
-    children: [
-        { label: 'digio.line.mode' },
-        { label: 'digio.line.reset' },
-        { label: 'digio.line.state' },
-    ],
-    label: 'digio.line'
-}
-
-const digio: ApiSpec = {
-    children: [
-        { label: 'digio.readport' },
-        { label: 'digio.writeport' },
-    ],
-    enums: [
+namespace Digio {
+    const digioEnumMode: Array<ExclusiveCompletionApiSpec> = [
         { label: 'digio.MODE_DIGITAL_IN' },
         { label: 'digio.MODE_DIGITAL_OPEN_DRAIN' },
         { label: 'digio.MODE_DIGITAL_OUT' },
@@ -209,10 +196,38 @@ const digio: ApiSpec = {
         { label: 'digio.MODE_TRIGGER_OUT' },
         { label: 'digio.MODE_SYNCHRONOUS_ACCEPTOR' },
         { label: 'digio.MODE_SYNCHRONOUS_MASTER' },
+    ]
+    const digioEnumState: Array<ExclusiveCompletionApiSpec> = [
         { label: 'digio.STATE_HIGH' },
         { label: 'digio.STATE_LOW' },
-    ],
-    label: 'digio'
+    ]
+
+    export const digioLine: ApiSpec = {
+        children: [
+            {
+                assignmentExclusives: digioEnumMode,
+                label: 'digio.line.mode'
+            },
+            { label: 'digio.line.reset' },
+            {
+                assignmentExclusives: digioEnumState,
+                label: 'digio.line.state'
+            },
+        ],
+        label: 'digio.line'
+    }
+
+    export const digio: ApiSpec = {
+        children: [
+            { label: 'digio.readport' },
+            { label: 'digio.writeport' },
+        ],
+        enums: [
+            ...digioEnumMode,
+            ...digioEnumState
+        ],
+        label: 'digio'
+    }
 }
 
 namespace Display {
@@ -1211,8 +1226,8 @@ export function getApiSpec(): Array<ApiSpec> {
         createconfigscript,
         dataqueue,
         delay,
-        digioLine,
-        digio,
+        Digio.digioLine,
+        Digio.digio,
         Display.displayInput,
         Display.display,
         eventlog,
