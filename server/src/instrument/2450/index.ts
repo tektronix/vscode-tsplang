@@ -540,17 +540,32 @@ namespace Format {
 
 const gpib: ApiSpec = { label: 'gpib' }
 
-const lan: ApiSpec = {
-    children: [
-        { label: 'lan.ipconfig' },
-        { label: 'lan.lxidomain' },
-        { label: 'lan.macaddress' },
-    ],
-    enums: [
+namespace Lan {
+    const lanEnumMode: Array<ExclusiveCompletionApiSpec> = [
         { label: 'lan.MODE_AUTO' },
         { label: 'lan.MODE_MANUAL' },
-    ],
-    label: 'lan'
+    ]
+
+    export const lan: ApiSpec = {
+        children: [
+            {
+                label: 'lan.ipconfig',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 0, lanEnumMode ]
+                        ])
+                    }
+                ]
+            },
+            { label: 'lan.lxidomain' },
+            { label: 'lan.macaddress' },
+        ],
+        enums: [
+            ...lanEnumMode
+        ],
+        label: 'lan'
+    }
 }
 
 const localnode: ApiSpec = {
@@ -1319,7 +1334,7 @@ export function getApiSpec(): Array<ApiSpec> {
         File.file,
         Format.format,
         gpib,
-        lan,
+        Lan.lan,
         localnode,
         node,
         opc,
