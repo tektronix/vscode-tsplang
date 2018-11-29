@@ -164,7 +164,7 @@ export const signatures: Array<InstrumentSignatureInformation> = [
                 label: 'fileName',
             },
             {
-                documentation: 'Some: file.MODE_*',
+                documentation: 'Some file.MODE_*',
                 label: 'accessType',
             },
         ],
