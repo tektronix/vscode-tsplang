@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -136,7 +134,6 @@ The index column entry in the .csv file starts at 1 for each append operation.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.clearstats([bufferVar])',
         parameters: [
             {
@@ -148,7 +145,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.delete(bufferName)',
         parameters: [
             {
@@ -159,7 +155,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.getstats([bufferVar])',
         parameters: [
             {
@@ -171,7 +166,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.make(bufferSize[, style])',
         parameters: [
             {
@@ -189,7 +183,6 @@ WRITABLE buffers are used to import external data and cannot be used to collect 
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.save(bufferVar, fileName[, timeFormat][, start, end])',
         parameters: [
             {
@@ -219,7 +212,6 @@ flash drive; given as some buffer.SAVE_*.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.saveappend(bufferVar, fileName[, timeFormat][, start, end])',
         parameters: [
             {

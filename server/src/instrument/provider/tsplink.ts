@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -140,7 +138,6 @@ while line 2 is set high (1).'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tsplink.initialize([expectedNodes])',
         parameters: [
             {
@@ -152,7 +149,6 @@ An error is logged if the return value is not equal to this number.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tsplink.writeport(pattern)',
         parameters: [
             {

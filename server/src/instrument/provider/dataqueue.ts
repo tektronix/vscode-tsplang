@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -101,7 +99,6 @@ Any returned tables and subtables are duplicates and contain no references to th
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'dataqueue.add(value[, timeout])',
         parameters: [
             {
@@ -116,7 +113,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'dataqueue.next([timeout])',
         parameters: [
             {

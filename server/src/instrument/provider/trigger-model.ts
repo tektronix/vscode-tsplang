@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -119,7 +117,6 @@ Trigger state is updated every 100 ms.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.getbranchcount(blockNumber)',
         parameters: [
             {
@@ -130,7 +127,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: 'Load trigger model from Source and Measure config lists.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("ConfigList", measureConfigList, sourceConfigList[, delay][, bufferName])',
         parameters: [
             {
@@ -158,7 +154,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Load a basic duration loop trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("DurationLoop", duration[, delay][, bufferName])',
         parameters: [
             {
@@ -182,7 +177,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Clear the trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("Empty")',
         parameters: [
             {
@@ -193,7 +187,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Load a basic grade binning trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("GradeBinning", components, startInLine, startDelay, endDelay, \
 limit1High, limit1Low[, limit1Pattern]\
 [, limit2High][, limit2Low][, limit2Pattern]\
@@ -295,7 +288,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Load a basic logic trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("LogicTrigger", digInLine, digOutLine, count, clear[, delay][, bufferName])',
         parameters: [
             {
@@ -334,7 +326,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Load a basic event loop trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("LoopUntilEvent", triggerEvent, position, clear[, delay][, bufferName])',
         parameters: [
             {
@@ -366,7 +357,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Load a basic looping trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("SimpleLoop", count[, delay][, bufferName])',
         parameters: [
             {
@@ -390,7 +380,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Load a basic sort binning trigger model.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.load("SortBinning", components, startInLine, startDelay, endDelay, \
 limit1High, limit1Low[, limit1Pattern]\
 [, limit2High][, limit2Low][, limit2Pattern]\
@@ -483,7 +472,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     },
     {
         documentation: 'Transfer execution to the specified block number.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ALWAYS, branchToBlock)',
         parameters: [
             {
@@ -503,7 +491,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
     {
         documentation: 'Transfer execution if the total number of branches is less than the specified counter; \
 otherwise continue.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_COUNTER, targetCount, branchToBlock)',
         parameters: [
             {
@@ -527,7 +514,6 @@ otherwise continue.',
     {
         documentation: 'Transfer execution if the delta between the last two measurements (ultimate - penultimate) is \
 less than the specified value; otherwise continue.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_DELTA, targetDifference, branchToBlock\
 [, measureBlock])',
         parameters: [
@@ -557,7 +543,6 @@ undefined, the trigger model uses a previous measure block.',
     },
     {
         documentation: 'Transfer execution if a measurement meets the specified criteria.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_CONSTANT, limitType, limitA, limitB, \
 branchToBlock[, measureBlock])',
         parameters: [
@@ -603,7 +588,6 @@ undefined, the trigger model uses the previous measure block.',
     {
         documentation: 'Transfer execution if a measurement meets the criteria specified by a loaded measurement \
 configuration list.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_DYNAMIC, limitType, limitNumber, \
 branchToBlock[, measureBlock])',
         parameters: [
@@ -637,7 +621,6 @@ undefined, the trigger model uses the previous measure block.',
     },
     {
         documentation: 'Transfer execution if this block has not been executed; otherwise continue.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE, branchToBlock)',
         parameters: [
             {
@@ -656,7 +639,6 @@ undefined, the trigger model uses the previous measure block.',
     },
     {
         documentation: 'Transfer execution if this block has been executed; otherwise continue.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE_EXCLUDED, branchToBlock)',
         parameters: [
             {
@@ -676,7 +658,6 @@ first encounter.',
     },
     {
         documentation: 'Transfer execution if the specified event has occurred; otherwise continue.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ON_EVENT, event, branchToBlock)',
         parameters: [
             {
@@ -700,7 +681,6 @@ specified block.',
     },
     {
         documentation: 'Clear the specified reading buffer.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BUFFER_CLEAR[, bufferName])',
         parameters: [
             {
@@ -719,7 +699,6 @@ specified block.',
     },
     {
         documentation: 'Recall the settings at the next index of the specified source/measurement configuration list.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_NEXT, configurationList)',
         parameters: [
             {
@@ -739,7 +718,6 @@ specified block.',
     {
         documentation: 'Recall the settings at the previous index of the specified source/measurement configuration \
 list.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_PREV, configurationList)',
         parameters: [
             {
@@ -758,7 +736,6 @@ list.',
     },
     {
         documentation: 'Recall the settings stored in the specified source/measurement configuration list.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_RECALL, configurationList[, index])',
         parameters: [
             {
@@ -782,7 +759,6 @@ list.',
     {
         documentation: 'Halt measurement and trigger model execution for the specified amount of time. Background \
 measurements will continue, as will any infinite measurements set by a previous block.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_CONSTANT, time)',
         parameters: [
             {
@@ -802,7 +778,6 @@ measurements will continue, as will any infinite measurements set by a previous 
     {
         documentation: 'Halt measurement and trigger model execution for a remotely programmable amount of time. \
 Background measurements will continue, as will any infinite measurements set by a previous block.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_DYNAMIC, trigger.USER_DELAY_*)',
         parameters: [
             {
@@ -823,7 +798,6 @@ measure or source user delays, respectively. Where <n> is the index of the userd
     {
         documentation: 'Send a given bit pattern (0 to 63) on the specified digital I/O line. The least significant \
 bit maps to digital I/O line 1 and the most significant bit to line 6.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DIGITAL_IO, bitPattern, bitMask)',
         parameters: [
             {
@@ -848,7 +822,6 @@ bit maps to digital I/O line 1 and the most significant bit to line 6.',
         documentation: 'Post the specified event to the event log. Using this block too often in a trigger model \
 could overflow the event log. It may also take away from the time needed to process more critical trigger model \
 blocks.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_LOG_EVENT, eventNumber, message)',
         parameters: [
             {
@@ -873,7 +846,6 @@ model immediately and posts a warning message to the event log.',
     {
         documentation: 'Take the specified number of measurements. If an infinite measure count is given, then \
 execution continues until the next MEASURE block.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_MEASURE[, bufferName][, count])',
         parameters: [
             {
@@ -897,7 +869,6 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
     },
     {
         documentation: 'Placeholder block to prevent trigger model renumbering.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_NOP)',
         parameters: [
             {
@@ -912,7 +883,6 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
     },
     {
         documentation: 'Generate the specified trigger event and continue.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_NOTIFY, trigger.EVENT_NOTIFY*)',
         parameters: [
             {
@@ -931,7 +901,6 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
     },
     {
         documentation: 'Resets the total branch count of the specified COUNTER block.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_RESET_BRANCH_COUNT, counter)',
         parameters: [
             {
@@ -950,7 +919,6 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
     },
     {
         documentation: 'Sets the source to the specified output state.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_SOURCE_OUTPUT, state)',
         parameters: [
             {
@@ -969,7 +937,6 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
     },
     {
         documentation: 'Halts execution until the specified event occurs.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_WAIT, event[, clear][, logic][, event][, event])',
         parameters: [
             {

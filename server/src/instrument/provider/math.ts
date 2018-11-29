@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -295,7 +293,6 @@ Returns the tangent of angle x in radians.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.abs(x)',
         parameters: [
             {
@@ -305,7 +302,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.acos(x)',
         parameters: [
             {
@@ -316,7 +312,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.asin(x)',
         parameters: [
             {
@@ -327,7 +322,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.atan(x)',
         parameters: [
             {
@@ -337,7 +331,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.atan2(y, x)',
         parameters: [
             {
@@ -352,7 +345,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.ceil(x)',
         parameters: [
             {
@@ -363,7 +355,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.cos(x)',
         parameters: [
             {
@@ -374,7 +365,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.deg(x)',
         parameters: [
             {
@@ -385,7 +375,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.exp(x)',
         parameters: [
             {
@@ -396,7 +385,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.floor(x)',
         parameters: [
             {
@@ -407,7 +395,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.frexp(x)',
         parameters: [
             {
@@ -418,7 +405,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.ldexp(x, exp)',
         parameters: [
             {
@@ -433,7 +419,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.log(x)',
         parameters: [
             {
@@ -443,7 +428,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.log10(x)',
         parameters: [
             {
@@ -453,7 +437,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.max(...)',
         parameters: [
             {
@@ -464,7 +447,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.min(...)',
         parameters: [
             {
@@ -475,7 +457,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.pow(base, exp)',
         parameters: [
             {
@@ -488,7 +469,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.rad(x)',
         parameters: [
             {
@@ -499,7 +479,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.random(x)',
         parameters: [
             {
@@ -510,7 +489,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.random(x, y)',
         parameters: [
             {
@@ -525,7 +503,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.randomseed(x)',
         parameters: [
             {
@@ -535,7 +512,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.sin(x)',
         parameters: [
             {
@@ -546,7 +522,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.sqrt(x)',
         parameters: [
             {
@@ -557,7 +532,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.tan(x)',
         parameters: [
             {

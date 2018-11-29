@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
@@ -350,7 +350,6 @@ This attribute is saved with the active function and retained until the next ins
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.read([bufferName])',
         parameters: [
             {
@@ -366,7 +365,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.readwithtime([bufferName])',
         parameters: [
             {

@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -172,7 +170,6 @@ Returns a copy of the string s with all cased characters converted to uppercase.
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.byte(s[, index])',
         parameters: [
             {
@@ -187,7 +184,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.char([...])',
         parameters: [
             {
@@ -198,7 +194,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.dump(f)',
         parameters: [
             {
@@ -209,7 +204,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.find(s, pattern[, start[, plain]])',
         parameters: [
             {
@@ -232,7 +226,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.format(formatstring[, ...])',
         parameters: [
             {
@@ -247,7 +240,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.gsub(s, pattern, repl[, n])',
         parameters: [
             {
@@ -271,7 +263,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.len(s)',
         parameters: [
             {
@@ -282,7 +273,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.lower(s)',
         parameters: [
             {
@@ -293,7 +283,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.rep(s, n)',
         parameters: [
             {
@@ -308,7 +297,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.sub(s, start[, end])',
         parameters: [
             {
@@ -328,7 +316,6 @@ Defaults to -1.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.upper(s)',
         parameters: [
             {

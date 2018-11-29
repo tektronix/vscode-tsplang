@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -96,7 +94,6 @@ Output from previous commands is discarded.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.tsp.abort(connectionID)',
         parameters: [
             {
@@ -107,7 +104,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.tsp.rbtablecopy(connectionID, name[, startIndex, endIndex])',
         parameters: [
             {
@@ -130,7 +126,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.tsp.runscript(connectionID, name, script)',
         parameters: [
             {

@@ -15,7 +15,11 @@
  */
 'use strict'
 
-export { CommandDocumentation, CompletionItemData, InstrumentCompletionItem } from './completionItem'
-export { IndexedParameterInformation } from './parameterInformation'
-export { InstrumentSignatureHelp } from './signatureHelp'
-export { InstrumentSignatureInformation, SignatureData } from './signatureInformation'
+import { ParameterInformation } from 'vscode-languageserver'
+
+export interface IndexedParameterInformation extends ParameterInformation {
+    /**
+     * The parameter index of this parameter information.
+     */
+    index: number
+}

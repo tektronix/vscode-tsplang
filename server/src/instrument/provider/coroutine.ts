@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -98,7 +96,6 @@ Suspends execution of the current coroutine. Any arguments given are returned as
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'coroutine.create(f)',
         parameters: [
             {
@@ -109,7 +106,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'coroutine.resume(co, ...)',
         parameters: [
             {
@@ -124,7 +120,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'coroutine.status(co)',
         parameters: [
             {
@@ -135,7 +130,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'coroutine.wrap(f)',
         parameters: [
             {
@@ -146,7 +140,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'coroutine.yield(...)',
         parameters: [
             {

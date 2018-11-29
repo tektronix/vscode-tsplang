@@ -18,7 +18,7 @@
 import { ParameterInformation, SignatureInformation } from 'vscode-languageserver'
 
 import { ApiSpec, BaseApiSpec, ChildApiSpec, CommandSet, CommandSetInterface, ExclusiveCompletionApiSpec, InstrumentSpec, SignatureDataApiSpec } from '..'
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CommandDocumentation, IndexedParameterInformation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes
@@ -147,6 +147,7 @@ function filter(
                     throw new Error(`Filter Error: no signatures found with the label "${child.label}".`)
                 }
 
+                // Add any parameter exclusive completions.
                 if (child.signatureExclusives !== undefined) {
                     signatures = addSignatureExclusives(
                         child.signatureExclusives,
@@ -319,18 +320,26 @@ function formatSignatures(
     spec: InstrumentSpec,
     signatures: Array<InstrumentSignatureInformation>
 ): Array<InstrumentSignatureInformation> {
-    const result = new Array<InstrumentSignatureInformation>()
+    const result = signatures.map((value: InstrumentSignatureInformation) => {
+        // Only format parameters if this signature has never been loaded.
+        if (value._loaded !== true && value.getFormattedParameters !== undefined) {
+            const formatted = value.getFormattedParameters(spec)
 
-    signatures.forEach((value: InstrumentSignatureInformation) => {
-        result.push({
-            data: value.data,
-            documentation: value.documentation,
-            getFormattedParameters: (): Array<ParameterInformation> => new Array(),
-            label: value.label,
-            parameters: (value.parameters === undefined)
-                ? value.getFormattedParameters(spec)
-                : value.parameters.concat(value.getFormattedParameters(spec))
-        })
+            formatted.forEach((param: IndexedParameterInformation) => {
+                // Instantiate a new array if necessary.
+                if (value.parameters === undefined) {
+                    value.parameters = new Array()
+                }
+
+                // Insert this parameter at the associated index while removing 0 items.
+                value.parameters.splice(param.index, 0, param as ParameterInformation)
+            })
+
+            // Set the load status of this signature.
+            value._loaded = true
+        }
+
+        return value
     })
 
     return result

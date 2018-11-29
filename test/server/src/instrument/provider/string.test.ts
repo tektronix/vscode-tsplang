@@ -50,10 +50,16 @@ import { emptySpec } from '../emptySpec'
     @test('Signatures formatted properly')
     signaturesFormattedProperly(): void {
         Namespace.signatures.forEach((element: InstrumentSignatureInformation) => {
+            if (element.getFormattedParameters === undefined) {
+                assert(true)
+
+                return
+            }
+
             const formattedParams = element.getFormattedParameters(emptySpec)
 
             if (formattedParams.length === 0) {
-                assert(true)
+                assert(false, 'No formatted parameters returned.')
 
                 return
             }

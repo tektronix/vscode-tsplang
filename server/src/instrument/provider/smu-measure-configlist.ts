@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -136,7 +134,6 @@ between power cycles.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.configlist.create(listName)',
         parameters: [
             {
@@ -147,7 +144,6 @@ export const signatures: Array<InstrumentSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.configlist.delete(listName[, index])',
         parameters: [
             {
@@ -163,7 +159,6 @@ Deletes the entire configuration list by default.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.configlist.query(listName, index[, fieldSeparator])',
         parameters: [
             {
@@ -183,7 +178,6 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.configlist.recall(listName[, index])',
         parameters: [
             {
@@ -199,7 +193,6 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.configlist.size(listName)',
         parameters: [
             {
@@ -210,7 +203,6 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.measure.configlist.store(listName)',
         parameters: [
             {

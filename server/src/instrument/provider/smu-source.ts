@@ -17,7 +17,7 @@
 
 import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CommandDocumentation, IndexedParameterInformation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
 import { InstrumentSpec } from '..'
 
@@ -303,7 +303,7 @@ This attribute is saved with the active function and retained until the next ins
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+        getFormattedParameters: (spec: InstrumentSpec): Array<IndexedParameterInformation> => {
             return [
                 {
                     documentation: 'The source level at which to start sweeping as a number.\n\
@@ -313,6 +313,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 1,
                     label: 'start'
                 },
                 {
@@ -323,6 +324,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 2,
                     label: 'stop'
                 },
             ]
@@ -372,7 +374,7 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+        getFormattedParameters: (spec: InstrumentSpec): Array<IndexedParameterInformation> => {
             return [
                 {
                     documentation: 'The source level at which to start sweeping as a number.\n\
@@ -382,6 +384,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 1,
                     label: 'start'
                 },
                 {
@@ -392,6 +395,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 2,
                     label: 'stop'
                 },
             ]
@@ -441,7 +445,6 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])',
         parameters: [
             {
@@ -477,7 +480,7 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+        getFormattedParameters: (spec: InstrumentSpec): Array<IndexedParameterInformation> => {
             return [
                 {
                     documentation: 'The source level at which to start sweeping as a number.\n\
@@ -487,6 +490,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 1,
                     label: 'start'
                 },
                 {
@@ -497,6 +501,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 2,
                     label: 'stop'
                 },
             ]

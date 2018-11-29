@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { SignatureInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '../instrument'
 
-import { InstrumentCompletionItem } from '.'
+import { IndexedParameterInformation, InstrumentCompletionItem } from '.'
 
 export interface SignatureData {
     parameterTypes: Map<number, Array<InstrumentCompletionItem>>
@@ -30,6 +30,10 @@ export interface SignatureData {
 }
 
 export interface InstrumentSignatureInformation extends SignatureInformation {
+    /**
+     * **Never define this value in a provider file.**
+     */
+    _loaded?: boolean
     data?: SignatureData
-    getFormattedParameters(spec: InstrumentSpec): Array<ParameterInformation>
+    getFormattedParameters?(spec: InstrumentSpec): Array<IndexedParameterInformation>
 }

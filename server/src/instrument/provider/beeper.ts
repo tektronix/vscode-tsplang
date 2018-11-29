@@ -17,7 +17,7 @@
 
 import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { IndexedParameterInformation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
 import { InstrumentSpec } from '..'
 
@@ -45,18 +45,20 @@ the front panel.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+        getFormattedParameters: (spec: InstrumentSpec): Array<IndexedParameterInformation> => {
             return [
                 {
                     documentation: 'The amount of time to play the tone (%{0} to %{1} seconds).'
                         .replace('%{0}', spec.beeper.minSeconds.toString())
                         .replace('%{1}', spec.beeper.maxSeconds.toString()),
+                    index: 0,
                     label: 'duration'
                 },
                 {
                     documentation: 'The frequency of the beep (%{0} to %{1} Hz).'
                         .replace('%{0}', spec.beeper.minHertz.toString())
                         .replace('%{1}', spec.beeper.maxHertz.toString()),
+                    index: 1,
                     label: 'frequency'
                 },
             ]

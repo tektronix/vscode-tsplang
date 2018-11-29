@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
@@ -67,7 +65,6 @@ you entered.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.format(bufferVar, units, displayDigits[, extraUnits][, extraDigits])',
         parameters: [
             {
@@ -100,7 +97,6 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
             qualifier: 0
         },
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
         parameters: [
             {
@@ -132,7 +128,6 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
             qualifier: 1
         },
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',
         parameters: [
             {

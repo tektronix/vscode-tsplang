@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
-
-import { InstrumentSpec } from '..'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
@@ -100,7 +98,6 @@ for a more accurate conversion.'
 export const signatures: Array<InstrumentSignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'os.date([format[, time]])',
         parameters: [
             {
@@ -116,7 +113,6 @@ All other format specifiers follow the convention set by the C-language strftime
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'os.difftime(t1, t2)',
         parameters: [
             {
@@ -129,7 +125,6 @@ All other format specifiers follow the convention set by the C-language strftime
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'os.rename(source, destination)',
         parameters: [
             {
@@ -144,7 +139,6 @@ All other format specifiers follow the convention set by the C-language strftime
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'os.time(t)',
         parameters: [
             {
