@@ -398,21 +398,63 @@ namespace Display {
     }
 }
 
-const eventlog: ApiSpec = {
-    children: [
-        { label: 'eventlog.clear' },
-        { label: 'eventlog.getcount' },
-        { label: 'eventlog.next' },
-        { label: 'eventlog.post' },
-        { label: 'eventlog.save' },
-    ],
-    enums: [
+namespace Eventlog {
+    const eventlogEnumSev: Array<ExclusiveCompletionApiSpec> = [
         { label: 'eventlog.SEV_ALL' },
         { label: 'eventlog.SEV_ERROR' },
         { label: 'eventlog.SEV_INFO' },
         { label: 'eventlog.SEV_WARN' },
-    ],
-    label: 'eventlog'
+    ]
+
+    export const eventlog: ApiSpec = {
+        children: [
+            { label: 'eventlog.clear' },
+            {
+                label: 'eventlog.getcount',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 0, eventlogEnumSev ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'eventlog.next',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 0, eventlogEnumSev ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'eventlog.post',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, eventlogEnumSev ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'eventlog.save',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, eventlogEnumSev ]
+                        ])
+                    }
+                ]
+            },
+        ],
+        enums: [
+            ...eventlogEnumSev
+        ],
+        label: 'eventlog'
+    }
 }
 
 const exit: ApiSpec = { label: 'exit' }
@@ -1230,7 +1272,7 @@ export function getApiSpec(): Array<ApiSpec> {
         Digio.digio,
         Display.displayInput,
         Display.display,
-        eventlog,
+        Eventlog.eventlog,
         exit,
         file,
         format,
