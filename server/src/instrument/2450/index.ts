@@ -507,20 +507,35 @@ namespace File {
     }
 }
 
-const format: ApiSpec = {
-    children: [
-        { label: 'format.asciiprecision' },
-        { label: 'format.byteorder' },
-        { label: 'format.data' },
-    ],
-    enums: [
+namespace Format {
+    const formatEnumData: Array<ExclusiveCompletionApiSpec> = [
         { label: 'format.ASCII' },
-        { label: 'format.BIGENDIAN' },
-        { label: 'format.LITTLEENDIAN' },
         { label: 'format.REAL32' },
         { label: 'format.REAL64' },
-    ],
-    label: 'format'
+    ]
+    const formatEnumEnding: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'format.BIGENDIAN' },
+        { label: 'format.LITTLEENDIAN' },
+    ]
+
+    export const format: ApiSpec = {
+        children: [
+            { label: 'format.asciiprecision' },
+            {
+                assignmentExclusives: formatEnumEnding,
+                label: 'format.byteorder'
+            },
+            {
+                assignmentExclusives: formatEnumData,
+                label: 'format.data'
+            },
+        ],
+        enums: [
+            ...formatEnumData,
+            ...formatEnumEnding,
+        ],
+        label: 'format'
+    }
 }
 
 const gpib: ApiSpec = { label: 'gpib' }
@@ -1302,7 +1317,7 @@ export function getApiSpec(): Array<ApiSpec> {
         Eventlog.eventlog,
         exit,
         File.file,
-        format,
+        Format.format,
         gpib,
         lan,
         localnode,
