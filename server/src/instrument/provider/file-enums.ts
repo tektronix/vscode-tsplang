@@ -22,31 +22,37 @@ import { InstrumentCompletionItem } from '../../wrapper'
 export const completions: Array<InstrumentCompletionItem> = [
     {
         data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_APPEND'
     },
     {
         data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_READ'
     },
     {
         data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_WRITE'
     },
     {
         data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'READ_ALL'
     },
     {
         data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'READ_LINE'
     },
     {
         data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'READ_NUMBER'
     },

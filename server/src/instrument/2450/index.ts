@@ -459,25 +459,52 @@ namespace Eventlog {
 
 const exit: ApiSpec = { label: 'exit' }
 
-const file: ApiSpec = {
-    children: [
-        { label: 'file.close' },
-        { label: 'file.flush' },
-        { label: 'file.mkdir' },
-        { label: 'file.open' },
-        { label: 'file.read' },
-        { label: 'file.usbdriveexists' },
-        { label: 'file.write' },
-    ],
-    enums: [
+namespace File {
+    const fileEnumMode: Array<ExclusiveCompletionApiSpec> = [
         { label: 'file.MODE_APPEND' },
         { label: 'file.MODE_READ' },
         { label: 'file.MODE_WRITE' },
+    ]
+    const fileEnumRead: Array<ExclusiveCompletionApiSpec> = [
         { label: 'file.READ_ALL' },
         { label: 'file.READ_LINE' },
         { label: 'file.READ_NUMBER' },
-    ],
-    label: 'file'
+    ]
+
+    export const file: ApiSpec = {
+        children: [
+            { label: 'file.close' },
+            { label: 'file.flush' },
+            { label: 'file.mkdir' },
+            {
+                label: 'file.open',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, fileEnumMode ]
+                        ])
+                    }
+                ]
+            },
+            {
+                label: 'file.read',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, fileEnumRead ]
+                        ])
+                    }
+                ]
+            },
+            { label: 'file.usbdriveexists' },
+            { label: 'file.write' },
+        ],
+        enums: [
+            ...fileEnumMode,
+            ...fileEnumRead
+        ],
+        label: 'file'
+    }
 }
 
 const format: ApiSpec = {
@@ -1274,7 +1301,7 @@ export function getApiSpec(): Array<ApiSpec> {
         Display.display,
         Eventlog.eventlog,
         exit,
-        file,
+        File.file,
         format,
         gpib,
         lan,
