@@ -175,7 +175,8 @@ fieldList
 
 field
     : '[' expression ']' '=' expression
-    | NAME '=' expression| expression
+    | NAME '=' expression
+    | expression
     ;
 
 fieldSeparator
