@@ -270,37 +270,31 @@ export const completions: Array<InstrumentCompletionItem> = [
     },
     {
         data: { domains: ['display'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_100'
     },
     {
         data: { domains: ['display'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_75'
     },
     {
         data: { domains: ['display'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_50'
     },
     {
         data: { domains: ['display'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_25'
     },
     {
         data: { domains: ['display'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LCD_OFF'
     },
     {
         data: { domains: ['display'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_BLACKOUT'
     },
