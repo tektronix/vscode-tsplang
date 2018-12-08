@@ -21,42 +21,49 @@ import { InstrumentCompletionItem } from '../../wrapper'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.MSB: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'MSB'
     },
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.EAV: 4',
         kind: CompletionItemKind.EnumMember,
         label: 'EAV'
     },
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.QSB: 8',
         kind: CompletionItemKind.EnumMember,
         label: 'QSB'
     },
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.MAV: 16',
         kind: CompletionItemKind.EnumMember,
         label: 'MAV'
     },
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.ESB: 32',
         kind: CompletionItemKind.EnumMember,
         label: 'ESB'
     },
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.MSS: 64',
         kind: CompletionItemKind.EnumMember,
         label: 'MSS'
     },
     {
+        allowBitwise: true,
         data: { domains: ['status'] },
         detail: 'status.OSB: 128',
         kind: CompletionItemKind.EnumMember,

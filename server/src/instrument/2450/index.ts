@@ -1046,49 +1046,8 @@ namespace Smu {
     }
 }
 
-const statusOperation: ApiSpec = {
-    children: [
-        { label: 'status.operation.condition' },
-        { label: 'status.operation.enable' },
-        { label: 'status.operation.event' },
-        { label: 'status.operation.getmap' },
-        { label: 'status.operation.setmap' },
-    ],
-    label: 'status.operation'
-}
-
-const statusQuestionable: ApiSpec = {
-    children: [
-        { label: 'status.questionable.condition' },
-        { label: 'status.questionable.enable' },
-        { label: 'status.questionable.event' },
-        { label: 'status.questionable.getmap' },
-        { label: 'status.questionable.setmap' },
-    ],
-    label: 'status.questionable'
-}
-
-const statusStandard: ApiSpec = {
-    children: [
-        { label: 'status.standard.enable' },
-        { label: 'status.standard.event' },
-    ],
-    enums: [
-        { label: 'status.standard.OPC' },
-        { label: 'status.standard.QYE' },
-        { label: 'status.standard.PON' },
-    ],
-    label: 'status.standard'
-}
-
-const status: ApiSpec = {
-    children: [
-        { label: 'status.clear' },
-        { label: 'status.condition' },
-        { label: 'status.preset' },
-        { label: 'status.request_enable' },
-    ],
-    enums: [
+namespace Status {
+    const statusEnum: Array<ExclusiveCompletionApiSpec> = [
         { label: 'status.MSB' },
         { label: 'status.EAV' },
         { label: 'status.QSB' },
@@ -1096,8 +1055,64 @@ const status: ApiSpec = {
         { label: 'status.ESB' },
         { label: 'status.MSS' },
         { label: 'status.OSB' },
-    ],
-    label: 'status'
+    ]
+    const statusStandardEnum: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'status.standard.OPC' },
+        { label: 'status.standard.QYE' },
+        { label: 'status.standard.PON' },
+    ]
+
+    export const statusOperation: ApiSpec = {
+        children: [
+            { label: 'status.operation.condition' },
+            { label: 'status.operation.enable' },
+            { label: 'status.operation.event' },
+            { label: 'status.operation.getmap' },
+            { label: 'status.operation.setmap' },
+        ],
+        label: 'status.operation'
+    }
+
+    export const statusQuestionable: ApiSpec = {
+        children: [
+            { label: 'status.questionable.condition' },
+            { label: 'status.questionable.enable' },
+            { label: 'status.questionable.event' },
+            { label: 'status.questionable.getmap' },
+            { label: 'status.questionable.setmap' },
+        ],
+        label: 'status.questionable'
+    }
+
+    export const statusStandard: ApiSpec = {
+        children: [
+            {
+                assignmentExclusives: statusStandardEnum,
+                label: 'status.standard.enable'
+            },
+            { label: 'status.standard.event' },
+        ],
+        enums: [
+            ...statusStandardEnum,
+        ],
+        label: 'status.standard'
+    }
+
+    export const status: ApiSpec = {
+        children: [
+            { label: 'status.clear' },
+            { label: 'status.condition' },
+            { label: 'status.preset' },
+            {
+                assignmentExclusives: statusEnum,
+                label: 'status.request_enable'
+            },
+        ],
+        enums: [
+            ...statusEnum,
+        ],
+        label: 'status'
+    }
 }
 
 const timer: ApiSpec = {
@@ -1464,10 +1479,10 @@ export function getApiSpec(): Array<ApiSpec> {
         Smu.smuSourceVlimit,
         Smu.smuSource,
         Smu.smu,
-        statusOperation,
-        statusQuestionable,
-        statusStandard,
-        status,
+        Status.statusOperation,
+        Status.statusQuestionable,
+        Status.statusStandard,
+        Status.status,
         timer,
         triggerBlender,
         triggerDigin,

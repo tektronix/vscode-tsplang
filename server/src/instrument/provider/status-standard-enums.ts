@@ -21,18 +21,21 @@ import { InstrumentCompletionItem } from '../../wrapper'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
+        allowBitwise: true,
         data: { domains: ['standard', 'status'] },
         detail: 'status.standard.OPC: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'OPC'
     },
     {
+        allowBitwise: true,
         data: { domains: ['standard', 'status'] },
         detail: 'status.standard.QYE: 4',
         kind: CompletionItemKind.EnumMember,
         label: 'QYE'
     },
     {
+        allowBitwise: true,
         data: { domains: ['standard', 'status'] },
         detail: 'status.standard.PON: 128',
         kind: CompletionItemKind.EnumMember,
