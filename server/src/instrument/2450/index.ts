@@ -648,29 +648,84 @@ namespace Smu {
         export const DC_VOLTAGE: ExclusiveCompletionApiSpec = { label: 'smu.FUNC_DC_VOLTAGE' }
         export const RESISTANCE: ExclusiveCompletionApiSpec = { label: 'smu.FUNC_RESISTANCE' }
     }
+    const smuEnumAudible: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.AUDIBLE_FAIL' },
+        { label: 'smu.AUDIBLE_NONE' },
+        { label: 'smu.AUDIBLE_PASS' },
+    ]
     const smuEnumDelay: ExclusiveCompletionApiSpec = { label: 'smu.DELAY_AUTO' }
+    const smuEnumDigits: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.DIGITS_3_5' },
+        { label: 'smu.DIGITS_4_5' },
+        { label: 'smu.DIGITS_5_5' },
+        { label: 'smu.DIGITS_6_5' },
+    ]
+    const smuEnumFail: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.FAIL_BOTH' },
+        { label: 'smu.FAIL_HIGH' },
+        { label: 'smu.FAIL_LOW' },
+        { label: 'smu.FAIL_NONE' },
+    ]
+    const smuEnumFilter: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.FILTER_MOVING_AVG' },
+        { label: 'smu.FILTER_REPEAT_AVG' },
+    ]
+    const smuEnumFuncMeasure: Array<ExclusiveCompletionApiSpec> = [
+        Func.RESISTANCE
+    ]
+    const smuEnumFuncSource: Array<ExclusiveCompletionApiSpec> = [
+        Func.DC_CURRENT,
+        Func.DC_VOLTAGE
+    ]
     const smuEnumInfinite: ExclusiveCompletionApiSpec = { label: 'smu.INFINITE' }
+    const smuEnumMath: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.MATH_MXB' },
+        { label: 'smu.MATH_PERCENT' },
+        { label: 'smu.MATH_RECIPROCAL' },
+    ]
     const smuEnumOffmode: Array<ExclusiveCompletionApiSpec> = [
         { label: 'smu.OFFMODE_GUARD' },
         { label: 'smu.OFFMODE_HIGHZ' },
         { label: 'smu.OFFMODE_NORMAL' },
         { label: 'smu.OFFMODE_ZERO' },
     ]
-    const smuEnumMeasureFunc: Array<ExclusiveCompletionApiSpec> = [
-        Func.RESISTANCE
+    export const smuEnumOnOff: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.OFF' },
+        { label: 'smu.ON' },
+    ]
+    const smuEnumProtect: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.PROTECT_2V' },
+        { label: 'smu.PROTECT_5V' },
+        { label: 'smu.PROTECT_10V' },
+        { label: 'smu.PROTECT_20V' },
+        { label: 'smu.PROTECT_40V' },
+        { label: 'smu.PROTECT_60V' },
+        { label: 'smu.PROTECT_80V' },
+        { label: 'smu.PROTECT_100V' },
+        { label: 'smu.PROTECT_120V' },
+        { label: 'smu.PROTECT_140V' },
+        { label: 'smu.PROTECT_160V' },
+        { label: 'smu.PROTECT_180V' },
+        { label: 'smu.PROTECT_NONE' },
     ]
     const smuEnumRange: Array<ExclusiveCompletionApiSpec> = [
         { label: 'smu.RANGE_AUTO' },
         { label: 'smu.RANGE_BEST' },
         { label: 'smu.RANGE_FIXED' },
     ]
-    const smuEnumSourceFunc: Array<ExclusiveCompletionApiSpec> = [
-        Func.DC_CURRENT,
-        Func.DC_VOLTAGE
+    const smuEnumSense: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.SENSE_2WIRE' },
+        { label: 'smu.SENSE_4WIRE' },
     ]
-    export const smuEnumOnOff: Array<ExclusiveCompletionApiSpec> = [
-        { label: 'smu.OFF' },
-        { label: 'smu.ON' },
+    const smuEnumTerminals: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.TERMINALS_FRONT' },
+        { label: 'smu.TERMINALS_REAR' },
+    ]
+    const smuEnumUnits: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'smu.UNIT_AMP' },
+        { label: 'smu.UNIT_OHM' },
+        { label: 'smu.UNIT_VOLT' },
+        { label: 'smu.UNIT_WATT' },
     ]
 
     export const smuInterlock: ApiSpec = {
@@ -682,7 +737,10 @@ namespace Smu {
 
     export const smuMeasureAutozero: ApiSpec = {
         children: [
-            { label: 'smu.measure.autozero.enable' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.autozero.enable'
+            },
             { label: 'smu.measure.autozero.once' },
         ],
         label: 'smu.measure.autozero'
@@ -704,8 +762,14 @@ namespace Smu {
     export const smuMeasureFilter: ApiSpec = {
         children: [
             { label: 'smu.measure.filter.count' },
-            { label: 'smu.measure.filter.enable' },
-            { label: 'smu.measure.filter.type' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.filter.enable'
+            },
+            {
+                assignmentExclusives: smuEnumFilter,
+                label: 'smu.measure.filter.type'
+            },
         ],
         label: 'smu.measure.filter'
     }
@@ -726,11 +790,23 @@ namespace Smu {
 
     export const smuMeasureLimit: ApiSpec = {
         children: [
-            { label: 'smu.measure.limit.audible' },
-            { label: 'smu.measure.limit.autoclear' },
+            {
+                assignmentExclusives: smuEnumAudible,
+                label: 'smu.measure.limit.audible'
+            },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.limit.autoclear'
+            },
             { label: 'smu.measure.limit.clear' },
-            { label: 'smu.measure.limit.enable' },
-            { label: 'smu.measure.limit.fail' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.limit.enable'
+            },
+            {
+                assignmentExclusives: smuEnumFail,
+                label: 'smu.measure.limit.fail'
+            },
         ],
         label: 'smu.measure.limit'
     }
@@ -745,8 +821,14 @@ namespace Smu {
 
     export const smuMeasureMath: ApiSpec = {
         children: [
-            { label: 'smu.measure.math.enable' },
-            { label: 'smu.measure.math.format' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.math.enable'
+            },
+            {
+                assignmentExclusives: smuEnumMath,
+                label: 'smu.measure.math.format'
+            },
             { label: 'smu.measure.math.percent' },
         ],
         label: 'smu.measure.math'
@@ -755,7 +837,10 @@ namespace Smu {
     export const smuMeasureRel: ApiSpec = {
         children: [
             { label: 'smu.measure.rel.acquire' },
-            { label: 'smu.measure.rel.enable' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.rel.enable'
+            },
             { label: 'smu.measure.rel.level' },
         ],
         label: 'smu.measure.rel'
@@ -763,20 +848,41 @@ namespace Smu {
 
     export const smuMeasure: ApiSpec = {
         children: [
-            { label: 'smu.measure.autorange' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.autorange'
+            },
             { label: 'smu.measure.autorangehigh' },
             { label: 'smu.measure.autorangelow' },
             { label: 'smu.measure.count' },
-            { label: 'smu.measure.displaydigits' },
-            { label: 'smu.measure.func' },
+            {
+                assignmentExclusives: smuEnumDigits,
+                label: 'smu.measure.displaydigits'
+            },
+            {
+                assignmentExclusives: smuEnumFuncSource.concat(...smuEnumFuncMeasure),
+                label: 'smu.measure.func'
+            },
             { label: 'smu.measure.nplc' },
-            { label: 'smu.measure.offsetcompensation' },
+            {
+                assignmentExclusives: smuEnumOnOff,
+                label: 'smu.measure.offsetcompensation'
+            },
             { label: 'smu.measure.range' },
             { label: 'smu.measure.read' },
             { label: 'smu.measure.readwithtime' },
-            { label: 'smu.measure.sense' },
-            { label: 'smu.measure.terminals' },
-            { label: 'smu.measure.unit' },
+            {
+                assignmentExclusives: smuEnumSense,
+                label: 'smu.measure.sense'
+            },
+            {
+                assignmentExclusives: smuEnumTerminals,
+                label: 'smu.measure.terminals'
+            },
+            {
+                assignmentExclusives: smuEnumUnits,
+                label: 'smu.measure.unit'
+            },
             { label: 'smu.measure.userdelay' },
         ],
         label: 'smu.measure'
@@ -805,7 +911,10 @@ namespace Smu {
 
     export const smuSourceProtect: ApiSpec = {
         children: [
-            { label: 'smu.source.protect.level' },
+            {
+                assignmentExclusives: smuEnumProtect,
+                label: 'smu.source.protect.level'
+            },
             { label: 'smu.source.protect.tripped' },
         ],
         label: 'smu.source.protect'
@@ -831,7 +940,7 @@ namespace Smu {
             },
             { label: 'smu.source.delay' },
             {
-                assignmentExclusives: smuEnumSourceFunc,
+                assignmentExclusives: smuEnumFuncSource,
                 label: 'smu.source.func'
             },
             {
@@ -915,51 +1024,23 @@ namespace Smu {
             { label: 'smu.reset' },
         ],
         enums: [
-            { label: 'smu.AUDIBLE_FAIL' },
-            { label: 'smu.AUDIBLE_NONE' },
-            { label: 'smu.AUDIBLE_PASS' },
+            ...smuEnumAudible,
             smuEnumDelay,
-            { label: 'smu.DIGITS_3_5' },
-            { label: 'smu.DIGITS_4_5' },
-            { label: 'smu.DIGITS_5_5' },
-            { label: 'smu.DIGITS_6_5' },
-            { label: 'smu.FAIL_BOTH' },
-            { label: 'smu.FAIL_HIGH' },
-            { label: 'smu.FAIL_LOW' },
-            { label: 'smu.FAIL_NONE' },
-            { label: 'smu.FILTER_MOVING_AVG' },
-            { label: 'smu.FILTER_REPEAT_AVG' },
+            ...smuEnumDigits,
+            ...smuEnumFail,
+            ...smuEnumFilter,
             Func.DC_CURRENT,
             Func.DC_VOLTAGE,
             Func.RESISTANCE,
             smuEnumInfinite,
-            { label: 'smu.MATH_MXB' },
-            { label: 'smu.MATH_PERCENT' },
-            { label: 'smu.MATH_RECIPROCAL' },
+            ...smuEnumMath,
             ...smuEnumOffmode,
             ...smuEnumOnOff,
-            { label: 'smu.PROTECT_2V' },
-            { label: 'smu.PROTECT_5V' },
-            { label: 'smu.PROTECT_10V' },
-            { label: 'smu.PROTECT_20V' },
-            { label: 'smu.PROTECT_40V' },
-            { label: 'smu.PROTECT_60V' },
-            { label: 'smu.PROTECT_80V' },
-            { label: 'smu.PROTECT_100V' },
-            { label: 'smu.PROTECT_120V' },
-            { label: 'smu.PROTECT_140V' },
-            { label: 'smu.PROTECT_160V' },
-            { label: 'smu.PROTECT_180V' },
-            { label: 'smu.PROTECT_NONE' },
+            ...smuEnumProtect,
             ...smuEnumRange,
-            { label: 'smu.SENSE_2WIRE' },
-            { label: 'smu.SENSE_4WIRE' },
-            { label: 'smu.TERMINALS_FRONT' },
-            { label: 'smu.TERMINALS_REAR' },
-            { label: 'smu.UNIT_AMP' },
-            { label: 'smu.UNIT_OHM' },
-            { label: 'smu.UNIT_VOLT' },
-            { label: 'smu.UNIT_WATT' },
+            ...smuEnumSense,
+            ...smuEnumTerminals,
+            ...smuEnumUnits,
         ],
         label: 'smu'
     }
