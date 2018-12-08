@@ -124,7 +124,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_LIMIT: 32',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Source status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_LIMIT'
     },
@@ -132,7 +135,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_LIMIT1_HIGH: 128',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_LIMIT1_HIGH'
     },
@@ -140,7 +146,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_LIMIT1_LOW: 64',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_LIMIT1_LOW'
     },
@@ -148,7 +157,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_LIMIT2_HIGH: 32',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_LIMIT2_HIGH'
     },
@@ -156,7 +168,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_LIMIT2_LOW: 16',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_LIMIT2_LOW'
     },
@@ -164,7 +179,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_ORIGIN: 6',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_ORIGIN'
     },
@@ -172,7 +190,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_OUTPUT: 128',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Source status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_OUTPUT'
     },
@@ -180,7 +201,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_OVER_TEMP: 16',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Source status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_OVER_TEMP'
     },
@@ -188,7 +212,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_PROTECTION: 4',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Source status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_PROTECTION'
     },
@@ -196,7 +223,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_QUESTIONABLE: 1',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_QUESTIONABLE'
     },
@@ -204,7 +234,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_READBACK: 8',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Source status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_READBACK'
     },
@@ -212,7 +245,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_SENSE: 64',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Source status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_SENSE'
     },
@@ -220,7 +256,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_START_GROUP: 256',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_START_GROUP'
     },
@@ -228,7 +267,10 @@ export const completions: Array<InstrumentCompletionItem> = [
         allowBitwise: true,
         data: { domains: ['buffer'] },
         detail: 'buffer.STAT_TERMINAL: 8',
-        exclusive: true,
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Measure status.'
+        },
         kind: CompletionItemKind.EnumMember,
         label: 'STAT_TERMINAL'
     },

@@ -40,21 +40,23 @@ namespace Buffer {
         { label: 'buffer.SAVE_RELATIVE_TIME' },
         { label: 'buffer.SAVE_TIMESTAMP_TIME' },
     ]
-    const bufferEnumStat: Array<ExclusiveCompletionApiSpec> = [
-        { label: 'buffer.STAT_LIMIT' },
+    const bufferEnumStatMeasure: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.STAT_LIMIT1_HIGH' },
         { label: 'buffer.STAT_LIMIT1_LOW' },
         { label: 'buffer.STAT_LIMIT2_HIGH' },
         { label: 'buffer.STAT_LIMIT2_LOW' },
         { label: 'buffer.STAT_ORIGIN' },
+        { label: 'buffer.STAT_QUESTIONABLE' },
+        { label: 'buffer.STAT_START_GROUP' },
+        { label: 'buffer.STAT_TERMINAL' },
+    ]
+    const bufferEnumStatSource: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'buffer.STAT_LIMIT' },
         { label: 'buffer.STAT_OUTPUT' },
         { label: 'buffer.STAT_OVER_TEMP' },
         { label: 'buffer.STAT_PROTECTION' },
-        { label: 'buffer.STAT_QUESTIONABLE' },
         { label: 'buffer.STAT_READBACK' },
         { label: 'buffer.STAT_SENSE' },
-        { label: 'buffer.STAT_START_GROUP' },
-        { label: 'buffer.STAT_TERMINAL' },
     ]
     const bufferEnumStyle: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.STYLE_COMPACT' },
@@ -104,13 +106,13 @@ namespace Buffer {
                 signatureExclusives: [
                     {
                         parameters: new Map([
-                            [ 4, bufferEnumStat ],
+                            [ 4, bufferEnumStatMeasure ],
                         ]),
                         qualifier: 0
                     },
                     {
                         parameters: new Map([
-                            [ 5, bufferEnumStat ],
+                            [ 5, bufferEnumStatMeasure ],
                         ]),
                         qualifier: 1
                     },
@@ -163,7 +165,8 @@ namespace Buffer {
             { label: 'buffer.OFF' },
             { label: 'buffer.ON' },
             ...bufferEnumSave,
-            ...bufferEnumStat,
+            ...bufferEnumStatMeasure,
+            ...bufferEnumStatSource,
             ...bufferEnumStyle,
             ...bufferEnumUnit,
         ],
