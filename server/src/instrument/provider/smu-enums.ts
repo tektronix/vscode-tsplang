@@ -93,19 +93,16 @@ export const completions: Array<InstrumentCompletionItem> = [
     },
     {
         data: { domains: ['smu'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_DC_CURRENT'
     },
     {
         data: { domains: ['smu'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_DC_VOLTAGE'
     },
     {
         data: { domains: ['smu'] },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_RESISTANCE'
     },
@@ -155,7 +152,6 @@ export const completions: Array<InstrumentCompletionItem> = [
 the present voltage range. If the output is acting a current source, then it is selected and set to 0A; otherwise it \
 is set to 0V.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'OFFMODE_GUARD'
     },
@@ -167,7 +163,6 @@ is set to 0V.'
 Opening this relay disconnects the instrument as a load. To prevent execessive wear, do not use this offmode during \
 tests that toggle the output state frequently.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'OFFMODE_HIGHZ'
     },
@@ -178,7 +173,6 @@ tests that toggle the output state frequently.'
             value: 'Turning the source off sets the measurement sense type to 2-Wire, selects the voltage source and \
 sets it to 0V, and sets the current limit to 10% of the present measurement autorange value.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'OFFMODE_NORMAL'
     },
@@ -191,7 +185,6 @@ sets it to 0V and sets the range to the present range (turning off autorange if 
 a current source, then the current limit is set to the programmed source current value or to 10% of the present \
 current range, whichever is greater; otherwise the current limit is not changed.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'OFFMODE_ZERO'
     },
