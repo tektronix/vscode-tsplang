@@ -27,7 +27,6 @@ export const completions: Array<InstrumentCompletionItem> = [
             value: 'Automatically detect externally generated logic levels. \
 Input lines can be read from but not written to.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_DIGITAL_IN'
     },
@@ -38,7 +37,6 @@ Input lines can be read from but not written to.'
             value: 'Line serves as input, output, or both. \
 A 1 must be written to a line used as an input in open-drain mode.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_DIGITAL_OPEN_DRAIN'
     },
@@ -49,7 +47,6 @@ A 1 must be written to a line used as an input in open-drain mode.'
             value: 'Can be configured as logic low (default; 0 V) or as logic high (+5 V). \
 Output lines are actively driven high or low.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_DIGITAL_OUT'
     },
@@ -60,7 +57,6 @@ Output lines are actively driven high or low.'
             value: 'Automatically detect and respond to externally generated triggers. \
 Input can be rising, falling, or either-edged as specified by the trigger.digin[N].edge attribute.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_TRIGGER_IN'
     },
@@ -71,7 +67,6 @@ Input can be rising, falling, or either-edged as specified by the trigger.digin[
             value: 'Line serves as input trigger detection and output trigger generator. \
 Input edge state is specified by the trigger.digin[N].edge attribute.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_TRIGGER_OPEN_DRAIN'
     },
@@ -83,7 +78,6 @@ Input edge state is specified by the trigger.digin[N].edge attribute.'
 Use the postive logic setting to generate a rising edge trigger and the negative logic setting to generate a falling \
 edge trigger.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_TRIGGER_OUT'
     },
@@ -94,7 +88,6 @@ edge trigger.'
             value: 'Detect falling-edge trigger input and automatically latch and drive the trigger \
 line low. Assert an output trigger to release the latched line.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_SYNCHRONOUS_ACCEPTOR'
     },
@@ -105,21 +98,18 @@ line low. Assert an output trigger to release the latched line.'
             value: 'Detect rising-edge trigger input and assert a transistor-transistor logic low pulse \
 as output.'
         },
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_SYNCHRONOUS_MASTER'
     },
     {
         data: { domains: ['digio'] },
         detail: 'digio.STATE_HIGH: 1',
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_HIGH'
     },
     {
         data: { domains: ['digio'] },
         detail: 'digio.STATE_LOW: 0',
-        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LOW'
     },
