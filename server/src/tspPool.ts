@@ -53,7 +53,7 @@ export class TspPool {
                 resolve(newEntry)
             }
             catch (e) {
-                reject(new Error('Registration failed: ' + e.toString()))
+                reject(e)
             }
         })
     }
@@ -87,7 +87,7 @@ export class TspPool {
         const entry = this.pool.get(model)
 
         if (entry === undefined) {
-            throw new Error(`attempted to access the non-existant ${model} entry.`)
+            throw new Error(`Attempted to access the non-existant ${model} entry.`)
         }
 
         entry.references++
@@ -114,7 +114,7 @@ export class TspPool {
                     luaEntry = await this.register(Model.LUA)
                 }
                 catch (e) {
-                    reject(new Error('Load failure: ' + e.toString()))
+                    reject(e)
                 }
             }
 
@@ -148,7 +148,7 @@ export class TspPool {
                         })
                     }
                     catch (e) {
-                        reject(new Error('Load failure: ' + e.toString()))
+                        reject(e)
                     }
 
                     break

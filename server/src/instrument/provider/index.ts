@@ -387,7 +387,7 @@ export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: Instrum
 
             resolve(result)
         } catch (e) {
-            reject(new Error(e.toString()))
+            reject(e)
         }
     })
 }

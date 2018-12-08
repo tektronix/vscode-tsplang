@@ -48,7 +48,7 @@ export class TspManager {
         ): Promise<void> => {
             // check if the doc has already been registered
             if (this.dict.has(uri)) {
-                reject(new Error('Document already registered'))
+                reject(new Error('Document already registered.'))
 
                 return
             }
@@ -56,7 +56,7 @@ export class TspManager {
             const document = this.documents.get(uri)
 
             if (document === undefined) {
-                reject(new Error('Error fetching document from document manager.'))
+                reject(new Error('Unable to fetch document from document manager.'))
 
                 return
             }
@@ -80,7 +80,7 @@ export class TspManager {
 
                 resolve()
             } catch (e) {
-                reject(new Error('Registration failure: ' + e.toString()))
+                reject(e)
             }
         })
     }
@@ -112,7 +112,7 @@ export class TspManager {
         ): Promise<void> => {
             // check if the doc has not been registered
             if (!this.dict.has(uri)) {
-                reject(new Error('Document is not registered'))
+                reject(new Error('Document is not registered.'))
 
                 return
             }
@@ -120,7 +120,7 @@ export class TspManager {
             const document = this.documents.get(uri)
 
             if (document === undefined) {
-                reject(new Error('Error fetching document from document manager.'))
+                reject(new Error('Unable to fetch document from document manager.'))
 
                 return
             }
