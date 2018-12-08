@@ -1123,195 +1123,121 @@ const timer: ApiSpec = {
     label: 'timer'
 }
 
-const triggerBlender: ApiSpec = {
-    children: [
-        { label: 'trigger.blender.clear' },
-        { label: 'trigger.blender.orenable' },
-        { label: 'trigger.blender.overrun' },
-        { label: 'trigger.blender.reset' },
-        { label: 'trigger.blender.stimulus' },
-        { label: 'trigger.blender.wait' },
-    ],
-    label: 'trigger.blender'
-}
-
-const triggerDigin: ApiSpec = {
-    children: [
-        { label: 'trigger.digin.clear' },
-        { label: 'trigger.digin.edge' },
-        { label: 'trigger.digin.overrun' },
-        { label: 'trigger.digin.wait' },
-    ],
-    label: 'trigger.digin'
-}
-
-const triggerDigout: ApiSpec = {
-    children: [
-        { label: 'trigger.digout.assert' },
-        { label: 'trigger.digout.logic' },
-        { label: 'trigger.digout.pulsewidth' },
-        { label: 'trigger.digout.release' },
-        { label: 'trigger.digout.stimulus' },
-    ],
-    label: 'trigger.digout'
-}
-
-const triggerLanin: ApiSpec = {
-    children: [
-        { label: 'trigger.lanin.clear' },
-        { label: 'trigger.lanin.edge' },
-        { label: 'trigger.lanin.overrun' },
-        { label: 'trigger.lanin.wait' },
-    ],
-    label: 'trigger.lanin'
-}
-
-const triggerLanout: ApiSpec = {
-    children: [
-        { label: 'trigger.lanout.assert' },
-        { label: 'trigger.lanout.connect' },
-        { label: 'trigger.lanout.connected' },
-        { label: 'trigger.lanout.disconnect' },
-        { label: 'trigger.lanout.ipaddress' },
-        { label: 'trigger.lanout.logic' },
-        { label: 'trigger.lanout.protocol' },
-        { label: 'trigger.lanout.stimulus' },
-    ],
-    label: 'trigger.lanout'
-}
-
-const triggerModel: ApiSpec = {
-    children: [
-        { label: 'trigger.model.abort' },
-        { label: 'trigger.model.getblocklist' },
-        { label: 'trigger.model.getbranchcount' },
-        { label: 'trigger.model.initiate' },
-        { label: 'trigger.model.load' },
-        { label: 'trigger.model.setblock' },
-        { label: 'trigger.model.state' },
-    ],
-    label: 'trigger.model'
-}
-
-const triggerTimerStart: ApiSpec = {
-    children: [
-        { label: 'trigger.timer.start.fractionalseconds' },
-        { label: 'trigger.timer.start.generate' },
-        { label: 'trigger.timer.start.overrun' },
-        { label: 'trigger.timer.start.seconds' },
-        { label: 'trigger.timer.start.stimulus' },
-    ],
-    label: 'trigger.timer.start'
-}
-
-const triggerTimer: ApiSpec = {
-    children: [
-        { label: 'trigger.timer.clear' },
-        { label: 'trigger.timer.count' },
-        { label: 'trigger.timer.delay' },
-        { label: 'trigger.timer.delaylist' },
-        { label: 'trigger.timer.enable' },
-        { label: 'trigger.timer.reset' },
-        { label: 'trigger.timer.wait' },
-    ],
-    label: 'trigger.timer'
-}
-
-const triggerTsplinkin: ApiSpec = {
-    children: [
-        { label: 'trigger.tsplinkin.clear' },
-        { label: 'trigger.tsplinkin.edge' },
-        { label: 'trigger.tsplinkin.overrun' },
-        { label: 'trigger.tsplinkin.wait' },
-    ],
-    label: 'trigger.tsplinkin'
-}
-
-const triggerTsplinkout: ApiSpec = {
-    children: [
-        { label: 'trigger.tsplinkout.assert' },
-        { label: 'trigger.tsplinkout.logic' },
-        { label: 'trigger.tsplinkout.pulsewidth' },
-        { label: 'trigger.tsplinkout.release' },
-        { label: 'trigger.tsplinkout.stimulus' },
-    ],
-    label: 'trigger.tsplinkout'
-}
-
-const trigger: ApiSpec = {
-    children: [
-        { label: 'trigger.clear' },
-        { label: 'trigger.wait' },
-    ],
-    enums: [
-        { label: 'trigger.BLOCK_BRANCH_ALWAYS' },
-        { label: 'trigger.BLOCK_BRANCH_COUNTER' },
-        { label: 'trigger.BLOCK_BRANCH_DELTA' },
-        { label: 'trigger.BLOCK_BRANCH_LIMIT_CONSTANT' },
-        { label: 'trigger.BLOCK_BRANCH_LIMIT_DYNAMIC' },
-        { label: 'trigger.BLOCK_BRANCH_ON_EVENT' },
-        { label: 'trigger.BLOCK_BRANCH_ONCE' },
-        { label: 'trigger.BLOCK_BRANCH_ONCE_EXCLUDED' },
-        { label: 'trigger.BLOCK_BUFFER_CLEAR' },
-        { label: 'trigger.BLOCK_CONFIG_NEXT' },
-        { label: 'trigger.BLOCK_CONFIG_PREV' },
-        { label: 'trigger.BLOCK_CONFIG_RECALL' },
-        { label: 'trigger.BLOCK_DELAY_CONSTANT' },
-        { label: 'trigger.BLOCK_DELAY_DYNAMIC' },
-        { label: 'trigger.BLOCK_DIGITAL_IO' },
-        { label: 'trigger.BLOCK_LOG_EVENT' },
-        { label: 'trigger.BLOCK_MEASURE' },
-        { label: 'trigger.BLOCK_NOP' },
-        { label: 'trigger.BLOCK_NOTIFY' },
-        { label: 'trigger.BLOCK_RESET_BRANCH_COUNT' },
-        { label: 'trigger.BLOCK_SOURCE_OUTPUT' },
-        { label: 'trigger.BLOCK_WAIT' },
+namespace Trigger {
+    namespace Block {
+        export namespace Branch {
+            export const ALWAYS: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_ALWAYS' }
+            export const COUNTER: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_COUNTER' }
+            export const DELTA: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_DELTA' }
+            export const LIMIT_CONSTANT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_LIMIT_CONSTANT' }
+            export const LIMIT_DYNAMIC: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_LIMIT_DYNAMIC' }
+            export const ONCE: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_ONCE' }
+            export const ONCE_EXCLUDED: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_ONCE_EXCLUDED' }
+            export const ON_EVENT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BRANCH_ON_EVENT' }
+        }
+        export const BUFFER_CLEAR: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_BUFFER_CLEAR' }
+        export namespace Config {
+            export const NEXT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_CONFIG_NEXT' }
+            export const PREV: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_CONFIG_PREV' }
+            export const RECALL: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_CONFIG_RECALL' }
+        }
+        export namespace Delay {
+            export const CONSTANT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_DELAY_CONSTANT' }
+            export const DYNAMIC: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_DELAY_DYNAMIC' }
+        }
+        export const DIGITAL_IO: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_DIGITAL_IO' }
+        export const LOG_EVENT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_LOG_EVENT' }
+        export const MEASURE: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_MEASURE' }
+        export const NOP: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_NOP' }
+        export const NOTIFY: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_NOTIFY' }
+        export const RESET_BRANCH_COUNT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_RESET_BRANCH_COUNT' }
+        export const SOURCE_OUTPUT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_SOURCE_OUTPUT' }
+        export const WAIT: ExclusiveCompletionApiSpec = { label: 'trigger.BLOCK_WAIT' }
+    }
+    const triggerEnumClear: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.CLEAR_ENTER' },
         { label: 'trigger.CLEAR_NEVER' },
+    ]
+    const triggerEnumCount: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.COUNT_INFINITE' },
         { label: 'trigger.COUNT_STOP' },
+    ]
+    const triggerEnumEdge: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.EDGE_EITHER' },
         { label: 'trigger.EDGE_FALLING' },
         { label: 'trigger.EDGE_RISING' },
-        { label: 'trigger.EVENT_BLENDER1' },
-        { label: 'trigger.EVENT_BLENDER2' },
-        { label: 'trigger.EVENT_COMMAND' },
-        { label: 'trigger.EVENT_DIGIO1' },
-        { label: 'trigger.EVENT_DIGIO2' },
-        { label: 'trigger.EVENT_DIGIO3' },
-        { label: 'trigger.EVENT_DIGIO4' },
-        { label: 'trigger.EVENT_DIGIO5' },
-        { label: 'trigger.EVENT_DIGIO6' },
-        { label: 'trigger.EVENT_DISPLAY' },
-        { label: 'trigger.EVENT_LAN1' },
-        { label: 'trigger.EVENT_LAN2' },
-        { label: 'trigger.EVENT_LAN3' },
-        { label: 'trigger.EVENT_LAN4' },
-        { label: 'trigger.EVENT_LAN5' },
-        { label: 'trigger.EVENT_LAN6' },
-        { label: 'trigger.EVENT_LAN7' },
-        { label: 'trigger.EVENT_LAN8' },
-        { label: 'trigger.EVENT_NONE' },
-        { label: 'trigger.EVENT_NOTIFY1' },
-        { label: 'trigger.EVENT_NOTIFY2' },
-        { label: 'trigger.EVENT_NOTIFY3' },
-        { label: 'trigger.EVENT_NOTIFY4' },
-        { label: 'trigger.EVENT_NOTIFY5' },
-        { label: 'trigger.EVENT_NOTIFY6' },
-        { label: 'trigger.EVENT_NOTIFY7' },
-        { label: 'trigger.EVENT_NOTIFY8' },
-        { label: 'trigger.EVENT_SOURCE_LIMIT' },
-        { label: 'trigger.EVENT_TIMER1' },
-        { label: 'trigger.EVENT_TIMER2' },
-        { label: 'trigger.EVENT_TIMER3' },
-        { label: 'trigger.EVENT_TIMER4' },
-        { label: 'trigger.EVENT_TSPLINK1' },
-        { label: 'trigger.EVENT_TSPLINK2' },
-        { label: 'trigger.EVENT_TSPLINK3' },
+    ]
+    namespace Event {
+        export const BLENDER: Array<ExclusiveCompletionApiSpec> = [
+            { label: 'trigger.EVENT_BLENDER1' },
+            { label: 'trigger.EVENT_BLENDER2' },
+        ]
+        export const COMMAND: ExclusiveCompletionApiSpec = { label: 'trigger.EVENT_COMMAND' }
+        export const DIGIO: Array<ExclusiveCompletionApiSpec> = [
+            { label: 'trigger.EVENT_DIGIO1' },
+            { label: 'trigger.EVENT_DIGIO2' },
+            { label: 'trigger.EVENT_DIGIO3' },
+            { label: 'trigger.EVENT_DIGIO4' },
+            { label: 'trigger.EVENT_DIGIO5' },
+            { label: 'trigger.EVENT_DIGIO6' },
+        ]
+        export const DISPLAY: ExclusiveCompletionApiSpec = { label: 'trigger.EVENT_DISPLAY' }
+        export const LAN: Array<ExclusiveCompletionApiSpec> = [
+            { label: 'trigger.EVENT_LAN1' },
+            { label: 'trigger.EVENT_LAN2' },
+            { label: 'trigger.EVENT_LAN3' },
+            { label: 'trigger.EVENT_LAN4' },
+            { label: 'trigger.EVENT_LAN5' },
+            { label: 'trigger.EVENT_LAN6' },
+            { label: 'trigger.EVENT_LAN7' },
+            { label: 'trigger.EVENT_LAN8' },
+        ]
+        export const NONE: ExclusiveCompletionApiSpec = { label: 'trigger.EVENT_NONE' }
+        export const NOTIFY: Array<ExclusiveCompletionApiSpec> = [
+            { label: 'trigger.EVENT_NOTIFY1' },
+            { label: 'trigger.EVENT_NOTIFY2' },
+            { label: 'trigger.EVENT_NOTIFY3' },
+            { label: 'trigger.EVENT_NOTIFY4' },
+            { label: 'trigger.EVENT_NOTIFY5' },
+            { label: 'trigger.EVENT_NOTIFY6' },
+            { label: 'trigger.EVENT_NOTIFY7' },
+            { label: 'trigger.EVENT_NOTIFY8' },
+        ]
+        export const SOURCE_LIMIT: ExclusiveCompletionApiSpec = { label: 'trigger.EVENT_SOURCE_LIMIT' }
+        export const TIMER: Array<ExclusiveCompletionApiSpec> = [
+            { label: 'trigger.EVENT_TIMER1' },
+            { label: 'trigger.EVENT_TIMER2' },
+            { label: 'trigger.EVENT_TIMER3' },
+            { label: 'trigger.EVENT_TIMER4' },
+        ]
+        export const TSPLINK: Array<ExclusiveCompletionApiSpec> = [
+            { label: 'trigger.EVENT_TSPLINK1' },
+            { label: 'trigger.EVENT_TSPLINK2' },
+            { label: 'trigger.EVENT_TSPLINK3' },
+        ]
+
+        export function all(): Array<ExclusiveCompletionApiSpec> {
+            return [
+                ...BLENDER,
+                COMMAND,
+                ...DIGIO,
+                DISPLAY,
+                ...LAN,
+                NONE,
+                ...NOTIFY,
+                SOURCE_LIMIT,
+                ...TIMER,
+                ...TSPLINK,
+            ]
+        }
+    }
+    const triggerEnumLimit: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.LIMIT_ABOVE' },
         { label: 'trigger.LIMIT_BELOW' },
         { label: 'trigger.LIMIT_INSIDE' },
         { label: 'trigger.LIMIT_OUTSIDE' },
+    ]
+    const triggerEnumLog: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.LOG_INFO1' },
         { label: 'trigger.LOG_INFO2' },
         { label: 'trigger.LOG_INFO3' },
@@ -1325,18 +1251,21 @@ const trigger: ApiSpec = {
         { label: 'trigger.LOG_ERROR2' },
         { label: 'trigger.LOG_ERROR3' },
         { label: 'trigger.LOG_ERROR4' },
+    ]
+    const triggerEnumLogic: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.LOGIC_NEGATIVE' },
         { label: 'trigger.LOGIC_POSITIVE' },
+    ]
+    const triggerEnumOnOff: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.OFF' },
         { label: 'trigger.ON' },
-        { label: 'trigger.STATE_ABORTED' },
-        { label: 'trigger.STATE_ABORTING' },
-        { label: 'trigger.STATE_BUILDING' },
-        { label: 'trigger.STATE_EMPTY' },
-        { label: 'trigger.STATE_FAILED' },
-        { label: 'trigger.STATE_IDLE' },
-        { label: 'trigger.STATE_RUNNING' },
-        { label: 'trigger.STATE_WAITING' },
+    ]
+    const triggerEnumProtocol: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'trigger.PROTOCOL_MULTICAST' },
+        { label: 'trigger.PROTOCOL_TCP' },
+        { label: 'trigger.PROTOCOL_UDP' },
+    ]
+    const triggerEnumUserDelay: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.USER_DELAY_M1' },
         { label: 'trigger.USER_DELAY_M2' },
         { label: 'trigger.USER_DELAY_M3' },
@@ -1347,10 +1276,368 @@ const trigger: ApiSpec = {
         { label: 'trigger.USER_DELAY_S3' },
         { label: 'trigger.USER_DELAY_S4' },
         { label: 'trigger.USER_DELAY_S5' },
+    ]
+    const triggerEnumWait: Array<ExclusiveCompletionApiSpec> = [
         { label: 'trigger.WAIT_AND' },
         { label: 'trigger.WAIT_OR' },
-    ],
-    label: 'trigger'
+    ]
+
+    export const triggerBlender: ApiSpec = {
+        children: [
+            { label: 'trigger.blender.clear' },
+            { label: 'trigger.blender.orenable' },
+            { label: 'trigger.blender.overrun' },
+            { label: 'trigger.blender.reset' },
+            {
+                assignmentExclusives: Event.all(),
+                label: 'trigger.blender.stimulus'
+            },
+            { label: 'trigger.blender.wait' },
+        ],
+        label: 'trigger.blender'
+    }
+
+    export const triggerDigin: ApiSpec = {
+        children: [
+            { label: 'trigger.digin.clear' },
+            {
+                assignmentExclusives: triggerEnumEdge,
+                label: 'trigger.digin.edge'
+            },
+            { label: 'trigger.digin.overrun' },
+            { label: 'trigger.digin.wait' },
+        ],
+        label: 'trigger.digin'
+    }
+
+    export const triggerDigout: ApiSpec = {
+        children: [
+            { label: 'trigger.digout.assert' },
+            {
+                assignmentExclusives: triggerEnumLogic,
+                label: 'trigger.digout.logic'
+            },
+            { label: 'trigger.digout.pulsewidth' },
+            { label: 'trigger.digout.release' },
+            {
+                assignmentExclusives: Event.all(),
+                label: 'trigger.digout.stimulus'
+            },
+        ],
+        label: 'trigger.digout'
+    }
+
+    export const triggerLanin: ApiSpec = {
+        children: [
+            { label: 'trigger.lanin.clear' },
+            {
+                assignmentExclusives: triggerEnumEdge,
+                label: 'trigger.lanin.edge'
+            },
+            { label: 'trigger.lanin.overrun' },
+            { label: 'trigger.lanin.wait' },
+        ],
+        label: 'trigger.lanin'
+    }
+
+    export const triggerLanout: ApiSpec = {
+        children: [
+            { label: 'trigger.lanout.assert' },
+            { label: 'trigger.lanout.connect' },
+            { label: 'trigger.lanout.connected' },
+            { label: 'trigger.lanout.disconnect' },
+            { label: 'trigger.lanout.ipaddress' },
+            {
+                assignmentExclusives: triggerEnumLogic,
+                label: 'trigger.lanout.logic'
+            },
+            {
+                assignmentExclusives: triggerEnumProtocol,
+                label: 'trigger.lanout.protocol'
+            },
+            {
+                assignmentExclusives: Event.all(),
+                label: 'trigger.lanout.stimulus'
+            },
+        ],
+        label: 'trigger.lanout'
+    }
+
+    export const triggerModel: ApiSpec = {
+        children: [
+            { label: 'trigger.model.abort' },
+            { label: 'trigger.model.getblocklist' },
+            { label: 'trigger.model.getbranchcount' },
+            { label: 'trigger.model.initiate' },
+            { label: 'trigger.model.load' },
+            {
+                label: 'trigger.model.setblock',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.ALWAYS] ]
+                        ]),
+                        qualifier: 0
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.COUNTER] ]
+                        ]),
+                        qualifier: 1
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.DELTA] ]
+                        ]),
+                        qualifier: 2
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.LIMIT_CONSTANT] ],
+                            [ 2, triggerEnumLimit ]
+                        ]),
+                        qualifier: 3
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.LIMIT_DYNAMIC] ],
+                            [ 2, triggerEnumLimit ]
+                        ]),
+                        qualifier: 4
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.ONCE] ]
+                        ]),
+                        qualifier: 5
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.ONCE_EXCLUDED] ]
+                        ]),
+                        qualifier: 6
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Branch.ON_EVENT] ],
+                            [ 2, Event.all() ]
+                        ]),
+                        qualifier: 7
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.BUFFER_CLEAR] ]
+                        ]),
+                        qualifier: 8
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Config.NEXT] ]
+                        ]),
+                        qualifier: 9
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Config.PREV] ]
+                        ]),
+                        qualifier: 10
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Config.RECALL] ]
+                        ]),
+                        qualifier: 11
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Delay.CONSTANT] ]
+                        ]),
+                        qualifier: 12
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.Delay.DYNAMIC] ],
+                            [ 2, triggerEnumUserDelay ]
+                        ]),
+                        qualifier: 13
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.DIGITAL_IO] ]
+                        ]),
+                        qualifier: 14
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.LOG_EVENT] ],
+                            [ 2, triggerEnumLog ]
+                        ]),
+                        qualifier: 15
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.MEASURE] ],
+                            [ 3, triggerEnumCount ]
+                        ]),
+                        qualifier: 16
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.NOP] ]
+                        ]),
+                        qualifier: 17
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.NOTIFY] ],
+                            [ 2, Event.NOTIFY ]
+                        ]),
+                        qualifier: 18
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.RESET_BRANCH_COUNT] ]
+                        ]),
+                        qualifier: 19
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.SOURCE_OUTPUT] ],
+                            [ 2, Smu.smuEnumOnOff ]
+                        ]),
+                        qualifier: 20
+                    },
+                    {
+                        parameters: new Map([
+                            [ 1, [Block.WAIT] ],
+                            [ 2, Event.all() ],
+                            [ 3, triggerEnumClear ],
+                            [ 4, triggerEnumWait ],
+                            [ 5, Event.all() ],
+                            [ 6, Event.all() ]
+                        ]),
+                        qualifier: 21
+                    },
+                ]
+            },
+            { label: 'trigger.model.state' },
+        ],
+        label: 'trigger.model'
+    }
+
+    export const triggerTimerStart: ApiSpec = {
+        children: [
+            { label: 'trigger.timer.start.fractionalseconds' },
+            {
+                assignmentExclusives: triggerEnumOnOff,
+                label: 'trigger.timer.start.generate'
+            },
+            { label: 'trigger.timer.start.overrun' },
+            { label: 'trigger.timer.start.seconds' },
+            {
+                assignmentExclusives: Event.all(),
+                label: 'trigger.timer.start.stimulus'
+            },
+        ],
+        label: 'trigger.timer.start'
+    }
+
+    export const triggerTimer: ApiSpec = {
+        children: [
+            { label: 'trigger.timer.clear' },
+            { label: 'trigger.timer.count' },
+            { label: 'trigger.timer.delay' },
+            { label: 'trigger.timer.delaylist' },
+            {
+                assignmentExclusives: triggerEnumOnOff,
+                label: 'trigger.timer.enable'
+            },
+            { label: 'trigger.timer.reset' },
+            { label: 'trigger.timer.wait' },
+        ],
+        label: 'trigger.timer'
+    }
+
+    export const triggerTsplinkin: ApiSpec = {
+        children: [
+            { label: 'trigger.tsplinkin.clear' },
+            {
+                assignmentExclusives: triggerEnumEdge,
+                label: 'trigger.tsplinkin.edge'
+            },
+            { label: 'trigger.tsplinkin.overrun' },
+            { label: 'trigger.tsplinkin.wait' },
+        ],
+        label: 'trigger.tsplinkin'
+    }
+
+    export const triggerTsplinkout: ApiSpec = {
+        children: [
+            { label: 'trigger.tsplinkout.assert' },
+            {
+                assignmentExclusives: triggerEnumLogic,
+                label: 'trigger.tsplinkout.logic'
+            },
+            { label: 'trigger.tsplinkout.pulsewidth' },
+            { label: 'trigger.tsplinkout.release' },
+            {
+                assignmentExclusives: Event.all(),
+                label: 'trigger.tsplinkout.stimulus'
+            },
+        ],
+        label: 'trigger.tsplinkout'
+    }
+
+    export const trigger: ApiSpec = {
+        children: [
+            { label: 'trigger.clear' },
+            { label: 'trigger.wait' },
+        ],
+        enums: [
+            Block.Branch.ALWAYS,
+            Block.Branch.COUNTER,
+            Block.Branch.DELTA,
+            Block.Branch.LIMIT_CONSTANT,
+            Block.Branch.LIMIT_DYNAMIC,
+            Block.Branch.ONCE,
+            Block.Branch.ONCE_EXCLUDED,
+            Block.Branch.ON_EVENT,
+            Block.BUFFER_CLEAR,
+            Block.Config.NEXT,
+            Block.Config.PREV,
+            Block.Config.RECALL,
+            Block.Delay.CONSTANT,
+            Block.Delay.DYNAMIC,
+            Block.DIGITAL_IO,
+            Block.LOG_EVENT,
+            Block.MEASURE,
+            Block.NOP,
+            Block.NOTIFY,
+            Block.RESET_BRANCH_COUNT,
+            Block.SOURCE_OUTPUT,
+            Block.WAIT,
+            ...triggerEnumClear,
+            ...triggerEnumCount,
+            ...triggerEnumEdge,
+            ...Event.all(),
+            ...triggerEnumLimit,
+            ...triggerEnumLog,
+            ...triggerEnumLogic,
+            ...triggerEnumOnOff,
+            ...triggerEnumProtocol,
+            { label: 'trigger.STATE_ABORTED' },
+            { label: 'trigger.STATE_ABORTING' },
+            { label: 'trigger.STATE_BUILDING' },
+            { label: 'trigger.STATE_EMPTY' },
+            { label: 'trigger.STATE_FAILED' },
+            { label: 'trigger.STATE_IDLE' },
+            { label: 'trigger.STATE_RUNNING' },
+            { label: 'trigger.STATE_WAITING' },
+            ...triggerEnumUserDelay,
+            ...triggerEnumWait,
+        ],
+        label: 'trigger'
+    }
 }
 
 namespace Tsplink {
@@ -1508,17 +1795,17 @@ export function getApiSpec(): Array<ApiSpec> {
         Status.statusStandard,
         Status.status,
         timer,
-        triggerBlender,
-        triggerDigin,
-        triggerDigout,
-        triggerLanin,
-        triggerLanout,
-        triggerModel,
-        triggerTimerStart,
-        triggerTimer,
-        triggerTsplinkin,
-        triggerTsplinkout,
-        trigger,
+        Trigger.triggerBlender,
+        Trigger.triggerDigin,
+        Trigger.triggerDigout,
+        Trigger.triggerLanin,
+        Trigger.triggerLanout,
+        Trigger.triggerModel,
+        Trigger.triggerTimerStart,
+        Trigger.triggerTimer,
+        Trigger.triggerTsplinkin,
+        Trigger.triggerTsplinkout,
+        Trigger.trigger,
         Tsplink.tsplinkLine,
         Tsplink.tsplink,
         Tspnet.tspnetTsp,

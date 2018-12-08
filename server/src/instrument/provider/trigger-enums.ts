@@ -22,131 +22,157 @@ import { InstrumentCompletionItem } from '../../wrapper'
 export const completions: Array<InstrumentCompletionItem> = [
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ALWAYS'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_COUNTER'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_DELTA'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_LIMIT_CONSTANT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_LIMIT_DYNAMIC'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ON_EVENT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ONCE'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BRANCH_ONCE_EXCLUDED'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_BUFFER_CLEAR'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_CONFIG_NEXT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_CONFIG_PREV'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_CONFIG_RECALL'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_DELAY_CONSTANT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_DELAY_DYNAMIC'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_DIGITAL_IO'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_LOG_EVENT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_MEASURE'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_NOP'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_NOTIFY'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_RESET_BRANCH_COUNT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_SOURCE_OUTPUT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_WAIT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'CLEAR_ENTER'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'CLEAR_NEVER'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'COUNT_INFINITE'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'COUNT_STOP'
     },
@@ -497,86 +523,103 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_ABOVE'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_BELOW'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_INSIDE'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LIMIT_OUTSIDE'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO1'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO2'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO3'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_INFO4'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN_ABORT'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN1'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN2'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN3'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_WARN4'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR1'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR2'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR3'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'LOG_ERROR4'
     },
@@ -607,6 +650,21 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
         data: { domains: ['trigger'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ON'
+    },
+    {
+        data: { domains: ['trigger'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'PROTOCOL_MULTICAST'
+    },
+    {
+        data: { domains: ['trigger'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'PROTOCOL_TCP'
+    },
+    {
+        data: { domains: ['trigger'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'PROTOCOL_UDP'
     },
     {
         data: { domains: ['trigger'] },
@@ -650,61 +708,73 @@ when the device_trigger method is invoked. If neither of those interfaces are ac
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M1'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M2'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M3'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M4'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_M5'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S1'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S2'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S3'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S4'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'USER_DELAY_S5'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'WAIT_AND'
     },
     {
         data: { domains: ['trigger'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'WAIT_OR'
     },

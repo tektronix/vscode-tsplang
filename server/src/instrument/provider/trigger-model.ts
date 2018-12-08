@@ -471,6 +471,10 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 0
+        },
         documentation: 'Transfer execution to the specified block number.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ALWAYS, branchToBlock)',
         parameters: [
@@ -489,6 +493,10 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 1
+        },
         documentation: 'Transfer execution if the total number of branches is less than the specified counter; \
 otherwise continue.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_COUNTER, targetCount, branchToBlock)',
@@ -512,6 +520,10 @@ otherwise continue.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 2
+        },
         documentation: 'Transfer execution if the delta between the last two measurements (ultimate - penultimate) is \
 less than the specified value; otherwise continue.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_DELTA, targetDifference, branchToBlock\
@@ -542,6 +554,10 @@ undefined, the trigger model uses a previous measure block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 3
+        },
         documentation: 'Transfer execution if a measurement meets the specified criteria.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_CONSTANT, limitType, limitA, limitB, \
 branchToBlock[, measureBlock])',
@@ -586,6 +602,10 @@ undefined, the trigger model uses the previous measure block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 4
+        },
         documentation: 'Transfer execution if a measurement meets the criteria specified by a loaded measurement \
 configuration list.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_LIMIT_DYNAMIC, limitType, limitNumber, \
@@ -620,6 +640,10 @@ undefined, the trigger model uses the previous measure block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 5
+        },
         documentation: 'Transfer execution if this block has not been executed; otherwise continue.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE, branchToBlock)',
         parameters: [
@@ -638,6 +662,10 @@ undefined, the trigger model uses the previous measure block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 6
+        },
         documentation: 'Transfer execution if this block has been executed; otherwise continue.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ONCE_EXCLUDED, branchToBlock)',
         parameters: [
@@ -657,6 +685,10 @@ first encounter.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 7
+        },
         documentation: 'Transfer execution if the specified event has occurred; otherwise continue.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BRANCH_ON_EVENT, event, branchToBlock)',
         parameters: [
@@ -680,6 +712,10 @@ specified block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 8
+        },
         documentation: 'Clear the specified reading buffer.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_BUFFER_CLEAR[, bufferName])',
         parameters: [
@@ -698,6 +734,10 @@ specified block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 9
+        },
         documentation: 'Recall the settings at the next index of the specified source/measurement configuration list.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_NEXT, configurationList)',
         parameters: [
@@ -716,6 +756,10 @@ specified block.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 10
+        },
         documentation: 'Recall the settings at the previous index of the specified source/measurement configuration \
 list.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_PREV, configurationList)',
@@ -735,6 +779,10 @@ list.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 11
+        },
         documentation: 'Recall the settings stored in the specified source/measurement configuration list.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_CONFIG_RECALL, configurationList[, index])',
         parameters: [
@@ -757,6 +805,10 @@ list.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 12
+        },
         documentation: 'Halt measurement and trigger model execution for the specified amount of time. Background \
 measurements will continue, as will any infinite measurements set by a previous block.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_CONSTANT, time)',
@@ -776,6 +828,10 @@ measurements will continue, as will any infinite measurements set by a previous 
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 13
+        },
         documentation: 'Halt measurement and trigger model execution for a remotely programmable amount of time. \
 Background measurements will continue, as will any infinite measurements set by a previous block.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DELAY_DYNAMIC, trigger.USER_DELAY_*)',
@@ -796,6 +852,10 @@ measure or source user delays, respectively. Where <n> is the index of the userd
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 14
+        },
         documentation: 'Send a given bit pattern (0 to 63) on the specified digital I/O line. The least significant \
 bit maps to digital I/O line 1 and the most significant bit to line 6.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DIGITAL_IO, bitPattern, bitMask)',
@@ -819,6 +879,10 @@ bit maps to digital I/O line 1 and the most significant bit to line 6.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 15
+        },
         documentation: 'Post the specified event to the event log. Using this block too often in a trigger model \
 could overflow the event log. It may also take away from the time needed to process more critical trigger model \
 blocks.',
@@ -844,6 +908,10 @@ model immediately and posts a warning message to the event log.',
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 16
+        },
         documentation: 'Take the specified number of measurements. If an infinite measure count is given, then \
 execution continues until the next MEASURE block.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_MEASURE[, bufferName][, count])',
@@ -868,6 +936,10 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 17
+        },
         documentation: 'Placeholder block to prevent trigger model renumbering.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_NOP)',
         parameters: [
@@ -882,6 +954,10 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 18
+        },
         documentation: 'Generate the specified trigger event and continue.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_NOTIFY, trigger.EVENT_NOTIFY*)',
         parameters: [
@@ -900,6 +976,10 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 19
+        },
         documentation: 'Resets the total branch count of the specified COUNTER block.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_RESET_BRANCH_COUNT, counter)',
         parameters: [
@@ -918,6 +998,10 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 20
+        },
         documentation: 'Sets the source to the specified output state.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_SOURCE_OUTPUT, state)',
         parameters: [
@@ -936,6 +1020,10 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 21
+        },
         documentation: 'Halts execution until the specified event occurs.',
         label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_WAIT, event[, clear][, logic][, event][, event])',
         parameters: [
