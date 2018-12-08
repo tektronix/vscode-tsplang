@@ -1353,35 +1353,50 @@ const trigger: ApiSpec = {
     label: 'trigger'
 }
 
-const tsplink: ApiSpec = {
-    children: [
+namespace Tsplink {
+    const tsplinkEnumMode: Array<ExclusiveCompletionApiSpec> = [
         { label: 'tsplink.MODE_DIGITAL_OPEN_DRAIN' },
         { label: 'tsplink.MODE_TRIGGER_OPEN_DRAIN' },
         { label: 'tsplink.MODE_SYNCHRONOUS_ACCEPTOR' },
         { label: 'tsplink.MODE_SYNCHRONOUS_MASTER' },
+    ]
+    const tsplinkEnumState: Array<ExclusiveCompletionApiSpec> = [
         { label: 'tsplink.STATE_HIGH' },
         { label: 'tsplink.STATE_LOW' },
-    ],
-    enums: [
-        { label: 'tsplink.group' },
-        { label: 'tsplink.initialize' },
-        { label: 'tsplink.master' },
-        { label: 'tsplink.node' },
-        { label: 'tsplink.readport' },
-        { label: 'tsplink.reset' },
-        { label: 'tsplink.state' },
-        { label: 'tsplink.writeport' },
-    ],
-    label: 'tsplink'
-}
+    ]
 
-const tsplinkLine: ApiSpec = {
-    children: [
-        { label: 'tsplink.line.mode' },
-        { label: 'tsplink.line.reset' },
-        { label: 'tsplink.line.state' },
-    ],
-    label: 'tsplink.line'
+    export const tsplinkLine: ApiSpec = {
+        children: [
+            {
+                assignmentExclusives: tsplinkEnumMode,
+                label: 'tsplink.line.mode'
+            },
+            { label: 'tsplink.line.reset' },
+            {
+                assignmentExclusives: tsplinkEnumState,
+                label: 'tsplink.line.state'
+            },
+        ],
+        label: 'tsplink.line'
+    }
+
+    export const tsplink: ApiSpec = {
+        children: [
+            { label: 'tsplink.group' },
+            { label: 'tsplink.initialize' },
+            { label: 'tsplink.master' },
+            { label: 'tsplink.node' },
+            { label: 'tsplink.readport' },
+            { label: 'tsplink.reset' },
+            { label: 'tsplink.state' },
+            { label: 'tsplink.writeport' },
+        ],
+        enums: [
+            ...tsplinkEnumMode,
+            ...tsplinkEnumState,
+        ],
+        label: 'tsplink'
+    }
 }
 
 const tspnet: ApiSpec = {
@@ -1495,8 +1510,8 @@ export function getApiSpec(): Array<ApiSpec> {
         triggerTsplinkin,
         triggerTsplinkout,
         trigger,
-        tsplinkLine,
-        tsplink,
+        Tsplink.tsplinkLine,
+        Tsplink.tsplink,
         tspnetTsp,
         tspnet,
         upgrade,

@@ -99,6 +99,7 @@ line 2 is set high (1).'
     },
     {
         data: { domains: ['tsplink'] },
+        deprecated: true,
         documentation: {
             kind: MarkupKind.Markdown,
             value: '*deprecated* — use tsplink.initialize()'
