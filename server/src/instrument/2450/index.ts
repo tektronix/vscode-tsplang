@@ -402,7 +402,7 @@ namespace Display {
 }
 
 namespace Eventlog {
-    const eventlogEnumSev: Array<ExclusiveCompletionApiSpec> = [
+    export const eventlogEnumSev: Array<ExclusiveCompletionApiSpec> = [
         { label: 'eventlog.SEV_ALL' },
         { label: 'eventlog.SEV_ERROR' },
         { label: 'eventlog.SEV_INFO' },
@@ -571,29 +571,50 @@ namespace Lan {
     }
 }
 
-const localnode: ApiSpec = {
-    children: [
-        { label: 'localnode.access' },
-        { label: 'localnode.gettime' },
-        { label: 'localnode.linefreq' },
-        { label: 'localnode.model' },
-        { label: 'localnode.password' },
-        { label: 'localnode.prompts' },
-        { label: 'localnode.prompts4882' },
-        { label: 'localnode.serialno' },
-        { label: 'localnode.settime' },
-        { label: 'localnode.showevents' },
-        { label: 'localnode.version' },
-    ],
-    enums: [
+namespace Localnode {
+    const localnodeEnumAccess: Array<ExclusiveCompletionApiSpec> = [
         { label: 'localnode.ACCESS_EXCLUSIVE' },
         { label: 'localnode.ACCESS_FULL' },
         { label: 'localnode.ACCESS_LOCKOUT' },
         { label: 'localnode.ACCESS_PROTECTED' },
+    ]
+    const localnodeEnumEnableDisable: Array<ExclusiveCompletionApiSpec> = [
         { label: 'localnode.DISABLE' },
         { label: 'localnode.ENABLE' },
-    ],
-    label: 'localnode'
+    ]
+
+    export const localnode: ApiSpec = {
+        children: [
+            {
+                assignmentExclusives: localnodeEnumAccess,
+                label: 'localnode.access'
+            },
+            { label: 'localnode.gettime' },
+            { label: 'localnode.linefreq' },
+            { label: 'localnode.model' },
+            { label: 'localnode.password' },
+            {
+                assignmentExclusives: localnodeEnumEnableDisable,
+                label: 'localnode.prompts'
+            },
+            {
+                assignmentExclusives: localnodeEnumEnableDisable,
+                label: 'localnode.prompts4882'
+            },
+            { label: 'localnode.serialno' },
+            { label: 'localnode.settime' },
+            {
+                assignmentExclusives: Eventlog.eventlogEnumSev,
+                label: 'localnode.showevents'
+            },
+            { label: 'localnode.version' },
+        ],
+        enums: [
+            ...localnodeEnumAccess,
+            ...localnodeEnumEnableDisable,
+        ],
+        label: 'localnode'
+    }
 }
 
 const node: ApiSpec = {
@@ -1338,7 +1359,7 @@ export function getApiSpec(): Array<ApiSpec> {
         Format.format,
         gpib,
         Lan.lan,
-        localnode,
+        Localnode.localnode,
         node,
         opc,
         printbuffer,
