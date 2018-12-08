@@ -21,7 +21,6 @@ import { InstrumentCompletionItem } from '../../wrapper'
 
 export const completions: Array<InstrumentCompletionItem> = [
     {
-        detail: 'This function stops a script that is presently running.',
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction exit()\n```\n\
