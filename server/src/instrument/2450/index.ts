@@ -1399,37 +1399,46 @@ namespace Tsplink {
     }
 }
 
-const tspnet: ApiSpec = {
-    children: [
-        { label: 'tspnet.clear' },
-        { label: 'tspnet.connect' },
-        { label: 'tspnet.disconnect' },
-        { label: 'tspnet.execute' },
-        { label: 'tspnet.idn' },
-        { label: 'tspnet.read' },
-        { label: 'tspnet.readavailable' },
-        { label: 'tspnet.reset' },
-        { label: 'tspnet.termination' },
-        { label: 'tspnet.timeout' },
-        { label: 'tspnet.write' },
-    ],
-    enums: [
+namespace Tspnet {
+    const tspnetEnumTerm: Array<ExclusiveCompletionApiSpec> = [
         { label: 'tspnet.TERM_CR' },
         { label: 'tspnet.TERM_CRLF' },
         { label: 'tspnet.TERM_LF' },
         { label: 'tspnet.TERM_LFCR' },
-    ],
-    label: 'tspnet'
-}
+    ]
 
-const tspnetTsp: ApiSpec = {
-    children: [
-        { label: 'tspnet.tsp.abort' },
-        { label: 'tspnet.tsp.abortonconnect' },
-        { label: 'tspnet.tsp.rbtablecopy' },
-        { label: 'tspnet.tsp.runscript' },
-    ],
-    label: 'tspnet.tsp'
+    export const tspnetTsp: ApiSpec = {
+        children: [
+            { label: 'tspnet.tsp.abort' },
+            { label: 'tspnet.tsp.abortonconnect' },
+            { label: 'tspnet.tsp.rbtablecopy' },
+            { label: 'tspnet.tsp.runscript' },
+        ],
+        label: 'tspnet.tsp'
+    }
+
+    export const tspnet: ApiSpec = {
+        children: [
+            { label: 'tspnet.clear' },
+            { label: 'tspnet.connect' },
+            { label: 'tspnet.disconnect' },
+            { label: 'tspnet.execute' },
+            { label: 'tspnet.idn' },
+            { label: 'tspnet.read' },
+            { label: 'tspnet.readavailable' },
+            { label: 'tspnet.reset' },
+            {
+                assignmentExclusives: tspnetEnumTerm,
+                label: 'tspnet.termination'
+            },
+            { label: 'tspnet.timeout' },
+            { label: 'tspnet.write' },
+        ],
+        enums: [
+            ...tspnetEnumTerm,
+        ],
+        label: 'tspnet'
+    }
 }
 
 const upgrade: ApiSpec = {
@@ -1512,8 +1521,8 @@ export function getApiSpec(): Array<ApiSpec> {
         trigger,
         Tsplink.tsplinkLine,
         Tsplink.tsplink,
-        tspnetTsp,
-        tspnet,
+        Tspnet.tspnetTsp,
+        Tspnet.tspnet,
         upgrade,
         userstring,
         waitcomplete
