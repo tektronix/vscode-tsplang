@@ -16,7 +16,7 @@
 'use strict'
 
 import { Token } from 'antlr4'
-import { Position, Range } from 'vscode-languageserver'
+import { CompletionItemKind, Position, Range } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
@@ -208,6 +208,11 @@ export namespace SignatureContext {
     ): Array<InstrumentCompletionItem> {
         const results = new Array<InstrumentCompletionItem>()
 
+        // Track the root completion items that have been added to the results.
+        // Roots are kept in a separate array for increased lookup speed since there are usually
+        // fewer root items than there are completions.
+        const existingRoots = new Array<InstrumentCompletionItem>()
+
         context.signatures.forEach((signature: InstrumentSignatureInformation) => {
             if (signature.data === undefined) {
                 return
@@ -219,8 +224,32 @@ export namespace SignatureContext {
                 return
             }
 
-            results.push(...completions)
+            // Get all non-root completion items.
+            const leafCompletions = completions.filter((completion: InstrumentCompletionItem) => {
+                // If this completion item is not a root completion
+                if (completion.kind && completion.kind !== CompletionItemKind.Module) {
+                    return true
+                }
+                else {
+                    // Compares the given root to the current completion item.
+                    const predicate = (root: InstrumentCompletionItem): boolean => {
+                        // Compare the two namespaces. Exclude their labels.
+                        return InstrumentCompletionItem.namespacesEqual(root, completion, true)
+                    }
+
+                    // Only add unique root completion items to the root completion array.
+                    if (! existingRoots.some(predicate)) {
+                        existingRoots.push(completion)
+                    }
+                }
+            })
+
+            // Add all non-root completions to the results.
+            results.push(...leafCompletions)
         })
+
+        // Add all root completions to the results.
+        results.push(...existingRoots)
 
         return results
     }
