@@ -194,6 +194,46 @@ function filterEnums(
     return filteredEnumerations
 }
 
+/**
+ * Make all root completion items for the given list of completion items.
+ * @param completions An array of completion items.
+ * @returns An array of root completions items or any empty array if no items could be generated.
+ */
+function generateRoots(completions: Array<InstrumentCompletionItem>): Array<InstrumentCompletionItem> {
+    // An array containing one completion item per unique namespace.
+    const uniqueNamespaces = new Array<InstrumentCompletionItem>()
+
+    completions.forEach((enumerationItem: InstrumentCompletionItem) => {
+        const predicate = (uniqueItem: InstrumentCompletionItem): boolean => {
+            // Compare each unique namespace to the current enumeration completion
+            // without including the label properties.
+            return InstrumentCompletionItem.namespacesEqual(uniqueItem, enumerationItem, true)
+        }
+
+        // If the current namespace is not in our list of unique namespaces.
+        if (! uniqueNamespaces.some(predicate)) {
+            uniqueNamespaces.push(enumerationItem)
+        }
+    })
+
+    const results = new Array<InstrumentCompletionItem>()
+
+    // Generate root namespace completion items for each unique namespace.
+    uniqueNamespaces.forEach((uniqueItem: InstrumentCompletionItem) => {
+        const fullyQualifiedCompletion = resolveCompletionNamespace(uniqueItem)
+
+        // Throw an error if this completion has no domain.
+        if (uniqueItem.data === undefined || uniqueItem.data.domains.length === 0) {
+            throw new Error(`Unable to generate root completion for '${fullyQualifiedCompletion}'.`)
+        }
+
+        // Create root completion items and add them to the results.
+        results.push(...InstrumentCompletionItem.createRootItems(fullyQualifiedCompletion, true))
+    })
+
+    return results
+}
+
 function addAssignmentExclusives(
     exclusives: Array<ExclusiveCompletionApiSpec>,
     completions: Array<InstrumentCompletionItem>,
@@ -214,19 +254,11 @@ function addAssignmentExclusives(
 
         // Something went wrong if we are here but have nothing to show for it.
         if (filteredEnums.length === 0) {
-            throw new Error('Exclusive Resolution Error: no assignment completions available.')
+            throw new Error(`No assignment completions available for '${resolveCompletionNamespace(completion)}'.`)
         }
 
-        const rootItems = InstrumentCompletionItem.createRootItems(
-            resolveCompletionNamespace(filteredEnums[0]),
-            true
-        )
-
-        if (rootItems === undefined) {
-            throw new Error('Exclusive Resolution Error: unable to generate root assignment completions.')
-        }
-
-        filteredEnums.push(...rootItems)
+        // Add all root namespace completions to the array of enumeration completions.
+        filteredEnums.push(...generateRoots(filteredEnums))
 
         completion.data.types = filteredEnums
 
@@ -253,18 +285,10 @@ function addSignatureExclusives(
 
         // For each exclusive signature spec.
         exclusives.forEach((spec: SignatureDataApiSpec) => {
-            let specQualifier = spec.qualifier
-
             // Initialize the qualifier of the signature spec to something easier to work with if undefined.
-            if (specQualifier === undefined) {
-                specQualifier = 0
-            }
+            const specQualifier = spec.qualifier || 0
 
-            if (signature.data === undefined) {
-                return
-            }
-
-            if (signature.data.qualifier !== specQualifier) {
+            if (signature.data && signature.data.qualifier !== specQualifier) {
                 return
             }
 
@@ -280,16 +304,8 @@ function addSignatureExclusives(
                     return
                 }
 
-                const rootItems = InstrumentCompletionItem.createRootItems(
-                    resolveCompletionNamespace(filteredEnums[0]),
-                    true
-                )
-
-                if (rootItems === undefined) {
-                    throw new Error('Exclusive Resolution Error: unable to generate root signature completions.')
-                }
-
-                filteredEnums.push(...rootItems)
+                // Add all root namespace completions to the array of enumeration completions.
+                filteredEnums.push(...generateRoots(filteredEnums))
 
                 parameterMap.set(key, filteredEnums)
             })
@@ -297,7 +313,7 @@ function addSignatureExclusives(
 
         // Something went wrong if we are here but have nothing to show for it.
         if (parameterMap.size === 0) {
-            throw new Error('Exclusive Resolution Error: no signature completions available.')
+            throw new Error(`No parameter completions available for '${resolveSignatureNamespace(signature)}'.`)
         }
 
         signature.data.parameterTypes = parameterMap

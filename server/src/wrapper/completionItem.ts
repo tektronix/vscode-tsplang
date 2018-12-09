@@ -41,13 +41,13 @@ export namespace InstrumentCompletionItem {
     /**
      * Creates InstrumentCompletionItems of kind Module based on the given string.
      * @param label The label whose namespaces will become root completions items.
-     * @param excludeLast Whether the last item of the namespace should be included in the results.
-     * @returns An array of generated root namespaces or undefined if nothing could be generated.
+     * @param excludeLast Exclude the last item of the namespace from the results.
+     * @returns An array of generated root namespaces or an empty array if nothing could be generated.
      */
     export function createRootItems(
         label: string,
         excludeLast: boolean
-    ): Array<InstrumentCompletionItem> | undefined {
+    ): Array<InstrumentCompletionItem> {
         const namespaces = label.split('.')
 
         if (excludeLast) {
@@ -55,7 +55,7 @@ export namespace InstrumentCompletionItem {
             namespaces.pop()
 
             if (namespaces.length === 0) {
-                return
+                return []
             }
         }
 
@@ -90,16 +90,21 @@ export namespace InstrumentCompletionItem {
      * Compare the labels and data.domains properties of two items to determine their equality.
      * @param a The first item.
      * @param b The second item.
+     * @param excludeLabel Exclude the label from the comparision. Defaults to false.
      * @returns True if the two items match and false otherwise.
      */
-    export function namespacesEqual(a: InstrumentCompletionItem, b: InstrumentCompletionItem): boolean {
+    export function namespacesEqual(
+        a: InstrumentCompletionItem,
+        b: InstrumentCompletionItem,
+        excludeLabel: boolean = false
+    ): boolean {
         // Compare labels.
-        if (a.label.localeCompare(b.label) !== 0) {
+        if (! excludeLabel && a.label.localeCompare(b.label) !== 0) {
             return false
         }
 
         if (a.data === undefined) {
-            // If neither have a data property, then this these two root completions are equal.
+            // If neither have a data property, then these two root completions are equal.
             if (b.data === undefined) {
                 return true
             }
