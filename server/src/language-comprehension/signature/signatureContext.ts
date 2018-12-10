@@ -20,6 +20,8 @@ import { CompletionItemKind, Position, Range } from 'vscode-languageserver'
 
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
+import { TokenUtil } from '../tokenUtil'
+
 import { ParameterContext, ParameterMap } from '.'
 
 export interface SignatureContext {
@@ -96,7 +98,7 @@ export namespace SignatureContext {
             throw new Error('Parameter `closingParenthesis` is not a closing parenthesis (")").')
         }
 
-        const result: SignatureContext = {
+        let result: SignatureContext = {
             signatures,
             parameters: new ParameterMap(),
             range: Range.create(
@@ -159,6 +161,8 @@ export namespace SignatureContext {
                     }
                 )
 
+                result = narrowContextScope(result)
+
                 // Set the new starting position to the stop offset of this comma.
                 groupStart = comma.stop + 1
 
@@ -199,10 +203,12 @@ export namespace SignatureContext {
             }
         )
 
+        result = narrowContextScope(result)
+
         return result
     }
 
-    export function getCompletionsForParameter(
+    function getCompletionsForParameter(
         parameter: number,
         context: SignatureContext
     ): Array<InstrumentCompletionItem> {
@@ -252,6 +258,71 @@ export namespace SignatureContext {
         results.push(...existingRoots)
 
         return results
+    }
+
+    function narrowContextScope(context: SignatureContext): SignatureContext {
+        // Create the array containing all applicable signatures.
+        const candidates = new Array<InstrumentSignatureInformation>()
+
+        // Skip if
+        //  1. There's only 1 signature.
+        //      1 signature means 1 set of parameters.
+        //  2. The signature context has no parameter contexts.
+        //      No parameter contexts means that we're currently providing completions for
+        //      the 1st parameter. 0 parameters means all possible signatures are still valid.
+        if (context.signatures.length > 1 && context.parameters.size > 0) {
+            context.signatures.forEach((signature: InstrumentSignatureInformation) => {
+                // Skip if
+                //  1. We have no SignatureData.
+                //      No SignatureData means no exclusive parameter completions.
+                //      No parameter completions means we have nothing to suggest intelligently.
+                //  2. We have less than 2 parameters with exclusive completions.
+                //      We need 2 or more parameter completions to narrow the set of possible
+                //      completions, otherwise all possible completions are equally valid.
+                if (! signature.data || signature.data.parameterTypes.size <= 1) {
+                    return
+                }
+
+                let match = true
+
+                for (const [parameterIndex, completions] of signature.data.parameterTypes.entries()) {
+                    // Find the ParameterContext at the current parameter index.
+                    const parameterContext = new Array(...context.parameters.values()).find(
+                        (value: ParameterContext) => value.index === parameterIndex
+                    )
+
+                    // Stop if the user has yet to specify a parameter at the current index.
+                    if (parameterContext === undefined) {
+                        break
+                    }
+
+                    // Get the text the user specified for this parameter.
+                    const parameterText = TokenUtil.getString(...parameterContext.tokens)
+
+                    // Continue if the parameter is blank.
+                    if (parameterText === undefined) {
+                        continue
+                    }
+
+                    match = match && completions.some((completion: InstrumentCompletionItem) => {
+                        return InstrumentCompletionItem.namespaceMatch(parameterText, completion)
+                    })
+                }
+
+                // Add this signature to the array of applicable signatures.
+                if (match) {
+                    candidates.push(signature)
+                }
+            })
+        }
+        else {
+            // Use all signatures if we aren't able to be more specific.
+            candidates.push(...context.signatures)
+        }
+
+        context.signatures = candidates
+
+        return context
     }
 
     /**
