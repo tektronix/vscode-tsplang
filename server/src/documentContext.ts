@@ -34,7 +34,7 @@ import { ParameterContext, SignatureContext, SignatureMap } from './language-com
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
 
 declare class CorrectRecogException extends RecognitionException {
-    startToken: Token
+    startToken?: Token
 }
 
 export class DocumentContext extends TspListener {
@@ -140,8 +140,15 @@ export class DocumentContext extends TspListener {
         const expressionList = context.expressionList()
 
         if (context.exception !== null) {
+            const exception: CorrectRecogException = context.exception
+
+            // Skip this exception if it doesn't contain a start token.
+            if (exception.startToken === undefined) {
+                return
+            }
+
             // Get the index of the Token at which the exception starts.
-            const blameIndex = (context.exception as CorrectRecogException).startToken.tokenIndex
+            const blameIndex = exception.startToken.tokenIndex
 
             // Get all Tokens starting at the exception index.
             const remainingTokens = this.tokenStream.tokens.slice(blameIndex)
