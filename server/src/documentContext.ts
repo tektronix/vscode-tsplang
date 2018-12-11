@@ -28,8 +28,7 @@ import { CommandSet } from './instrument'
 import { resolveSignatureNamespace } from './instrument/provider'
 import { TokenUtil } from './language-comprehension'
 import { ExclusiveMap, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
-import { GlobalMap } from './language-comprehension/global-completion'
-import { getAssignmentCompletions, getGlobalCompletions } from './language-comprehension/parser-context-handler'
+import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext, SignatureMap } from './language-comprehension/signature'
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
 
@@ -43,7 +42,6 @@ export class DocumentContext extends TspListener {
     private exclusives: ExclusiveMap
     private fuzzyOffsets: FuzzyOffsetMap
     private fuzzySignatureOffsets: FuzzyOffsetMap
-    private globals: GlobalMap
     private inputStream: InputStream
     private lexer: TspLexer
     private parser: TspParser
@@ -270,8 +268,6 @@ export class DocumentContext extends TspListener {
                 this.exclusives.set(k, v)
             }
         }
-
-        this.globals = getGlobalCompletions(context, this.globals)
     }
 
     getCompletionItems(cursor: Position): Array<InstrumentCompletionItem> {
@@ -303,19 +299,7 @@ export class DocumentContext extends TspListener {
             }
         }
 
-        const result = new Array<InstrumentCompletionItem>(...this.commandSet.completions)
-
-        // Add globals to the list of available instrument completions.
-        for (const globalContexts of this.globals.values()) {
-            for (const globalContext of globalContexts) {
-                // If this completion is located before the cursor.
-                if (this.document.offsetAt(globalContext.position) < this.document.offsetAt(cursor)) {
-                    result.push(globalContext.completion)
-                }
-            }
-        }
-
-        return result
+        return this.commandSet.completions
     }
 
     getSignatureHelp(cursor: Position): SignatureHelp | undefined {
@@ -380,7 +364,6 @@ export class DocumentContext extends TspListener {
         this.exclusives = new ExclusiveMap()
         this.fuzzyOffsets = new FuzzyOffsetMap()
         this.fuzzySignatureOffsets = new FuzzyOffsetMap()
-        this.globals = new GlobalMap()
         this.signatures = new SignatureMap()
 
         this.inputStream = new InputStream(this.document.getText())

@@ -16,4 +16,3 @@
 'use strict'
 
 export { getAssignmentCompletions } from './exclusive'
-export { getGlobalCompletions } from './global'
