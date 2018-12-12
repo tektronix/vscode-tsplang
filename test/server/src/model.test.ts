@@ -13,82 +13,68 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
 import { Model } from '../../../server/src/model'
 
-@suite class ModelTest {
-    @test('Model.fromString returns Model')
-    modelFromStringReturnsModelType(): void {
-        try {
-            let _typeCompatibilityCheck: Model = Model.fromString('2450')
-            _typeCompatibilityCheck = Model.fromString('2460')
-            _typeCompatibilityCheck = Model.fromString('2461')
-            _typeCompatibilityCheck = Model.fromString('2461-sys')
-            _typeCompatibilityCheck = Model.fromString('6500')
-        }
-        catch {
-            assert(false, 'Model.fromString failed to return a Model type')
-        }
-    }
+describe('Model', () => {
+    describe('.KI2450', () => {
+        it('contained in Model', () => {
+            expect(Model).to.have.ownProperty('KI2450')
+        })
 
-    @test('Model.fromString returns undefined')
-    modelFromStringReturnsUndefinedOnInvalid(): void {
-        assert(
-            Model.fromString('invalid model') === undefined,
-            'Model.fromString failed to return a Model type'
-        )
-    }
+        it('equals "2450"', () => {
+            expect(Model.KI2450).to.equal('2450')
+        })
+    })
 
-    @test('Model.KI2450 is a Model type')
-    modelKI2450IsAModelType(): void {
-        try {
-            const _typeCompatibilityCheck: Model = Model.KI2450
-        }
-        catch {
-            assert(false, 'Model.KI2450 incompatible with type Model')
-        }
-    }
+    describe('.KI2460', () => {
+        it('contained in Model', () => {
+            expect(Model).to.have.ownProperty('KI2460')
+        })
 
-    @test('Model.KI2460 is a Model type')
-    modelKI2460IsAModelType(): void {
-        try {
-            const _typeCompatibilityCheck: Model = Model.KI2460
-        }
-        catch {
-            assert(false, 'Model.KI2460 incompatible with type Model')
-        }
-    }
+        it('equals "2460"', () => {
+            expect(Model.KI2460).to.equal('2460')
+        })
+    })
 
-    @test('Model.KI2461 is a Model type')
-    modelKI2461IsAModelType(): void {
-        try {
-            const _typeCompatibilityCheck: Model = Model.KI2461
-        }
-        catch {
-            assert(false, 'Model.KI2461 incompatible with type Model')
-        }
-    }
+    describe('.LUA', () => {
+        it('contained in Model', () => {
+            expect(Model).to.have.ownProperty('LUA')
+        })
 
-    @test('Model.KI2461SYS is a Model type')
-    modelKI2461SYSIsAModelType(): void {
-        try {
-            const _typeCompatibilityCheck: Model = Model.KI2461SYS
-        }
-        catch {
-            assert(false, 'Model.KI2461SYS incompatible with type Model')
-        }
-    }
+        it('equals "lua"', () => {
+            expect(Model.LUA).to.equal('lua')
+        })
+    })
 
-    @test('Model.KI6500 is a Model type')
-    modelKI6500IsAModelType(): void {
-        try {
-            const _typeCompatibilityCheck: Model = Model.KI6500
-        }
-        catch {
-            assert(false, 'Model.KI6500 incompatible with type Model')
-        }
-    }
-}
+    describe('.fromString', () => {
+        it('returns a Model type when passed "2450"', () => {
+            const result = Model.fromString('2450')
+
+            expect(result).to.equal(Model.KI2450)
+        })
+
+        it('returns a Model type when passed "2460"', () => {
+            const result = Model.fromString('2460')
+
+            expect(result).to.equal(Model.KI2460)
+        })
+
+        it('returns a Model type when passed "lua"', () => {
+            const result = Model.fromString('lua')
+
+            expect(result).to.equal(Model.LUA)
+        })
+
+        it('returns undefined when passed an unsupported model', () => {
+            const result = Model.fromString('unsupported')
+
+            expect(result).to.be.undefined
+        })
+    })
+})

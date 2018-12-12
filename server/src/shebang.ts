@@ -32,7 +32,7 @@ export namespace Shebang {
     export const MAX_NODE_NUMBER = 64
     export const SEPARATOR = ';'
     const nodeAssignmentOp = '='
-    const shebangRegExp = new RegExp('^'.concat(Shebang.PREFIX))
+    const shebangRegExp = new RegExp('^\\s*'.concat(Shebang.PREFIX))
     const nodeRegExp = new RegExp(
         '^\\s*node\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
     )
@@ -48,7 +48,10 @@ export namespace Shebang {
         }
 
         // Remove the prefix and split on the separator.
-        const bangArray = line.replace(shebangRegExp, '').trim().split(Shebang.SEPARATOR)
+        const rawBangArray = line.replace(shebangRegExp, '').trim().split(Shebang.SEPARATOR)
+
+        // Drop all empty string entries.
+        const bangArray = rawBangArray.filter((value: string) => value.length > 0)
 
         const result: Shebang = { master: undefined, text: line }
 

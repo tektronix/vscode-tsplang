@@ -112,6 +112,11 @@ export class TspPool {
             if (model !== Model.LUA) {
                 try {
                     luaEntry = await this.register(Model.LUA)
+
+                    // If the current model is undefined, then we can resolve as a Lua entry.
+                    if (model === undefined) {
+                        resolve(luaEntry)
+                    }
                 }
                 catch (e) {
                     reject(e)

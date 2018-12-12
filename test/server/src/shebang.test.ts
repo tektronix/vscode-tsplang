@@ -13,236 +13,404 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
 import { Model } from '../../../server/src/model'
 import { Shebang } from '../../../server/src/shebang'
 
-@suite class ShebangTest {
-    @test('Error on duplicate node assignments')
-    errorOnDuplicateNodeAssignments(): void {
-        let shebangLine = '  --#!2450 ; node [ 1 ] = 2450 ; node [ 1] = 6500 ; node [2 ] = 2460 ; node[ 3] = 6500  '
+describe('Shebang', () => {
+    describe('.PREFIX', () => {
+        it('contained in Shebang', () => {
+            expect(Shebang).to.have.ownProperty('PREFIX')
+        })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Node 1 has already been specified.') === 0)
-        }
+        it('typeof string', () => {
+            expect(typeof Shebang.PREFIX === 'string').to.equal(true)
+        })
+    })
 
-        shebangLine = '  --#!2450 ; node[1 ] = 2450 ; node[2] = 6500 ; node [2] = 2460 ; node[ 3 ] = 6500  '
+    describe('.MAX_NODE_NUMBER', () => {
+        it('contained in Shebang', () => {
+            expect(Shebang).to.have.ownProperty('MAX_NODE_NUMBER')
+        })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Node 2 has already been specified.') === 0)
-        }
+        it('typeof number', () => {
+            expect(typeof Shebang.MAX_NODE_NUMBER === 'number').to.equal(true)
+        })
+    })
 
-        shebangLine = '  --#!2450 ; node[ 1  ] = 2450 ; node  [ 2] = 6500 ; node [  3] = 2460 ; node[ 3  ] = 6500  '
+    describe('.SEPARATOR', () => {
+        it('contained in Shebang', () => {
+            expect(Shebang).to.have.ownProperty('SEPARATOR')
+        })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Node 3 has already been specified.') === 0)
-        }
-    }
+        it('typeof string', () => {
+            expect(typeof Shebang.SEPARATOR === 'string').to.equal(true)
+        })
+    })
 
-    @test('Error on invalid node number')
-    errorOnInvalidNodeNumber(): void {
-        let shebangLine = '  --#!2450 ; node[-1]=2450 ; node[-99]=6500 ; node[65] = 2460 ; node[+99] = 6500  '
+    describe('.tokenize', () => {
+        describe('Given a line without a starting Shebang.PREFIX', () => {
+            describe('If that line is an empty string', () => {
+                const line = ''
+                let shebang: Shebang
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare(
-                `Node number -1 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-            ) === 0)
-        }
+                before(() => {
+                    shebang = Shebang.tokenize(line)
+                })
 
-        shebangLine = '  --#!2450 ; node[1]=2450 ; node[-99]=6500 ; node[65] = 2460 ; node[+99] = 6500  '
+                it('returns a shebang whose master property is equal to Model.LUA', () => {
+                    expect(shebang.master).to.equal(Model.LUA)
+                })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare(
-                `Node number -99 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-            ) === 0)
-        }
+                it('returns a shebang whose text property is an empty string', () => {
+                    expect(shebang.text).to.equal(line)
+                })
+            })
 
-        shebangLine = '  --#!2450 ; node[1]=2450 ; node[2]=6500 ; node[65] = 2460 ; node[+99] = 6500  '
+            describe('If that line is a valid Model', () => {
+                const line = Model.KI2450
+                let shebang: Shebang
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare(
-                `Node number 65 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-            ) === 0)
-        }
+                before(() => {
+                    shebang = Shebang.tokenize(line)
+                })
 
-        shebangLine = '  --#!2450 ; node[1]=2450 ; node[2]=6500 ; node[3] = 2460 ; node[+99] = 6500  '
+                it('returns a shebang whose master property is equal to Model.LUA', () => {
+                    expect(shebang.master).to.equal(Model.LUA)
+                })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare(
-                `Node number 99 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-            ) === 0)
-        }
-    }
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
+            })
 
-    @test('Error on invalid node syntax')
-    errorOnInvalidNodeSyntax(): void {
-        let shebangLine = '  --#!2450 ; node[1] = 2450 ; node{1] = 6500 ; node(2) = 2460 ; node[3] = 6500  '
+            describe('If the Shebang.PREFIX does not start the line', () => {
+                const line = Model.KI2460 + Shebang.PREFIX
+                let shebang: Shebang
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Invalid node expression " node{1] = 6500 ".') === 0)
-        }
+                before(() => {
+                    shebang = Shebang.tokenize(line)
+                })
 
-        shebangLine = '  --#!2450 ; node[1] = 2450 ; node[2] = 6500 ;    node(3) = 2460 ; node[4] = 6500  '
+                it('returns a shebang whose master property is equal to Model.LUA', () => {
+                    expect(shebang.master).to.equal(Model.LUA)
+                })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Invalid node expression "    node(3) = 2460 ".') === 0)
-        }
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
+            })
+        })
 
-        shebangLine = '  --#!2450 ; node[1] = 2450 ; node[2] = 6500 ; node[3] = 2460 ;  <64L4QxLQ|$\\1ng4W<\\d  '
+        describe('Given a line with a Shebang.PREFIX', () => {
+            describe('If that line does not contain a master model', () => {
+                const line = Shebang.PREFIX
+                let shebang: Shebang
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Invalid node expression "  <64L4QxLQ|$\\1ng4W<\\d".') === 0)
-        }
-    }
+                before(() => {
+                    shebang = Shebang.tokenize(line)
+                })
 
-    @test('Error on unknown model')
-    errorOnUnknownModel(): void {
-        let shebangLine = '--#!Unknown'
+                it('returns a shebang whose master property is undefined', () => {
+                    expect(shebang.master).to.be.undefined
+                })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Model "Unknown" is an invalid or unsupported model.') === 0)
-        }
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
+            })
 
-        shebangLine = 'VLXkyi(c&,^' + Shebang.SEPARATOR + 'MeKrAY8I'
+            describe('If that line contains a valid master model', () => {
+                const master = Model.KI2450
+                const line = Shebang.PREFIX + master
+                let shebang: Shebang
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Model "VLXkyi(c&,^" is an invalid or unsupported model.') === 0)
-        }
+                before(() => {
+                    shebang = Shebang.tokenize(line)
+                })
 
-        shebangLine = '--#!2450;node[1]=VLXkyi(c&,^;MeKrAY8I'
+                it('returns a shebang whose master property is the given master model', () => {
+                    expect(shebang.master).to.equal(master)
+                })
 
-        try {
-            Shebang.tokenize(shebangLine)
-        }
-        catch (e) {
-            assert(e.message.localeCompare('Model "VLXkyi(c&,^" is an invalid or unsupported model.') === 0)
-        }
-    }
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
+            })
 
-    @test('Line returned as given.')
-    lineReturnedAsGiven(): void {
-        const shebangLine = 'c>Bj8oTgw_GTW:hYc=HZ'
+            describe('If that line contains an invalid master model', () => {
+                const master = 'UnSuppORTed'
+                const line = Shebang.PREFIX + master
 
-        const shebang = Shebang.tokenize(shebangLine)
+                it('throws an Error when the given master model is unsupported', () => {
+                    expect(
+                        () => Shebang.tokenize(line),
+                        `Model "${master}" is an invalid or unsupported model.`
+                    ).to.throw(Error)
+                })
+            })
 
-        assert(shebang.text.localeCompare(shebangLine) === 0)
-    }
+            describe('If that line has a single valid node assignment', () => {
+                const master = Model.KI2460
+                const nodeNumber = 1
+                const nodeModel = Model.KI2461SYS
+                const line = [
+                    Shebang.PREFIX,
+                    master,
+                    Shebang.SEPARATOR,
+                    `node[${(nodeNumber > 0) ? '+' : '-'}${nodeNumber}]=${nodeModel}`
+                ].join('')
+                let shebang: Shebang
 
-    @test('Lua model on invalid prefix')
-    luaModelOnInvalidPrefix(): void {
-        const shebangLine = '--2450;'
+                before(() => {
+                    shebang = Shebang.tokenize(line)
+                })
 
-        const shebang = Shebang.tokenize(shebangLine)
+                it('returns a shebang whose master property is the given master model', () => {
+                    expect(shebang.master).to.equal(master)
+                })
 
-        assert(shebang.master === Model.LUA)
-    }
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
 
-    @test('Parse model')
-    parseModel(): void {
-        const shebangLine = '--#!2450'
+                it('returns a shebang with an accurate nodes property', () => {
+                    expect(shebang.nodes).to.deep.equal(new Map<number, Model>([
+                        [ nodeNumber, nodeModel ]
+                    ]))
+                })
+            })
 
-        const shebang = Shebang.tokenize(shebangLine)
+            describe('If that line has multiple valid node assignments', () => {
+                const master = Model.KI2461SYS
+                // tslint:disable:no-magic-numbers
+                const nodeMap = new Map<number, Model>([
+                    [ 1, Model.KI2461 ],
+                    [ 2, Model.KI2450 ],
+                    [ 5, Model.KI6500 ],
+                    [ 63, Model.KI2460 ],
+                ])
+                // tslint:enable:no-magic-numbers
+                const lineArray: Array<string> = [ Shebang.PREFIX, master ]
+                let line: string
+                let shebang: Shebang
 
-        assert(shebang.master === Model.KI2450)
-    }
+                before(() => {
+                    nodeMap.forEach((model: Model, nodeNumber: number) => {
+                        lineArray.push(
+                            Shebang.SEPARATOR,
+                            `node[${(nodeNumber > 0) ? '+' : '-'}${nodeNumber}]=${model}`
+                        )
+                    })
 
-    @test('Parse multiple nodes')
-    parseMultipleNodes(): void {
-        const shebangLine = '--#!2450; node[1] = 2450; node[2] = 2460; node[+5] = 2461; node[63] = 6500;'
-        // tslint:disable-next-line:no-magic-numbers
-        const nodeNumbers = [1, 2, 5, 63]
-        const nodeModels = [Model.KI2450, Model.KI2460, Model.KI2461, Model.KI6500]
+                    // Add another entry so we have an ending separator
+                    lineArray.push(' ')
 
-        const shebang = Shebang.tokenize(shebangLine)
+                    line = lineArray.join(Shebang.SEPARATOR)
+                    shebang = Shebang.tokenize(line)
+                })
 
-        assert(shebang.nodes !== undefined)
+                it('returns a shebang whose master property is the given master model', () => {
+                    expect(shebang.master).to.equal(master)
+                })
 
-        const nodes = shebang.nodes as Map<number, Model>
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
 
-        assert(nodes.size === nodeNumbers.length)
+                it('returns a shebang with an accurate nodes property', () => {
+                    expect(shebang.nodes).to.deep.equal(nodeMap)
+                })
+            })
 
-        let nodeNumber = nodeNumbers.shift() as number
-        let nodeModel = nodeModels.shift() as Model
+            describe('If that line contains duplicate node assignments', () => {
+                describe('throws an Error', () => {
+                    it('test 1', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2461} `,
+                            ` node [ 1 ] = ${Model.KI2450} `,
+                            ` node [ 1] = ${Model.KI6500} `,
+                            ` node [2 ] = ${Model.KI2460} `,
+                            ` node[ 3] = ${Model.KI2461SYS}  `
+                        ].join(Shebang.SEPARATOR)
 
-        assert(nodes.has(nodeNumber))
-        assert(nodes.get(nodeNumber) === nodeModel)
+                        expect(
+                            () => Shebang.tokenize(line),
+                            'Node 1 has already been used.'
+                        ).to.throw(Error)
+                    })
 
-        nodeNumber = nodeNumbers.shift() as number
-        nodeModel = nodeModels.shift() as Model
+                    it('test 2', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2461} `,
+                            ` node[1 ] = ${Model.KI2450} `,
+                            ` node[2] = ${Model.KI6500} `,
+                            ` node [2] = ${Model.KI2460} `,
+                            ` node[ 3 ] = ${Model.KI2461SYS}  `
+                        ].join(Shebang.SEPARATOR)
 
-        assert(nodes.has(nodeNumber))
-        assert(nodes.get(nodeNumber) === nodeModel)
+                        expect(
+                            () => Shebang.tokenize(line),
+                            'Node 2 has already been used.'
+                        ).to.throw(Error)
+                    })
 
-        nodeNumber = nodeNumbers.shift() as number
-        nodeModel = nodeModels.shift() as Model
+                    it('test 3', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2461} `,
+                            ` node[ 1  ] = ${Model.KI2450} `,
+                            ` node  [ 2] = ${Model.KI6500} `,
+                            ` node [  3] = ${Model.KI2460} `,
+                            ` node[ 3  ] = ${Model.KI2461SYS}  `
+                        ].join(Shebang.SEPARATOR)
 
-        assert(nodes.has(nodeNumber))
-        assert(nodes.get(nodeNumber) === nodeModel)
+                        expect(
+                            () => Shebang.tokenize(line),
+                            'Node 3 has already been used.'
+                        ).to.throw(Error)
+                    })
+                })
+            })
 
-        nodeNumber = nodeNumbers.shift() as number
-        nodeModel = nodeModels.shift() as Model
+            describe('If that line contains invalid node numbers', () => {
+                describe('throws an Error', () => {
+                    it('test 1', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2450} `,
+                            ` node[-1]=${Model.KI6500} `,
+                            ` node[-99]=${Model.KI2460} `,
+                            ` node[65]=${Model.KI2461SYS} `,
+                            ` node[+99]=${Model.KI2461}  `
+                        ].join(Shebang.SEPARATOR)
 
-        assert(nodes.has(nodeNumber))
-        assert(nodes.get(nodeNumber) === nodeModel)
-    }
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Node number -1 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
+                        ).to.throw(Error)
+                    })
 
-    @test('Parse single node')
-    parseSingleNode(): void {
-        const shebangLine = '--#!2450;node[+1]=2450'
-        const nodeNumbers = [1]
-        const nodeModels = [Model.KI2450]
+                    it('test 2', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2450} `,
+                            ` node[1]=${Model.KI6500} `,
+                            ` node[-99]=${Model.KI2460} `,
+                            ` node[65]=${Model.KI2461SYS} `,
+                            ` node[+99]=${Model.KI2461}  `
+                        ].join(Shebang.SEPARATOR)
 
-        const shebang = Shebang.tokenize(shebangLine)
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Node number -99 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
+                        ).to.throw(Error)
+                    })
 
-        assert(shebang.nodes !== undefined)
+                    it('test 3', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2450} `,
+                            ` node[1]=${Model.KI6500} `,
+                            ` node[2]=${Model.KI2460} `,
+                            ` node[65]=${Model.KI2461SYS} `,
+                            ` node[+99]=${Model.KI2461}  `
+                        ].join(Shebang.SEPARATOR)
 
-        const nodes = shebang.nodes as Map<number, Model>
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Node number 65 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
+                        ).to.throw(Error)
+                    })
 
-        assert(nodes.size === nodeNumbers.length)
+                    it('test 4', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI2450} `,
+                            ` node[1]=${Model.KI6500} `,
+                            ` node[2]=${Model.KI2460} `,
+                            ` node[3]=${Model.KI2461SYS} `,
+                            ` node[+99]=${Model.KI2461}  `
+                        ].join(Shebang.SEPARATOR)
 
-        const nodeNumber = nodeNumbers.shift() as number
-        const nodeModel = nodeModels.shift() as Model
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Node number 99 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
+                        ).to.throw(Error)
+                    })
+                })
+            })
 
-        assert(nodes.has(nodeNumber))
-        assert(nodes.get(nodeNumber) === nodeModel)
-    }
-}
+            describe('If that line contains invalid node syntax', () => {
+                describe('throws an Error', () => {
+                    it('test 1', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI6500} `,
+                            ` node[1] = ${Model.KI2460} `,
+                            ` node{1] = ${Model.KI2461SYS} `,
+                            ` node(2) = ${Model.KI2461} `,
+                            ` node[3] = ${Model.KI2450}  `
+                        ].join(Shebang.SEPARATOR)
+
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Invalid node expression " node{1] = ${Model.KI2461SYS} ".`
+                        ).to.throw(Error)
+                    })
+
+                    it('test 2', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI6500} `,
+                            ` node[1] = ${Model.KI2460} `,
+                            ` node[2] = ${Model.KI2461SYS} `,
+                            `    node(3) = ${Model.KI2461} `,
+                            ` node[4] = ${Model.KI2450}  `
+                        ].join(Shebang.SEPARATOR)
+
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Invalid node expression "    node(3) = ${Model.KI2461} ".`
+                        ).to.throw(Error)
+                    })
+
+                    it('test 3', () => {
+                        const line = [
+                            `  ${Shebang.PREFIX}${Model.KI6500} `,
+                            ` node[1] = ${Model.KI2460} `,
+                            ` node[2] = ${Model.KI2461SYS} `,
+                            ` node[3] = ${Model.KI2461} `,
+                            `  <64L4QxLQ|$\\1ng4W<\\d  `
+                        ].join(Shebang.SEPARATOR)
+
+                        expect(
+                            () => Shebang.tokenize(line),
+                            `Invalid node expression "  <64L4QxLQ|$\\1ng4W<\\d".`
+                        ).to.throw(Error)
+                    })
+                })
+            })
+
+            describe('If that line contains an invalid node assignment', () => {
+                describe('throws an Error', () => {
+                    it('test 1', () => {
+                        const line = '--#!2450;node[1]=VLXkyi(c&,^;node[2]=MeKrAY8I'
+
+                        expect(
+                            () => Shebang.tokenize(line),
+                            'Model "VLXkyi(c&,^" is an invalid or unsupported model.'
+                        ).to.throw(Error)
+                    })
+
+                    it('test 2', () => {
+                        const line = '--#!2450;node[1]=6500;node[2]=MeKrAY8I'
+
+                        expect(
+                            () => Shebang.tokenize(line),
+                            'Model "MeKrAY8I" is an invalid or unsupported model.'
+                        ).to.throw(Error)
+                    })
+                })
+            })
+        })
+    })
+})
