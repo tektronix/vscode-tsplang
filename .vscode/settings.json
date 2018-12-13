@@ -28,4 +28,5 @@
         "ts-node/register",
         "source-map-support/register"
     ],
+    "mocha.parallelTests": 10,
 }
