@@ -20,9 +20,9 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
 import { CommandSetInterface } from '../../../../../server/src/instrument'
-import { CommandDocumentation, InstrumentSignatureInformation } from '../../../../../server/src/wrapper'
+import { CommandDocumentation } from '../../../../../server/src/wrapper'
 
-import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
+import { expectCompletionDocFormat } from './helpers'
 
 describe('Instrument Provider', () => {
     describe('smu-source-ilimit', () => {
@@ -41,8 +41,8 @@ describe('Instrument Provider', () => {
             expect(providerModule).to.haveOwnProperty('completions')
         })
 
-        it('exports "signatures"', () => {
-            expect(providerModule).to.haveOwnProperty('signatures')
+        it('does not export "signatures"', () => {
+            expect(providerModule).to.not.haveOwnProperty('signatures')
         })
 
         it('formats completionDocs', () => {
@@ -52,16 +52,6 @@ describe('Instrument Provider', () => {
 
             providerModule.completionDocs.forEach((completionDoc: CommandDocumentation, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
-            })
-        })
-
-        it('formats signatures', () => {
-            if (providerModule.signatures === undefined) {
-                return
-            }
-
-            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
-                expectSignatureFormat(signature)
             })
         })
     })

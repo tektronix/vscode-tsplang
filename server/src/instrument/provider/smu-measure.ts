@@ -37,7 +37,7 @@ to the measure autorangelow attribute. Defaults to %{2}. Any set value is saved 
 retained until the next instrument reset or power cycle.'
                     .replace('%{0}', spec.resistance.range.low.toString())
                     .replace('%{1}', spec.resistance.range.high.toString())
-                    .replace('%{1}', spec.smuMeasureAutorange.resistanceHighDefault.toString())
+                    .replace('%{2}', spec.smuMeasureAutorange.resistanceHighDefault.toString())
             }
         }
     ],

@@ -33,7 +33,7 @@ Get the status of the interlock.\n\
 \n\
 If smu.OFF is returned the %{0} range is disabled, nominal output is limited to ±%{1}V, and attempting to source more \
 than ±%{2}V will generate an error message; otherwise all voltage ranges are available.'
-                    .replace('%{1}', spec.voltage.measure.range.high.toString())
+                    .replace('%{0}', spec.voltage.measure.range.high.toString())
                     .replace('%{1}', spec.smuInterlock.maxNominalVoltageTripped.toString())
                     .replace('%{2}', spec.smuInterlock.maxSourceVoltageTripped.toString())
             },
