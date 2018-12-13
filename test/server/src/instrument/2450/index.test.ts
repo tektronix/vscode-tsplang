@@ -40,7 +40,7 @@ describe('Instrument Specification', () => {
             expect(instrumentModule).to.haveOwnProperty('getInstrumentSpec')
         })
 
-        describe('ApiSpec', () => {
+        describe('getApiSpec()', () => {
             const knownNamespaces = [
                 'beeper',
                 'buffer.write',
@@ -125,7 +125,7 @@ describe('Instrument Specification', () => {
             })
         })
 
-        describe('InstrumentSpec', () => {
+        describe('getInstrumentSpec()', () => {
             let spec: InstrumentSpec
 
             before(() => {
