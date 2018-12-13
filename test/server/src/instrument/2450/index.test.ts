@@ -13,117 +13,128 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import * as isEqual from 'lodash.isequal'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-import { ApiSpec } from '../../../../../server/src/instrument'
-import * as Namespace from '../../../../../server/src/instrument/2450'
+import { ApiSpec, InstrumentModule, InstrumentSpec } from '../../../../../server/src/instrument'
+
 import { emptySpec } from '../emptySpec'
 
-@suite class Model2450IndexTest {
-    @test('Exports ApiSpec array')
-    exportsCompletions(): void {
-        // tslint:disable-next-line:no-magic-numbers
-        const totalModules = 70
+describe('Instrument Specification', () => {
+    describe('2450', () => {
+        let instrumentModule: InstrumentModule
 
-        assert(Namespace.getApiSpec().length === totalModules, 'Unexpected number of 2450 ApiSpec modules')
-
-        const uniqueNamespaces: Map<string, number> = new Map()
-        Namespace.getApiSpec().forEach((value: ApiSpec) => {
-            switch (value.label) {
-                case 'beeper':
-                case 'buffer.write':
-                case 'buffer':
-                case 'coroutine':
-                case 'createconfigscript':
-                case 'dataqueue':
-                case 'delay':
-                case 'digio.line':
-                case 'digio':
-                case 'display.input':
-                case 'display':
-                case 'eventlog':
-                case 'exit':
-                case 'file':
-                case 'format':
-                case 'functions':
-                case 'gpib':
-                case 'keywords':
-                case 'lan':
-                case 'localnode':
-                case 'math':
-                case 'node':
-                case 'opc':
-                case 'os':
-                case 'printbuffer':
-                case 'printnumber':
-                case 'reset':
-                case 'script':
-                case 'smu.interlock':
-                case 'smu.measure.autozero':
-                case 'smu.measure.configlist':
-                case 'smu.measure.filter':
-                case 'smu.measure.limit.high':
-                case 'smu.measure.limit.low':
-                case 'smu.measure.limit':
-                case 'smu.measure.math.mxb':
-                case 'smu.measure.math':
-                case 'smu.measure.rel':
-                case 'smu.measure':
-                case 'smu.source.configlist':
-                case 'smu.source.ilimit':
-                case 'smu.source.protect':
-                case 'smu.source.vlimit':
-                case 'smu.source':
-                case 'smu':
-                case 'status.operation':
-                case 'status.questionable':
-                case 'status.standard':
-                case 'status':
-                case 'string':
-                case 'table':
-                case 'timer':
-                case 'trigger.blender':
-                case 'trigger.digin':
-                case 'trigger.digout':
-                case 'trigger.lanin':
-                case 'trigger.lanout':
-                case 'trigger.model':
-                case 'trigger.timer.start':
-                case 'trigger.timer':
-                case 'trigger.tsplinkin':
-                case 'trigger.tsplinkout':
-                case 'trigger':
-                case 'tsplink.line':
-                case 'tsplink':
-                case 'tspnet.tsp':
-                case 'tspnet':
-                case 'upgrade':
-                case 'userstring':
-                case 'waitcomplete':
-                    uniqueNamespaces.set(
-                        value.label,
-                        (uniqueNamespaces.has(value.label)) ?
-                            uniqueNamespaces[value.label] + 1 :
-                            1
-                    )
-
-                    return
-                default:
-                    assert(false, '2450 ApiSpec contains an unknown namespace "' + value.label + '"')
-            }
+        before(() => {
+            // tslint:disable-next-line:no-require-imports
+            instrumentModule = require('../../../../../server/src/instrument/2450')
         })
 
-        assert(uniqueNamespaces.size === totalModules, '2450 ApiSpec contains duplicate namespaces')
-    }
+        it('exports "getApiSpec"', () => {
+            expect(instrumentModule).to.haveOwnProperty('getApiSpec')
+        })
 
-    @test('Exports InstrumentSpec')
-    exportsInstrumentSpec(): void {
-        assert(
-            ! isEqual(Namespace.getInstrumentSpec(), emptySpec),
-            '2450 InstrumentSpec is an empty specification'
-        )
-    }
-}
+        it('exports "getInstrumentSpec"', () => {
+            expect(instrumentModule).to.haveOwnProperty('getInstrumentSpec')
+        })
+
+        describe('ApiSpec', () => {
+            const knownNamespaces = [
+                'beeper',
+                'buffer.write',
+                'buffer',
+                'createconfigscript',
+                'dataqueue',
+                'delay',
+                'digio.line',
+                'digio',
+                'display.input',
+                'display',
+                'eventlog',
+                'exit',
+                'file',
+                'format',
+                'gpib',
+                'lan',
+                'localnode',
+                'node',
+                'opc',
+                'printbuffer',
+                'printnumber',
+                'reset',
+                'script',
+                'smu.interlock',
+                'smu.measure.autozero',
+                'smu.measure.configlist',
+                'smu.measure.filter',
+                'smu.measure.limit.high',
+                'smu.measure.limit.low',
+                'smu.measure.limit',
+                'smu.measure.math.mxb',
+                'smu.measure.math',
+                'smu.measure.rel',
+                'smu.measure',
+                'smu.source.configlist',
+                'smu.source.ilimit',
+                'smu.source.protect',
+                'smu.source.vlimit',
+                'smu.source',
+                'smu',
+                'status.operation',
+                'status.questionable',
+                'status.standard',
+                'status',
+                'timer',
+                'trigger.blender',
+                'trigger.digin',
+                'trigger.digout',
+                'trigger.lanin',
+                'trigger.lanout',
+                'trigger.model',
+                'trigger.timer.start',
+                'trigger.timer',
+                'trigger.tsplinkin',
+                'trigger.tsplinkout',
+                'trigger',
+                'tsplink.line',
+                'tsplink',
+                'tspnet.tsp',
+                'tspnet',
+                'upgrade',
+                'userstring',
+                'waitcomplete'
+            ]
+            let specs: Array<ApiSpec>
+
+            before(() => {
+                specs = instrumentModule.getApiSpec()
+            })
+
+            it('contains all known namespaces', () => {
+                knownNamespaces.forEach((namespace: string) => {
+                    const result = specs.some((spec: ApiSpec) => spec.label.localeCompare(namespace) === 0)
+
+                    expect(result, `failed to contain the "${namespace}" namespace`).to.be.true
+                })
+            })
+
+            it('contains no additional namespaces', () => {
+                expect(specs.length).to.equal(knownNamespaces.length)
+            })
+        })
+
+        describe('InstrumentSpec', () => {
+            let spec: InstrumentSpec
+
+            before(() => {
+                spec = instrumentModule.getInstrumentSpec()
+            })
+
+            it('is not empty', () => {
+                expect(spec).to.not.deep.equal(emptySpec)
+            })
+        })
+    })
+})

@@ -13,42 +13,72 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import * as isEqual from 'lodash.isequal'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-import { ApiSpec } from '../../../../../server/src/instrument'
-import * as Namespace from '../../../../../server/src/instrument/lua'
+import { ApiSpec, InstrumentModule, InstrumentSpec } from '../../../../../server/src/instrument'
+
 import { emptySpec } from '../emptySpec'
 
-@suite class LuaIndexTest {
-    @test('Exports ApiSpec array')
-    exportsCompletions(): void {
-        // tslint:disable-next-line:no-magic-numbers
-        assert(Namespace.getApiSpec().length === 7, 'Lua ApiSpec contains unknown namespaces')
+describe('Instrument Specification', () => {
+    describe('Lua', () => {
+        let instrumentModule: InstrumentModule
 
-        Namespace.getApiSpec().forEach((value: ApiSpec) => {
-            switch (value.label) {
-                case 'coroutine':
-                case 'functions':
-                case 'keywords':
-                case 'math':
-                case 'os':
-                case 'string':
-                case 'table':
-                    return
-                default:
-                    assert(false, 'Lua ApiSpec contains an unknown namespace "' + value.label + '"')
-            }
+        before(() => {
+            // tslint:disable-next-line:no-require-imports
+            instrumentModule = require('../../../../../server/src/instrument/lua')
         })
-    }
 
-    @test('Exports empty InstrumentSpec')
-    exportsEmptyInstrumentSpec(): void {
-        assert(
-            isEqual(Namespace.getInstrumentSpec(), emptySpec),
-            'Lua InstrumentSpec is not an empty specification'
-        )
-    }
-}
+        it('exports "getApiSpec"', () => {
+            expect(instrumentModule).to.haveOwnProperty('getApiSpec')
+        })
+
+        it('exports "getInstrumentSpec"', () => {
+            expect(instrumentModule).to.haveOwnProperty('getInstrumentSpec')
+        })
+
+        describe('ApiSpec', () => {
+            const knownNamespaces = [
+                'coroutine',
+                'functions',
+                'keywords',
+                'math',
+                'os',
+                'string',
+                'table'
+            ]
+            let specs: Array<ApiSpec>
+
+            before(() => {
+                specs = instrumentModule.getApiSpec()
+            })
+
+            it('contains all known namespaces', () => {
+                knownNamespaces.forEach((namespace: string) => {
+                    const result = specs.some((spec: ApiSpec) => spec.label.localeCompare(namespace) === 0)
+
+                    expect(result, `failed to contain the "${namespace}" namespace`).to.be.true
+                })
+            })
+
+            it('contains no additional namespaces', () => {
+                expect(specs.length).to.equal(knownNamespaces.length)
+            })
+        })
+
+        describe('InstrumentSpec', () => {
+            let spec: InstrumentSpec
+
+            before(() => {
+                spec = instrumentModule.getInstrumentSpec()
+            })
+
+            it('is empty', () => {
+                expect(spec).to.deep.equal(emptySpec)
+            })
+        })
+    })
+})
