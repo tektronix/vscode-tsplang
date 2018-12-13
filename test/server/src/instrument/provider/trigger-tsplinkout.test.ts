@@ -13,34 +13,33 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-import * as Namespace from '../../../../../server/src/instrument/provider/trigger-tsplinkout'
+import { CommandSetInterface } from '../../../../../server/src/instrument'
 
-@suite class TriggerTsplinkoutTest {
-    @test('Exports completions')
-    exportsCompletions(): void {
-        assert(
-            Namespace.completions !== undefined,
-            'Expected Trigger-Tsplinkout to export completions'
-        )
-    }
+describe('Instrument Provider', () => {
+    describe('trigger-tsplinkout', () => {
+        let providerModule: CommandSetInterface
 
-    @test('Exports no completionDocs')
-    exportsNoCompletionDocs(): void {
-        assert(
-            ! Namespace.hasOwnProperty('completionDocs'),
-            'Unexpected completionDocs export from Trigger-Tsplinkout'
-        )
-    }
+        before(() => {
+            // tslint:disable-next-line:no-require-imports
+            providerModule = require('../../../../../server/src/instrument/provider/trigger-tsplinkout')
+        })
 
-    @test('Exports no signatures')
-    exportsSignatures(): void {
-        assert(
-            ! Namespace.hasOwnProperty('signatures'),
-            'Unexpected signatures export from Trigger-Tsplinkout'
-        )
-    }
-}
+        it('does not export "completionDocs"', () => {
+            expect(providerModule).to.not.haveOwnProperty('completionDocs')
+        })
+
+        it('exports "completions"', () => {
+            expect(providerModule).to.haveOwnProperty('completions')
+        })
+
+        it('does not export "signatures"', () => {
+            expect(providerModule).to.not.haveOwnProperty('signatures')
+        })
+    })
+})

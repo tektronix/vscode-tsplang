@@ -13,93 +13,46 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
-import { ParameterInformation } from 'vscode-languageclient'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-import * as Namespace from '../../../../../server/src/instrument/provider/status-operation'
+import { CommandSetInterface } from '../../../../../server/src/instrument'
 import { InstrumentSignatureInformation } from '../../../../../server/src/wrapper'
-import { emptySpec } from '../emptySpec'
 
-@suite class StatusOperationTest {
-    @test('Exports completions')
-    exportsCompletions(): void {
-        assert(
-            Namespace.completions !== undefined,
-            'Expected Status-Operation to export completions'
-        )
-    }
+import { expectSignatureFormat } from './helpers'
 
-    @test('Exports no completionDocs')
-    exportsNoCompletionDocs(): void {
-        assert(
-            ! Namespace.hasOwnProperty('completionDocs'),
-            'Unexpected completionDocs export from Status-Operation'
-        )
-    }
+describe('Instrument Provider', () => {
+    describe('status-operation', () => {
+        let providerModule: CommandSetInterface
 
-    @test('Exports signatures')
-    exportsSignatures(): void {
-        assert(
-            Namespace.signatures !== undefined,
-            'Expected Status-Operation to export signatures'
-        )
-    }
+        before(() => {
+            // tslint:disable-next-line:no-require-imports
+            providerModule = require('../../../../../server/src/instrument/provider/status-operation')
+        })
 
-    @test('Signatures formatted properly')
-    signaturesFormattedProperly(): void {
-        Namespace.signatures.forEach((element: InstrumentSignatureInformation) => {
-            if (element.getFormattedParameters === undefined) {
-                assert(true)
+        it('does not export "completionDocs"', () => {
+            expect(providerModule).to.not.haveOwnProperty('completionDocs')
+        })
 
+        it('exports "completions"', () => {
+            expect(providerModule).to.haveOwnProperty('completions')
+        })
+
+        it('exports "signatures"', () => {
+            expect(providerModule).to.haveOwnProperty('signatures')
+        })
+
+        it('formats signatures', () => {
+            if (providerModule.signatures === undefined) {
                 return
             }
 
-            const formattedParams = element.getFormattedParameters(emptySpec)
-
-            if (formattedParams.length === 0) {
-                assert(false, 'No formatted parameters returned.')
-
-                return
-            }
-
-            formattedParams.forEach((value: ParameterInformation) => {
-                if (value.documentation !== undefined) {
-                    let docString: string
-
-                    if (typeof value.documentation === 'string') {
-                        docString = value.documentation
-                    }
-                    else if (typeof value.documentation === 'object') {
-                        docString = value.documentation.value
-                    }
-                    else {
-                        assert(
-                            false,
-                            'Unknown type for ParameterInformation.documentation: ' + typeof value.documentation
-                        )
-
-                        return
-                    }
-
-                    const matches = docString.match(/%\{[0-9]+\}/)
-
-                    if (matches === null || matches.length > 0) {
-                        return
-                    }
-                    else {
-                        matches.forEach((matched: string) => {
-                            assert(
-                                false,
-                                'Matched a replacement string "' + matched + '" from ' + element.label
-                            )
-                        })
-
-                        return
-                    }
-                }
+            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
+                expectSignatureFormat(signature)
             })
         })
-    }
-}
+    })
+})

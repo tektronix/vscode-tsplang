@@ -13,144 +13,56 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
-import { ParameterInformation } from 'vscode-languageclient'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-import * as Namespace from '../../../../../server/src/instrument/provider/smu-measure'
+import { CommandSetInterface } from '../../../../../server/src/instrument'
 import { CommandDocumentation, InstrumentSignatureInformation } from '../../../../../server/src/wrapper'
-import { emptySpec } from '../emptySpec'
 
-@suite class SmuMeasureTest {
-    @test('CompletionDocs formatted properly')
-    completionDocsFormattedProperly(): void {
-        Namespace.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-            const docString = value.toString(emptySpec)
+import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
 
-            const matches = docString.match(/%\{[0-9]+\}/)
+describe('Instrument Provider', () => {
+    describe('smu-measure', () => {
+        let providerModule: CommandSetInterface
 
-            if (matches === null || matches.length > 0) {
-                return
-            }
-            else {
-                matches.forEach((matched: string) => {
-                    assert(
-                        false,
-                        'Matched a replacement string "' + matched + '" from ' + key
-                    )
-                })
-
-                return
-            }
+        before(() => {
+            // tslint:disable-next-line:no-require-imports
+            providerModule = require('../../../../../server/src/instrument/provider/smu-measure')
         })
-    }
 
-    @test('CompletionDocs formatter handles undefined')
-    completionsDocsFormatterHandlesUndefined(): void {
-        const undefinedMeasureRangeSpec = emptySpec
-        undefinedMeasureRangeSpec.current.measure.range.default = undefined
-        undefinedMeasureRangeSpec.voltage.measure.range.default = undefined
-        undefinedMeasureRangeSpec.resistance.range.default = undefined
-
-        Namespace.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-            const docString = value.toString(undefinedMeasureRangeSpec)
-
-            if (key.localeCompare('smu.measure.range') !== 0) {
-                return
-            }
-
-            const matches = docString.match(/(UNDEFINED)+/g)
-
-            if (matches === null || matches.length === 0) {
-                assert(
-                    false,
-                    'Failed to properly mark specification value as "UNDEFINED"'
-                )
-            }
-            else {
-                return
-            }
+        it('exports "completionDocs"', () => {
+            expect(providerModule).to.haveOwnProperty('completionDocs')
         })
-    }
 
-    @test('Exports completionDocs')
-    exportsCompletionDocs(): void {
-        assert(
-            Namespace.completionDocs !== undefined,
-            'Expected Smu-Measure to export completionDocs'
-        )
-    }
+        it('exports "completions"', () => {
+            expect(providerModule).to.haveOwnProperty('completions')
+        })
 
-    @test('Exports completions')
-    exportsCompletions(): void {
-        assert(
-            Namespace.completions !== undefined,
-            'Expected Smu-Measure to export completions'
-        )
-    }
+        it('exports "signatures"', () => {
+            expect(providerModule).to.haveOwnProperty('signatures')
+        })
 
-    @test('Exports signatures')
-    exportsSignatures(): void {
-        assert(
-            Namespace.signatures !== undefined,
-            'Expected Smu-Measure to export signatures'
-        )
-    }
-
-    @test('Signatures formatted properly')
-    signaturesFormattedProperly(): void {
-        Namespace.signatures.forEach((element: InstrumentSignatureInformation) => {
-            if (element.getFormattedParameters === undefined) {
-                assert(true)
-
+        it('formats completionDocs', () => {
+            if (providerModule.completionDocs === undefined) {
                 return
             }
 
-            const formattedParams = element.getFormattedParameters(emptySpec)
-
-            if (formattedParams.length === 0) {
-                assert(false, 'No formatted parameters returned.')
-
-                return
-            }
-
-            formattedParams.forEach((value: ParameterInformation) => {
-                if (value.documentation !== undefined) {
-                    let docString: string
-
-                    if (typeof value.documentation === 'string') {
-                        docString = value.documentation
-                    }
-                    else if (typeof value.documentation === 'object') {
-                        docString = value.documentation.value
-                    }
-                    else {
-                        assert(
-                            false,
-                            'Unknown type for ParameterInformation.documentation: ' + typeof value.documentation
-                        )
-
-                        return
-                    }
-
-                    const matches = docString.match(/%\{[0-9]+\}/)
-
-                    if (matches === null || matches.length > 0) {
-                        return
-                    }
-                    else {
-                        matches.forEach((matched: string) => {
-                            assert(
-                                false,
-                                'Matched a replacement string "' + matched + '" from ' + element.label
-                            )
-                        })
-
-                        return
-                    }
-                }
+            providerModule.completionDocs.forEach((completionDoc: CommandDocumentation, label: string) => {
+                expectCompletionDocFormat(completionDoc, label)
             })
         })
-    }
-}
+
+        it('formats signatures', () => {
+            if (providerModule.signatures === undefined) {
+                return
+            }
+
+            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
+                expectSignatureFormat(signature)
+            })
+        })
+    })
+})

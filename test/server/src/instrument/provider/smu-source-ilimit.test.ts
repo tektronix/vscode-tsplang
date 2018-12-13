@@ -13,59 +13,56 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-import * as Namespace from '../../../../../server/src/instrument/provider/smu-source-ilimit'
-import { CommandDocumentation } from '../../../../../server/src/wrapper'
-import { emptySpec } from '../emptySpec'
+import { CommandSetInterface } from '../../../../../server/src/instrument'
+import { CommandDocumentation, InstrumentSignatureInformation } from '../../../../../server/src/wrapper'
 
-@suite class SmuSourceIlimitTest {
-    @test('CompletionDocs formatted properly')
-    completionDocsFormattedProperly(): void {
-        Namespace.completionDocs.forEach((value: CommandDocumentation, key: string) => {
-            const docString = value.toString(emptySpec)
+import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
 
-            const matches = docString.match(/%\{[0-9]+\}/)
+describe('Instrument Provider', () => {
+    describe('smu-source-ilimit', () => {
+        let providerModule: CommandSetInterface
 
-            if (matches === null || matches.length > 0) {
-                return
-            }
-            else {
-                matches.forEach((matched: string) => {
-                    assert(
-                        false,
-                        'Matched a replacement string "' + matched + '" from ' + key
-                    )
-                })
-
-                return
-            }
+        before(() => {
+            // tslint:disable-next-line:no-require-imports
+            providerModule = require('../../../../../server/src/instrument/provider/smu-source-ilimit')
         })
-    }
 
-    @test('Exports completionDocs')
-    exportsCompletionDocs(): void {
-        assert(
-            Namespace.completionDocs !== undefined,
-            'Expected Smu-Source-Ilimit to export completionDocs'
-        )
-    }
+        it('exports "completionDocs"', () => {
+            expect(providerModule).to.haveOwnProperty('completionDocs')
+        })
 
-    @test('Exports completions')
-    exportsCompletions(): void {
-        assert(
-            Namespace.completions !== undefined,
-            'Expected Smu-Source-Ilimit to export completions'
-        )
-    }
+        it('exports "completions"', () => {
+            expect(providerModule).to.haveOwnProperty('completions')
+        })
 
-    @test('Exports no signatures')
-    exportsNoSignatures(): void {
-        assert(
-            ! Namespace.hasOwnProperty('signatures'),
-            'Unexpected signatures export from Smu-Source-Ilimit'
-        )
-    }
-}
+        it('exports "signatures"', () => {
+            expect(providerModule).to.haveOwnProperty('signatures')
+        })
+
+        it('formats completionDocs', () => {
+            if (providerModule.completionDocs === undefined) {
+                return
+            }
+
+            providerModule.completionDocs.forEach((completionDoc: CommandDocumentation, label: string) => {
+                expectCompletionDocFormat(completionDoc, label)
+            })
+        })
+
+        it('formats signatures', () => {
+            if (providerModule.signatures === undefined) {
+                return
+            }
+
+            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
+                expectSignatureFormat(signature)
+            })
+        })
+    })
+})
