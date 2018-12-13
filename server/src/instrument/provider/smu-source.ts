@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
 import { CommandDocumentation, IndexedParameterInformation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
 
