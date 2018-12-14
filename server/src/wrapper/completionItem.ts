@@ -62,24 +62,39 @@ export namespace InstrumentCompletionItem {
         const result = new Array<InstrumentCompletionItem>()
 
         for (const name of namespaces) {
+            // Get the last root completion item to use as reference.
             const last = result.pop()
+
+            // Create a completion item for the current namespace name.
             const current: InstrumentCompletionItem = {
                 kind: CompletionItemKind.Module,
                 label: name
             }
 
+            // If we have a previous root completion item to use as reference for
+            // the data.domains property.
             if (last !== undefined) {
+                // The current data.domains array will always start with the label of
+                // the previous root completion item.
                 const domains: Array<string> = [last.label]
 
+                // The remaining items in the current data.domains array are those from
+                // the previous root completion's data.domains array, if any such items
+                // exist.
                 if (last.data !== undefined) {
                     domains.push(...last.data.domains)
                 }
 
                 current.data = { domains }
 
+                // Add the previous root completion item back to the results before the
+                // current item to maintain proper domain ordering.
                 result.push(last)
             }
 
+            // If last is undefined, then this item is a top-level root completion item
+            // with an undefined data.domains property;
+            // otherwise the data.domains property has already been defined.
             result.push(current)
         }
 
