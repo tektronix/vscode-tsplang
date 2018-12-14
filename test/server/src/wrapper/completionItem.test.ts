@@ -23,26 +23,108 @@ import { InstrumentCompletionItem } from '../../../../server/src/wrapper'
 
 describe('Wrapper', () => {
     describe('InstrumentCompletionItem', () => {
+        const emptyCompletion: InstrumentCompletionItem = {
+            label: ''
+        }
+        const noDomainCompletion: InstrumentCompletionItem = {
+            kind: 9,
+            label: 'foo'
+        }
+        const singleDomainCompletion: InstrumentCompletionItem = {
+            data: { domains: ['foo'] },
+            kind: 9,
+            label: 'bar'
+        }
+        const multiDomainCompletion: InstrumentCompletionItem = {
+            data: { domains: ['bar', 'foo'] },
+            kind: 9,
+            label: 'baz'
+        }
+
         describe('.createRootItems()', () => {
-            expect.fail
+            it('returns an empty array when the given string is empty', () => {
+                expect(
+                    InstrumentCompletionItem.createRootItems('', false),
+                    'results not empty given an empty string with the last item included'
+                ).to.be.empty
+
+                expect(
+                    InstrumentCompletionItem.createRootItems('', true),
+                    'results not empty given an empty string without the last item'
+                ).to.be.empty
+            })
+
+            it('returns an empty array if nothing could be created', () => {
+                interface TestRecipe {
+                    excludeLast: boolean
+                    includeLast: boolean
+                    test: string
+                }
+
+                const scenarios = new Array<TestRecipe>(...[
+                    {excludeLast: true, includeLast: false, test: 'foo'},
+                    {excludeLast: true, includeLast: true, test: '.bar'},
+                    {excludeLast: true, includeLast: true, test: 'foo..baz'},
+                    {excludeLast: false, includeLast: true, test: 'foo.bar.'}
+                ])
+
+                scenarios.forEach((recipe: TestRecipe) => {
+                    // Fail this test if both are false
+                    if (! recipe.excludeLast && ! recipe.includeLast) {
+                        expect.fail(
+                            'both are false',
+                            'expected "excludeLast" or "includeLast" to be true',
+                            `invalid test recipe "${JSON.stringify(recipe)}"`
+                        )
+                    }
+
+                    if (recipe.excludeLast) {
+                        expect(
+                            InstrumentCompletionItem.createRootItems(recipe.test, true),
+                            `results not empty given "${recipe.test}" without the last item`
+                        ).to.be.empty
+                    }
+
+                    if (recipe.includeLast) {
+                        expect(
+                            InstrumentCompletionItem.createRootItems(recipe.test, false),
+                            `results not empty given "${recipe.test}" with the last item included`
+                        ).to.be.empty
+                    }
+                })
+            })
+
+            it('returns an accurate set of completion items when the last namespace is included', () => {
+                const scenarios = new Map<string, Array<InstrumentCompletionItem>>([
+                    ['foo', [noDomainCompletion]],
+                    ['foo.bar', [noDomainCompletion, singleDomainCompletion]],
+                    ['foo.bar.baz', [noDomainCompletion, singleDomainCompletion, multiDomainCompletion]]
+                ])
+
+                scenarios.forEach((expected: Array<InstrumentCompletionItem>, test: string) => {
+                    expect(
+                        InstrumentCompletionItem.createRootItems(test, false),
+                        `failed to create accurate root completions for "${test}" with the last item included`
+                    ).to.deep.equal(expected)
+                })
+            })
+
+            it('returns an accurate set of completion items when the last namespace is excluded', () => {
+                const scenarios = new Map<string, Array<InstrumentCompletionItem>>([
+                    ['foo.bar', [noDomainCompletion]],
+                    ['foo.bar.baz', [noDomainCompletion, singleDomainCompletion]]
+                ])
+
+                scenarios.forEach((expected: Array<InstrumentCompletionItem>, test: string) => {
+                    expect(
+                        InstrumentCompletionItem.createRootItems(test, true),
+                        `failed to create accurate root completions for "${test}" without the last item`
+                    ).to.deep.equal(expected)
+                })
+            })
         })
 
         describe('.namespaceMatch()', () => {
-            const emptyCompletion: InstrumentCompletionItem = {
-                label: ''
-            }
-            const noDomainCompletion: InstrumentCompletionItem = {
-                label: 'foo'
-            }
-            const singleDomainCompletion: InstrumentCompletionItem = {
-                data: { domains: ['foo'] },
-                label: 'bar'
-            }
-            const multiDomainCompletion: InstrumentCompletionItem = {
-                data: { domains: ['bar', 'foo'] },
-                label: 'baz'
-            }
-
             it('returns true when the given string is empty', () => {
                 const testCompletions = [
                     emptyCompletion,
@@ -159,7 +241,57 @@ describe('Wrapper', () => {
         })
 
         describe('.namespacesEqual()', () => {
-            expect.fail
+            it('returns true when the given completions are equivalent', () => {
+                const testCompletions = [
+                    emptyCompletion,
+                    noDomainCompletion,
+                    singleDomainCompletion,
+                    multiDomainCompletion
+                ]
+
+                testCompletions.forEach((test: InstrumentCompletionItem) => {
+                    expect(
+                        InstrumentCompletionItem.namespacesEqual(test, test),
+                        `"${JSON.stringify(test)}" failed to equal itself`
+                    ).to.be.true
+
+                    expect(
+                        InstrumentCompletionItem.namespacesEqual(test, test, true),
+                        `"${JSON.stringify(test)}" failed to equal itself without its label`
+                    ).to.be.true
+                })
+            })
+
+            it('returns false when the given completions are different', () => {
+                const testCompletions = [
+                    noDomainCompletion,
+                    singleDomainCompletion,
+                    multiDomainCompletion,
+                    {
+                        data: { domains: ['bar'] },
+                        label: 'baz'
+                    }
+                ]
+
+                testCompletions.forEach((itemA: InstrumentCompletionItem, indexA: number) => {
+                    testCompletions.forEach((itemB: InstrumentCompletionItem, indexB: number) => {
+                        // Skip the current item B if it's the same as item A
+                        if (indexB === indexA) {
+                            return
+                        }
+
+                        expect(
+                            InstrumentCompletionItem.namespacesEqual(itemA, itemB),
+                            `"${JSON.stringify(itemA)}" equals "${JSON.stringify(itemB)}"`
+                        ).to.be.false
+
+                        expect(
+                            InstrumentCompletionItem.namespacesEqual(itemA, itemB, true),
+                            `"${JSON.stringify(itemA)}" equals "${JSON.stringify(itemB)}" without labels`
+                        ).to.be.false
+                    })
+                })
+            })
         })
     })
 })
