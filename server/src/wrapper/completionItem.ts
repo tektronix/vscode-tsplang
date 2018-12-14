@@ -87,54 +87,6 @@ export namespace InstrumentCompletionItem {
     }
 
     /**
-     * Compare the labels and data.domains properties of two items to determine their equality.
-     * @param a The first item.
-     * @param b The second item.
-     * @param excludeLabel Exclude the label from the comparision. Defaults to false.
-     * @returns True if the two items match and false otherwise.
-     */
-    export function namespacesEqual(
-        a: InstrumentCompletionItem,
-        b: InstrumentCompletionItem,
-        excludeLabel: boolean = false
-    ): boolean {
-        // Compare labels.
-        if (! excludeLabel && a.label.localeCompare(b.label) !== 0) {
-            return false
-        }
-
-        if (a.data === undefined) {
-            // If neither have a data property, then these two root completions are equal.
-            if (b.data === undefined) {
-                return true
-            }
-
-            // Both data properties should be defined.
-            return false
-        }
-
-        // TypeScript demands the following
-        if (b.data === undefined) {
-            return false
-        }
-
-        // Both domains should be of equal length.
-        if (a.data.domains.length !== b.data.domains.length) {
-            return false
-        }
-
-        // Both domains should have the same domain items.
-        for (let i = 0; i < a.data.domains.length; i++) {
-            const aDomain = a.data.domains[i]
-            if (aDomain === undefined || aDomain.localeCompare(b.data.domains[i]) !== 0) {
-                return false
-            }
-        }
-
-        return true
-    }
-
-    /**
      * Compare the given string to the label and data.domains properties of the completion item.
      * **Note:** empty strings match everything.
      * @param target The search string.
@@ -185,5 +137,53 @@ export namespace InstrumentCompletionItem {
         }
 
         return false
+    }
+
+    /**
+     * Compare the labels and data.domains properties of two items to determine their equality.
+     * @param a The first item.
+     * @param b The second item.
+     * @param excludeLabel Exclude the label from the comparision. Defaults to false.
+     * @returns True if the two items match and false otherwise.
+     */
+    export function namespacesEqual(
+        a: InstrumentCompletionItem,
+        b: InstrumentCompletionItem,
+        excludeLabel: boolean = false
+    ): boolean {
+        // Compare labels.
+        if (! excludeLabel && a.label.localeCompare(b.label) !== 0) {
+            return false
+        }
+
+        if (a.data === undefined) {
+            // If neither have a data property, then these two root completions are equal.
+            if (b.data === undefined) {
+                return true
+            }
+
+            // Both data properties should be defined.
+            return false
+        }
+
+        // TypeScript demands the following
+        if (b.data === undefined) {
+            return false
+        }
+
+        // Both domains should be of equal length.
+        if (a.data.domains.length !== b.data.domains.length) {
+            return false
+        }
+
+        // Both domains should have the same domain items.
+        for (let i = 0; i < a.data.domains.length; i++) {
+            const aDomain = a.data.domains[i]
+            if (aDomain === undefined || aDomain.localeCompare(b.data.domains[i]) !== 0) {
+                return false
+            }
+        }
+
+        return true
     }
 }
