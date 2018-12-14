@@ -13,166 +13,153 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies no-magic-numbers prefer-function-over-method
-import { assert } from 'chai'
-import { suite, test } from 'mocha-typescript'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
 import { InstrumentCompletionItem } from '../../../../server/src/wrapper'
 
-function toString(completion: InstrumentCompletionItem): string {
-    let result = '{label: "' + completion.label + '"'
-
-    if (completion.data !== undefined) {
-        result += ', data: ['
-        completion.data.domains.forEach((item: string) => {
-            result += '"' + item + '", '
+describe('Wrapper', () => {
+    describe('InstrumentCompletionItem', () => {
+        describe('.createRootItems()', () => {
+            expect.fail
         })
-        // Remove the trailing ", "
-        result = result.slice(0, result.length - 2)
-        result += ']'
-    }
 
-    return result + '}'
-}
+        describe('.namespaceMatch()', () => {
+            const emptyCompletion: InstrumentCompletionItem = {
+                label: ''
+            }
+            const noDomainCompletion: InstrumentCompletionItem = {
+                label: 'foo'
+            }
+            const singleDomainCompletion: InstrumentCompletionItem = {
+                data: { domains: ['foo'] },
+                label: 'bar'
+            }
+            const multiDomainCompletion: InstrumentCompletionItem = {
+                data: { domains: ['bar', 'foo'] },
+                label: 'baz'
+            }
 
-@suite class InstrumentCompletionItemTest {
-    @test('namespaceMatch')
-    namespaceMatchTest(): void {
-        let testString = ''
-        let testCompletion: InstrumentCompletionItem = {
-            label: 'a'
-        }
-        assert(
-            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
-        )
+            it('returns true when the given string is empty', () => {
+                const testCompletions = [
+                    emptyCompletion,
+                    noDomainCompletion,
+                    singleDomainCompletion,
+                    multiDomainCompletion
+                ]
 
-        testCompletion = {
-            data: { domains: ['b'] },
-            label: 'a'
-        }
-        assert(
-            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
-        )
-
-        testString = 'a.'
-        testCompletion = {
-            label: 'a'
-        }
-        assert(
-            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
-        )
-
-        testCompletion = {
-            data: { domains: ['a'] },
-            label: 'b'
-        }
-        assert(
-            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
-        )
-
-        testString = 'a.p'
-        testCompletion = {
-            label: 'a'
-        }
-        assert(
-            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
-        )
-
-        testCompletion = {
-            data: { domains: ['a'] },
-            label: 'b'
-        }
-        assert(
-            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
-        )
-
-        testCompletion = {
-            data: { domains: ['b'] },
-            label: 'partial'
-        }
-        assert(
-            ! InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" partially matched "' + toString(testCompletion) + '"'
-        )
-
-        testCompletion = {
-            data: { domains: ['a'] },
-            label: 'partial'
-        }
-        assert(
-            InstrumentCompletionItem.namespaceMatch(testString, testCompletion),
-            '"' + testString + '" did not partially match "' + toString(testCompletion) + '"'
-        )
-    }
-
-    // Issue #31 - Unescaped regular expression string input.
-    @test('namespaceMatch Unescaped Regexp')
-    namespaceMatchUnescapedRegexpTest(): void {
-        let testStrings: Array<string> = ['(', '[', 'a(', 'a[']
-        let testCompletion: InstrumentCompletionItem = {
-            label: 'a'
-        }
-        try {
-            testStrings.forEach((str: string) => {
-                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
+                testCompletions.forEach((completion: InstrumentCompletionItem) => {
+                    expect(
+                        InstrumentCompletionItem.namespaceMatch('', completion),
+                        `an empty string failed to match "${JSON.stringify(completion)}"`
+                    ).to.be.true
+                })
             })
-        } catch (err) {
-            assert(
-                false,
-                'Failed to properly escape regular expression input. Raw Error: ' + err
-            )
-        }
 
-        testStrings = ['a(b', 'a[b']
-        testCompletion = {
-            label: 'b'
-        }
-        try {
-            testStrings.forEach((str: string) => {
-                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
-            })
-        } catch (err) {
-            assert(
-                false,
-                'Failed to properly escape regular expression input. Raw Error: ' + err
-            )
-        }
+            it('returns true when the given string is a partial match', () => {
+                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                    [noDomainCompletion, ['f', 'fo']],
+                    [singleDomainCompletion, ['foo.', 'foo.b', 'foo.ba']],
+                    [multiDomainCompletion, ['foo.bar.', 'foo.bar.b', 'foo.bar.ba']]
+                ])
 
-        testStrings = ['a.b(', 'a.b[']
-        testCompletion = {
-            data: { domains: ['a'] },
-            label: 'b'
-        }
-        try {
-            testStrings.forEach((str: string) => {
-                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
+                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                    cases.forEach((test: string) => {
+                        expect(
+                            InstrumentCompletionItem.namespaceMatch(test, completion),
+                            `"${test}" failed to match "${JSON.stringify(completion)}"`
+                        ).to.be.true
+                    })
+                })
             })
-        } catch (err) {
-            assert(
-                false,
-                'Failed to properly escape regular expression input. Raw Error: ' + err
-            )
-        }
 
-        testStrings = ['a.b(p', 'a.b[p']
-        testCompletion = {
-            label: 'partial'
-        }
-        try {
-            testStrings.forEach((str: string) => {
-                InstrumentCompletionItem.namespaceMatch(str, testCompletion)
+            it('returns true when the given string is a whole match', () => {
+                const scenarios = new Map<InstrumentCompletionItem, string>([
+                    [noDomainCompletion, 'foo'],
+                    [singleDomainCompletion, 'foo.bar'],
+                    [multiDomainCompletion, 'foo.bar.baz']
+                ])
+
+                scenarios.forEach((test: string, completion: InstrumentCompletionItem) => {
+                    expect(
+                        InstrumentCompletionItem.namespaceMatch(test, completion),
+                        `"${test}" failed to match "${JSON.stringify(completion)}"`
+                    ).to.be.true
+                })
             })
-        } catch (err) {
-            assert(
-                false,
-                'Failed to properly escape regular expression input. Raw Error: ' + err
-            )
-        }
-    }
-}
+
+            it('returns false when the given string is not a whole or partial match', () => {
+                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                    [noDomainCompletion, ['z', 'foz', 'F', 'fOO']],
+                    [singleDomainCompletion, ['z.ba', 'FoO.bar', 'foo.bAr']],
+                    [multiDomainCompletion, ['foo.z.baz', 'foo.bar.B', 'Foo.bar.baz']]
+                ])
+
+                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                    cases.forEach((test: string) => {
+                        expect(
+                            InstrumentCompletionItem.namespaceMatch(test, completion),
+                            `"${test}" matched "${JSON.stringify(completion)}"`
+                        ).to.be.false
+                    })
+                })
+            })
+
+            it('returns false when namespace depths are not equal', () => {
+                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                    [noDomainCompletion, ['foo.', 'foo..']],
+                    [singleDomainCompletion, ['foo', 'foo..', 'foo.bar.']],
+                    [multiDomainCompletion, ['foo', 'foo.bar', 'foo.bar..', 'foo.bar.baz.']]
+                ])
+
+                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                    cases.forEach((test: string) => {
+                        expect(
+                            InstrumentCompletionItem.namespaceMatch(test, completion),
+                            `"${test}" matched "${JSON.stringify(completion)}"`
+                        ).to.be.false
+                    })
+                })
+            })
+
+            it('(#31) escapes the given string before creating a RegExp', () => {
+                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                    [noDomainCompletion, [
+                        '(',
+                        '[',
+                        'foo(',
+                        'foo[',
+                        'y(foo',
+                        'y[foo',
+                        'y.z(fo',
+                        'y.z[fo'
+                    ]],
+                    [singleDomainCompletion, [
+                        'foo.bar(',
+                        'foo.bar[',
+                        'y(foo.bar',
+                        'y[foo.bar',
+                        'y.z(foo.',
+                        'y.z[foo.ba'
+                    ]],
+                ])
+
+                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                    cases.forEach((test: string) => {
+                        expect(
+                            () => InstrumentCompletionItem.namespaceMatch(test, completion),
+                            `failed to properly escape the RegExp input "${test}"`
+                        ).to.not.throw()
+                    })
+                })
+            })
+        })
+
+        describe('.namespacesEqual()', () => {
+            expect.fail
+        })
+    })
+})
