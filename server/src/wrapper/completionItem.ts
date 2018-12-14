@@ -62,6 +62,11 @@ export namespace InstrumentCompletionItem {
         const result = new Array<InstrumentCompletionItem>()
 
         for (const name of namespaces) {
+            // If any name is an empty string, then return an empty array.
+            if (name.localeCompare('') === 0) {
+                return []
+            }
+
             // Get the last root completion item to use as reference.
             const last = result.pop()
 
