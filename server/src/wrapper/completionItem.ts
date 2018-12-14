@@ -139,7 +139,8 @@ export namespace InstrumentCompletionItem {
      * **Note:** empty strings match everything.
      * @param target The search string.
      * @param completion The InstrumentCompletionItem to attempt a match against.
-     * @returns True if the search string wholly or partially matches and false otherwise.
+     * @returns True if the search string has the same namespace depth as the given completion and
+     * wholly or partially matches against it. False otherwise.
      */
     export function namespaceMatch(target: string, completion: InstrumentCompletionItem): boolean {
         // If content is an empty string, then everything is a partial match
