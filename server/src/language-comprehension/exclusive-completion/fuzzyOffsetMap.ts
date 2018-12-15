@@ -17,6 +17,14 @@
 
 import { Range, TextDocument } from 'vscode-languageserver'
 
+/**
+ * A Map used as a lookup table for the document offset of various contexts.
+ * Keyed to a lexically equivalent offset of the original context offset. The
+ * associated key-value is that original offset.
+ *
+ * **TODO:** we only consider horizontal whitespace to be lexically equivalent
+ * for now. This should change eventually.
+ */
 export class FuzzyOffsetMap extends Map<number, number> {
     private readonly horizontalSpaces: RegExp
 
