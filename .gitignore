@@ -8,3 +8,5 @@ npm-debug.log
 coverage/
 .nyc_output/
 .antlr/
+*.lua
+!server/grammar/antlr4-sandbox.lua
