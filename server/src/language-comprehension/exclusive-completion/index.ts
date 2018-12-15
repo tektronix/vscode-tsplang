@@ -16,5 +16,4 @@
 'use strict'
 
 export { ExclusiveContext } from './exclusiveContext'
-export { ExclusiveMap } from './exclusiveMap'
 export { FuzzyOffsetMap } from './fuzzyOffsetMap'

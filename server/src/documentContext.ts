@@ -27,9 +27,9 @@ import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 import { CommandSet } from './instrument'
 import { resolveSignatureNamespace } from './instrument/provider'
 import { TokenUtil } from './language-comprehension'
-import { ExclusiveMap, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
+import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
-import { ParameterContext, SignatureContext, SignatureMap } from './language-comprehension/signature'
+import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
 
 declare class CorrectRecogException extends RecognitionException {
@@ -39,14 +39,23 @@ declare class CorrectRecogException extends RecognitionException {
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
     readonly document: TextDocument
-    private exclusives: ExclusiveMap
+    /**
+     * A Map keyed to the ending offset of an assignment operator (`=`) or
+     * expression list separator (`,`). The associated key-value is an
+     * ExclusiveContext.
+     */
+    private exclusives: Map<number, ExclusiveContext>
     private fuzzyOffsets: FuzzyOffsetMap
     private fuzzySignatureOffsets: FuzzyOffsetMap
     private inputStream: InputStream
     private lexer: TspLexer
     private parser: TspParser
     private parseTree: ParserRuleContext
-    private signatures: SignatureMap
+    /**
+     * A Map keyed to the ending offset of a function call's open parenthesis.
+     * The associated key-value is a SignatureContext.
+     */
+    private signatures: Map<number, SignatureContext>
     private readonly tableIndexRegexp: RegExp
     private tokenStream: CommonTokenStream
 
@@ -247,7 +256,7 @@ export class DocumentContext extends TspListener {
             return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
         })
 
-        let newAssignmentExclusives: ExclusiveMap | undefined
+        let newAssignmentExclusives: Map<number, ExclusiveContext> | undefined
         //  statement  --{1}-->  variableList
         //             --{1}-->  '='
         //             --{1}-->  expressionList
@@ -361,10 +370,10 @@ export class DocumentContext extends TspListener {
     }
 
     update(): void {
-        this.exclusives = new ExclusiveMap()
+        this.exclusives = new Map()
         this.fuzzyOffsets = new FuzzyOffsetMap()
         this.fuzzySignatureOffsets = new FuzzyOffsetMap()
-        this.signatures = new SignatureMap()
+        this.signatures = new Map()
 
         this.inputStream = new InputStream(this.document.getText())
         this.lexer = new TspLexer(this.inputStream)

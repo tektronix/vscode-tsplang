@@ -22,13 +22,16 @@ import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../
 
 import { TokenUtil } from '../tokenUtil'
 
-import { ParameterMap } from '.'
+import { ParameterContext } from './parameterContext'
 
 export interface SignatureContext {
     /**
-     * This signature's parameter information.
+     * This signature's parameter information as a Map keyed to either an open
+     * parenthesis stop offset, a comma stop offset, or the stop offset of the
+     * last TerminalNode within the parameter. The associated key-value is a
+     * ParameterContext.
      */
-    parameters: ParameterMap
+    parameters: Map<number, ParameterContext>
     /**
      * The Range in which signature help and exclusive parameters should be provided.
      */
@@ -100,7 +103,7 @@ export namespace SignatureContext {
 
         const result: SignatureContext = {
             signatures,
-            parameters: new ParameterMap(),
+            parameters: new Map(),
             range: Range.create(
                 positionAt(openingParenthesis.stop + 1),
                 positionAt(closingParenthesis.start)

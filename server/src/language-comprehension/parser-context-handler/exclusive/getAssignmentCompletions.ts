@@ -24,7 +24,7 @@ import { TspParser } from '../../../../antlr4-tsplang'
 import { CommandSet } from '../../../instrument'
 import { resolveCompletionNamespace } from '../../../instrument/provider'
 
-import { ExclusiveMap } from '../../exclusive-completion'
+import { ExclusiveContext } from '../../exclusive-completion'
 
 import { getTerminals } from '../getTerminals'
 
@@ -44,10 +44,10 @@ export function getAssignmentCompletions(
     expListContext: TspParser.ExpressionListContext,
     commandSet: CommandSet,
     document: TextDocument
-): ExclusiveMap | undefined {
+): Map<number, ExclusiveContext> | undefined {
     // Keyed on the index of the variable with completions from the command set.
     // Think of it like partial results.
-    const candidates = new ExclusiveMap()
+    const candidates = new Map<number, ExclusiveContext>()
 
     const variables = varListContext.variable()
     for (let i = 0; i < variables.length; i++) {
@@ -141,7 +141,7 @@ export function getAssignmentCompletions(
             }
         }
 
-        return new ExclusiveMap([[exclusiveOffset, exclusiveContext]])
+        return new Map<number, ExclusiveContext>([[exclusiveOffset, exclusiveContext]])
     }
 
     // Keyed on the index of the expressionList where the TerminalNodes were found.
@@ -177,7 +177,7 @@ export function getAssignmentCompletions(
         }
     }
 
-    const result = new ExclusiveMap()
+    const result = new Map<number, ExclusiveContext>()
 
     // Complete any partial candidate results.
     for (const [key, partial] of candidates.entries()) {
