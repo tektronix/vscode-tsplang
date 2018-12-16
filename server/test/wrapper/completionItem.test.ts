@@ -293,5 +293,26 @@ describe('Wrapper', () => {
                 })
             })
         })
+
+        describe('.resolveNamespace()', () => {
+            it('returns an empty string when label is an empty string', () => {
+                expect(InstrumentCompletionItem.resolveNamespace(emptyCompletion)).to.be.empty
+            })
+
+            it('returns a properly resolved completion namespace', () => {
+                const scenarios = new Map<string, InstrumentCompletionItem>([
+                    ['foo', noDomainCompletion],
+                    ['foo.bar', singleDomainCompletion],
+                    ['foo.bar.baz', multiDomainCompletion]
+                ])
+
+                scenarios.forEach((test: InstrumentCompletionItem, expected: string) => {
+                    expect(
+                        InstrumentCompletionItem.resolveNamespace(test),
+                        `failed to properly resolve completion "${JSON.stringify(test)}"`
+                    ).to.equal(expected)
+                })
+            })
+        })
     })
 })
