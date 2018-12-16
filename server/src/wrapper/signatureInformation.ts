@@ -37,3 +37,28 @@ export interface InstrumentSignatureInformation extends SignatureInformation {
     data?: SignatureData
     getFormattedParameters?(spec: InstrumentSpec): Array<IndexedParameterInformation>
 }
+export namespace InstrumentSignatureInformation {
+    /**
+     * This matches how array indexers appear in InstrumentSignatureInformation.label
+     * as defined in the Instrument Provider.
+     * @see `node.ts` in the Instrument Provider for a good example.
+     */
+    const signatureTableIndexRegExp = new RegExp(/\[\]/g)
+
+    /**
+     * Fully resolves the namespace of the given signature item using the label property.
+     * All array indexers are removed during resolution.
+     * @param signature The signature item to resolve.
+     * @returns The fully resolved namespace of the given signature.
+     */
+    export function resolveNamespace(signature: InstrumentSignatureInformation): string {
+        let openParamIndex: number | undefined = signature.label.indexOf('(')
+
+        if (openParamIndex === -1) {
+            // Slice to the end of the string if an open parenthesis is not found.
+            openParamIndex = undefined
+        }
+
+        return signature.label.slice(0, openParamIndex).replace(signatureTableIndexRegExp, '')
+    }
+}

@@ -21,7 +21,6 @@ import 'mocha'
 
 import { MarkupKind } from 'vscode-languageserver'
 
-import { resolveSignatureNamespace } from '../../../src/instrument/provider'
 import { CommandDocumentation, IndexedParameterInformation, InstrumentSignatureInformation } from '../../../src/wrapper'
 
 import { emptySpec } from '../emptySpec'
@@ -45,7 +44,7 @@ export function expectCompletionDocFormat(completionDoc: CommandDocumentation, l
 }
 
 export function expectSignatureFormat(signature: InstrumentSignatureInformation): void {
-    const signatureLabel = resolveSignatureNamespace(signature)
+    const signatureLabel = InstrumentSignatureInformation.resolveNamespace(signature)
 
     if (signature.getFormattedParameters === undefined) {
         return

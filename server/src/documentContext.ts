@@ -25,7 +25,6 @@ import { Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 import { TspLexer, TspListener, TspParser } from '../antlr4-tsplang'
 
 import { CommandSet } from './instrument'
-import { resolveSignatureNamespace } from './instrument/provider'
 import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
@@ -114,11 +113,11 @@ export class DocumentContext extends TspListener {
         }
 
         // Filter all matching signatures from the CommandSet
-        const signatureLabel = resolveSignatureNamespace({
-            label: context.getText().replace(this.tableIndexRegexp, '[]')
+        const signatureLabel = InstrumentSignatureInformation.resolveNamespace({
+            label: context.getText().replace(this.tableIndexRegexp, '')
         })
         const matchingSignatures = this.commandSet.signatures.filter((signature: InstrumentSignatureInformation) => {
-            return resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
+            return InstrumentSignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
         })
 
         // If we have matching signatures, then create an associated SignatureContext.
@@ -204,12 +203,13 @@ export class DocumentContext extends TspListener {
             // If the leading tokens were a valid namespace.
             if (namespaceString !== undefined) {
                 // Filter all matching signatures from the CommandSet
-                const signatureLabel = resolveSignatureNamespace({
-                    label: namespaceString.replace(this.tableIndexRegexp, '[]') + '('
+                const signatureLabel = InstrumentSignatureInformation.resolveNamespace({
+                    label: namespaceString.replace(this.tableIndexRegexp, '')
                 })
                 matchingSignatures.push(...this.commandSet.signatures.filter(
                     (signature: InstrumentSignatureInformation) => {
-                        return resolveSignatureNamespace(signature).localeCompare(signatureLabel) === 0
+                        return InstrumentSignatureInformation
+                            .resolveNamespace(signature).localeCompare(signatureLabel) === 0
                     }
                 ))
             }

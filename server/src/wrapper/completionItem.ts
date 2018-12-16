@@ -206,4 +206,16 @@ export namespace InstrumentCompletionItem {
 
         return true
     }
+
+    /**
+     * Fully resolves the namespace of the given completion item using the label property and
+     * the data.domains property (if available).
+     * @param completion The completion item to resolve.
+     * @returns The fully resolved namespace of the given completion.
+     */
+    export function resolveNamespace(completion: InstrumentCompletionItem): string {
+        const namespaceArray: Array<string> = (completion.data) ? [...completion.data.domains].reverse() : []
+
+        return namespaceArray.concat(completion.label).join('.')
+    }
 }

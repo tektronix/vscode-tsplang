@@ -17,7 +17,6 @@
 
 import { Position } from 'vscode-languageserver'
 
-import { resolveCompletionNamespace } from './instrument/provider'
 import { TspItem } from './tspItem'
 import { InstrumentCompletionItem } from './wrapper'
 
@@ -34,7 +33,9 @@ export function resolveCompletion(item: InstrumentCompletionItem, tspItem: TspIt
 
     // Only service those CompletionItems whose "documentation" property is undefined
     if (result.documentation === undefined) {
-        const commandDoc = tspItem.context.commandSet.completionDocs.get(resolveCompletionNamespace(result))
+        const commandDoc = tspItem.context.commandSet.completionDocs.get(
+            InstrumentCompletionItem.resolveNamespace(result)
+        )
 
         if (commandDoc === undefined) {
             return result

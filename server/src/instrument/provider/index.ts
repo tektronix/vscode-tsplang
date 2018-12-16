@@ -33,24 +33,6 @@ function labelToModuleName(label: string, getEnums: boolean = false): string {
     return (getEnums) ? result.concat('-enums') : result
 }
 
-export function resolveCompletionNamespace(item: InstrumentCompletionItem): string {
-    if (item.data === undefined) {
-        return item.label
-    }
-
-    return [item.label].concat(item.data.domains).reverse().join('.')
-}
-
-export function resolveSignatureNamespace(item: SignatureInformation): string {
-    const openParamIndex: number = item.label.indexOf('(')
-
-    if (openParamIndex === -1) {
-        throw new Error('Signature label does not contain an open parenthesis.')
-    }
-
-    return item.label.slice(0, openParamIndex).replace(new RegExp(/\[\]/, 'g'), '')
-}
-
 /**
  * Returns all elements of the CommandSetInterface that can be found in the ApiSpec
  * (excluding Enumeration completions).
@@ -220,7 +202,7 @@ function generateRoots(completions: Array<InstrumentCompletionItem>): Array<Inst
 
     // Generate root namespace completion items for each unique namespace.
     uniqueNamespaces.forEach((uniqueItem: InstrumentCompletionItem) => {
-        const fullyQualifiedCompletion = resolveCompletionNamespace(uniqueItem)
+        const fullyQualifiedCompletion = InstrumentCompletionItem.resolveNamespace(uniqueItem)
 
         // Throw an error if this completion has no domain.
         if (uniqueItem.data === undefined || uniqueItem.data.domains.length === 0) {
@@ -254,7 +236,10 @@ function addAssignmentExclusives(
 
         // Something went wrong if we are here but have nothing to show for it.
         if (filteredEnums.length === 0) {
-            throw new Error(`No assignment completions available for '${resolveCompletionNamespace(completion)}'.`)
+            throw new Error([
+                'No assignment completions available for',
+                `'${InstrumentCompletionItem.resolveNamespace(completion)}'.`
+            ].join(' '))
         }
 
         // Add all root namespace completions to the array of enumeration completions.
@@ -313,7 +298,10 @@ function addSignatureExclusives(
 
         // Something went wrong if we are here but have nothing to show for it.
         if (parameterMap.size === 0) {
-            throw new Error(`No parameter completions available for '${resolveSignatureNamespace(signature)}'.`)
+            throw new Error([
+                'No parameter completions available for',
+                `'${InstrumentSignatureInformation.resolveNamespace(signature)}'.`
+            ].join(' '))
         }
 
         signature.data.parameterTypes = parameterMap

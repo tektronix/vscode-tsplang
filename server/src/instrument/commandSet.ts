@@ -18,7 +18,6 @@
 import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../wrapper'
 
 import { InstrumentSpec } from '.'
-import { resolveCompletionNamespace, resolveSignatureNamespace } from './provider'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, CommandDocumentation>
@@ -32,7 +31,7 @@ export namespace CommandSetInterface {
         const result = new Map<string, Array<InstrumentCompletionItem>>()
 
         completions.forEach((value: InstrumentCompletionItem) => {
-            const namespace = resolveCompletionNamespace(value)
+            const namespace = InstrumentCompletionItem.resolveNamespace(value)
 
             const item = result.get(namespace) || new Array<InstrumentCompletionItem>()
             item.push(value)
@@ -49,7 +48,7 @@ export namespace CommandSetInterface {
         const result = new Map<string, Array<InstrumentSignatureInformation>>()
 
         signatures.forEach((value: InstrumentSignatureInformation) => {
-            const namespace = resolveSignatureNamespace(value)
+            const namespace = InstrumentSignatureInformation.resolveNamespace(value)
 
             const item = result.get(namespace) || new Array<InstrumentSignatureInformation>()
             item.push(value)

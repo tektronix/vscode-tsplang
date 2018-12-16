@@ -22,7 +22,7 @@ import { TextDocument } from 'vscode-languageserver'
 import { TspParser } from '../../../../antlr4-tsplang'
 
 import { CommandSet } from '../../../instrument'
-import { resolveCompletionNamespace } from '../../../instrument/provider'
+import { InstrumentCompletionItem } from '../../../wrapper'
 
 import { ExclusiveContext } from '../../exclusive-completion'
 
@@ -67,7 +67,7 @@ export function getAssignmentCompletions(
 
         for (const item of commandSet.completions) {
             // If the candidate matches an instrument completion item.
-            if (candidateText.localeCompare(resolveCompletionNamespace(item)) === 0) {
+            if (candidateText.localeCompare(InstrumentCompletionItem.resolveNamespace(item)) === 0) {
                 // The item should have a data.types property with content.
                 if (item.data !== undefined
                         && item.data.types !== undefined
