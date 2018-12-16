@@ -26,9 +26,10 @@ import { CommandDocumentation, IndexedParameterInformation } from '../../../src/
 //  is included in the above import.
 import { InstrumentSignatureInformation } from '../../../src/wrapper/signatureInformation'
 
-import { emptySpec } from '../emptySpec'
+import { emptySpec, emptySpecUndefinedOptionals } from '../emptySpec'
 
 const replacementStringRegExp = new RegExp(/%\{[0-9]+\}/)
+const undefinedSpecValueRegExp = new RegExp(/UNDEFINED/)
 
 export function expectCompletionDocFormat(completionDoc: CommandDocumentation, label: string): void {
     const formattedDocumentation = completionDoc.toString(emptySpec)
@@ -39,11 +40,33 @@ export function expectCompletionDocFormat(completionDoc: CommandDocumentation, l
         `useless command documentation entry for ${label}`
     ).to.not.be.empty
 
-    // All replacement strings should be filled-in
+    // All replacement strings should be filled-in.
     expect(
         replacementStringRegExp.test(formattedDocumentation),
         `found a replacement string in the formatted command documentation for ${label}`
     ).to.be.false
+}
+
+export function expectCompletionDocUndefinedFormat(completionDoc: CommandDocumentation, label: string): void {
+    const formattedDocumentation = completionDoc.toString(emptySpecUndefinedOptionals)
+
+    // completionDoc items should return meaningful documenation or be removed.
+    expect(
+        formattedDocumentation,
+        `useless command documentation entry for ${label}`
+    ).to.not.be.empty
+
+    // All replacement strings should be filled-in.
+    expect(
+        replacementStringRegExp.test(formattedDocumentation),
+        `found a replacement string in the formatted command documentation for ${label}`
+    ).to.be.false
+
+    // The string "UNDEFINED" should be filled-in for optional spec values.
+    expect(
+        undefinedSpecValueRegExp.test(formattedDocumentation),
+        `could not find "UNDEFINED" in the formatted command documentation for ${label}`
+    ).to.be.true
 }
 
 export function expectSignatureFormat(signature: InstrumentSignatureInformation): void {

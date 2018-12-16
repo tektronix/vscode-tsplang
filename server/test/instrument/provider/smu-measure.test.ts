@@ -22,7 +22,7 @@ import 'mocha'
 import { CommandSetInterface } from '../../../src/instrument'
 import { CommandDocumentation, InstrumentSignatureInformation } from '../../../src/wrapper'
 
-import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
+import { expectCompletionDocFormat, expectCompletionDocUndefinedFormat, expectSignatureFormat } from './helpers'
 
 describe('Instrument Provider', () => {
     describe('smu-measure', () => {
@@ -52,6 +52,30 @@ describe('Instrument Provider', () => {
 
             providerModule.completionDocs.forEach((completionDoc: CommandDocumentation, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
+            })
+        })
+
+        it('formats completionDocs when some specs values are undefined', () => {
+            if (providerModule.completionDocs === undefined) {
+                return
+            }
+
+            const applicableCompletionDocs: Array<string> = [
+                'smu.measure.range'
+            ]
+
+            applicableCompletionDocs.forEach((label: string) => {
+                // Typecast because we just validated its existance.
+                const completionDoc = (providerModule.completionDocs as Map<string, CommandDocumentation>)
+                    .get('smu.measure.range')
+
+                expect(
+                    completionDoc,
+                    `"${label}" does not exist in the set of available completionDocs`
+                ).to.not.be.undefined
+
+                // Typecast because we just failed the test if the variable was undefined.
+                expectCompletionDocUndefinedFormat(completionDoc as CommandDocumentation, label)
             })
         })
 
