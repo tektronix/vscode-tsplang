@@ -7,22 +7,21 @@
         ".tsx"
     ],
     "include": [
-        "server/src/**/*.ts",
-        "server/src/instrument/lua/*.ts"
+        "server/src/**/*.ts"
     ],
     "exclude": [
         "**/*.d.ts",
         "**/*.test.ts",
-        "./coverage/**",
-        "./out/**",
-        "./client/**",
-        "./src/extension.ts",
-        "./server/antlr4-tsplang/*",
-        "./server/grammar/**",
-        "./server/src/instrument/2461/*",
-        "./server/src/instrument/6500/*",
-        "./server/src/instrument/raw-tsb-help/*",
-        "./server/test/**"
+        "coverage",
+        "out",
+        "client",
+        "src/extension.ts",
+        "server/antlr4-tsplang",
+        "server/grammar",
+        "server/src/instrument/2461",
+        "server/src/instrument/6500",
+        "server/src/instrument/raw-tsb-help",
+        "server/test"
     ],
     "reporter": [
         "json",
