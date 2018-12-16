@@ -19,12 +19,82 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { CommandSetInterface } from '../../src/instrument'
 import { InstrumentCompletionItem } from '../../src/wrapper'
 
 describe('Instrument', () => {
     describe('CommandSetInterface', () => {
+        const rootA: InstrumentCompletionItem = {
+            label: 'root'
+        }
+        const rootAFoo: InstrumentCompletionItem = {
+            data: { domains: ['root'] },
+            label: 'foo'
+        }
+        const rootABar: InstrumentCompletionItem = {
+            data: { domains: ['root'] },
+            label: 'bar'
+        }
+        const rootASubroot: InstrumentCompletionItem = {
+            data: { domains: ['root'] },
+            label: 'subroot'
+        }
+        const rootASubrootFoo: InstrumentCompletionItem = {
+            data: { domains: ['subroot', 'root'] },
+            label: 'foo'
+        }
+        const rootASubrootBar: InstrumentCompletionItem = {
+            data: { domains: ['subroot', 'root'] },
+            label: 'bar'
+        }
+        const rootASubrootBaz: InstrumentCompletionItem = {
+            data: { domains: ['subroot', 'root'] },
+            label: 'baz'
+        }
+
+        const completionSetA: Array<InstrumentCompletionItem> = [
+            rootA,
+            rootAFoo,
+            rootABar,
+            rootASubroot,
+            rootASubrootFoo,
+            rootASubrootBar,
+            rootASubrootBaz
+        ]
+        const completionSetB: Array<InstrumentCompletionItem> = [
+            rootA,
+            rootA,
+            rootA,
+            rootASubrootBar,
+            rootASubrootBar,
+            rootAFoo
+        ]
+
         describe('.getCompletionMap()', () => {
-            // expect.fail()
+            const expectedMapA = new Map<string, Array<InstrumentCompletionItem>>([
+                ['root', [rootA]],
+                ['root.foo', [rootAFoo]],
+                ['root.bar', [rootABar]],
+                ['root.subroot', [rootASubroot]],
+                ['root.subroot.foo', [rootASubrootFoo]],
+                ['root.subroot.bar', [rootASubrootBar]],
+                ['root.subroot.baz', [rootASubrootBaz]]
+            ])
+            const expectedMapB = new Map<string, Array<InstrumentCompletionItem>>([
+                ['root', [rootA, rootA, rootA]],
+                ['root.subroot.bar', [rootASubrootBar, rootASubrootBar]],
+                ['root.foo', [rootAFoo]],
+            ])
+
+            it('returns an empty map if the given array is empty', () => {
+                expect(CommandSetInterface.getCompletionMap([])).to.be.empty
+            })
+
+            it('returns an accurate completion map', () => {
+                expect(CommandSetInterface.getCompletionMap(completionSetA)).to.deep.equal(expectedMapA)
+
+                expect(CommandSetInterface.getCompletionMap(completionSetB)).to.deep.equal(expectedMapB)
+            })
         })
 
         describe('.getSignatureMap()', () => {

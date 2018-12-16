@@ -17,7 +17,7 @@
 
 import { SignatureHelp } from 'vscode-languageserver'
 
-import { InstrumentSignatureInformation } from '.'
+import { InstrumentSignatureInformation } from './signatureInformation'
 
 export interface InstrumentSignatureHelp extends SignatureHelp {
     signatures: Array<InstrumentSignatureInformation>

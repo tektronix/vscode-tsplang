@@ -21,7 +21,10 @@ import 'mocha'
 
 import { MarkupKind } from 'vscode-languageserver'
 
-import { CommandDocumentation, IndexedParameterInformation, InstrumentSignatureInformation } from '../../../src/wrapper'
+import { CommandDocumentation, IndexedParameterInformation } from '../../../src/wrapper'
+// XXX: This file has trouble resolving InstrumentSignatureInformation when it
+//  is included in the above import.
+import { InstrumentSignatureInformation } from '../../../src/wrapper/signatureInformation'
 
 import { emptySpec } from '../emptySpec'
 

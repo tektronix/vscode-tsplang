@@ -19,7 +19,8 @@ import { SignatureInformation } from 'vscode-languageserver'
 
 import { InstrumentSpec } from '../instrument'
 
-import { IndexedParameterInformation, InstrumentCompletionItem } from '.'
+import { InstrumentCompletionItem } from './completionItem'
+import { IndexedParameterInformation } from './parameterInformation'
 
 export interface SignatureData {
     parameterTypes: Map<number, Array<InstrumentCompletionItem>>
