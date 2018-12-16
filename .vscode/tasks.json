@@ -54,7 +54,7 @@
             "dependsOn": [
                 "watch:client",
                 "watch:server",
-                "watch:antlr4-tsplang"
+                "compile:antlr4-tsplang"
             ],
             "group": {
                 "kind": "build",
@@ -95,7 +95,6 @@
             "type": "npm",
             "script": "watch:antlr4-tsplang",
             "isBackground": true,
-            "group": "build",
             "presentation": {
                 "panel": "dedicated",
                 "reveal": "never"
