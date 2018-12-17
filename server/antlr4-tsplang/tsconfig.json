@@ -2,7 +2,7 @@
     "extends": "../tsconfig.json",
     "compilerOptions": {
         "allowJs": true,
-        "outDir": "../../out/server/node_modules/antlr4-tsplang"
+        "outDir": "../../out/server/node_modules"
     },
     "exclude": []
 }
