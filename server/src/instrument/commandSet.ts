@@ -65,12 +65,19 @@ export class CommandSet implements CommandSetInterface {
     readonly completions: Array<CompletionItem>
     readonly signatures: Array<SignatureInformation>
     readonly specification: InstrumentSpec
+    /**
+     * An array of Array.slice instruction tuples which, when each is performed
+     * on the main completion array, results in an array of root completions.
+     */
+    private rootCompletionSlices: Array<[number, number]>
 
     constructor(spec: InstrumentSpec) {
         this.completionDocs = new Map()
         this.completions = new Array()
         this.signatures = new Array()
         this.specification = spec
+
+        this.rootCompletionSlices = new Array()
     }
 
     add(set: CommandSetInterface): void {
@@ -84,6 +91,30 @@ export class CommandSet implements CommandSetInterface {
         // merge completion items
         set.completions.forEach((value: CompletionItem) => {
             this.completions.push(value)
+
+            // If this value has no "data" property, then it is a root completion.
+            if (value.data === undefined) {
+                const exclusiveCompletionsIndex = this.completions.length
+                const currentCompletionsIndex = exclusiveCompletionsIndex - 1
+
+                // Get the last slice range
+                if (this.rootCompletionSlices.length > 0) {
+                    const range = this.rootCompletionSlices[this.rootCompletionSlices.length - 1]
+
+                    // If the last range ends where this range begins.
+                    if (range[1] === currentCompletionsIndex) {
+                        // Modify the ending index of the last range and update the array.
+                        range[1] = exclusiveCompletionsIndex
+
+                        this.rootCompletionSlices[this.rootCompletionSlices.length - 1] = range
+
+                        return
+                    }
+                }
+
+                // Store the new index of the value for later.
+                this.rootCompletionSlices.push([currentCompletionsIndex, exclusiveCompletionsIndex])
+            }
         })
 
         // merge signatures
@@ -92,5 +123,22 @@ export class CommandSet implements CommandSetInterface {
                 this.signatures.push(value)
             })
         }
+    }
+
+    getRootCompletions(): Array<CompletionItem> | undefined {
+        // We cannot provide root completions if no completions exist.
+        if (this.rootCompletionSlices.length === 0) {
+            return
+        }
+
+        const results = new Array<CompletionItem>()
+
+        for (const range of this.rootCompletionSlices) {
+            const found = this.completions.slice(...range)
+
+            results.push(...found)
+        }
+
+        return results
     }
 }

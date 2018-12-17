@@ -207,147 +207,149 @@ describe('Instrument', () => {
     })
 
     describe('CommandSet', () => {
-        let commandSet: CommandSet
-
-        before(() => {
-            commandSet = new CommandSet(emptySpec)
-        })
-
         describe('#completionDocs', () => {
             it('is empty on instantiation', () => {
-                expect(commandSet.completionDocs).to.be.empty
+                expect(new CommandSet(emptySpec).completionDocs).to.be.empty
             })
         })
 
         describe('#completions', () => {
             it('is empty on instantiation', () => {
-                expect(commandSet.completions).to.be.empty
+                expect(new CommandSet(emptySpec).completions).to.be.empty
             })
         })
 
         describe('#signatures', () => {
             it('is empty on instantiation', () => {
-                expect(commandSet.signatures).to.be.empty
+                expect(new CommandSet(emptySpec).signatures).to.be.empty
             })
         })
 
         describe('#specification', () => {
             it('contains the passed InstrumentSpec', () => {
-                expect(commandSet.specification).to.deep.equal(emptySpec)
+                expect(new CommandSet(emptySpec).specification).to.deep.equal(emptySpec)
             })
         })
 
         describe('#add()', () => {
-            const emptyCommandSetInterface: CommandSetInterface = {
-                completions: []
-            }
-
-            it('does not add completion documentation when undefined', () => {
-                expect(commandSet.completionDocs).to.be.empty
-
-                commandSet.add(emptyCommandSetInterface)
-
-                expect(commandSet.completionDocs).to.be.empty
-            })
-
-            it('does not add completions when none are given', () => {
-                expect(commandSet.completions).to.be.empty
-
-                commandSet.add(emptyCommandSetInterface)
-
-                expect(commandSet.completions).to.be.empty
-            })
-
-            it('does not add signatures when undefined', () => {
-                expect(commandSet.signatures).to.be.empty
-
-                commandSet.add(emptyCommandSetInterface)
-
-                expect(commandSet.signatures).to.be.empty
-            })
-
-            it('adds completion documentation to the empty set', () => {
-                expect(commandSet.completionDocs).to.be.empty
-
-                commandSet.add({
-                    completionDocs: documentationSetA,
+            context('When adding nothing', () => {
+                const emptyCommandSetInterface: CommandSetInterface = {
                     completions: []
+                }
+                const commandSet = new CommandSet(emptySpec)
+
+                before('Add an empty CommandSet', () => {
+                    commandSet.add(emptyCommandSetInterface)
                 })
 
-                expect(commandSet.completionDocs).to.deep.equal(documentationSetA)
-            })
-
-            it('adds completions to the empty set', () => {
-                expect(commandSet.completions).to.be.empty
-
-                commandSet.add({
-                    completions: completionSetA
+                it('does not add completion documentation when undefined', () => {
+                    expect(commandSet.completionDocs).to.be.empty
                 })
 
-                expect(commandSet.completions).to.deep.equal(completionSetA)
-            })
-
-            it('adds signatures to the empty set', () => {
-                expect(commandSet.signatures).to.be.empty
-
-                commandSet.add({
-                    completions: [],
-                    signatures: signatureSetA
+                it('does not add completions when none are given', () => {
+                    expect(commandSet.completions).to.be.empty
                 })
 
-                expect(commandSet.signatures).to.deep.equal(signatureSetA)
+                it('does not add signatures when undefined', () => {
+                    expect(commandSet.signatures).to.be.empty
+                })
             })
 
-            it('merges completion documentation into an existing set', () => {
-                if (commandSet.completionDocs.size === 0) {
+            context('When adding to an empty CommandSet', () => {
+                const commandSet = new CommandSet(emptySpec)
+
+                before('Seed the CommandSet', () => {
                     commandSet.add({
                         completionDocs: documentationSetA,
-                        completions: []
-                    })
-                }
-
-                expect(commandSet.completionDocs).to.deep.equal(documentationSetA)
-
-                commandSet.add({
-                    completionDocs: documentationSetB,
-                    completions: []
-                })
-
-                expect(commandSet.completionDocs).to.deep.equal(MapMerge(documentationSetA, documentationSetB))
-            })
-
-            it('merges completions into an existing set', () => {
-                if (commandSet.completions.length === 0) {
-                    commandSet.add({
-                        completions: completionSetA
-                    })
-                }
-
-                expect(commandSet.completions).to.deep.equal(completionSetA)
-
-                commandSet.add({
-                    completions: completionSetB
-                })
-
-                expect(commandSet.completions).to.deep.equal(ArrayUnion(completionSetA, completionSetB))
-            })
-
-            it('merges signatures into an existing set', () => {
-                if (commandSet.signatures.length === 0) {
-                    commandSet.add({
-                        completions: [],
+                        completions: completionSetA,
                         signatures: signatureSetA
                     })
-                }
-
-                expect(commandSet.signatures).to.deep.equal(signatureSetA)
-
-                commandSet.add({
-                    completions: [],
-                    signatures: signatureSetB
                 })
 
-                expect(commandSet.signatures).to.deep.equal(ArrayUnion(signatureSetA, signatureSetB))
+                it('adds completion documentation to the empty set', () => {
+                    expect(commandSet.completionDocs).to.deep.equal(documentationSetA)
+                })
+
+                it('adds completions to the empty set', () => {
+                    expect(commandSet.completions).to.deep.equal(completionSetA)
+                })
+
+                it('adds signatures to the empty set', () => {
+                    expect(commandSet.signatures).to.deep.equal(signatureSetA)
+                })
+            })
+
+            context('When adding duplicates to the CommandSet', () => {
+                const commandSet = new CommandSet(emptySpec)
+
+                before('Seed the CommandSet', () => {
+                    // Add an initial CommandSet.
+                    commandSet.add({
+                        completionDocs: documentationSetA,
+                        completions: completionSetA,
+                        signatures: signatureSetA
+                    })
+
+                    // Merge another set with our current CommandSet.
+                    commandSet.add({
+                        completionDocs: documentationSetB,
+                        completions: completionSetB,
+                        signatures: signatureSetB
+                    })
+                })
+
+                it('merges completion documentation into an existing set', () => {
+                    expect(commandSet.completionDocs).to.deep.equal(MapMerge(documentationSetA, documentationSetB))
+                })
+
+                it('merges completions into an existing set', () => {
+                    expect(commandSet.completions).to.deep.equal(ArrayUnion(completionSetA, completionSetB))
+                })
+
+                it('merges signatures into an existing set', () => {
+                    expect(commandSet.signatures).to.deep.equal(ArrayUnion(signatureSetA, signatureSetB))
+                })
+            })
+        })
+
+        describe('#getRootCompletions()', () => {
+            context('When the CommandSet is empty', () => {
+                const commandSet = new CommandSet(emptySpec)
+
+                it('returns undefined if no completions are available', () => {
+                    expect(commandSet.getRootCompletions()).to.be.undefined
+                })
+            })
+
+            context('When the CommandSet is populated', () => {
+                const rootBCompl: CompletionItem = {
+                    label: 'foo'
+                }
+                const rootCCompl: CompletionItem = {
+                    label: 'bar'
+                }
+                const commandSet = new CommandSet(emptySpec)
+
+                before('Seed the CommandSet', () => {
+                    commandSet.add({
+                        completions: [
+                            rootACompl,
+                            rootASubrootCompl,
+                            rootBCompl,
+                            rootCCompl
+                        ]
+                    })
+                })
+
+                it('returns an array of root completions', () => {
+                    const expected: Array<CompletionItem> = [
+                        rootACompl,
+                        rootBCompl,
+                        rootCCompl
+                    ]
+
+                    expect(commandSet.getRootCompletions()).to.deep.equal(expected)
+                })
             })
         })
     })
