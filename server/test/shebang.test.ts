@@ -148,10 +148,9 @@ describe('Shebang', () => {
                 const line = Shebang.PREFIX + master
 
                 it('throws an Error when the given master model is unsupported', () => {
-                    expect(
-                        () => Shebang.tokenize(line),
+                    expect(() => Shebang.tokenize(line)).to.throw(
                         `Model "${master}" is an invalid or unsupported model.`
-                    ).to.throw(Error)
+                    )
                 })
             })
 
@@ -239,10 +238,7 @@ describe('Shebang', () => {
                             ` node[ 3] = ${Model.KI2461SYS}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
-                            'Node 1 has already been used.'
-                        ).to.throw(Error)
+                        expect(() => Shebang.tokenize(line)).to.throw('Node 1 has already been used.')
                     })
 
                     it('test 2', () => {
@@ -254,10 +250,7 @@ describe('Shebang', () => {
                             ` node[ 3 ] = ${Model.KI2461SYS}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
-                            'Node 2 has already been used.'
-                        ).to.throw(Error)
+                        expect(() => Shebang.tokenize(line)).to.throw('Node 2 has already been used.')
                     })
 
                     it('test 3', () => {
@@ -269,10 +262,7 @@ describe('Shebang', () => {
                             ` node[ 3  ] = ${Model.KI2461SYS}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
-                            'Node 3 has already been used.'
-                        ).to.throw(Error)
+                        expect(() => Shebang.tokenize(line)).to.throw('Node 3 has already been used.')
                     })
                 })
             })
@@ -288,10 +278,9 @@ describe('Shebang', () => {
                             ` node[+99]=${Model.KI2461}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Node number -1 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-                        ).to.throw(Error)
+                        )
                     })
 
                     it('test 2', () => {
@@ -303,10 +292,9 @@ describe('Shebang', () => {
                             ` node[+99]=${Model.KI2461}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Node number -99 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-                        ).to.throw(Error)
+                        )
                     })
 
                     it('test 3', () => {
@@ -318,10 +306,9 @@ describe('Shebang', () => {
                             ` node[+99]=${Model.KI2461}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Node number 65 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-                        ).to.throw(Error)
+                        )
                     })
 
                     it('test 4', () => {
@@ -333,10 +320,9 @@ describe('Shebang', () => {
                             ` node[+99]=${Model.KI2461}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Node number 99 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-                        ).to.throw(Error)
+                        )
                     })
                 })
             })
@@ -352,10 +338,9 @@ describe('Shebang', () => {
                             ` node[3] = ${Model.KI2450}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Invalid node expression " node{1] = ${Model.KI2461SYS} ".`
-                        ).to.throw(Error)
+                        )
                     })
 
                     it('test 2', () => {
@@ -367,10 +352,9 @@ describe('Shebang', () => {
                             ` node[4] = ${Model.KI2450}  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Invalid node expression "    node(3) = ${Model.KI2461} ".`
-                        ).to.throw(Error)
+                        )
                     })
 
                     it('test 3', () => {
@@ -382,10 +366,9 @@ describe('Shebang', () => {
                             `  <64L4QxLQ|$\\1ng4W<\\d  `
                         ].join(Shebang.SEPARATOR)
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             `Invalid node expression "  <64L4QxLQ|$\\1ng4W<\\d".`
-                        ).to.throw(Error)
+                        )
                     })
                 })
             })
@@ -395,19 +378,17 @@ describe('Shebang', () => {
                     it('test 1', () => {
                         const line = '--#!2450;node[1]=VLXkyi(c&,^;node[2]=MeKrAY8I'
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             'Model "VLXkyi(c&,^" is an invalid or unsupported model.'
-                        ).to.throw(Error)
+                        )
                     })
 
                     it('test 2', () => {
                         const line = '--#!2450;node[1]=6500;node[2]=MeKrAY8I'
 
-                        expect(
-                            () => Shebang.tokenize(line),
+                        expect(() => Shebang.tokenize(line)).to.throw(
                             'Model "MeKrAY8I" is an invalid or unsupported model.'
-                        ).to.throw(Error)
+                        )
                     })
                 })
             })
