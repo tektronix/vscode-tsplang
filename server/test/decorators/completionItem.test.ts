@@ -21,7 +21,7 @@ import 'mocha'
 
 import { CompletionItem } from '../../src/decorators'
 
-describe('Wrapper', () => {
+describe('Decorators', () => {
     describe('CompletionItem', () => {
         const emptyCompletion: CompletionItem = {
             label: ''

@@ -21,7 +21,7 @@ import 'mocha'
 
 import { SignatureInformation } from '../../src/decorators'
 
-describe('Wrapper', () => {
+describe('Decorators', () => {
     describe('SignatureInformation', () => {
         describe('.resolveNamespace()', () => {
             it('returns an empty string when label is an empty string', () => {
