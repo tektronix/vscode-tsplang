@@ -34,7 +34,7 @@ export namespace Shebang {
     const nodeAssignmentOp = '='
     const shebangRegExp = new RegExp('^\\s*'.concat(Shebang.PREFIX))
     const nodeRegExp = new RegExp(
-        '^\\s*node\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
+        '^\\s*node\\s*\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
     )
 
     export function tokenize(line: string): Shebang {
