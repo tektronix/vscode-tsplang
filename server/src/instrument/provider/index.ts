@@ -64,6 +64,22 @@ function filter(
     // The following labels are not to be treated as root namespaces.
     if (namespace.label.localeCompare('keywords') !== 0
         && namespace.label.localeCompare('functions') !== 0) {
+        // If this module contains completion docs for the namespace label.
+        if (providerMap.completionDocs.has(namespace.label)) {
+            const completionDocs = providerMap.completionDocs.get(namespace.label)
+
+            if (completionDocs === undefined) {
+                throw new Error(`Filter Error: no completionDocs found with the label "${namespace.label}".`)
+            }
+
+            if (filteredModule.completionDocs === undefined) {
+                filteredModule.completionDocs = new Map()
+            }
+
+            // Add root namespace documentation to the results.
+            filteredModule.completionDocs.set(namespace.label, completionDocs)
+        }
+
         // If this module contains a completion with the namespace label.
         if (providerMap.completions.has(namespace.label)) {
             const completions = providerMap.completions.get(namespace.label)
@@ -74,6 +90,22 @@ function filter(
 
             // Add root namespaces to the results.
             filteredModule.completions.push(...completions)
+        }
+
+        // If this module contains a signature with the namespace label.
+        if (providerMap.signatures.has(namespace.label)) {
+            const signatures = providerMap.signatures.get(namespace.label)
+
+            if (signatures === undefined) {
+                throw new Error(`Filter Error: no signatures found with the label "${namespace.label}".`)
+            }
+
+            if (filteredModule.signatures === undefined) {
+                filteredModule.signatures = new Array()
+            }
+
+            // Add root namespace signatures to the results.
+            filteredModule.signatures.push(...signatures)
         }
     }
 
