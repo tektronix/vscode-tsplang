@@ -116,11 +116,6 @@ export namespace Shebang {
                 result.nodes.set(nodeNumber, supportedNodeModel)
             }
             else {
-                // Ignore trailing separators.
-                if (niceItem.localeCompare('') === 0) {
-                    continue
-                }
-
                 throw new Error(`Invalid node expression "${item}".`)
             }
         }
