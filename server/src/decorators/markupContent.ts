@@ -22,8 +22,8 @@ import { InstrumentSpec } from '../instrument'
 export declare type MarkupContent = vscode_ls.MarkupContent
 
 class MarkupContentClass implements MarkupContent {
-    kind: vscode_ls.MarkupKind
-    value: string
+    readonly kind: vscode_ls.MarkupKind
+    readonly value: string
 
     constructor(strings: TemplateStringsArray, ...values: Array<string | number>) {
         const result = new Array<string>()
