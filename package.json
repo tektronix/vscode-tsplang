@@ -88,7 +88,7 @@
         "postinstall": "cd server && npm install && cd .. && npm run update-vscode",
         "test": "npm run lint -s & mocha --opts server/mocha.opts",
         "test:coverage": "nyc mocha --opts server/mocha.opts",
-        "test:mocha": "mocha --bail --full-trace --allow-uncaught --opts server/mocha.opts",
+        "test:mocha": "mocha --bail --full-trace --opts server/mocha.opts",
         "update-vscode": "node ./node_modules/vscode/bin/install",
         "watch:client": "tsc -w -p ./tsconfig.json",
         "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json",
