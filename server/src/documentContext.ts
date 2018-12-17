@@ -24,12 +24,12 @@ import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { TspLexer, TspListener, TspParser } from 'antlr4-tsplang'
 import { Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 
+import { CompletionItem, SignatureInformation } from './decorators'
 import { CommandSet } from './instrument'
 import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
-import { CompletionItem, SignatureInformation } from './decorators'
 
 declare class CorrectRecogException extends RecognitionException {
     startToken?: Token
@@ -367,6 +367,27 @@ export class DocumentContext extends TspListener {
                 text: this.document.getText(value.range).trim()
             })
         })
+    }
+
+    resolveCompletion(item: CompletionItem): CompletionItem {
+        // We cannot provide completion documentation if none exist
+        if (this.commandSet.completionDocs.size === 0) {
+            return item
+        }
+
+        // Only service a given item if its "documentation" property is undefined.
+        if (item.documentation === undefined) {
+            const docCallback = this.commandSet.completionDocs.get(CompletionItem.resolveNamespace(item))
+
+            // Nothing to do if no command documentation exists for this label.
+            if (docCallback === undefined) {
+                return item
+            }
+
+            item.documentation = docCallback(this.commandSet.specification)
+        }
+
+        return item
     }
 
     update(): void {

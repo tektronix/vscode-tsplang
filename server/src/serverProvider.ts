@@ -23,30 +23,6 @@ import { TspItem } from './tspItem'
 const namespaceRegexp = new RegExp(/^[a-zA-Z0-9\[\].]*/)
 const tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
-export function resolveCompletion(item: CompletionItem, tspItem: TspItem): CompletionItem {
-    const result = item
-
-    // We cannot provide completion documentation if none exist
-    if (tspItem.context.commandSet.completionDocs.size === 0) {
-        return result
-    }
-
-    // Only service those CompletionItems whose "documentation" property is undefined
-    if (result.documentation === undefined) {
-        const commandDoc = tspItem.context.commandSet.completionDocs.get(
-            CompletionItem.resolveNamespace(result)
-        )
-
-        if (commandDoc === undefined) {
-            return result
-        }
-
-        result.documentation = commandDoc(tspItem.context.commandSet.specification)
-    }
-
-    return result
-}
-
 export function getCompletions(position: Position, tspItem: TspItem): Array<CompletionItem> | undefined {
     // We cannot provide completions if none exist
     if (tspItem.context.commandSet.completions.length === 0) {

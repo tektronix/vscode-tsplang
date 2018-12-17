@@ -17,7 +17,7 @@
 
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
-import { getCompletions, resolveCompletion } from './serverProvider'
+import { getCompletions } from './serverProvider'
 import { TspManager } from './tspManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
@@ -105,7 +105,7 @@ connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
         return item
     }
 
-    return resolveCompletion(item, tspItem)
+    return tspItem.context.resolveCompletion(item)
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
