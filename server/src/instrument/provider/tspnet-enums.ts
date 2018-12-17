@@ -17,9 +17,9 @@
 
 import { CompletionItemKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem } from '../../wrapper'
+import { CompletionItem } from '../../decorators'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: { domains: ['tspnet'] },
         kind: CompletionItemKind.EnumMember,

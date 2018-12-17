@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     // No scriptVar namespace
     {
         data: { domains: ['scriptVar'] },
@@ -59,7 +59,7 @@ Returns the script body as a string with lines separated by newline characters.'
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         label: 'scriptVar.save([fileName])',

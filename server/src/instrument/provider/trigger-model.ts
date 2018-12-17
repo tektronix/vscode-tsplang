@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: { domains: ['trigger'] },
         kind: CompletionItemKind.Module,
@@ -114,7 +114,7 @@ Trigger state is updated every 100 ms.'
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         label: 'trigger.model.getbranchcount(blockNumber)',

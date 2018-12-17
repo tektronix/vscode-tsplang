@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         documentation: {
             kind: MarkupKind.Markdown,
@@ -36,7 +36,7 @@ Once created, the script that contains the settings can be run and edited like a
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         label: 'createconfigscript(scriptName)',

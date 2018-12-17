@@ -21,7 +21,7 @@ import { TerminalNode } from 'antlr4/tree/Tree'
 import { TextDocument } from 'vscode-languageserver'
 
 import { CommandSet } from '../../../instrument'
-import { InstrumentCompletionItem } from '../../../wrapper'
+import { CompletionItem } from '../../../decorators'
 
 import { ExclusiveContext } from '../../exclusive-completion'
 
@@ -66,7 +66,7 @@ export function getAssignmentCompletions(
 
         for (const item of commandSet.completions) {
             // If the candidate matches an instrument completion item.
-            if (candidateText.localeCompare(InstrumentCompletionItem.resolveNamespace(item)) === 0) {
+            if (candidateText.localeCompare(CompletionItem.resolveNamespace(item)) === 0) {
                 // The item should have a data.types property with content.
                 if (item.data !== undefined
                         && item.data.types !== undefined

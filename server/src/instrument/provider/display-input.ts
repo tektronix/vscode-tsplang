@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: { domains: ['display'] },
         kind: CompletionItemKind.Module,
@@ -98,7 +98,7 @@ The prompt is displayed until it has been responded to.'
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         label: 'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',

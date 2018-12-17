@@ -18,7 +18,7 @@
 import { Token } from 'antlr4'
 import { CompletionItemKind, Position, Range } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 import { TokenUtil } from '../tokenUtil'
 
@@ -39,7 +39,7 @@ export interface SignatureContext {
     /**
      * The signatures to provide within the associated Range.
      */
-    signatures: Array<InstrumentSignatureInformation>
+    signatures: Array<SignatureInformation>
 }
 export namespace SignatureContext {
     /**
@@ -90,7 +90,7 @@ export namespace SignatureContext {
         openingParenthesis: Token,
         tokens: Array<Token>,
         closingParenthesis: Token,
-        signatures: Array<InstrumentSignatureInformation>,
+        signatures: Array<SignatureInformation>,
         positionAt: (offset: number) => Position
     ): SignatureContext {
         if (openingParenthesis.text.localeCompare('(') !== 0) {
@@ -214,15 +214,15 @@ export namespace SignatureContext {
     function getCompletionsForParameter(
         parameter: number,
         context: SignatureContext
-    ): Array<InstrumentCompletionItem> {
-        const results = new Array<InstrumentCompletionItem>()
+    ): Array<CompletionItem> {
+        const results = new Array<CompletionItem>()
 
         // Track the root completion items that have been added to the results.
         // Roots are kept in a separate array for increased lookup speed since there are usually
         // fewer root items than there are completions.
-        const existingRoots = new Array<InstrumentCompletionItem>()
+        const existingRoots = new Array<CompletionItem>()
 
-        context.signatures.forEach((signature: InstrumentSignatureInformation) => {
+        context.signatures.forEach((signature: SignatureInformation) => {
             if (signature.data === undefined) {
                 return
             }
@@ -234,16 +234,16 @@ export namespace SignatureContext {
             }
 
             // Get all non-root completion items.
-            const leafCompletions = completions.filter((completion: InstrumentCompletionItem) => {
+            const leafCompletions = completions.filter((completion: CompletionItem) => {
                 // If this completion item is not a root completion
                 if (completion.kind && completion.kind !== CompletionItemKind.Module) {
                     return true
                 }
                 else {
                     // Compares the given root to the current completion item.
-                    const predicate = (root: InstrumentCompletionItem): boolean => {
+                    const predicate = (root: CompletionItem): boolean => {
                         // Compare the two namespaces. Exclude their labels.
-                        return InstrumentCompletionItem.namespacesEqual(root, completion, true)
+                        return CompletionItem.namespacesEqual(root, completion, true)
                     }
 
                     // Only add unique root completion items to the root completion array.
@@ -263,7 +263,7 @@ export namespace SignatureContext {
         return results
     }
 
-    function filterSignatures(context: SignatureContext): Array<InstrumentSignatureInformation> {
+    function filterSignatures(context: SignatureContext): Array<SignatureInformation> {
         // No filtering is possible when the context contains fewer than 2 signatures.
         if (context.signatures.length <= 1) {
             return context.signatures
@@ -274,7 +274,7 @@ export namespace SignatureContext {
             return context.signatures
         }
 
-        const matches = context.signatures.filter((signature: InstrumentSignatureInformation) => {
+        const matches = context.signatures.filter((signature: SignatureInformation) => {
             // Skip this signature if it contains no SignatureData.
             //  No SignatureData means no exclusive parameter completions.
             //  No exclusive parameter completions means we have nothing to filter on.
@@ -300,8 +300,8 @@ export namespace SignatureContext {
 
                 // Try to perform a partial match against at least one previously suggested parameter
                 // completion.
-                const onePartialMatch = completions.some((completionItem: InstrumentCompletionItem) => {
-                    return InstrumentCompletionItem.namespaceMatch(parameterText, completionItem)
+                const onePartialMatch = completions.some((completionItem: CompletionItem) => {
+                    return CompletionItem.namespaceMatch(parameterText, completionItem)
                 })
 
                 // If we failed to match against any parameter completion, then do not include

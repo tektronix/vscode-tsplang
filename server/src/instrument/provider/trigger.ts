@@ -17,9 +17,9 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'trigger'
@@ -55,7 +55,7 @@ The event detector is automatically reset and rearmed when this function returns
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         label: 'trigger.wait(timeout)',

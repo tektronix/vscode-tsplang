@@ -19,8 +19,8 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { MarkupContentCallback, SignatureInformation } from '../../../src/decorators'
 import { CommandSetInterface } from '../../../src/instrument'
-import { CommandDocumentation, InstrumentSignatureInformation } from '../../../src/wrapper'
 
 import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
 
@@ -50,7 +50,7 @@ describe('Instrument Provider', () => {
                 return
             }
 
-            providerModule.completionDocs.forEach((completionDoc: CommandDocumentation, label: string) => {
+            providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
             })
         })
@@ -60,7 +60,7 @@ describe('Instrument Provider', () => {
                 return
             }
 
-            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
+            providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)
             })
         })

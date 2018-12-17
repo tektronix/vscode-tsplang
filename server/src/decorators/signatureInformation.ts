@@ -15,32 +15,32 @@
  */
 'use strict'
 
-import { SignatureInformation } from 'vscode-languageserver'
+import * as vscode_ls from 'vscode-languageserver'
 
 import { InstrumentSpec } from '../instrument'
 
-import { InstrumentCompletionItem } from './completionItem'
-import { IndexedParameterInformation } from './parameterInformation'
+import { CompletionItem } from './completionItem'
+import { ParameterInformation } from './parameterInformation'
 
 export interface SignatureData {
-    parameterTypes: Map<number, Array<InstrumentCompletionItem>>
+    parameterTypes: Map<number, Array<CompletionItem>>
     /**
      * Used to internally differentiate multiple signatures with the same label.
      */
     qualifier?: number
 }
 
-export interface InstrumentSignatureInformation extends SignatureInformation {
+export interface SignatureInformation extends vscode_ls.SignatureInformation {
     /**
      * **Never define this value in a provider file.**
      */
     _loaded?: boolean
     data?: SignatureData
-    getFormattedParameters?(spec: InstrumentSpec): Array<IndexedParameterInformation>
+    getFormattedParameters?(spec: InstrumentSpec): Array<ParameterInformation>
 }
-export namespace InstrumentSignatureInformation {
+export namespace SignatureInformation {
     /**
-     * This matches how array indexers appear in InstrumentSignatureInformation.label
+     * This matches how array indexers appear in SignatureInformation.label
      * as defined in the Instrument Provider.
      * @see `node.ts` in the Instrument Provider for a good example.
      */
@@ -52,7 +52,7 @@ export namespace InstrumentSignatureInformation {
      * @param signature The signature item to resolve.
      * @returns The fully resolved namespace of the given signature.
      */
-    export function resolveNamespace(signature: InstrumentSignatureInformation): string {
+    export function resolveNamespace(signature: SignatureInformation): string {
         let openParamIndex: number | undefined = signature.label.indexOf('(')
 
         if (openParamIndex === -1) {

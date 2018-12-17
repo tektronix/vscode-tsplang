@@ -20,11 +20,11 @@ import { InstrumentSpec } from '../../src/instrument'
 export const emptySpec: InstrumentSpec = {
     beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
     current: {
-        measure: { level: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
+        measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
         source: { rangeDefault: NaN, ranges: [ NaN ] }
     },
     overflow: NaN,
-    resistance: { level: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
+    resistance: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
     smuInterlock: { maxNominalVoltageTripped: NaN, maxSourceVoltageTripped: NaN },
     smuMeasureAutorange: {
         currentLowDefault: NaN,
@@ -34,7 +34,7 @@ export const emptySpec: InstrumentSpec = {
     },
     smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
     voltage: {
-        measure: { level: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
+        measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
         source: { rangeDefault: NaN, ranges: [ NaN ] }
     }
 }

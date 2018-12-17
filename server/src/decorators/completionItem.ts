@@ -17,27 +17,19 @@
 
 // tslint:disable-next-line:no-require-imports
 import escapeStringRegexp = require('escape-string-regexp')
-
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
-
-import { InstrumentSpec } from '../instrument'
-
-export interface CommandDocumentation {
-    kind: MarkupKind
-    toString(spec: InstrumentSpec): string
-}
+import * as vscode_ls from 'vscode-languageserver'
 
 export interface CompletionItemData {
     domains: Array<string>
-    types?: Array<InstrumentCompletionItem>
+    types?: Array<CompletionItem>
 }
 
-export interface InstrumentCompletionItem extends CompletionItem {
+export interface CompletionItem extends vscode_ls.CompletionItem {
     allowBitwise?: boolean
     data?: CompletionItemData
     exclusive?: boolean
 }
-export namespace InstrumentCompletionItem {
+export namespace CompletionItem {
     /**
      * Creates InstrumentCompletionItems of kind Module based on the given string.
      * @param label The label whose namespaces will become root completions items.
@@ -47,7 +39,7 @@ export namespace InstrumentCompletionItem {
     export function createRootItems(
         label: string,
         excludeLast: boolean
-    ): Array<InstrumentCompletionItem> {
+    ): Array<CompletionItem> {
         const namespaces = label.split('.')
 
         if (excludeLast) {
@@ -59,7 +51,7 @@ export namespace InstrumentCompletionItem {
             }
         }
 
-        const result = new Array<InstrumentCompletionItem>()
+        const result = new Array<CompletionItem>()
 
         for (const name of namespaces) {
             // If any name is an empty string, then return an empty array.
@@ -71,8 +63,8 @@ export namespace InstrumentCompletionItem {
             const last = result.pop()
 
             // Create a completion item for the current namespace name.
-            const current: InstrumentCompletionItem = {
-                kind: CompletionItemKind.Module,
+            const current: CompletionItem = {
+                kind: vscode_ls.CompletionItemKind.Module,
                 label: name
             }
 
@@ -110,11 +102,11 @@ export namespace InstrumentCompletionItem {
      * Compare the given string to the label and data.domains properties of the completion item.
      * **Note:** empty strings match everything.
      * @param target The search string.
-     * @param completion The InstrumentCompletionItem to attempt a match against.
+     * @param completion The CompletionItem to attempt a match against.
      * @returns True if the search string has the same namespace depth as the given completion and
      * wholly or partially matches against it. False otherwise.
      */
-    export function namespaceMatch(target: string, completion: InstrumentCompletionItem): boolean {
+    export function namespaceMatch(target: string, completion: CompletionItem): boolean {
         // If content is an empty string, then everything is a partial match
         if (target.localeCompare('') === 0) {
             return true
@@ -129,7 +121,7 @@ export namespace InstrumentCompletionItem {
         // array with at least 1 item, so disregard the undefined type.
         const lastName = names.pop() as string
 
-        // Reverse the remaining names so we can more easily match against InstrumentCompletionItem.data.domains.
+        // Reverse the remaining names so we can more easily match against CompletionItem.data.domains.
         names = names.reverse()
 
         // If the given completion's namespace length does not match our content's namespace length
@@ -167,8 +159,8 @@ export namespace InstrumentCompletionItem {
      * @returns True if the two items match and false otherwise.
      */
     export function namespacesEqual(
-        a: InstrumentCompletionItem,
-        b: InstrumentCompletionItem,
+        a: CompletionItem,
+        b: CompletionItem,
         excludeLabel: boolean = false
     ): boolean {
         // Compare labels.
@@ -213,7 +205,7 @@ export namespace InstrumentCompletionItem {
      * @param completion The completion item to resolve.
      * @returns The fully resolved namespace of the given completion.
      */
-    export function resolveNamespace(completion: InstrumentCompletionItem): string {
+    export function resolveNamespace(completion: CompletionItem): string {
         const namespaceArray: Array<string> = (completion.data) ? [...completion.data.domains].reverse() : []
 
         return namespaceArray.concat(completion.label).join('.')

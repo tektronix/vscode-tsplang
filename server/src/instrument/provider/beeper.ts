@@ -17,11 +17,11 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { IndexedParameterInformation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, ParameterInformation, SignatureInformation } from '../../decorators'
 
 import { InstrumentSpec } from '..'
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         kind: CompletionItemKind.Module,
         label: 'beeper'
@@ -42,10 +42,10 @@ the front panel.'
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<IndexedParameterInformation> => {
+        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
             return [
                 {
                     documentation: 'The amount of time to play the tone (%{0} to %{1} seconds).'

@@ -15,9 +15,9 @@
  */
 'use strict'
 
-import { InstrumentCompletionItem } from '../../wrapper'
+import { CompletionItem } from '../../decorators'
 
 export interface ExclusiveContext {
-    completions: Array<InstrumentCompletionItem>
+    completions: Array<CompletionItem>
     text?: string
 }

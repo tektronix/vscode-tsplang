@@ -20,7 +20,7 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
 import { CommandSetInterface } from '../../../src/instrument'
-import { InstrumentSignatureInformation } from '../../../src/wrapper'
+import { SignatureInformation } from '../../../src/decorators'
 
 import { expectSignatureFormat } from './helpers'
 
@@ -50,7 +50,7 @@ describe('Instrument Provider', () => {
                 return
             }
 
-            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
+            providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)
             })
         })

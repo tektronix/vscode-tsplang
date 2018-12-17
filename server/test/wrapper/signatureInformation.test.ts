@@ -19,22 +19,19 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-// XXX: there must be some sort of namespace collision or something going on here,
-//  because the server/test/ directory does not like to properly resolve
-//  server/src/wrapper.InstrumentSignatureInformation
-import { InstrumentSignatureInformation } from '../../src/wrapper/signatureInformation'
+import { SignatureInformation } from '../../src/decorators'
 
 describe('Wrapper', () => {
-    describe('InstrumentSignatureInformation', () => {
+    describe('SignatureInformation', () => {
         describe('.resolveNamespace()', () => {
             it('returns an empty string when label is an empty string', () => {
-                expect(InstrumentSignatureInformation.resolveNamespace({
+                expect(SignatureInformation.resolveNamespace({
                     label: ''
                 })).to.be.empty
             })
 
             it('returns an empty string when the first character is an open parenthesis', () => {
-                expect(InstrumentSignatureInformation.resolveNamespace({
+                expect(SignatureInformation.resolveNamespace({
                     label: '('
                 })).to.be.empty
             })
@@ -49,7 +46,7 @@ describe('Wrapper', () => {
                 scenarios.forEach((testCases: Array<string>, expected: string) => {
                     testCases.forEach((test: string) => {
                         expect(
-                            InstrumentSignatureInformation.resolveNamespace({
+                            SignatureInformation.resolveNamespace({
                                 label: test
                             }),
                             `failed to properly resolve signature with label "${test}"`
@@ -69,7 +66,7 @@ describe('Wrapper', () => {
 
                 testCases.forEach((test: string) => {
                     expect(
-                        InstrumentSignatureInformation.resolveNamespace({
+                        SignatureInformation.resolveNamespace({
                             label: test
                         }),
                         `failed to properly resolve signature with label "${test}"`
@@ -87,7 +84,7 @@ describe('Wrapper', () => {
                 scenarios.forEach((testCases: Array<string>, expected: string) => {
                     testCases.forEach((test: string) => {
                         expect(
-                            InstrumentSignatureInformation.resolveNamespace({
+                            SignatureInformation.resolveNamespace({
                                 label: test
                             }),
                             `failed to properly resolve signature with label "${test}"`
@@ -106,7 +103,7 @@ describe('Wrapper', () => {
                 scenarios.forEach((testCases: Array<string>, expected: string) => {
                     testCases.forEach((test: string) => {
                         expect(
-                            InstrumentSignatureInformation.resolveNamespace({
+                            SignatureInformation.resolveNamespace({
                                 label: test
                             }),
                             `failed to properly resolve signature with label "${test}"`

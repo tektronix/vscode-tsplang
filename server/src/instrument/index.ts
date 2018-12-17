@@ -17,6 +17,10 @@
 
 export { CommandSet, CommandSetInterface } from './commandSet'
 
+export declare type DefaultFillValue = 'UNDEFINED'
+// tslint:disable-next-line:variable-name
+export const DefaultFillValue: DefaultFillValue = 'UNDEFINED'
+
 export interface InstrumentModule {
     getApiSpec(): Array<ApiSpec>
     getInstrumentSpec(): InstrumentSpec
@@ -141,7 +145,7 @@ export interface SourceVoltageSpec {
 }
 
 export interface RangeSpec {
-    default?: number
+    default?: number | DefaultFillValue
     high: number
     low: number
 }
@@ -162,7 +166,7 @@ export interface SmuInterlockSpec {
 }
 
 export interface SmuMeasureAutorangeSpec {
-    currentHighDefault?: number
+    currentHighDefault?: number | DefaultFillValue
     /**
      * 2450: 10e-9
      *
@@ -181,7 +185,7 @@ export interface SmuMeasureAutorangeSpec {
      * 2460: 2
      */
     resistanceLowDefault: number
-    voltageHighDefault?: number
+    voltageHighDefault?: number | DefaultFillValue
     /**
      * 2450: 20
      *
@@ -215,7 +219,7 @@ export interface InstrumentSpec {
     resistance: MeasureResistanceSpec
     smuInterlock: SmuInterlockSpec
     smuMeasureAutorange: SmuMeasureAutorangeSpec
-    smuSourceSweepLog: SmuSourceSweepLog
+    smuSourceSweepLog: SmuSourceSweepLog,
     voltage: {
         measure: MeasureVoltageSpec;
         source: SourceVoltageSpec;

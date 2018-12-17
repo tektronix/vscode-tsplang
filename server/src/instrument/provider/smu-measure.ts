@@ -17,115 +17,76 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformation } from '../../decorators'
 
-import { InstrumentSpec } from '..'
+import { DefaultFillValue, InstrumentSpec } from '..'
 
-export const completionDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [
         'smu.measure.autorangehigh',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.measure.autorangehigh\n```\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.measure.autorangehigh\n\`\`\`\n\
 \n\
 Acts as a read-write attribute if and only if the present measurement function is set to Resistance; otherwise it \
 acts as a read-only attribute.\n\
 \n\
-For Resistance measurements, this attribute can be set to any number from %{0} to %{1} that is greater than or equal \
-to the measure autorangelow attribute. Defaults to %{2}. Any set value is saved with the resistance function and \
-retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.resistance.range.low.toString())
-                    .replace('%{1}', spec.resistance.range.high.toString())
-                    .replace('%{2}', spec.smuMeasureAutorange.resistanceHighDefault.toString())
-            }
-        }
+For Resistance measurements, this attribute can be set to any number from ${spec.resistance.range.low} to \
+${spec.resistance.range.high} that is greater than or equal to the measure autorangelow attribute. Defaults to \
+${spec.smuMeasureAutorange.resistanceHighDefault}. Any set value is saved with the resistance function and retained \
+until the next instrument reset or power cycle.`
     ],
     [
         'smu.measure.autorangelow',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.measure.autorangelow\n```\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.measure.autorangelow\n\`\`\`\n\
 \n\
 Get or set the lowest range available to the autorange setting to a number.\n\
 \n\
-When the measurement function is set to Current, the valid range of this attribute is %{0} to \
-%{1} and defaults to %{2}.\n\
+When the measurement function is set to Current, the valid range of this attribute is \
+${spec.current.measure.range.low} to ${spec.current.measure.range.high} and defaults to \
+${spec.smuMeasureAutorange.currentLowDefault}.\n\
 \n\
-When the measurement function is set to Voltage, the valid range is %{3} to %{4} and defaults to %{5}.\n\
+When the measurement function is set to Voltage, the valid range is ${spec.voltage.measure.range.low} to \
+${spec.voltage.measure.range.high} and defaults to ${spec.smuMeasureAutorange.voltageLowDefault}.\n\
 \n\
-When the measurement function is set to Resistance, the valid range is any number %{6} to %{7} that is less than \
-or equal to the measure autorangehigh attribute. Defaults to %{8}.\n\
+When the measurement function is set to Resistance, the valid range is any number ${spec.resistance.range.low} to \
+${spec.resistance.range.high} that is less than or equal to the measure autorangehigh attribute. Defaults to \
+${spec.smuMeasureAutorange.resistanceLowDefault}.\n\
 \n\
 While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
 greater than or equal to the supplied value.\n\
 \n\
-This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.current.measure.range.low.toString())
-                    .replace('%{1}', spec.current.measure.range.high.toString())
-                    .replace('%{2}', spec.smuMeasureAutorange.currentLowDefault.toString())
-                    .replace('%{3}', spec.voltage.measure.range.low.toString())
-                    .replace('%{4}', spec.voltage.measure.range.high.toString())
-                    .replace('%{5}', spec.smuMeasureAutorange.voltageLowDefault.toString())
-                    .replace('%{6}', spec.resistance.range.low.toString())
-                    .replace('%{7}', spec.resistance.range.high.toString())
-                    .replace('%{8}', spec.smuMeasureAutorange.resistanceLowDefault.toString())
-            },
-        }
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
     [
         'smu.measure.range',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.measure.range\n```\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.measure.range\n\`\`\`\n\
 \n\
 Get or set the measurement range of the active measure function as a number.\n\
 \n\
-When the measurement function is set to Current, the valid range of this attribute is %{0} to %{1} and defaults to \
-%{2}.\n\
+When the measurement function is set to Current, the valid range of this attribute is \
+${spec.current.measure.range.low} to ${spec.current.measure.range.high} and defaults to \
+${spec.current.measure.range.default || DefaultFillValue}.\n\
 \n\
-When the measurement function is set to Voltage, this range is %{3} to %{4} and defaults to %{5}.\n\
+When the measurement function is set to Voltage, this range is ${spec.voltage.measure.range.low} to \
+${spec.voltage.measure.range.high} and defaults to ${spec.voltage.measure.range.default || DefaultFillValue}.\n\
 \n\
-When the measurement function is set to Resistance, this range is %{6} to %{7} and defaults to %{8}.\n\
+When the measurement function is set to Resistance, this range is ${spec.resistance.range.low} to \
+${spec.resistance.range.high} and defaults to ${spec.resistance.range.default || DefaultFillValue}.\n\
 \n\
 While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
 greater than or equal to the supplied value.\n\
 \n\
-Any signal greater than the set range is returned as %{9}.\n\
+Any signal greater than the set range is returned as ${spec.overflow}.\n\
 \n\
 If sourcing and measuring the same function, the source range takes precendence.\n\
 \n\
-This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.current.measure.range.low.toString())
-                    .replace('%{1}', spec.current.measure.range.high.toString())
-                    .replace(
-                        '%{2}',
-                        (spec.current.measure.range.default === undefined) ?
-                            'UNDEFINED' : spec.current.measure.range.default.toString()
-                    )
-                    .replace('%{3}', spec.voltage.measure.range.low.toString())
-                    .replace('%{4}', spec.voltage.measure.range.high.toString())
-                    .replace(
-                        '%{5}',
-                        (spec.voltage.measure.range.default === undefined) ?
-                            'UNDEFINED' : spec.voltage.measure.range.default.toString()
-                    )
-                    .replace('%{6}', spec.resistance.range.low.toString())
-                    .replace('%{7}', spec.resistance.range.high.toString())
-                    .replace(
-                        '%{8}',
-                        (spec.resistance.range.default === undefined) ?
-                            'UNDEFINED' : spec.resistance.range.default.toString()
-                    )
-                    .replace('%{9}', spec.overflow.toString())
-            }
-        }
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
 ])
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: { domains: ['smu'] },
         kind: CompletionItemKind.Module,
@@ -347,7 +308,7 @@ This attribute is saved with the active function and retained until the next ins
     },
 ]
 
-export const signatures: Array<InstrumentSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         label: 'smu.measure.read([bufferName])',

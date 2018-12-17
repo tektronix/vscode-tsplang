@@ -15,7 +15,7 @@
  */
 'use strict'
 
-export { CommandDocumentation, CompletionItemData, InstrumentCompletionItem } from './completionItem'
-export { IndexedParameterInformation } from './parameterInformation'
-export { InstrumentSignatureHelp } from './signatureHelp'
-export { InstrumentSignatureInformation, SignatureData } from './signatureInformation'
+export { CompletionItemData, CompletionItem } from './completionItem'
+export { MarkupContent, MarkupContentCallback } from './markupContent'
+export { ParameterInformation } from './parameterInformation'
+export { SignatureInformation, SignatureData } from './signatureInformation'

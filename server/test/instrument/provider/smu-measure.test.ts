@@ -19,8 +19,8 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { MarkupContentCallback, SignatureInformation } from '../../../src/decorators'
 import { CommandSetInterface } from '../../../src/instrument'
-import { CommandDocumentation, InstrumentSignatureInformation } from '../../../src/wrapper'
 
 import { expectCompletionDocFormat, expectCompletionDocUndefinedFormat, expectSignatureFormat } from './helpers'
 
@@ -50,7 +50,7 @@ describe('Instrument Provider', () => {
                 return
             }
 
-            providerModule.completionDocs.forEach((completionDoc: CommandDocumentation, label: string) => {
+            providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
             })
         })
@@ -66,7 +66,7 @@ describe('Instrument Provider', () => {
 
             applicableCompletionDocs.forEach((label: string) => {
                 // Typecast because we just validated its existance.
-                const completionDoc = (providerModule.completionDocs as Map<string, CommandDocumentation>)
+                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>)
                     .get('smu.measure.range')
 
                 expect(
@@ -75,7 +75,7 @@ describe('Instrument Provider', () => {
                 ).to.not.be.undefined
 
                 // Typecast because we just failed the test if the variable was undefined.
-                expectCompletionDocUndefinedFormat(completionDoc as CommandDocumentation, label)
+                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label)
             })
         })
 
@@ -84,7 +84,7 @@ describe('Instrument Provider', () => {
                 return
             }
 
-            providerModule.signatures.forEach((signature: InstrumentSignatureInformation) => {
+            providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)
             })
         })

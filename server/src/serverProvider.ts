@@ -17,13 +17,13 @@
 
 import { Position } from 'vscode-languageserver'
 
+import { CompletionItem } from './decorators'
 import { TspItem } from './tspItem'
-import { InstrumentCompletionItem } from './wrapper'
 
 const namespaceRegexp = new RegExp(/^[a-zA-Z0-9\[\].]*/)
 const tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
-export function resolveCompletion(item: InstrumentCompletionItem, tspItem: TspItem): InstrumentCompletionItem {
+export function resolveCompletion(item: CompletionItem, tspItem: TspItem): CompletionItem {
     const result = item
 
     // We cannot provide completion documentation if none exist
@@ -34,23 +34,20 @@ export function resolveCompletion(item: InstrumentCompletionItem, tspItem: TspIt
     // Only service those CompletionItems whose "documentation" property is undefined
     if (result.documentation === undefined) {
         const commandDoc = tspItem.context.commandSet.completionDocs.get(
-            InstrumentCompletionItem.resolveNamespace(result)
+            CompletionItem.resolveNamespace(result)
         )
 
         if (commandDoc === undefined) {
             return result
         }
 
-        result.documentation = {
-            kind: commandDoc.kind,
-            value: commandDoc.toString(tspItem.context.commandSet.specification)
-        }
+        result.documentation = commandDoc(tspItem.context.commandSet.specification)
     }
 
     return result
 }
 
-export function getCompletions(position: Position, tspItem: TspItem): Array<InstrumentCompletionItem> | undefined {
+export function getCompletions(position: Position, tspItem: TspItem): Array<CompletionItem> | undefined {
     // We cannot provide completions if none exist
     if (tspItem.context.commandSet.completions.length === 0) {
         return
@@ -70,7 +67,7 @@ export function getCompletions(position: Position, tspItem: TspItem): Array<Inst
         return
     }
 
-    const results: Array<InstrumentCompletionItem> = new Array()
+    const results: Array<CompletionItem> = new Array()
 
     const firstMatch = reverseMatches.shift()
 
@@ -95,7 +92,7 @@ export function getCompletions(position: Position, tspItem: TspItem): Array<Inst
     if (tspItem.context !== undefined) {
         // Attempt to partial match against the current user completion items.
         for (const completion of tspItem.context.getCompletionItems(position)) {
-            if (InstrumentCompletionItem.namespaceMatch(unreversed, completion)) {
+            if (CompletionItem.namespaceMatch(unreversed, completion)) {
                 results.push(completion)
             }
         }

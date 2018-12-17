@@ -15,10 +15,8 @@
  */
 'use strict'
 
-import { ParameterInformation, SignatureInformation } from 'vscode-languageserver'
-
 import { ApiSpec, BaseApiSpec, ChildApiSpec, CommandSet, CommandSetInterface, ExclusiveCompletionApiSpec, InstrumentSpec, SignatureDataApiSpec } from '..'
-import { CommandDocumentation, IndexedParameterInformation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../../wrapper'
+import { CompletionItem, MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../decorators'
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes
@@ -40,13 +38,13 @@ function labelToModuleName(label: string, getEnums: boolean = false): string {
 function filter(
     namespace: ApiSpec,
     providerModule: CommandSetInterface,
-    enumerations: Array<InstrumentCompletionItem>
+    enumerations: Array<CompletionItem>
 ): CommandSetInterface {
     // Create an object of Maps whose keys will match against ApiSpec labels.
     const providerMap = {
-        completionDocs: new Map<string, CommandDocumentation>(),
+        completionDocs: new Map<string, MarkupContentCallback>(),
         completions: CommandSetInterface.getCompletionMap(providerModule.completions),
-        signatures: new Map<string, Array<InstrumentSignatureInformation>>()
+        signatures: new Map<string, Array<SignatureInformation>>()
     }
 
     // Re-instantiate the completionDoc property with content if this module has completionDocs.
@@ -152,11 +150,11 @@ function filter(
 function filterEnums(
     namespace: ApiSpec,
     enumModule: CommandSetInterface
-): Array<InstrumentCompletionItem> {
+): Array<CompletionItem> {
     // Create an object of Maps whose keys will match against ApiSpec labels.
     const completionMap = CommandSetInterface.getCompletionMap(enumModule.completions)
 
-    const filteredEnumerations = new Array<InstrumentCompletionItem>()
+    const filteredEnumerations = new Array<CompletionItem>()
 
     if (namespace.enums !== undefined) {
         namespace.enums.forEach((enumeration: BaseApiSpec) => {
@@ -181,15 +179,15 @@ function filterEnums(
  * @param completions An array of completion items.
  * @returns An array of root completions items or any empty array if no items could be generated.
  */
-function generateRoots(completions: Array<InstrumentCompletionItem>): Array<InstrumentCompletionItem> {
+function generateRoots(completions: Array<CompletionItem>): Array<CompletionItem> {
     // An array containing one completion item per unique namespace.
-    const uniqueNamespaces = new Array<InstrumentCompletionItem>()
+    const uniqueNamespaces = new Array<CompletionItem>()
 
-    completions.forEach((enumerationItem: InstrumentCompletionItem) => {
-        const predicate = (uniqueItem: InstrumentCompletionItem): boolean => {
+    completions.forEach((enumerationItem: CompletionItem) => {
+        const predicate = (uniqueItem: CompletionItem): boolean => {
             // Compare each unique namespace to the current enumeration completion
             // without including the label properties.
-            return InstrumentCompletionItem.namespacesEqual(uniqueItem, enumerationItem, true)
+            return CompletionItem.namespacesEqual(uniqueItem, enumerationItem, true)
         }
 
         // If the current namespace is not in our list of unique namespaces.
@@ -198,11 +196,11 @@ function generateRoots(completions: Array<InstrumentCompletionItem>): Array<Inst
         }
     })
 
-    const results = new Array<InstrumentCompletionItem>()
+    const results = new Array<CompletionItem>()
 
     // Generate root namespace completion items for each unique namespace.
-    uniqueNamespaces.forEach((uniqueItem: InstrumentCompletionItem) => {
-        const fullyQualifiedCompletion = InstrumentCompletionItem.resolveNamespace(uniqueItem)
+    uniqueNamespaces.forEach((uniqueItem: CompletionItem) => {
+        const fullyQualifiedCompletion = CompletionItem.resolveNamespace(uniqueItem)
 
         // Throw an error if this completion has no domain.
         if (uniqueItem.data === undefined || uniqueItem.data.domains.length === 0) {
@@ -210,7 +208,7 @@ function generateRoots(completions: Array<InstrumentCompletionItem>): Array<Inst
         }
 
         // Create root completion items and add them to the results.
-        results.push(...InstrumentCompletionItem.createRootItems(fullyQualifiedCompletion, true))
+        results.push(...CompletionItem.createRootItems(fullyQualifiedCompletion, true))
     })
 
     return results
@@ -218,11 +216,11 @@ function generateRoots(completions: Array<InstrumentCompletionItem>): Array<Inst
 
 function addAssignmentExclusives(
     exclusives: Array<ExclusiveCompletionApiSpec>,
-    completions: Array<InstrumentCompletionItem>,
-    enumerations: Array<InstrumentCompletionItem>
-): Array<InstrumentCompletionItem> {
+    completions: Array<CompletionItem>,
+    enumerations: Array<CompletionItem>
+): Array<CompletionItem> {
     // Modify each completion item.
-    const modifiedCompletions = completions.map((completion: InstrumentCompletionItem) => {
+    const modifiedCompletions = completions.map((completion: CompletionItem) => {
         // Return an unmodified completion item if it is a root namespace.
         if (completion.data === undefined) {
             return completion
@@ -238,7 +236,7 @@ function addAssignmentExclusives(
         if (filteredEnums.length === 0) {
             throw new Error([
                 'No assignment completions available for',
-                `'${InstrumentCompletionItem.resolveNamespace(completion)}'.`
+                `'${CompletionItem.resolveNamespace(completion)}'.`
             ].join(' '))
         }
 
@@ -255,13 +253,13 @@ function addAssignmentExclusives(
 
 function addSignatureExclusives(
     exclusives: Array<SignatureDataApiSpec>,
-    signatures: Array<InstrumentSignatureInformation>,
-    enumerations: Array<InstrumentCompletionItem>
-): Array<InstrumentSignatureInformation> {
+    signatures: Array<SignatureInformation>,
+    enumerations: Array<CompletionItem>
+): Array<SignatureInformation> {
     // Modify each signature.
-    const modifiedSignatures = signatures.map((signature: InstrumentSignatureInformation) => {
+    const modifiedSignatures = signatures.map((signature: SignatureInformation) => {
         // Resulting exclusive parameter completion map.
-        const parameterMap = new Map<number, Array<InstrumentCompletionItem>>()
+        const parameterMap = new Map<number, Array<CompletionItem>>()
 
         // Initialize signature data to something easier to work with if undefined.
         if (signature.data === undefined) {
@@ -300,7 +298,7 @@ function addSignatureExclusives(
         if (parameterMap.size === 0) {
             throw new Error([
                 'No parameter completions available for',
-                `'${InstrumentSignatureInformation.resolveNamespace(signature)}'.`
+                `'${SignatureInformation.resolveNamespace(signature)}'.`
             ].join(' '))
         }
 
@@ -313,30 +311,30 @@ function addSignatureExclusives(
 }
 
 function dropExclusiveCompletions(
-    completions: Array<InstrumentCompletionItem>
-): Array<InstrumentCompletionItem> {
-    return completions.filter((completion: InstrumentCompletionItem) => {
+    completions: Array<CompletionItem>
+): Array<CompletionItem> {
+    return completions.filter((completion: CompletionItem) => {
         return ! completion.exclusive
     })
 }
 
 function formatSignatures(
     spec: InstrumentSpec,
-    signatures: Array<InstrumentSignatureInformation>
-): Array<InstrumentSignatureInformation> {
-    const result = signatures.map((value: InstrumentSignatureInformation) => {
+    signatures: Array<SignatureInformation>
+): Array<SignatureInformation> {
+    const result = signatures.map((value: SignatureInformation) => {
         // Only format parameters if this signature has never been loaded.
         if (value._loaded !== true && value.getFormattedParameters !== undefined) {
             const formatted = value.getFormattedParameters(spec)
 
-            formatted.forEach((param: IndexedParameterInformation) => {
+            formatted.forEach((param: ParameterInformation) => {
                 // Instantiate a new array if necessary.
                 if (value.parameters === undefined) {
                     value.parameters = new Array()
                 }
 
                 // Insert this parameter at the associated index while removing 0 items.
-                value.parameters.splice(param.index, 0, param as ParameterInformation)
+                value.parameters.splice(param.index, 0, param)
             })
 
             // Set the load status of this signature.
@@ -357,7 +355,7 @@ export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: Instrum
         try {
             // Load all enumeration completions first to allow cross-namespace enumeration
             // requests in the ApiSpec.
-            const enumerations = new Array<InstrumentCompletionItem>()
+            const enumerations = new Array<CompletionItem>()
 
             apiSpecs.forEach((api: ApiSpec) => {
                 if (api.enums === undefined) {

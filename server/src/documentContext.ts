@@ -29,7 +29,7 @@ import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
-import { InstrumentCompletionItem, InstrumentSignatureInformation } from './wrapper'
+import { CompletionItem, SignatureInformation } from './decorators'
 
 declare class CorrectRecogException extends RecognitionException {
     startToken?: Token
@@ -113,11 +113,11 @@ export class DocumentContext extends TspListener {
         }
 
         // Filter all matching signatures from the CommandSet
-        const signatureLabel = InstrumentSignatureInformation.resolveNamespace({
+        const signatureLabel = SignatureInformation.resolveNamespace({
             label: context.getText().replace(this.tableIndexRegexp, '')
         })
-        const matchingSignatures = this.commandSet.signatures.filter((signature: InstrumentSignatureInformation) => {
-            return InstrumentSignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
+        const matchingSignatures = this.commandSet.signatures.filter((signature: SignatureInformation) => {
+            return SignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
         })
 
         // If we have matching signatures, then create an associated SignatureContext.
@@ -198,17 +198,17 @@ export class DocumentContext extends TspListener {
             // Get the string representation of the namespace tokens.
             const namespaceString = TokenUtil.getString(...namespaceTokens)
 
-            const matchingSignatures = new Array<InstrumentSignatureInformation>()
+            const matchingSignatures = new Array<SignatureInformation>()
 
             // If the leading tokens were a valid namespace.
             if (namespaceString !== undefined) {
                 // Filter all matching signatures from the CommandSet
-                const signatureLabel = InstrumentSignatureInformation.resolveNamespace({
+                const signatureLabel = SignatureInformation.resolveNamespace({
                     label: namespaceString.replace(this.tableIndexRegexp, '')
                 })
                 matchingSignatures.push(...this.commandSet.signatures.filter(
-                    (signature: InstrumentSignatureInformation) => {
-                        return InstrumentSignatureInformation
+                    (signature: SignatureInformation) => {
+                        return SignatureInformation
                             .resolveNamespace(signature).localeCompare(signatureLabel) === 0
                     }
                 ))
@@ -279,7 +279,7 @@ export class DocumentContext extends TspListener {
         }
     }
 
-    getCompletionItems(cursor: Position): Array<InstrumentCompletionItem> {
+    getCompletionItems(cursor: Position): Array<CompletionItem> {
         let offset = this.document.offsetAt(cursor)
 
         if (!this.exclusives.has(offset)) {
@@ -290,11 +290,11 @@ export class DocumentContext extends TspListener {
         const exclusiveContext = this.exclusives.get(offset)
 
         if (exclusiveContext !== undefined) {
-            const exclusiveResult = new Array<InstrumentCompletionItem>()
+            const exclusiveResult = new Array<CompletionItem>()
 
             if (exclusiveContext.text !== undefined) {
                 for (const completion of exclusiveContext.completions) {
-                    if (InstrumentCompletionItem.namespaceMatch(exclusiveContext.text, completion)) {
+                    if (CompletionItem.namespaceMatch(exclusiveContext.text, completion)) {
                         exclusiveResult.push(completion)
                     }
                 }

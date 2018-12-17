@@ -15,25 +15,25 @@
  */
 'use strict'
 
-import { CommandDocumentation, InstrumentCompletionItem, InstrumentSignatureInformation } from '../wrapper'
+import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformation } from '../decorators'
 
 import { InstrumentSpec } from '.'
 
 export interface CommandSetInterface {
-    completionDocs?: Map<string, CommandDocumentation>
-    completions: Array<InstrumentCompletionItem>
-    signatures?: Array<InstrumentSignatureInformation>
+    completionDocs?: Map<string, MarkupContentCallback>
+    completions: Array<CompletionItem>
+    signatures?: Array<SignatureInformation>
 }
 export namespace CommandSetInterface {
     export function getCompletionMap(
-        completions: Array<InstrumentCompletionItem>
-    ): Map<string, Array<InstrumentCompletionItem>> {
-        const result = new Map<string, Array<InstrumentCompletionItem>>()
+        completions: Array<CompletionItem>
+    ): Map<string, Array<CompletionItem>> {
+        const result = new Map<string, Array<CompletionItem>>()
 
-        completions.forEach((value: InstrumentCompletionItem) => {
-            const namespace = InstrumentCompletionItem.resolveNamespace(value)
+        completions.forEach((value: CompletionItem) => {
+            const namespace = CompletionItem.resolveNamespace(value)
 
-            const item = result.get(namespace) || new Array<InstrumentCompletionItem>()
+            const item = result.get(namespace) || new Array<CompletionItem>()
             item.push(value)
 
             result.set(namespace, item)
@@ -43,14 +43,14 @@ export namespace CommandSetInterface {
     }
 
     export function getSignatureMap(
-        signatures: Array<InstrumentSignatureInformation>
-    ): Map<string, Array<InstrumentSignatureInformation>> {
-        const result = new Map<string, Array<InstrumentSignatureInformation>>()
+        signatures: Array<SignatureInformation>
+    ): Map<string, Array<SignatureInformation>> {
+        const result = new Map<string, Array<SignatureInformation>>()
 
-        signatures.forEach((value: InstrumentSignatureInformation) => {
-            const namespace = InstrumentSignatureInformation.resolveNamespace(value)
+        signatures.forEach((value: SignatureInformation) => {
+            const namespace = SignatureInformation.resolveNamespace(value)
 
-            const item = result.get(namespace) || new Array<InstrumentSignatureInformation>()
+            const item = result.get(namespace) || new Array<SignatureInformation>()
             item.push(value)
 
             result.set(namespace, item)
@@ -61,9 +61,9 @@ export namespace CommandSetInterface {
 }
 
 export class CommandSet implements CommandSetInterface {
-    readonly completionDocs: Map<string, CommandDocumentation>
-    readonly completions: Array<InstrumentCompletionItem>
-    readonly signatures: Array<InstrumentSignatureInformation>
+    readonly completionDocs: Map<string, MarkupContentCallback>
+    readonly completions: Array<CompletionItem>
+    readonly signatures: Array<SignatureInformation>
     readonly specification: InstrumentSpec
 
     constructor(spec: InstrumentSpec) {
@@ -76,19 +76,19 @@ export class CommandSet implements CommandSetInterface {
     add(set: CommandSetInterface): void {
         // merge completion documentation
         if (set.completionDocs !== undefined) {
-            set.completionDocs.forEach((value: CommandDocumentation, key: string) => {
+            set.completionDocs.forEach((value: MarkupContentCallback, key: string) => {
                 this.completionDocs.set(key, value)
             })
         }
 
         // merge completion items
-        set.completions.forEach((value: InstrumentCompletionItem) => {
+        set.completions.forEach((value: CompletionItem) => {
             this.completions.push(value)
         })
 
         // merge signatures
         if (set.signatures !== undefined) {
-            set.signatures.forEach((value: InstrumentSignatureInformation) => {
+            set.signatures.forEach((value: SignatureInformation) => {
                 this.signatures.push(value)
             })
         }

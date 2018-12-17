@@ -21,18 +21,16 @@ import 'mocha'
 
 import { MarkupKind } from 'vscode-languageserver'
 
-import { CommandDocumentation, IndexedParameterInformation } from '../../../src/wrapper'
-// XXX: This file has trouble resolving InstrumentSignatureInformation when it
-//  is included in the above import.
-import { InstrumentSignatureInformation } from '../../../src/wrapper/signatureInformation'
+import { MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../../src/decorators'
+import { DefaultFillValue } from '../../../src/instrument'
 
 import { emptySpec, emptySpecUndefinedOptionals } from '../emptySpec'
 
-const replacementStringRegExp = new RegExp(/%\{[0-9]+\}/)
-const undefinedSpecValueRegExp = new RegExp(/UNDEFINED/)
+// const replacementStringRegExp = new RegExp(/%\{[0-9]+\}/)
+const undefinedSpecValueRegExp = new RegExp(DefaultFillValue)
 
-export function expectCompletionDocFormat(completionDoc: CommandDocumentation, label: string): void {
-    const formattedDocumentation = completionDoc.toString(emptySpec)
+export function expectCompletionDocFormat(completionDoc: MarkupContentCallback, label: string): void {
+    const formattedDocumentation = completionDoc(emptySpec)
 
     // completionDoc items should return meaningful documenation or be removed.
     expect(
@@ -42,13 +40,13 @@ export function expectCompletionDocFormat(completionDoc: CommandDocumentation, l
 
     // All replacement strings should be filled-in.
     expect(
-        replacementStringRegExp.test(formattedDocumentation),
+        undefinedSpecValueRegExp.test(formattedDocumentation.value),
         `found a replacement string in the formatted command documentation for ${label}`
     ).to.be.false
 }
 
-export function expectCompletionDocUndefinedFormat(completionDoc: CommandDocumentation, label: string): void {
-    const formattedDocumentation = completionDoc.toString(emptySpecUndefinedOptionals)
+export function expectCompletionDocUndefinedFormat(completionDoc: MarkupContentCallback, label: string): void {
+    const formattedDocumentation = completionDoc(emptySpecUndefinedOptionals)
 
     // completionDoc items should return meaningful documenation or be removed.
     expect(
@@ -56,21 +54,15 @@ export function expectCompletionDocUndefinedFormat(completionDoc: CommandDocumen
         `useless command documentation entry for ${label}`
     ).to.not.be.empty
 
-    // All replacement strings should be filled-in.
-    expect(
-        replacementStringRegExp.test(formattedDocumentation),
-        `found a replacement string in the formatted command documentation for ${label}`
-    ).to.be.false
-
     // The string "UNDEFINED" should be filled-in for optional spec values.
     expect(
-        undefinedSpecValueRegExp.test(formattedDocumentation),
+        undefinedSpecValueRegExp.test(formattedDocumentation.value),
         `could not find "UNDEFINED" in the formatted command documentation for ${label}`
     ).to.be.true
 }
 
-export function expectSignatureFormat(signature: InstrumentSignatureInformation): void {
-    const signatureLabel = InstrumentSignatureInformation.resolveNamespace(signature)
+export function expectSignatureFormat(signature: SignatureInformation): void {
+    const signatureLabel = SignatureInformation.resolveNamespace(signature)
 
     if (signature.getFormattedParameters === undefined) {
         return
@@ -84,7 +76,7 @@ export function expectSignatureFormat(signature: InstrumentSignatureInformation)
         `useless formatter function in signature "${signatureLabel}"`
     ).to.not.be.empty
 
-    formattedParameters.forEach((parameter: IndexedParameterInformation) => {
+    formattedParameters.forEach((parameter: ParameterInformation) => {
         expect(
             parameter.documentation,
             `parameter "${parameter.label}" of signature "${signatureLabel}" has no documentation`
@@ -111,7 +103,7 @@ export function expectSignatureFormat(signature: InstrumentSignatureInformation)
 
         // All replacement strings should be filled-in
         expect(
-            replacementStringRegExp.test(documentation),
+            undefinedSpecValueRegExp.test(documentation),
             [
                 'found a replacement string in the formatted parameter',
                 `"${parameter.label}" of signature "${signatureLabel}"`

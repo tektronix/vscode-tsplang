@@ -19,23 +19,23 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { InstrumentCompletionItem } from '../../src/wrapper'
+import { CompletionItem } from '../../src/decorators'
 
 describe('Wrapper', () => {
-    describe('InstrumentCompletionItem', () => {
-        const emptyCompletion: InstrumentCompletionItem = {
+    describe('CompletionItem', () => {
+        const emptyCompletion: CompletionItem = {
             label: ''
         }
-        const noDomainCompletion: InstrumentCompletionItem = {
+        const noDomainCompletion: CompletionItem = {
             kind: 9,
             label: 'foo'
         }
-        const singleDomainCompletion: InstrumentCompletionItem = {
+        const singleDomainCompletion: CompletionItem = {
             data: { domains: ['foo'] },
             kind: 9,
             label: 'bar'
         }
-        const multiDomainCompletion: InstrumentCompletionItem = {
+        const multiDomainCompletion: CompletionItem = {
             data: { domains: ['bar', 'foo'] },
             kind: 9,
             label: 'baz'
@@ -44,12 +44,12 @@ describe('Wrapper', () => {
         describe('.createRootItems()', () => {
             it('returns an empty array when the given string is empty', () => {
                 expect(
-                    InstrumentCompletionItem.createRootItems('', false),
+                    CompletionItem.createRootItems('', false),
                     'results not empty given an empty string with the last item included'
                 ).to.be.empty
 
                 expect(
-                    InstrumentCompletionItem.createRootItems('', true),
+                    CompletionItem.createRootItems('', true),
                     'results not empty given an empty string without the last item'
                 ).to.be.empty
             })
@@ -80,14 +80,14 @@ describe('Wrapper', () => {
 
                     if (recipe.excludeLast) {
                         expect(
-                            InstrumentCompletionItem.createRootItems(recipe.test, true),
+                            CompletionItem.createRootItems(recipe.test, true),
                             `results not empty given "${recipe.test}" without the last item`
                         ).to.be.empty
                     }
 
                     if (recipe.includeLast) {
                         expect(
-                            InstrumentCompletionItem.createRootItems(recipe.test, false),
+                            CompletionItem.createRootItems(recipe.test, false),
                             `results not empty given "${recipe.test}" with the last item included`
                         ).to.be.empty
                     }
@@ -95,29 +95,29 @@ describe('Wrapper', () => {
             })
 
             it('returns an accurate set of completion items when the last namespace is included', () => {
-                const scenarios = new Map<string, Array<InstrumentCompletionItem>>([
+                const scenarios = new Map<string, Array<CompletionItem>>([
                     ['foo', [noDomainCompletion]],
                     ['foo.bar', [noDomainCompletion, singleDomainCompletion]],
                     ['foo.bar.baz', [noDomainCompletion, singleDomainCompletion, multiDomainCompletion]]
                 ])
 
-                scenarios.forEach((expected: Array<InstrumentCompletionItem>, test: string) => {
+                scenarios.forEach((expected: Array<CompletionItem>, test: string) => {
                     expect(
-                        InstrumentCompletionItem.createRootItems(test, false),
+                        CompletionItem.createRootItems(test, false),
                         `failed to create accurate root completions for "${test}" with the last item included`
                     ).to.deep.equal(expected)
                 })
             })
 
             it('returns an accurate set of completion items when the last namespace is excluded', () => {
-                const scenarios = new Map<string, Array<InstrumentCompletionItem>>([
+                const scenarios = new Map<string, Array<CompletionItem>>([
                     ['foo.bar', [noDomainCompletion]],
                     ['foo.bar.baz', [noDomainCompletion, singleDomainCompletion]]
                 ])
 
-                scenarios.forEach((expected: Array<InstrumentCompletionItem>, test: string) => {
+                scenarios.forEach((expected: Array<CompletionItem>, test: string) => {
                     expect(
-                        InstrumentCompletionItem.createRootItems(test, true),
+                        CompletionItem.createRootItems(test, true),
                         `failed to create accurate root completions for "${test}" without the last item`
                     ).to.deep.equal(expected)
                 })
@@ -133,25 +133,25 @@ describe('Wrapper', () => {
                     multiDomainCompletion
                 ]
 
-                testCompletions.forEach((completion: InstrumentCompletionItem) => {
+                testCompletions.forEach((completion: CompletionItem) => {
                     expect(
-                        InstrumentCompletionItem.namespaceMatch('', completion),
+                        CompletionItem.namespaceMatch('', completion),
                         `an empty string failed to match "${JSON.stringify(completion)}"`
                     ).to.be.true
                 })
             })
 
             it('returns true when the given string is a partial match', () => {
-                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                const scenarios = new Map<CompletionItem, Array<string>>([
                     [noDomainCompletion, ['f', 'fo']],
                     [singleDomainCompletion, ['foo.', 'foo.b', 'foo.ba']],
                     [multiDomainCompletion, ['foo.bar.', 'foo.bar.b', 'foo.bar.ba']]
                 ])
 
-                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                scenarios.forEach((cases: Array<string>, completion: CompletionItem) => {
                     cases.forEach((test: string) => {
                         expect(
-                            InstrumentCompletionItem.namespaceMatch(test, completion),
+                            CompletionItem.namespaceMatch(test, completion),
                             `"${test}" failed to match "${JSON.stringify(completion)}"`
                         ).to.be.true
                     })
@@ -159,31 +159,31 @@ describe('Wrapper', () => {
             })
 
             it('returns true when the given string is a whole match', () => {
-                const scenarios = new Map<InstrumentCompletionItem, string>([
+                const scenarios = new Map<CompletionItem, string>([
                     [noDomainCompletion, 'foo'],
                     [singleDomainCompletion, 'foo.bar'],
                     [multiDomainCompletion, 'foo.bar.baz']
                 ])
 
-                scenarios.forEach((test: string, completion: InstrumentCompletionItem) => {
+                scenarios.forEach((test: string, completion: CompletionItem) => {
                     expect(
-                        InstrumentCompletionItem.namespaceMatch(test, completion),
+                        CompletionItem.namespaceMatch(test, completion),
                         `"${test}" failed to match "${JSON.stringify(completion)}"`
                     ).to.be.true
                 })
             })
 
             it('returns false when the given string is not a whole or partial match', () => {
-                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                const scenarios = new Map<CompletionItem, Array<string>>([
                     [noDomainCompletion, ['z', 'foz', 'F', 'fOO']],
                     [singleDomainCompletion, ['z.ba', 'FoO.bar', 'foo.bAr']],
                     [multiDomainCompletion, ['foo.z.baz', 'foo.bar.B', 'Foo.bar.baz']]
                 ])
 
-                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                scenarios.forEach((cases: Array<string>, completion: CompletionItem) => {
                     cases.forEach((test: string) => {
                         expect(
-                            InstrumentCompletionItem.namespaceMatch(test, completion),
+                            CompletionItem.namespaceMatch(test, completion),
                             `"${test}" matched "${JSON.stringify(completion)}"`
                         ).to.be.false
                     })
@@ -191,16 +191,16 @@ describe('Wrapper', () => {
             })
 
             it('returns false when namespace depths are not equal', () => {
-                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                const scenarios = new Map<CompletionItem, Array<string>>([
                     [noDomainCompletion, ['foo.', 'foo..']],
                     [singleDomainCompletion, ['foo', 'foo..', 'foo.bar.']],
                     [multiDomainCompletion, ['foo', 'foo.bar', 'foo.bar..', 'foo.bar.baz.']]
                 ])
 
-                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                scenarios.forEach((cases: Array<string>, completion: CompletionItem) => {
                     cases.forEach((test: string) => {
                         expect(
-                            InstrumentCompletionItem.namespaceMatch(test, completion),
+                            CompletionItem.namespaceMatch(test, completion),
                             `"${test}" matched "${JSON.stringify(completion)}"`
                         ).to.be.false
                     })
@@ -208,7 +208,7 @@ describe('Wrapper', () => {
             })
 
             it('(#31) escapes the given string before creating a RegExp', () => {
-                const scenarios = new Map<InstrumentCompletionItem, Array<string>>([
+                const scenarios = new Map<CompletionItem, Array<string>>([
                     [noDomainCompletion, [
                         '(',
                         '[',
@@ -229,10 +229,10 @@ describe('Wrapper', () => {
                     ]],
                 ])
 
-                scenarios.forEach((cases: Array<string>, completion: InstrumentCompletionItem) => {
+                scenarios.forEach((cases: Array<string>, completion: CompletionItem) => {
                     cases.forEach((test: string) => {
                         expect(
-                            () => InstrumentCompletionItem.namespaceMatch(test, completion),
+                            () => CompletionItem.namespaceMatch(test, completion),
                             `failed to properly escape the RegExp input "${test}"`
                         ).to.not.throw()
                     })
@@ -249,14 +249,14 @@ describe('Wrapper', () => {
                     multiDomainCompletion
                 ]
 
-                testCompletions.forEach((test: InstrumentCompletionItem) => {
+                testCompletions.forEach((test: CompletionItem) => {
                     expect(
-                        InstrumentCompletionItem.namespacesEqual(test, test),
+                        CompletionItem.namespacesEqual(test, test),
                         `"${JSON.stringify(test)}" failed to equal itself`
                     ).to.be.true
 
                     expect(
-                        InstrumentCompletionItem.namespacesEqual(test, test, true),
+                        CompletionItem.namespacesEqual(test, test, true),
                         `"${JSON.stringify(test)}" failed to equal itself without its label`
                     ).to.be.true
                 })
@@ -273,20 +273,20 @@ describe('Wrapper', () => {
                     }
                 ]
 
-                testCompletions.forEach((itemA: InstrumentCompletionItem, indexA: number) => {
-                    testCompletions.forEach((itemB: InstrumentCompletionItem, indexB: number) => {
+                testCompletions.forEach((itemA: CompletionItem, indexA: number) => {
+                    testCompletions.forEach((itemB: CompletionItem, indexB: number) => {
                         // Skip the current item B if it's the same as item A
                         if (indexB === indexA) {
                             return
                         }
 
                         expect(
-                            InstrumentCompletionItem.namespacesEqual(itemA, itemB),
+                            CompletionItem.namespacesEqual(itemA, itemB),
                             `"${JSON.stringify(itemA)}" equals "${JSON.stringify(itemB)}"`
                         ).to.be.false
 
                         expect(
-                            InstrumentCompletionItem.namespacesEqual(itemA, itemB, true),
+                            CompletionItem.namespacesEqual(itemA, itemB, true),
                             `"${JSON.stringify(itemA)}" equals "${JSON.stringify(itemB)}" without labels`
                         ).to.be.false
                     })
@@ -296,19 +296,19 @@ describe('Wrapper', () => {
 
         describe('.resolveNamespace()', () => {
             it('returns an empty string when label is an empty string', () => {
-                expect(InstrumentCompletionItem.resolveNamespace(emptyCompletion)).to.be.empty
+                expect(CompletionItem.resolveNamespace(emptyCompletion)).to.be.empty
             })
 
             it('returns a properly resolved completion namespace', () => {
-                const scenarios = new Map<string, InstrumentCompletionItem>([
+                const scenarios = new Map<string, CompletionItem>([
                     ['foo', noDomainCompletion],
                     ['foo.bar', singleDomainCompletion],
                     ['foo.bar.baz', multiDomainCompletion]
                 ])
 
-                scenarios.forEach((test: InstrumentCompletionItem, expected: string) => {
+                scenarios.forEach((test: CompletionItem, expected: string) => {
                     expect(
-                        InstrumentCompletionItem.resolveNamespace(test),
+                        CompletionItem.resolveNamespace(test),
                         `failed to properly resolve completion "${JSON.stringify(test)}"`
                     ).to.equal(expected)
                 })

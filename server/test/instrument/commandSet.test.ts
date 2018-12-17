@@ -19,71 +19,103 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { CompletionItem, SignatureInformation } from '../../src/decorators'
 import { CommandSetInterface } from '../../src/instrument'
-import { InstrumentCompletionItem } from '../../src/wrapper'
 
 describe('Instrument', () => {
     describe('CommandSetInterface', () => {
-        const rootA: InstrumentCompletionItem = {
+        const rootACompl: CompletionItem = {
             label: 'root'
         }
-        const rootAFoo: InstrumentCompletionItem = {
+        const rootAFooCompl: CompletionItem = {
             data: { domains: ['root'] },
             label: 'foo'
         }
-        const rootABar: InstrumentCompletionItem = {
+        const rootABarCompl: CompletionItem = {
             data: { domains: ['root'] },
             label: 'bar'
         }
-        const rootASubroot: InstrumentCompletionItem = {
+        const rootASubrootCompl: CompletionItem = {
             data: { domains: ['root'] },
             label: 'subroot'
         }
-        const rootASubrootFoo: InstrumentCompletionItem = {
+        const rootASubrootFooCompl: CompletionItem = {
             data: { domains: ['subroot', 'root'] },
             label: 'foo'
         }
-        const rootASubrootBar: InstrumentCompletionItem = {
+        const rootASubrootBarCompl: CompletionItem = {
             data: { domains: ['subroot', 'root'] },
             label: 'bar'
         }
-        const rootASubrootBaz: InstrumentCompletionItem = {
+        const rootASubrootBazCompl: CompletionItem = {
             data: { domains: ['subroot', 'root'] },
             label: 'baz'
         }
 
-        const completionSetA: Array<InstrumentCompletionItem> = [
-            rootA,
-            rootAFoo,
-            rootABar,
-            rootASubroot,
-            rootASubrootFoo,
-            rootASubrootBar,
-            rootASubrootBaz
+        const rootAFooSig: SignatureInformation = {
+            label: 'root.foo()'
+        }
+        const rootABarSig: SignatureInformation = {
+            label: 'root.bar()'
+        }
+        const rootASubrootFooSig: SignatureInformation = {
+            label: 'root.subroot[].foo()'
+        }
+        const rootASubrootBarSig: SignatureInformation = {
+            label: 'root.subroot[].bar()'
+        }
+        const rootASubrootBazSig: SignatureInformation = {
+            label: 'root.subroot[].baz()'
+        }
+
+        const completionSetA: Array<CompletionItem> = [
+            rootACompl,
+            rootAFooCompl,
+            rootABarCompl,
+            rootASubrootCompl,
+            rootASubrootFooCompl,
+            rootASubrootBarCompl,
+            rootASubrootBazCompl
         ]
-        const completionSetB: Array<InstrumentCompletionItem> = [
-            rootA,
-            rootA,
-            rootA,
-            rootASubrootBar,
-            rootASubrootBar,
-            rootAFoo
+        const completionSetB: Array<CompletionItem> = [
+            rootACompl,
+            rootACompl,
+            rootACompl,
+            rootASubrootBarCompl,
+            rootASubrootBarCompl,
+            rootAFooCompl
+        ]
+
+        const signatureSetA: Array<SignatureInformation> = [
+            rootAFooSig,
+            rootABarSig,
+            rootASubrootFooSig,
+            rootASubrootBarSig,
+            rootASubrootBazSig
+        ]
+        const signatureSetB: Array<SignatureInformation> = [
+            rootAFooSig,
+            rootAFooSig,
+            rootAFooSig,
+            rootASubrootBarSig,
+            rootASubrootBarSig,
+            rootASubrootFooSig,
         ]
 
         describe('.getCompletionMap()', () => {
-            const expectedMapA = new Map<string, Array<InstrumentCompletionItem>>([
-                ['root', [rootA]],
-                ['root.foo', [rootAFoo]],
-                ['root.bar', [rootABar]],
-                ['root.subroot', [rootASubroot]],
-                ['root.subroot.foo', [rootASubrootFoo]],
-                ['root.subroot.bar', [rootASubrootBar]],
-                ['root.subroot.baz', [rootASubrootBaz]]
+            const expectedMapA = new Map<string, Array<CompletionItem>>([
+                ['root', [rootACompl]],
+                ['root.foo', [rootAFooCompl]],
+                ['root.bar', [rootABarCompl]],
+                ['root.subroot', [rootASubrootCompl]],
+                ['root.subroot.foo', [rootASubrootFooCompl]],
+                ['root.subroot.bar', [rootASubrootBarCompl]],
+                ['root.subroot.baz', [rootASubrootBazCompl]]
             ])
-            const expectedMapB = new Map<string, Array<InstrumentCompletionItem>>([
-                ['root', [rootA, rootA, rootA]],
-                ['root.subroot.bar', [rootASubrootBar, rootASubrootBar]],
-                ['root.foo', [rootAFoo]],
+            const expectedMapB = new Map<string, Array<CompletionItem>>([
+                ['root', [rootACompl, rootACompl, rootACompl]],
+                ['root.subroot.bar', [rootASubrootBarCompl, rootASubrootBarCompl]],
+                ['root.foo', [rootAFooCompl]],
             ])
 
             it('returns an empty map if the given array is empty', () => {
@@ -98,7 +130,28 @@ describe('Instrument', () => {
         })
 
         describe('.getSignatureMap()', () => {
-            // expect.fail()
+            const expectedMapA = new Map<string, Array<SignatureInformation>>([
+                ['root.foo', [rootAFooSig]],
+                ['root.bar', [rootABarSig]],
+                ['root.subroot.foo', [rootASubrootFooSig]],
+                ['root.subroot.bar', [rootASubrootBarSig]],
+                ['root.subroot.baz', [rootASubrootBazSig]]
+            ])
+            const expectedMapB = new Map<string, Array<SignatureInformation>>([
+                ['root.foo', [rootAFooSig, rootAFooSig, rootAFooSig]],
+                ['root.subroot.bar', [rootASubrootBarSig, rootASubrootBarSig]],
+                ['root.subroot.foo', [rootASubrootFooSig]],
+            ])
+
+            it('returns an empty map if the given array is empty', () => {
+                expect(CommandSetInterface.getSignatureMap([])).to.be.empty
+            })
+
+            it('returns an accurate signature map', () => {
+                expect(CommandSetInterface.getSignatureMap(signatureSetA)).to.deep.equal(expectedMapA)
+
+                expect(CommandSetInterface.getSignatureMap(signatureSetB)).to.deep.equal(expectedMapB)
+            })
         })
     })
 

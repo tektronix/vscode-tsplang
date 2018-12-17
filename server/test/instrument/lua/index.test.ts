@@ -21,7 +21,7 @@ import 'mocha'
 
 import { ApiSpec, InstrumentModule, InstrumentSpec } from '../../../src/instrument'
 
-import { emptySpec } from '../emptySpec'
+import { emptySpecUndefinedOptionals } from '../emptySpec'
 
 describe('Instrument Specification', () => {
     describe('Lua', () => {
@@ -77,7 +77,7 @@ describe('Instrument Specification', () => {
             })
 
             it('is empty', () => {
-                expect(spec).to.deep.equal(emptySpec)
+                expect(spec).to.deep.equal(emptySpecUndefinedOptionals)
             })
         })
     })

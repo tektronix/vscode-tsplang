@@ -15,10 +15,11 @@
  */
 'use strict'
 
-import { SignatureHelp } from 'vscode-languageserver'
+import * as vscode_ls from 'vscode-languageserver'
 
-import { InstrumentSignatureInformation } from './signatureInformation'
-
-export interface InstrumentSignatureHelp extends SignatureHelp {
-    signatures: Array<InstrumentSignatureInformation>
+export interface ParameterInformation extends vscode_ls.ParameterInformation {
+    /**
+     * The parameter index of this parameter information.
+     */
+    index: number
 }

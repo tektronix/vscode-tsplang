@@ -17,40 +17,33 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { CommandDocumentation, InstrumentCompletionItem } from '../../wrapper'
+import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 import { InstrumentSpec } from '..'
 
-export const completionDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [
         'smu.measure.rel.level',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.measure.rel.level\n```\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.measure.rel.level\n\`\`\`\n\
 \n\
 Get or set the value used by the relative offset calculation to some number. Defaults to 0 for all measurement \
 functions.\n\
 \n\
-When the measurement function is set to Current, the valid range of this attribute is %{0} to %{1}.\n\
+When the measurement function is set to Current, the valid range of this attribute is \
+${spec.current.measure.level.low} to ${spec.current.measure.level.high}.\n\
 \n\
-When the measurement function is set to Resistance, the valid range of this attribute is %{2} to %{3}.\n\
+When the measurement function is set to Resistance, the valid range of this attribute is \
+${spec.resistance.level.low} to ${spec.resistance.level.high}.\n\
 \n\
-When the measurement function is set to Voltage, the valid range of this attribute is %{4} to %{5}.\n\
+When the measurement function is set to Voltage, the valid range of this attribute is \
+${spec.voltage.measure.level.low} to ${spec.voltage.measure.level.high}.\n\
 \n\
-This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace('%{0}', spec.current.measure.level.low.toString())
-                    .replace('%{1}', spec.current.measure.level.high.toString())
-                    .replace('%{2}', spec.resistance.level.low.toString())
-                    .replace('%{3}', spec.resistance.level.high.toString())
-                    .replace('%{4}', spec.voltage.measure.level.low.toString())
-                    .replace('%{5}', spec.voltage.measure.level.high.toString())
-            }
-        }
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
 ])
 
-export const completions: Array<InstrumentCompletionItem> = [
+export const completions: Array<CompletionItem> = [
     {
         data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Module,
