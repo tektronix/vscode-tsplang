@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformation } from '../decorators'
+import { BaseItem, CompletionItem, MarkupContentCallback, ResolvedNamespace, SignatureInformation } from '../decorators'
 
 import { InstrumentSpec } from '.'
 
@@ -61,23 +61,34 @@ export namespace CommandSetInterface {
 }
 
 export class CommandSet implements CommandSetInterface {
+    readonly completionDepthMap: Map<number, Array<CompletionItem>>
     readonly completionDocs: Map<string, MarkupContentCallback>
-    readonly completions: Array<CompletionItem>
-    readonly signatures: Array<SignatureInformation>
+    readonly signatureDepthMap: Map<number, Array<SignatureInformation>>
     readonly specification: InstrumentSpec
-    /**
-     * An array of Array.slice instruction tuples which, when each is performed
-     * on the main completion array, results in an array of root completions.
-     */
-    private rootCompletionSlices: Array<[number, number]>
 
     constructor(spec: InstrumentSpec) {
+        this.completionDepthMap = new Map()
         this.completionDocs = new Map()
-        this.completions = new Array()
-        this.signatures = new Array()
+        this.signatureDepthMap = new Map()
         this.specification = spec
+    }
 
-        this.rootCompletionSlices = new Array()
+    get completions(): Array<CompletionItem> {
+        const result = new Array<CompletionItem>()
+        this.completionDepthMap.forEach((value: Array<CompletionItem>) => {
+            result.push(...value)
+        })
+
+        return result
+    }
+
+    get signatures(): Array<SignatureInformation> {
+        const result = new Array<SignatureInformation>()
+        this.signatureDepthMap.forEach((value: Array<SignatureInformation>) => {
+            result.push(...value)
+        })
+
+        return result
     }
 
     add(set: CommandSetInterface): void {
@@ -90,55 +101,20 @@ export class CommandSet implements CommandSetInterface {
 
         // merge completion items
         set.completions.forEach((value: CompletionItem) => {
-            this.completions.push(value)
-
-            // If this value has no "data" property, then it is a root completion.
-            if (value.data === undefined) {
-                const exclusiveCompletionsIndex = this.completions.length
-                const currentCompletionsIndex = exclusiveCompletionsIndex - 1
-
-                // Get the last slice range
-                if (this.rootCompletionSlices.length > 0) {
-                    const range = this.rootCompletionSlices[this.rootCompletionSlices.length - 1]
-
-                    // If the last range ends where this range begins.
-                    if (range[1] === currentCompletionsIndex) {
-                        // Modify the ending index of the last range and update the array.
-                        range[1] = exclusiveCompletionsIndex
-
-                        this.rootCompletionSlices[this.rootCompletionSlices.length - 1] = range
-
-                        return
-                    }
-                }
-
-                // Store the new index of the value for later.
-                this.rootCompletionSlices.push([currentCompletionsIndex, exclusiveCompletionsIndex])
-            }
+            const depth = (value.data === undefined) ? 0 : value.data.domains.length
+            const completions = this.completionDepthMap.get(depth) || new Array<CompletionItem>()
+            completions.push(value)
+            this.completionDepthMap.set(depth, completions)
         })
 
         // merge signatures
         if (set.signatures !== undefined) {
             set.signatures.forEach((value: SignatureInformation) => {
-                this.signatures.push(value)
+                const depth = SignatureInformation.depth(value)
+                const signatures = this.signatureDepthMap.get(depth) || new Array<SignatureInformation>()
+                signatures.push(value)
+                this.signatureDepthMap.set(depth, signatures)
             })
         }
-    }
-
-    getRootCompletions(): Array<CompletionItem> | undefined {
-        // We cannot provide root completions if no completions exist.
-        if (this.rootCompletionSlices.length === 0) {
-            return
-        }
-
-        const results = new Array<CompletionItem>()
-
-        for (const range of this.rootCompletionSlices) {
-            const found = this.completions.slice(...range)
-
-            results.push(...found)
-        }
-
-        return results
     }
 }

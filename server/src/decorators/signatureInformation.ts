@@ -19,8 +19,10 @@ import * as vscode_ls from 'vscode-languageserver'
 
 import { InstrumentSpec } from '../instrument'
 
+import { BaseItem } from './baseItem'
 import { CompletionItem } from './completionItem'
 import { ParameterInformation } from './parameterInformation'
+import { ResolvedNamespace } from './resolvedNamespace'
 
 export interface SignatureData {
     parameterTypes: Map<number, Array<CompletionItem>>
@@ -30,7 +32,7 @@ export interface SignatureData {
     qualifier?: number
 }
 
-export interface SignatureInformation extends vscode_ls.SignatureInformation {
+export interface SignatureInformation extends vscode_ls.SignatureInformation, BaseItem {
     /**
      * **Never define this value in a provider file.**
      */
@@ -39,12 +41,11 @@ export interface SignatureInformation extends vscode_ls.SignatureInformation {
     getFormattedParameters?(spec: InstrumentSpec): Array<ParameterInformation>
 }
 export namespace SignatureInformation {
-    /**
-     * This matches how array indexers appear in SignatureInformation.label
-     * as defined in the Instrument Provider.
-     * @see `node.ts` in the Instrument Provider for a good example.
-     */
-    const signatureTableIndexRegExp = new RegExp(/\[\]/g)
+    export function depth(signature: SignatureInformation): number {
+        const rawDepth = resolveNamespace(signature).split('.').length - 1
+
+        return (rawDepth < 0) ? 0 : rawDepth
+    }
 
     /**
      * Fully resolves the namespace of the given signature item using the label property.
@@ -52,7 +53,7 @@ export namespace SignatureInformation {
      * @param signature The signature item to resolve.
      * @returns The fully resolved namespace of the given signature.
      */
-    export function resolveNamespace(signature: SignatureInformation): string {
+    export function resolveNamespace(signature: SignatureInformation): ResolvedNamespace {
         let openParamIndex: number | undefined = signature.label.indexOf('(')
 
         if (openParamIndex === -1) {
@@ -60,6 +61,6 @@ export namespace SignatureInformation {
             openParamIndex = undefined
         }
 
-        return signature.label.slice(0, openParamIndex).replace(signatureTableIndexRegExp, '')
+        return ResolvedNamespace.create(signature.label.slice(0, openParamIndex))
     }
 }

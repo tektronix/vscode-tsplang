@@ -20,8 +20,8 @@ import { TspParser } from 'antlr4-tsplang'
 import { TerminalNode } from 'antlr4/tree/Tree'
 import { TextDocument } from 'vscode-languageserver'
 
-import { CommandSet } from '../../../instrument'
 import { CompletionItem } from '../../../decorators'
+import { CommandSet } from '../../../instrument'
 
 import { ExclusiveContext } from '../../exclusive-completion'
 

@@ -24,7 +24,7 @@ import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 import { TspLexer, TspListener, TspParser } from 'antlr4-tsplang'
 import { Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 
-import { CompletionItem, SignatureInformation } from './decorators'
+import { CompletionItem, ResolvedNamespace, SignatureInformation } from './decorators'
 import { CommandSet } from './instrument'
 import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
@@ -38,6 +38,7 @@ declare class CorrectRecogException extends RecognitionException {
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
     readonly document: TextDocument
+    private enteredStatementException: boolean
     /**
      * A Map keyed to the ending offset of an assignment operator (`=`) or
      * expression list separator (`,`). The associated key-value is an
@@ -141,145 +142,262 @@ export class DocumentContext extends TspListener {
     }
 
     exitStatement(context: TspParser.StatementContext): void {
-        // Context decompositions.
-        const variableList = context.variableList()
-        const expressionList = context.expressionList()
+        let startIndex: number
 
-        if (context.exception !== null) {
-            const exception: CorrectRecogException = context.exception
+        // Use the parse tree if no exceptions occurred within the StatementContext.
+        if (context.exception === null) {
+            // Reset our exception status if necessary.
+            if (this.enteredStatementException) {
+                this.enteredStatementException = false
+            }
 
-            // Skip this exception if it doesn't contain a start token.
-            if (exception.startToken === undefined) {
+            // Context decompositions.
+            const variableList = context.variableList()
+            const expressionList = context.expressionList()
+
+            // Context TerminalNode filters.
+            const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
+                return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
+            })
+
+            let newAssignmentExclusives: Map<number, ExclusiveContext> | undefined
+            //  statement  --{1}-->  variableList
+            //             --{1}-->  '='
+            //             --{1}-->  expressionList
+            if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
+                newAssignmentExclusives = getAssignmentCompletions(
+                    variableList,
+                    assignmentTerminal,
+                    expressionList,
+                    this.commandSet,
+                    this.document
+                )
+            }
+
+            if (newAssignmentExclusives !== undefined) {
+                this.registerExclusiveEntries([...newAssignmentExclusives.entries()])
+
                 return
             }
 
-            // Get the index of the Token at which the exception starts.
-            const blameIndex = exception.startToken.tokenIndex
-
-            // Get all Tokens starting at the exception index.
-            const remainingTokens = this.tokenStream.tokens.slice(blameIndex)
-
-            // We need to track our progress through the Token array.
-            let index = 0
-
-            // Grab Tokens if they form a valid namespace.
-            // (NAME types, full-stop accessors, and array indexers only)
-            const namespaceTokens = new Array<Token>()
-            for (; index < remainingTokens.length; index++) {
-                const token = remainingTokens[index]
-
-                if (token.type === TspLexer.NAME || token.text.localeCompare('.') === 0) {
-                    namespaceTokens.push(token)
-
-                    continue
-                }
-
-                // Consume everything inside the array indexer.
-                if (token.text.localeCompare('[') === 0) {
-                    const startingIndex = index
-
-                    index = SignatureContext.consumePair(index, remainingTokens)
-
-                    // If we successfully consumed the array indexer.
-                    if (index !== startingIndex) {
-                        // Advance the index by 1.
-                        index++
-
-                        // Add the array indexer to the namespace tokens.
-                        namespaceTokens.push(...remainingTokens.slice(startingIndex, index))
-                    }
-
-                    continue
-                }
-
-                break
+            startIndex = context.start.tokenIndex
+        }
+        else {
+            // Exceptions tend to cluster, so only parse them once.
+            // Reset on the next StatementContext without an exception.
+            if (this.enteredStatementException) {
+                return
             }
 
-            // Get the string representation of the namespace tokens.
-            const namespaceString = TokenUtil.getString(...namespaceTokens)
+            const exception: CorrectRecogException = context.exception
 
-            const matchingSignatures = new Array<SignatureInformation>()
+            // Get the index of a starting Token.
+            startIndex = (exception.startToken === undefined)
+                ? context.start.tokenIndex
+                : exception.startToken.tokenIndex
 
-            // If the leading tokens were a valid namespace.
-            if (namespaceString !== undefined) {
-                // Filter all matching signatures from the CommandSet
-                const signatureLabel = SignatureInformation.resolveNamespace({
-                    label: namespaceString.replace(this.tableIndexRegexp, '')
-                })
-                matchingSignatures.push(...this.commandSet.signatures.filter(
-                    (signature: SignatureInformation) => {
-                        return SignatureInformation
-                            .resolveNamespace(signature).localeCompare(signatureLabel) === 0
-                    }
-                ))
-            }
+            this.enteredStatementException = true
+        }
 
-            // Try to process these tokens as a signature if there are signature matches.
-            if (matchingSignatures.length > 0) {
-                // If the next token is an open parenthesis.
-                if (index < remainingTokens.length && remainingTokens[index].text.localeCompare('(') === 0) {
-                    const openParenthesis = remainingTokens[index]
+        // TODO
+        // The following example needs work:
+        /**
+         * --#!2450
+         * a, display.lightstate, c = [[
+         * ]],display.<REQUEST>
+         */
 
-                    // Try to reach the pairing close parenthesis.
-                    const closingIndex = SignatureContext.consumePair(index, remainingTokens)
+        // Get all Tokens starting at the exception index.
+        const remainingTokens = this.tokenStream.tokens.slice(startIndex)
 
-                    // If we found a close parenthesis.
-                    if (closingIndex !== index) {
-                        const closeParenthesis = remainingTokens[closingIndex]
+        // Cache Tokens if they form a valid namespace.
+        // (NAME types, full-stop accessors, and array indexers only)
+        let namespaceTokens = new Array<Token>()
 
-                        // Get all tokens between the parentheses.
-                        const midTokens = remainingTokens.slice(index + 1, closingIndex)
+        for (let index = 0; index < remainingTokens.length; index++) {
+            const token = remainingTokens[index]
 
-                        // Advance to the token after the close parenthesis.
-                        index = closingIndex + 1
+            if (token.type === TspLexer.NAME || token.type === TspLexer.EOF) {
+                let resolvedNamespace: ResolvedNamespace
+                let depth: number
 
-                        // Create a SignatureContext.
-                        const signatureContext = SignatureContext.create(
-                            openParenthesis,
-                            midTokens,
-                            closeParenthesis,
-                            matchingSignatures,
-                            this.document.positionAt.bind(this.document)
+                const lastToken = remainingTokens[index - 1]
+
+                // If the last Token was also a NAME or started on the last line.
+                if (lastToken !== undefined && (lastToken.type === TspLexer.NAME || lastToken.line !== token.line)) {
+                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
+                    depth = ResolvedNamespace.depth(resolvedNamespace)
+
+                    // Filter on any available completions at our current namespace depth.
+                    const completions = (this.commandSet.completionDepthMap.get(depth) || []).filter(
+                        (value: CompletionItem) => CompletionItem.namespaceMatch(resolvedNamespace, value)
+                    )
+
+                    // Register any matching completions.
+                    if (completions.length > 0) {
+                        this.registerExclusiveContext(
+                            namespaceTokens[namespaceTokens.length - 1].stop + 1,
+                            {
+                                completions,
+                                text: TokenUtil.getString(...namespaceTokens)
+                            }
                         )
+                    }
 
-                        // Register this signature context.
-                        this.registerSignatureContext(openParenthesis.stop + 1, signatureContext)
+                    // Clear the cached namespace.
+                    namespaceTokens = new Array<Token>()
+                }
+
+                namespaceTokens.push(token)
+
+                // Look ahead to see if the next Token is an open parenthesis.
+                const nextToken = remainingTokens[index + 1]
+
+                if (nextToken !== undefined && nextToken.text.localeCompare('(') === 0) {
+                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
+                    depth = ResolvedNamespace.depth(resolvedNamespace)
+
+                    // Filter on any available signatures at our current namespace depth.
+                    const signatures = (this.commandSet.signatureDepthMap.get(depth) || []).filter(
+                        (value: SignatureInformation) => {
+                            return ResolvedNamespace.equal(
+                                SignatureInformation.resolveNamespace(value),
+                                // We just type-guarded, so typecast is okay.
+                                resolvedNamespace as ResolvedNamespace
+                            )
+                        }
+                    )
+
+                    if (signatures.length > 0) {
+                        const nextIndex = index + 1
+
+                        // Try to reach the pairing close parenthesis.
+                        const closingIndex = SignatureContext.consumePair(nextIndex, remainingTokens)
+
+                        // If we found a close parenthesis.
+                        if (closingIndex !== nextIndex) {
+                            const closeParenthesis = remainingTokens[closingIndex]
+
+                            // Get all Tokens between the parentheses.
+                            const midTokens = remainingTokens.slice(nextIndex + 1, closingIndex)
+
+                            // Advance to the Token after the close parenthesis.
+                            index = closingIndex + 1
+
+                            // Register this signature context.
+                            this.registerSignatureContext(
+                                nextToken.stop + 1,
+                                SignatureContext.create(
+                                    nextToken,
+                                    midTokens,
+                                    closeParenthesis,
+                                    signatures,
+                                    this.document.positionAt.bind(this.document)
+                                )
+                            )
+                        }
                     }
                 }
             }
+            else if (token.text.localeCompare('.') === 0) {
+                namespaceTokens.push(token)
+            }
+            // Consume everything inside the array indexer.
+            else if (token.text.localeCompare('[') === 0) {
+                const startingIndex = index
 
-            return
-        }
+                index = SignatureContext.consumePair(index, remainingTokens)
 
-        // Context TerminalNode filters.
-        const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
-            return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
-        })
+                // If we successfully consumed the array indexer.
+                if (index !== startingIndex) {
+                    // Advance the index by 1.
+                    index++
 
-        let newAssignmentExclusives: Map<number, ExclusiveContext> | undefined
-        //  statement  --{1}-->  variableList
-        //             --{1}-->  '='
-        //             --{1}-->  expressionList
-        if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
-            newAssignmentExclusives = getAssignmentCompletions(
-                variableList,
-                assignmentTerminal,
-                expressionList,
-                this.commandSet,
-                this.document
-            )
-        }
-
-        if (newAssignmentExclusives !== undefined) {
-            this.fuzzyOffsets.fuzz(this.document.getText(), ...newAssignmentExclusives.keys())
-
-            for (const [k, v] of newAssignmentExclusives) {
-                this.exclusives.set(k, v)
+                    // Add the array indexer to the namespace tokens.
+                    namespaceTokens.push(...remainingTokens.slice(startingIndex, index))
+                }
+            }
+            // If this Token is an invalid namespace component.
+            else {
+                // Clear the cache.
+                namespaceTokens = new Array<Token>()
             }
         }
+
+        // // Please insert a Token to continue...
+        // if (namespaceTokens.length === 0) {
+        //     return
+        // }
+
+        // // Get the string representation of the namespace Tokens.
+        // // We just verified that we had Tokens, so typecast is okay.
+        // const rawNamespace = TokenUtil.getString(...namespaceTokens) as string
+        // // Create a match-able namespace label.
+        // const namespaceLabel = ResolvedNamespace.create(rawNamespace)
+
+        // // Filter all matching completions from the CommandSet
+        // matchingCompletions.push(...this.commandSet.completions.filter((completion: CompletionItem) => {
+        //     return CompletionItem.namespaceMatch(namespaceLabel, completion)
+        // }))
+
+        // // Filter all matching signatures from the CommandSet
+        // matchingSignatures.push(...this.commandSet.signatures.filter(
+        //     (signature: SignatureInformation) => {
+        //         return SignatureInformation.resolveNamespace(signature).localeCompare(namespaceLabel) === 0
+        //     }
+        // ))
+
+        // // Process these Tokens as an instrument completion if there are completion matches.
+        // if (matchingCompletions.length > 0) {
+        //     // Register this exclusive context using the last Token.
+        //     this.registerExclusiveContext(
+        //         namespaceTokens[namespaceTokens.length - 1].stop + 1,
+        //         {
+        //         completions: matchingCompletions,
+        //         text: rawNamespace.trim()
+        //         }
+        //     )
+        // }
+
+        // // Try to process these Tokens as a signature if there are signature matches.
+        // if (matchingSignatures.length > 0) {
+        //     // If the next Token is an open parenthesis.
+        //     if (index < remainingTokens.length && remainingTokens[index].text.localeCompare('(') === 0) {
+        //         const openParenthesis = remainingTokens[index]
+
+        //         // Try to reach the pairing close parenthesis.
+        //         const closingIndex = SignatureContext.consumePair(index, remainingTokens)
+
+        //         // If we found a close parenthesis.
+        //         if (closingIndex !== index) {
+        //             const closeParenthesis = remainingTokens[closingIndex]
+
+        //             // Get all Tokens between the parentheses.
+        //             const midTokens = remainingTokens.slice(index + 1, closingIndex)
+
+        //             // Advance to the Token after the close parenthesis.
+        //             index = closingIndex + 1
+
+        //             // Create a SignatureContext.
+        //             const signatureContext = SignatureContext.create(
+        //                 openParenthesis,
+        //                 midTokens,
+        //                 closeParenthesis,
+        //                 matchingSignatures,
+        //                 this.document.positionAt.bind(this.document)
+        //             )
+
+        //             // Register this signature context.
+        //             this.registerSignatureContext(openParenthesis.stop + 1, signatureContext)
+        //         }
+        //     }
+        // }
+
+        // return
+
     }
 
-    getCompletionItems(cursor: Position): Array<CompletionItem> {
+    getCompletionItems(cursor: Position): Array<CompletionItem> | undefined {
         let offset = this.document.offsetAt(cursor)
 
         if (!this.exclusives.has(offset)) {
@@ -300,7 +418,11 @@ export class DocumentContext extends TspListener {
                 }
             }
             else {
-                return exclusiveContext.completions
+                // Only add root completions from this exclusive context if no
+                // text is available to filter on.
+                exclusiveResult.push(...exclusiveContext.completions.filter((value: CompletionItem) => {
+                    return value.data === undefined
+                }))
             }
 
             if (exclusiveResult.length > 0) {
@@ -308,7 +430,7 @@ export class DocumentContext extends TspListener {
             }
         }
 
-        return this.commandSet.completions
+        return this.commandSet.completionDepthMap.get(0)
     }
 
     getSignatureHelp(cursor: Position): SignatureHelp | undefined {
@@ -343,6 +465,20 @@ export class DocumentContext extends TspListener {
             activeSignature: 0,
             signatures: context.signatures
         }
+    }
+
+    registerExclusiveContext(offset: number, context: ExclusiveContext): void {
+        // Fuzz the exclusive offset range.
+        this.fuzzyOffsets.fuzz(this.document.getText(), offset)
+
+        // Add this new exclusive context.
+        this.exclusives.set(offset, context)
+    }
+
+    registerExclusiveEntries(entries: Array<[number, ExclusiveContext]>): void {
+        entries.forEach(([offset, context]: [number, ExclusiveContext]) => {
+            this.registerExclusiveContext(offset, context)
+        })
     }
 
     registerSignatureContext(offset: number, context: SignatureContext): void {
@@ -391,6 +527,7 @@ export class DocumentContext extends TspListener {
     }
 
     update(): void {
+        this.enteredStatementException = false
         this.exclusives = new Map()
         this.fuzzyOffsets = new FuzzyOffsetMap()
         this.fuzzySignatureOffsets = new FuzzyOffsetMap()

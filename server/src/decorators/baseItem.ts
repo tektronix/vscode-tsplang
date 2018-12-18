@@ -13,11 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-'use strict'
 
-export { BaseItem } from './baseItem'
-export { CompletionItemData, CompletionItem } from './completionItem'
-export { MarkupContent, MarkupContentCallback } from './markupContent'
-export { ParameterInformation } from './parameterInformation'
-export { ResolvedNamespace } from './resolvedNamespace'
-export { SignatureInformation, SignatureData } from './signatureInformation'
+import { CompletionItemData } from './completionItem'
+import { SignatureData } from './signatureInformation'
+
+export interface BaseItem {
+    data?: CompletionItemData | SignatureData
+    label: string
+}

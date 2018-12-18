@@ -15,16 +15,20 @@
  */
 'use strict'
 
+import { Token } from 'antlr4'
 // tslint:disable-next-line:no-require-imports
 import escapeStringRegexp = require('escape-string-regexp')
 import * as vscode_ls from 'vscode-languageserver'
+
+import { BaseItem } from './baseItem'
+import { ResolvedNamespace } from './resolvedNamespace'
 
 export interface CompletionItemData {
     domains: Array<string>
     types?: Array<CompletionItem>
 }
 
-export interface CompletionItem extends vscode_ls.CompletionItem {
+export interface CompletionItem extends vscode_ls.CompletionItem, BaseItem {
     allowBitwise?: boolean
     data?: CompletionItemData
     exclusive?: boolean
@@ -205,9 +209,28 @@ export namespace CompletionItem {
      * @param completion The completion item to resolve.
      * @returns The fully resolved namespace of the given completion.
      */
-    export function resolveNamespace(completion: CompletionItem): string {
+    export function resolveNamespace(completion: CompletionItem): ResolvedNamespace {
         const namespaceArray: Array<string> = (completion.data) ? [...completion.data.domains].reverse() : []
 
         return namespaceArray.concat(completion.label).join('.')
+    }
+
+    /**
+     * Compare the given Token array to the label and data.domains properties of the completion item.
+     * **Note:** empty arrays match everything.
+     * @param tokens The array of Tokens to use for the search.
+     * @param completion The CompletionItem to attempt a match against.
+     * @returns True if the given Tokens have the same namespace depth as the given completion and
+     * wholly or partially match against it. False otherwise.
+     */
+    export function tokensMatch(tokens: Array<Token>, completion: CompletionItem): boolean {
+        if (tokens.length === 0) {
+            return true
+        }
+
+        return ResolvedNamespace.equal(
+            ResolvedNamespace.create(tokens),
+            CompletionItem.resolveNamespace(completion)
+        )
     }
 }
