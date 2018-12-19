@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { BaseItem, CompletionItem, MarkupContentCallback, ResolvedNamespace, SignatureInformation } from '../decorators'
+import { CompletionItem, MarkupContentCallback, SignatureInformation } from '../decorators'
 
 import { InstrumentSpec } from '.'
 
