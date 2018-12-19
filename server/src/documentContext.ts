@@ -265,8 +265,7 @@ export class DocumentContext extends TspListener {
                         (value: SignatureInformation) => {
                             return ResolvedNamespace.equal(
                                 SignatureInformation.resolveNamespace(value),
-                                // We just type-guarded, so typecast is okay.
-                                resolvedNamespace as ResolvedNamespace
+                                resolvedNamespace
                             )
                         }
                     )
