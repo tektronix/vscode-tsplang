@@ -37,7 +37,8 @@ function getTerminalsFromException(
         return []
     }
 
-    const remainingTokens = ((exception.input as unknown) as CommonTokenStream).tokens.slice(startingTokenIndex)
+    // tslint:disable-next-line:no-any
+    const remainingTokens = ((exception.input as any) as CommonTokenStream).tokens.slice(startingTokenIndex)
 
     const result = new Array<TerminalNode>()
 
