@@ -53,9 +53,5 @@ export namespace ResolvedNamespace {
     export function equal(a: ResolvedNamespace, b: ResolvedNamespace): boolean {
         return a.localeCompare(b) === 0
     }
-
-    export function is(value: string): boolean {
-        return !tableIndexRegExp.test(value)
-    }
 }
 export type ResolvedNamespace = string
