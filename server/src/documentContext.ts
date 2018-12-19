@@ -199,14 +199,6 @@ export class DocumentContext extends TspListener {
             this.enteredStatementException = true
         }
 
-        // TODO
-        // The following example needs work:
-        /**
-         * --#!2450
-         * a, display.lightstate, c = [[
-         * ]],display.<REQUEST>
-         */
-
         // Get all Tokens starting at the exception index.
         const remainingTokens = this.tokenStream.tokens.slice(startIndex)
 
@@ -223,8 +215,15 @@ export class DocumentContext extends TspListener {
 
                 const lastToken = remainingTokens[index - 1]
 
-                // If the last Token was also a NAME or started on the last line.
-                if (lastToken !== undefined && (lastToken.type === TspLexer.NAME || lastToken.line !== token.line)) {
+                const shouldRegisterNamespace = (lastToken === undefined)
+                    ? false
+                    // If this token is an EOF
+                    : token.type === TspLexer.EOF
+                        // OR if the last Token was also a NAME or started on the last line.
+                        || (lastToken.type === TspLexer.NAME || lastToken.line !== token.line)
+
+                // If we have cached namespace Tokens.
+                if (shouldRegisterNamespace) {
                     resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
                     depth = ResolvedNamespace.depth(resolvedNamespace)
 
@@ -235,13 +234,17 @@ export class DocumentContext extends TspListener {
 
                     // Register any matching completions.
                     if (completions.length > 0) {
-                        this.registerExclusiveContext(
-                            namespaceTokens[namespaceTokens.length - 1].stop + 1,
-                            {
-                                completions,
-                                text: TokenUtil.getString(...namespaceTokens)
-                            }
-                        )
+                        const stopOffset = namespaceTokens[namespaceTokens.length - 1].stop + 1
+
+                        if (!this.exclusives.has(stopOffset)) {
+                            this.registerExclusiveContext(
+                                stopOffset,
+                                {
+                                    completions,
+                                    text: TokenUtil.getString(...namespaceTokens)
+                                }
+                            )
+                        }
                     }
 
                     // Clear the cached namespace.
@@ -310,11 +313,8 @@ export class DocumentContext extends TspListener {
 
                 // If we successfully consumed the array indexer.
                 if (index !== startingIndex) {
-                    // Advance the index by 1.
-                    index++
-
                     // Add the array indexer to the namespace tokens.
-                    namespaceTokens.push(...remainingTokens.slice(startingIndex, index))
+                    namespaceTokens.push(...remainingTokens.slice(startingIndex, index + 1))
                 }
             }
             // If this Token is an invalid namespace component.
@@ -323,78 +323,6 @@ export class DocumentContext extends TspListener {
                 namespaceTokens = new Array<Token>()
             }
         }
-
-        // // Please insert a Token to continue...
-        // if (namespaceTokens.length === 0) {
-        //     return
-        // }
-
-        // // Get the string representation of the namespace Tokens.
-        // // We just verified that we had Tokens, so typecast is okay.
-        // const rawNamespace = TokenUtil.getString(...namespaceTokens) as string
-        // // Create a match-able namespace label.
-        // const namespaceLabel = ResolvedNamespace.create(rawNamespace)
-
-        // // Filter all matching completions from the CommandSet
-        // matchingCompletions.push(...this.commandSet.completions.filter((completion: CompletionItem) => {
-        //     return CompletionItem.namespaceMatch(namespaceLabel, completion)
-        // }))
-
-        // // Filter all matching signatures from the CommandSet
-        // matchingSignatures.push(...this.commandSet.signatures.filter(
-        //     (signature: SignatureInformation) => {
-        //         return SignatureInformation.resolveNamespace(signature).localeCompare(namespaceLabel) === 0
-        //     }
-        // ))
-
-        // // Process these Tokens as an instrument completion if there are completion matches.
-        // if (matchingCompletions.length > 0) {
-        //     // Register this exclusive context using the last Token.
-        //     this.registerExclusiveContext(
-        //         namespaceTokens[namespaceTokens.length - 1].stop + 1,
-        //         {
-        //         completions: matchingCompletions,
-        //         text: rawNamespace.trim()
-        //         }
-        //     )
-        // }
-
-        // // Try to process these Tokens as a signature if there are signature matches.
-        // if (matchingSignatures.length > 0) {
-        //     // If the next Token is an open parenthesis.
-        //     if (index < remainingTokens.length && remainingTokens[index].text.localeCompare('(') === 0) {
-        //         const openParenthesis = remainingTokens[index]
-
-        //         // Try to reach the pairing close parenthesis.
-        //         const closingIndex = SignatureContext.consumePair(index, remainingTokens)
-
-        //         // If we found a close parenthesis.
-        //         if (closingIndex !== index) {
-        //             const closeParenthesis = remainingTokens[closingIndex]
-
-        //             // Get all Tokens between the parentheses.
-        //             const midTokens = remainingTokens.slice(index + 1, closingIndex)
-
-        //             // Advance to the Token after the close parenthesis.
-        //             index = closingIndex + 1
-
-        //             // Create a SignatureContext.
-        //             const signatureContext = SignatureContext.create(
-        //                 openParenthesis,
-        //                 midTokens,
-        //                 closeParenthesis,
-        //                 matchingSignatures,
-        //                 this.document.positionAt.bind(this.document)
-        //             )
-
-        //             // Register this signature context.
-        //             this.registerSignatureContext(openParenthesis.stop + 1, signatureContext)
-        //         }
-        //     }
-        // }
-
-        // return
-
     }
 
     getCompletionItems(cursor: Position): Array<CompletionItem> | undefined {
@@ -411,8 +339,9 @@ export class DocumentContext extends TspListener {
             const exclusiveResult = new Array<CompletionItem>()
 
             if (exclusiveContext.text !== undefined) {
+                // Only show those completions which partially match the text.
                 for (const completion of exclusiveContext.completions) {
-                    if (CompletionItem.namespaceMatch(exclusiveContext.text, completion)) {
+                    if (CompletionItem.namespaceMatch(ResolvedNamespace.create(exclusiveContext.text), completion)) {
                         exclusiveResult.push(completion)
                     }
                 }

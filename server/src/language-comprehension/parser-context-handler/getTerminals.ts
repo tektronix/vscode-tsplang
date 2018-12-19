@@ -15,9 +15,64 @@
  */
 'use strict'
 
-import { ParserRuleContext } from 'antlr4'
-// tslint:disable-next-line:no-submodule-imports
-import { TerminalNode } from 'antlr4/tree/Tree'
+import { CommonTokenStream, ParserRuleContext, Token } from 'antlr4'
+// tslint:disable:no-submodule-imports
+import { NoViableAltException, RecognitionException } from 'antlr4/error/Errors'
+import { TerminalNode, TerminalNodeImpl } from 'antlr4/tree/Tree'
+
+declare class CorrectNoViableAltException extends NoViableAltException {
+    startToken: Token
+}
+
+function getTerminalsFromException(
+    exception: RecognitionException,
+    last?: TerminalNode
+): Array<TerminalNode> {
+    let startingTokenIndex: number
+
+    if (exception instanceof NoViableAltException) {
+        startingTokenIndex = (exception as CorrectNoViableAltException).startToken.tokenIndex
+    }
+    else {
+        return []
+    }
+
+    const remainingTokens = ((exception.input as unknown) as CommonTokenStream).tokens.slice(startingTokenIndex)
+
+    const result = new Array<TerminalNode>()
+
+    for (const token of remainingTokens) {
+        if (token.type === Token.EOF) {
+            break
+        }
+
+        if (result.length === 0) {
+            if (last === undefined) {
+                result.push(new TerminalNodeImpl(token))
+
+                continue
+            }
+
+            if (token.line === last.symbol.line) {
+                result.push(new TerminalNodeImpl(token))
+
+                continue
+            }
+
+            break
+        }
+
+        if (token.line === result[result.length - 1].symbol.line) {
+            result.push(new TerminalNodeImpl(token))
+
+            continue
+        }
+
+        break
+    }
+
+    return result
+}
 
 export function getTerminals(
     context: ParserRuleContext,
@@ -25,6 +80,10 @@ export function getTerminals(
 ): Array<TerminalNode> {
     const recurse = (current: ParserRuleContext, terminals: Array<TerminalNode>): Array<TerminalNode> => {
         let result = new Array<TerminalNode>(...terminals)
+
+        if (current.exception !== null) {
+            return result.concat(...getTerminalsFromException(current.exception, result[result.length - 1]))
+        }
 
         for (let i = 0; i < current.getChildCount(); i++) {
             const child = current.getChild(i)

@@ -17,7 +17,6 @@
 
 import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
-import { getCompletions } from './serverProvider'
 import { TspManager } from './tspManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
@@ -90,7 +89,7 @@ connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionIt
         return
     }
 
-    return getCompletions(params.position, tspItem)
+    return tspItem.context.getCompletionItems(params.position)
 })
 
 // This handler resolves additional information for the item selected in the completion list.

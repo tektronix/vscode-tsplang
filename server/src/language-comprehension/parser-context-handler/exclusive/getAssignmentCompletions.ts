@@ -20,7 +20,7 @@ import { TspParser } from 'antlr4-tsplang'
 import { TerminalNode } from 'antlr4/tree/Tree'
 import { TextDocument } from 'vscode-languageserver'
 
-import { CompletionItem } from '../../../decorators'
+import { CompletionItem, ResolvedNamespace } from '../../../decorators'
 import { CommandSet } from '../../../instrument'
 
 import { ExclusiveContext } from '../../exclusive-completion'
@@ -63,14 +63,15 @@ export function getAssignmentCompletions(
         }
 
         const candidateText = candidate.getText()
+        const candidateDepth = ResolvedNamespace.depth(candidateText)
 
-        for (const item of commandSet.completions) {
+        const completionCandidates = commandSet.completionDepthMap.get(candidateDepth) || []
+
+        for (const item of completionCandidates) {
             // If the candidate matches an instrument completion item.
-            if (candidateText.localeCompare(CompletionItem.resolveNamespace(item)) === 0) {
+            if (CompletionItem.namespaceMatch(ResolvedNamespace.create(candidateText), item)) {
                 // The item should have a data.types property with content.
-                if (item.data !== undefined
-                        && item.data.types !== undefined
-                        && item.data.types.length > 0) {
+                if (item.data !== undefined && item.data.types !== undefined && item.data.types.length > 0) {
                     candidates.set(i, {
                         completions: item.data.types
                     })
