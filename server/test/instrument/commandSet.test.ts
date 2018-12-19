@@ -149,7 +149,7 @@ describe('Instrument', () => {
         rootAFooSig,
         rootASubrootBarSig,
         rootASubrootBarSig,
-        rootASubrootFooSig,
+        rootASubrootFooSig
     ]
 
     describe('CommandSetInterface', () => {
@@ -207,6 +207,12 @@ describe('Instrument', () => {
     })
 
     describe('CommandSet', () => {
+        describe('#completionDepthMap', () => {
+            it('is empty on instantiation', () => {
+                expect(new CommandSet(emptySpec).completionDepthMap).to.be.empty
+            })
+        })
+
         describe('#completionDocs', () => {
             it('is empty on instantiation', () => {
                 expect(new CommandSet(emptySpec).completionDocs).to.be.empty
@@ -216,6 +222,12 @@ describe('Instrument', () => {
         describe('#completions', () => {
             it('is empty on instantiation', () => {
                 expect(new CommandSet(emptySpec).completions).to.be.empty
+            })
+        })
+
+        describe('#signatureDepthMap', () => {
+            it('is empty on instantiation', () => {
+                expect(new CommandSet(emptySpec).signatureDepthMap).to.be.empty
             })
         })
 
@@ -247,16 +259,31 @@ describe('Instrument', () => {
                 })
 
                 it('does not add completions when none are given', () => {
+                    expect(commandSet.completionDepthMap).to.be.empty
                     expect(commandSet.completions).to.be.empty
                 })
 
                 it('does not add signatures when undefined', () => {
+                    expect(commandSet.signatureDepthMap).to.be.empty
                     expect(commandSet.signatures).to.be.empty
                 })
             })
 
             context('When adding to an empty CommandSet', () => {
                 const commandSet = new CommandSet(emptySpec)
+
+                const completionDepthMapA: Map<number, Array<CompletionItem>> = new Map([
+                    [0, [rootACompl]],
+                    [1, [rootAFooCompl, rootABarCompl, rootASubrootCompl]],
+                    // tslint:disable-next-line:no-magic-numbers
+                    [2, [rootASubrootFooCompl, rootASubrootBarCompl, rootASubrootBazCompl]]
+                ])
+
+                const signatureDepthMapA: Map<number, Array<SignatureInformation>> = new Map([
+                    [1, [rootAFooSig, rootABarSig]],
+                    // tslint:disable-next-line:no-magic-numbers
+                    [2, [rootASubrootFooSig, rootASubrootBarSig, rootASubrootBazSig]]
+                ])
 
                 before('Seed the CommandSet', () => {
                     commandSet.add({
@@ -271,16 +298,50 @@ describe('Instrument', () => {
                 })
 
                 it('adds completions to the empty set', () => {
-                    expect(commandSet.completions).to.deep.equal(completionSetA)
+                    expect(commandSet.completions).to.contain.members(completionSetA)
+                })
+
+                it('maps the namespace depth of each completion', () => {
+                    expect(commandSet.completionDepthMap).to.deep.equal(completionDepthMapA)
                 })
 
                 it('adds signatures to the empty set', () => {
-                    expect(commandSet.signatures).to.deep.equal(signatureSetA)
+                    expect(commandSet.signatures).to.contain.members(signatureSetA)
+                })
+
+                it('maps the namespace depth of each signature', () => {
+                    expect(commandSet.signatureDepthMap).to.deep.equal(signatureDepthMapA)
                 })
             })
 
             context('When adding duplicates to the CommandSet', () => {
                 const commandSet = new CommandSet(emptySpec)
+
+                const completionDepthMapB: Map<number, Array<CompletionItem>> = new Map([
+                    [0, [rootACompl, rootACompl, rootACompl, rootACompl]],
+                    [1, [rootAFooCompl, rootABarCompl, rootASubrootCompl, rootAFooCompl]],
+                    // tslint:disable-next-line:no-magic-numbers
+                    [2, [
+                        rootASubrootFooCompl,
+                        rootASubrootBarCompl,
+                        rootASubrootBazCompl,
+                        rootASubrootBarCompl,
+                        rootASubrootBarCompl
+                    ]]
+                ])
+
+                const signatureDepthMapB: Map<number, Array<SignatureInformation>> = new Map([
+                    [1, [rootAFooSig, rootABarSig, rootAFooSig, rootAFooSig, rootAFooSig]],
+                    // tslint:disable-next-line:no-magic-numbers
+                    [2, [
+                        rootASubrootFooSig,
+                        rootASubrootBarSig,
+                        rootASubrootBazSig,
+                        rootASubrootBarSig,
+                        rootASubrootBarSig,
+                        rootASubrootFooSig
+                    ]]
+                ])
 
                 before('Seed the CommandSet', () => {
                     // Add an initial CommandSet.
@@ -303,54 +364,19 @@ describe('Instrument', () => {
                 })
 
                 it('merges completions into an existing set', () => {
-                    expect(commandSet.completions).to.deep.equal(ArrayUnion(completionSetA, completionSetB))
+                    expect(commandSet.completions).to.contain.members(ArrayUnion(completionSetA, completionSetB))
+                })
+
+                it('maps the namespace depth of each completion', () => {
+                    expect(commandSet.completionDepthMap).to.deep.equal(completionDepthMapB)
                 })
 
                 it('merges signatures into an existing set', () => {
-                    expect(commandSet.signatures).to.deep.equal(ArrayUnion(signatureSetA, signatureSetB))
-                })
-            })
-        })
-
-        describe.skip('#getRootCompletions()', () => {
-            context('When the CommandSet is empty', () => {
-                const commandSet = new CommandSet(emptySpec)
-
-                it('returns undefined if no completions are available', () => {
-                    expect.fail('getRootCompletions is undefined')
-                    // expect(commandSet.getRootCompletions()).to.be.undefined
-                })
-            })
-
-            context('When the CommandSet is populated', () => {
-                const rootBCompl: CompletionItem = {
-                    label: 'foo'
-                }
-                const rootCCompl: CompletionItem = {
-                    label: 'bar'
-                }
-                const commandSet = new CommandSet(emptySpec)
-
-                before('Seed the CommandSet', () => {
-                    commandSet.add({
-                        completions: [
-                            rootACompl,
-                            rootASubrootCompl,
-                            rootBCompl,
-                            rootCCompl
-                        ]
-                    })
+                    expect(commandSet.signatures).to.contain.members(ArrayUnion(signatureSetA, signatureSetB))
                 })
 
-                it('returns an array of root completions', () => {
-                    const expected: Array<CompletionItem> = [
-                        rootACompl,
-                        rootBCompl,
-                        rootCCompl
-                    ]
-
-                    expect.fail('getRootCompletions is undefined')
-                    // expect(commandSet.getRootCompletions()).to.deep.equal(expected)
+                it('maps the namespace depth of each signature', () => {
+                    expect(commandSet.signatureDepthMap).to.deep.equal(signatureDepthMapB)
                 })
             })
         })

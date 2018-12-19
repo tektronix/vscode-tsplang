@@ -93,11 +93,11 @@ describe('Decorators', () => {
                 })
             })
 
-            it('does not remove populated indexers', () => {
+            it('removes indexers containing integers', () => {
                 const scenarios = new Map<string, Array<string>>([
-                    ['foo[1]', ['foo[1][](', 'fo[]o[1]((', '[]foo[1[]](bar.baz[](']],
-                    ['foo[ ].bar', ['foo[ ].bar[](', 'foo[ ][].bar((', 'foo[ ][].bar(baz[.](']],
-                    ['baz[1*^)  ] ', ['baz[1*^) [] ] (']]
+                    ['foo', ['foo[1][](', 'fo[]o[1]((', '[]foo[1](bar.baz[](']],
+                    ['foo.bar', ['foo[3].bar[](', 'foo[999][].bar((', 'foo[5][].bar(baz[.](']],
+                    ['baz[1*^)  ] ', ['baz[1*^) [22] ] (']]
                 ])
 
                 scenarios.forEach((testCases: Array<string>, expected: string) => {
