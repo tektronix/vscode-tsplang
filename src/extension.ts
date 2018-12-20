@@ -43,7 +43,12 @@ export function activate(context: ExtensionContext): void {
     const clientOptions: LanguageClientOptions = {
         // Register the server for TSP documents
         documentSelector: [{scheme: 'file', language: 'tsp'}],
+        initializationOptions: {
+            // tslint:disable-next-line:no-string-literal
+            enumerationSuggestions: workspace.getConfiguration('tsplang')['enumerationSuggestions']
+        },
         synchronize : {
+            configurationSection: 'tsplang',
             fileEvents: workspace.createFileSystemWatcher(
                 '*.tsp',
                 false,

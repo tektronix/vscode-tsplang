@@ -18,6 +18,7 @@
 import { TextDocuments } from 'vscode-languageserver'
 
 import { Model } from './model'
+import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 import { TspItem } from './tspItem'
 import { TspPool } from './tspPool'
@@ -41,7 +42,7 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    async register(uri: string): Promise<void> {
+    async register(uri: string, documentSettings: TsplangSettings): Promise<void> {
         return new Promise<void>(async (
             resolve: (value?: void) => void,
             reject: (reason?: Error) => void
@@ -71,7 +72,7 @@ export class TspManager {
                 const shebang = Shebang.tokenize(firstLine)
 
                 // Try to make a new TspItem instance.
-                const tspItem = await TspItem.create(document, shebang, this.pool)
+                const tspItem = await TspItem.create(document, shebang, documentSettings, this.pool)
 
                 tspItem.context.update()
                 tspItem.context.walk()
@@ -139,7 +140,7 @@ export class TspManager {
                 this.unregister(uri)
 
                 // Re-register everything.
-                await this.register(uri)
+                await this.register(uri, item.settings)
 
                 // The context was updated by register, so we can resolve.
                 resolve()
@@ -153,5 +154,11 @@ export class TspManager {
 
             resolve()
         })
+    }
+
+    updateSettings(uri: string, settings: TsplangSettings): void {
+        this.unregister(uri)
+        this.pool.update(settings)
+        this.register(uri, settings)
     }
 }

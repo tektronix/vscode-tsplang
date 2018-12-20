@@ -15,9 +15,12 @@
  */
 'use strict'
 
-import { ApiSpec, CommandSet, InstrumentModule, InstrumentSpec } from './instrument'
+import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+
+import { ApiSpec, CommandSet, CommandSetInterface, InstrumentModule, InstrumentSpec } from './instrument'
 import { generateCommandSet } from './instrument/provider'
 import { Model } from './model'
+import { EnumerationSuggestionValue, TsplangSettings } from './settings'
 
 export interface PoolEntry {
     apiSpec: Array<ApiSpec>
@@ -33,7 +36,7 @@ export class TspPool {
         this.pool = new Map()
     }
 
-    async register(model: Model): Promise<PoolEntry> {
+    async register(model: Model, settings: TsplangSettings): Promise<PoolEntry> {
         return new Promise<PoolEntry>(async (
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
@@ -46,7 +49,7 @@ export class TspPool {
             }
 
             try {
-                const newEntry = await this.load(model)
+                const newEntry = await this.load(model, settings)
                 // add new model to the current pool
                 this.pool.set(model, newEntry)
 
@@ -83,6 +86,36 @@ export class TspPool {
         }
     }
 
+    update(settings: TsplangSettings): void {
+        for (const model of this.pool.keys()) {
+            const entry = this.pool.get(model) as PoolEntry
+
+            const modifiedCompletions = entry.commandSet.completions.map((value: CompletionItem) => {
+                // Only edit enumerations.
+                if (value.kind !== undefined && value.kind === CompletionItemKind.EnumMember) {
+                    // Set the sortText property of this enumeration completion.
+                    value.sortText = EnumerationSuggestionValue.resolveSortText(value, settings.enumerationSuggestions)
+                }
+
+                return value
+            })
+
+            // Create a new CommandSetInterface using the modifed completions.
+            const commandSetInterface: CommandSetInterface = {
+                completionDocs: entry.commandSet.completionDocs,
+                completions: modifiedCompletions,
+                signatures: entry.commandSet.signatures
+            }
+
+            // Re-instance this CommandSet
+            entry.commandSet = new CommandSet(entry.instrumentSpec)
+            entry.commandSet.add(commandSetInterface)
+
+            // Update the pool entry with our new item.
+            this.pool.set(model, entry)
+        }
+    }
+
     private get(model: Model): PoolEntry {
         const entry = this.pool.get(model)
 
@@ -101,7 +134,7 @@ export class TspPool {
         return entry
     }
 
-    private load = async (model: Model): Promise<PoolEntry> => {
+    private load = async (model: Model, settings: TsplangSettings): Promise<PoolEntry> => {
         return new Promise<PoolEntry>(async (
             resolve: (value?: PoolEntry) => void,
             reject: (reason?: Error) => void
@@ -111,7 +144,7 @@ export class TspPool {
             // All models need the Lua entry, except the Lua model.
             if (model !== Model.LUA) {
                 try {
-                    luaEntry = await this.register(Model.LUA)
+                    luaEntry = await this.register(Model.LUA, settings)
 
                     // If the current model is undefined, then we can resolve as a Lua entry.
                     if (model === undefined) {
@@ -133,7 +166,7 @@ export class TspPool {
                         const api: Array<ApiSpec> = await instrModule.getApiSpec()
                         const spec: InstrumentSpec = await instrModule.getInstrumentSpec()
 
-                        const cmdSet: CommandSet = await generateCommandSet(api, spec)
+                        const cmdSet: CommandSet = await generateCommandSet(api, spec, settings)
 
                         // If this is not a Lua model, then merge the Lua entry.
                         if (luaEntry !== undefined) {

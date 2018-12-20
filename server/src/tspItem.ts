@@ -18,23 +18,31 @@
 import { TextDocument } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
+import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 import { TspPool } from './tspPool'
 
 export interface TspItem {
     context: DocumentContext
+    settings: TsplangSettings
     shebang: Shebang
 }
 export namespace TspItem {
-    export async function create(registrant: TextDocument, shebang: Shebang, pool: TspPool): Promise<TspItem> {
+    export async function create(
+        registrant: TextDocument,
+        shebang: Shebang,
+        settings: TsplangSettings,
+        pool: TspPool
+    ): Promise<TspItem> {
         return new Promise<TspItem>(async (
             resolve: (value?: TspItem) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
             try {
-                const entry = await pool.register(shebang.master)
+                const entry = await pool.register(shebang.master, settings)
 
                 resolve({
+                    settings,
                     shebang,
                     context: new DocumentContext(entry.commandSet, registrant)
                 })
