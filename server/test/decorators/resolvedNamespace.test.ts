@@ -22,9 +22,8 @@ import 'mocha'
 import { Token } from 'antlr4'
 
 import { ResolvedNamespace } from '../../src/decorators'
-import { TokenUtil } from '../../src/language-comprehension'
 
-import { makeTestToken } from '../testTypes'
+import { makeStringArray, makeTestToken } from '../testTypes'
 
 describe('Decorators', () => {
     describe('ResolvedNamespace', () => {
@@ -109,7 +108,7 @@ describe('Decorators', () => {
                     testCases.forEach((test: Array<Token>) => {
                         expect(
                             ResolvedNamespace.create(test),
-                            `"${TokenUtil.getString(...test)}" did not resolve to "${expected}"`
+                            `"${JSON.stringify(makeStringArray(...test))}" did not resolve to "${expected}"`
                         ).to.equal(expected)
                     })
                 })

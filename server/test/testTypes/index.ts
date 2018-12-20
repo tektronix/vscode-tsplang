@@ -14,4 +14,4 @@
  *  limitations under the License.
  */
 
-export { makeTestToken } from './token'
+export { makeStringArray, makeTestToken } from './token'

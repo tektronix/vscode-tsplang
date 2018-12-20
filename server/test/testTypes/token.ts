@@ -30,6 +30,16 @@ class Token extends antlr4.Token {
     }
 }
 
+export function makeStringArray(...tokens: Array<antlr4.Token>): Array<string> {
+    const result = new Array<string>()
+
+    tokens.forEach((value: Token) => {
+        result.push(value.text)
+    })
+
+    return result
+}
+
 export function makeTestToken(text: string): Token {
     const result = new Token()
     result.text = text
