@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available trigger lines. Indexed from 1 to 3.'
@@ -28,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'line'
     },
     {
-        data: ['line', 'tsplink'],
+        data: { domains: ['line', 'tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntsplink.line[N].mode\n```\n\
@@ -39,7 +41,7 @@ Get or set the TSP-Link trigger line to tsplink.MODE_\\*. Defaults to tsplink.MO
         label: 'mode',
     },
     {
-        data: ['line', 'tsplink'],
+        data: { domains: ['line', 'tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\
@@ -57,7 +59,7 @@ It also clears "trigger.tsplinkin[N].overrun".'
         label: 'reset',
     },
     {
-        data: ['line', 'tsplink'],
+        data: { domains: ['line', 'tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntsplink.line[N].state\n```\n\

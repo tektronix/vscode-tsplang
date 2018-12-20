@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['limit', 'measure', 'smu'],
+        data: { domains: ['limit', 'measure', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'low'
     },
     {
-        data: ['low', 'limit', 'measure', 'smu'],
+        data: { domains: ['low', 'limit', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.limit[Y].low.value\n```\n\

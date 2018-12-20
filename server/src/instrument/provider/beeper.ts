@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem, ParameterInformation, SignatureInformation } from '../../decorators'
 
 import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +27,7 @@ export const completions: Array<CompletionItem> = [
         label: 'beeper'
     },
     {
-        data: ['beeper'],
+        data: { domains: ['beeper'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction beep(duration, frequency)\n```\n\nbeeper.beep(duration, frequency)\n\
@@ -42,7 +42,7 @@ the front panel.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
@@ -51,12 +51,14 @@ export const signatures: Array<FormattableSignatureInformation> = [
                     documentation: 'The amount of time to play the tone (%{0} to %{1} seconds).'
                         .replace('%{0}', spec.beeper.minSeconds.toString())
                         .replace('%{1}', spec.beeper.maxSeconds.toString()),
+                    index: 0,
                     label: 'duration'
                 },
                 {
                     documentation: 'The frequency of the beep (%{0} to %{1} Hz).'
                         .replace('%{0}', spec.beeper.minHertz.toString())
                         .replace('%{1}', spec.beeper.maxHertz.toString()),
+                    index: 1,
                     label: 'frequency'
                 },
             ]

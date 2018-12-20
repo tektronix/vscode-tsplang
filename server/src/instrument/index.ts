@@ -17,6 +17,10 @@
 
 export { CommandSet, CommandSetInterface } from './commandSet'
 
+export declare type DefaultFillValue = 'UNDEFINED'
+// tslint:disable-next-line:variable-name
+export const DefaultFillValue: DefaultFillValue = 'UNDEFINED'
+
 export interface InstrumentModule {
     getApiSpec(): Array<ApiSpec>
     getInstrumentSpec(): InstrumentSpec
@@ -26,9 +30,24 @@ export interface BaseApiSpec {
     label: string
 }
 
+export interface ExclusiveCompletionApiSpec extends BaseApiSpec {
+    /** TODO: use this fill-in CompletionItem.preselect to hightlight the default value. */
+    preselect?: boolean
+}
+
+export interface SignatureDataApiSpec {
+    parameters: Map<number, Array<ExclusiveCompletionApiSpec>>
+    qualifier?: number
+}
+
+export interface ChildApiSpec extends BaseApiSpec {
+    assignmentExclusives?: Array<ExclusiveCompletionApiSpec>
+    signatureExclusives?: Array<SignatureDataApiSpec>
+}
+
 export interface ApiSpec extends BaseApiSpec {
-    children?: Array<BaseApiSpec>
-    enums?: Array<BaseApiSpec>
+    children?: Array<ChildApiSpec>
+    enums?: Array<ExclusiveCompletionApiSpec>
 }
 
 export interface BeeperSpec {
@@ -126,7 +145,7 @@ export interface SourceVoltageSpec {
 }
 
 export interface RangeSpec {
-    default?: number
+    default?: number | DefaultFillValue
     high: number
     low: number
 }
@@ -147,7 +166,7 @@ export interface SmuInterlockSpec {
 }
 
 export interface SmuMeasureAutorangeSpec {
-    currentHighDefault?: number
+    currentHighDefault?: number | DefaultFillValue
     /**
      * 2450: 10e-9
      *
@@ -166,7 +185,7 @@ export interface SmuMeasureAutorangeSpec {
      * 2460: 2
      */
     resistanceLowDefault: number
-    voltageHighDefault?: number
+    voltageHighDefault?: number | DefaultFillValue
     /**
      * 2450: 20
      *
@@ -200,7 +219,7 @@ export interface InstrumentSpec {
     resistance: MeasureResistanceSpec
     smuInterlock: SmuInterlockSpec
     smuMeasureAutorange: SmuMeasureAutorangeSpec
-    smuSourceSweepLog: SmuSourceSweepLog
+    smuSourceSweepLog: SmuSourceSweepLog,
     voltage: {
         measure: MeasureVoltageSpec;
         source: SourceVoltageSpec;

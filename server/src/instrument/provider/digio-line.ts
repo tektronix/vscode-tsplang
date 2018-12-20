@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available I/O trigger lines. Indexed from 1 to 6.'
@@ -28,18 +30,18 @@ export const completions: Array<CompletionItem> = [
         label: 'line'
     },
     {
-        data: ['line', 'digio'],
+        data: { domains: ['line', 'digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndigio.line[N].mode\n```\n\
 \n\
-Get or set the digital I/O line to digio.MODE_\\*. Defaults to digio.MODE_IN.'
+Get or set the digital I/O line to digio.MODE_\\*. Defaults to digio.MODE_DIGITAL_IN.'
         },
         kind: CompletionItemKind.Property,
         label: 'mode',
     },
     {
-        data: ['line', 'digio'],
+        data: { domains: ['line', 'digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\
@@ -59,7 +61,7 @@ It also clears "trigger.digin[N].overrun".'
         label: 'reset',
     },
     {
-        data: ['line', 'digio'],
+        data: { domains: ['line', 'digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndigio.line[N].state\n```\n\

@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'table'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction concat(t, sep, start, end)\n```\n\
@@ -42,7 +40,7 @@ the start index defaults to 1, and the end index defaults to the size of the tab
         label: 'concat'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction insert(t, index, v)\n```\n\ntable.insert(t[, index], v)\n\
@@ -54,7 +52,7 @@ table.'
         label: 'insert'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction remove(t, index)\n```\n\ntable.remove(t[, index]) -> any\n\
@@ -65,7 +63,7 @@ Remove and return the element of table t at the index. If index is omitted, then
         label: 'remove'
     },
     {
-        data: ['table'],
+        data: { domains: ['table'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sort(t, f)\n```\n\ntable.sort(t[, f])\n\
@@ -80,10 +78,9 @@ Function f must accept two arguments and return true when the first is less than
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'table.concat(t[, sep[, start[, end]]])',
         parameters: [
             {
@@ -106,7 +103,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: 'Insert an element into the last position of the table.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'table.insert(t, v)',
         parameters: [
             {
@@ -121,7 +117,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: 'Insert an element into the specified table index.',
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'table.insert(t, index, v)',
         parameters: [
             {
@@ -140,7 +135,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'table.remove(t[, index])',
         parameters: [
             {
@@ -155,7 +149,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'table.sort(t[, f])',
         parameters: [
             {

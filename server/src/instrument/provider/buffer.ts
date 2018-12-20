@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'buffer'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clearstats(bufferVar)\n```\n\nbuffer.clearstats([bufferVar])\n\
@@ -38,7 +36,7 @@ Clear the statistical information associated with the specified buffer without c
         label: 'clearstats'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(bufferName)\n```\n\nbuffer.delete(bufferName)\n\
@@ -51,7 +49,7 @@ You cannot delete the default reading buffers, defbuffer1 and defbuffer2.'
         label: 'delete'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getstats(bufferVar)\n```\n\
@@ -78,7 +76,7 @@ statistics include the data that was overwritten.'
         label: 'getstats'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction make(bufferSize, style)\n```\n\
@@ -98,7 +96,7 @@ You cannot assign user-defined reading buffers the name defbuffer1 and defbuffer
         label: 'make'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction save(bufferVar, fileName, timeFormat, start, end)\n```\n\
@@ -116,7 +114,7 @@ Verify that you are using a unique name to avoid overwriting any existing .csv f
         label: 'save'
     },
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction saveappend(bufferVar, fileName, timeFormat, start, end)\n```\n\
@@ -133,10 +131,9 @@ The index column entry in the .csv file starts at 1 for each append operation.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.clearstats([bufferVar])',
         parameters: [
             {
@@ -148,7 +145,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.delete(bufferName)',
         parameters: [
             {
@@ -159,7 +155,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.getstats([bufferVar])',
         parameters: [
             {
@@ -171,7 +166,6 @@ defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.make(bufferSize[, style])',
         parameters: [
             {
@@ -189,7 +183,6 @@ WRITABLE buffers are used to import external data and cannot be used to collect 
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.save(bufferVar, fileName[, timeFormat][, start, end])',
         parameters: [
             {
@@ -219,7 +212,6 @@ flash drive; given as some buffer.SAVE_*.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.saveappend(bufferVar, fileName[, timeFormat][, start, end])',
         parameters: [
             {

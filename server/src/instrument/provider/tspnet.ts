@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'tspnet'
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear(connectionID)\n```\n\ntspnet.clear(connectionID)\n\
@@ -38,7 +36,7 @@ Clear pending output data from the remote instrument without processing.'
         label: 'clear',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction connect(ipAddress, portNumber, initString)\n```\n\
@@ -64,7 +62,7 @@ You can simultaneously connect to a maximum of 32 remote devices.'
         label: 'connect',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction disconnect(connectionID)\n```\n\ntspnet.disconnect(connectionID)\n\
@@ -77,7 +75,7 @@ For TSP-enabled devices, this aborts any remotely running commands or scripts.'
         label: 'disconnect',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction execute(connectionID, commandString, formatString)\n```\n\
@@ -94,7 +92,7 @@ If sent to a TSP-enabled device, this command blocks operation until the device 
         label: 'execute',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction idn(connectionID)\n```\n\ntspnet.idn(connectionID) -> string\n\
@@ -105,7 +103,7 @@ Send a \\*IDN? to the remote instrument and return its response.'
         label: 'idn',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction read(connectionID, formatString)\n```\n\
@@ -120,7 +118,7 @@ format specifier in the string, up to the maximum of 10. The "%d" format specifi
         label: 'read',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction readavailable(connectionID)\n```\n\
@@ -133,7 +131,7 @@ Returns the number of bytes available to read from the specified connection.'
         label: 'readavailable',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\
@@ -146,7 +144,7 @@ On remote TSP-enabled devices, this causes any commands or scripts running to be
         label: 'reset',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction termination(connectionID, termSequence)\n```\n\
@@ -160,7 +158,7 @@ tspnet.TERM_LF for TSP-enabled devices and tspnet.TERM_CRLF for non TSP devices.
         label: 'termination',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntspnet.timeout\n```\n\
@@ -173,7 +171,7 @@ Accurate to 10 milliseconds.'
         label: 'timeout',
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction write(connectionID, inputString)\n```\n\
@@ -192,10 +190,9 @@ commands.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.clear(connectionID)',
         parameters: [
             {
@@ -206,7 +203,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.connect(ipAddress[, portNumber, initString])',
         parameters: [
             {
@@ -225,7 +221,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.disconnect(connectionID)',
         parameters: [
             {
@@ -236,7 +231,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.execute(connectionID, commandString[, formatString])',
         parameters: [
             {
@@ -259,7 +253,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.idn(connectionID)',
         parameters: [
             {
@@ -270,7 +263,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.read(connectionID[, formatString])',
         parameters: [
             {
@@ -289,7 +281,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.readavailable(connectionID)',
         parameters: [
             {
@@ -300,7 +291,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.termination(connectionID[, termSequence])',
         parameters: [
             {
@@ -319,7 +309,6 @@ tspnet.TERM_LFCR',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tspnet.write(connectionID, inputString)',
         parameters: [
             {

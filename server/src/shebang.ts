@@ -17,104 +17,109 @@
 
 import { Model } from './model'
 
-/*
-    Example valid shebang line:
-        --#!2450 node[1]=2636 node[11]=2461
-*/
+/**
+ * Valid shebang example:
+ *
+ * --#!2450;node[1]=2636;node[11]=2461
+ */
+export interface Shebang {
+    master: Model
+    nodes?: Map<number, Model>
+    text: string
+}
 export namespace Shebang {
-    export const prefix = '--#!'
-    export const maxNodeNumber = 64
-    const separator = ';'
+    export const PREFIX = '--#!'
+    export const MAX_NODE_NUMBER = 64
+    export const SEPARATOR = ';'
     const nodeAssignmentOp = '='
-
-    export interface ShebangToken {
-        model: Model
-        node?: number
-    }
-
-    const shebangRegexp: RegExp = new RegExp(
-        '^'.concat(prefix)
+    const shebangRegExp = new RegExp('^\\s*'.concat(Shebang.PREFIX))
+    const nodeRegExp = new RegExp(
+        '^\\s*node\\s*\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
     )
 
-    const nodeRegexp: RegExp = new RegExp(
-        '^\\s*node\\[[0-9]{1,2}\\]\\s*'.concat(
-            nodeAssignmentOp,
-            '\\s*.+'
-        )
-    )
+    export function tokenize(line: string): Shebang {
+        // Test that the line begins with a shebang prefix.
+        if (!shebangRegExp.test(line)) {
+            // Resolve to Lua completions should no shebang line exist.
+            return {
+                master: Model.LUA,
+                text: line
+            }
+        }
 
-    export async function tokenize(line: string): Promise<Array<ShebangToken>> {
-        return new Promise<Array<ShebangToken>>((
-            resolve: (value?: Array<ShebangToken>) => void,
-            reject: (reason?: Error) => void
-        ): void => {
-            let bangline: string = line.toLowerCase()
-            const results: Array<ShebangToken> = new Array()
+        // Remove the prefix and split on the separator.
+        const rawBangArray = line.replace(shebangRegExp, '').trim().split(Shebang.SEPARATOR)
 
-            // check for required shebang
-            if (shebangRegexp.test(bangline)) {
-                // remove shebang if it exists
-                bangline = bangline.replace(shebangRegexp, '').trim()
+        // Drop all empty string entries.
+        const bangArray = rawBangArray.filter((value: string) => value.length > 0)
+
+        const result: Shebang = { master: undefined, text: line }
+
+        for (const item of bangArray) {
+            const niceItem = item.toLowerCase().trim()
+
+            // Check for the required master model.
+            if (result.master === undefined) {
+                const supportedModel = Model.fromString(niceItem)
+
+                if (supportedModel === undefined) {
+                    throw new Error(`Model "${item.trim()}" is an invalid or unsupported model.`)
+                }
+
+                result.master = supportedModel
+            }
+            else if (nodeRegExp.test(niceItem)) {
+                // We have already tested that the string matches, so we are safe to type-cast.
+                const nodeMatch = niceItem.match(nodeRegExp) as RegExpMatchArray
+
+                // Remove the first element (the full match).
+                nodeMatch.shift()
+
+                // We know that there will always be 3 array items:
+                //  0) Full match
+                //  1) Group 1 (the node number)
+                //  2) Group 2 (the assigned model)
+                // and we just removed the 0th array item.
+                const [nodeNumberString, nodeModel]: Array<string> = nodeMatch
+
+                const nodeNumber = parseInt(nodeNumberString, 10)
+
+                // If we have already defined this node.
+                if (result.nodes !== undefined && result.nodes.has(nodeNumber)) {
+                    throw new Error(`Node ${nodeNumber} has already been used.`)
+                }
+
+                // If the node number is out of bounds.
+                if (nodeNumber < 1 || nodeNumber > Shebang.MAX_NODE_NUMBER) {
+                    throw new Error(
+                        `Node number ${nodeNumber} is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
+                    )
+                }
+
+                const supportedNodeModel = Model.fromString(nodeModel)
+
+                // If the specified model is invalid.
+                if (supportedNodeModel === undefined) {
+                    // If we have made it this far, we can be assured that we have an assignment operator.
+                    // But if not, the whole node assignment will be placed in the error message. (Because
+                    // lastIndexOf returns -1 on not found and string.slice(0) returns the original string.)
+                    const originalModelString = item.slice(item.lastIndexOf(nodeAssignmentOp) + 1)
+
+                    throw new Error(`Model "${originalModelString}" is an invalid or unsupported model.`)
+                }
+
+                // Instantiate the node Map if we have not done so already.
+                if (result.nodes === undefined) {
+                    result.nodes = new Map()
+                }
+
+                result.nodes.set(nodeNumber, supportedNodeModel)
             }
             else {
-                reject(new Error('No \"' + prefix + '\" detected on the first line of the file.'))
-
-                return
+                throw new Error(`Invalid node expression "${item}".`)
             }
+        }
 
-            const splitBangline: Array<string> = bangline.split(separator)
-            const usedNodeNums: Array<number> = new Array()
-
-            for (const item of splitBangline) {
-                // check for required master model
-                if (results.length === 0) {
-                    const thisModel: Model = Model.fromString(item.trim())
-
-                    // check for instrument support
-                    if (thisModel === undefined) {
-                        reject(new Error('Model \"' + item.trim() + '\" is not a valid or supported model.'))
-
-                        return
-                    }
-
-                    // add match to output array
-                    results.push({model: thisModel})
-                }
-                else if (results.length >= 1 && nodeRegexp.test(item)) {
-                    // get the node number
-                    const splitRegExp: RegExp = new RegExp(
-                        '[\\[|\\]|'.concat(nodeAssignmentOp, ']')
-                    )
-                    // split on either '[' or ']' or NodeAssignmentOp
-                    const splitstr = item.split(splitRegExp)
-
-                    // ignore item 0, just get the contents of the square brackets:
-                    const nodeNum: number = parseInt(splitstr[1].trim(), 10)
-                    /* TODO: resolve usage of magic number */
-                    // tslint:disable-next-line:no-magic-numbers
-                    const nodeModel: Model = Model.fromString(splitstr[3].trim())
-                    // the nodeNum and nodeModel can be retrieved from indices because the form of the
-                    // string is known (from the nodeRegexp.test(item) line)
-
-                    // check if nodeNum is an integer between 1 and 64 (inclusive) that hasn't been
-                    // used before. If it doesn't fit any of those things, ignore this item and move on.
-                    if (nodeNum % 1 !== 0
-                        || usedNodeNums.indexOf(nodeNum) !== -1
-                        || nodeNum < 1
-                        || nodeNum > maxNodeNumber
-                        || nodeModel === undefined) {
-                        continue
-                    }
-                    results.push({model: nodeModel, node: nodeNum})
-                    usedNodeNums.push(nodeNum)
-                }
-                else {
-                    // item is after the model number, but is not a node assignment. Ignore it.
-                    continue
-                }
-            }
-
-            resolve(results)
-        })
+        return result
     }
 }

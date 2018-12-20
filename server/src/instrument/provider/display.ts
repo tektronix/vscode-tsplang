@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,10 +25,10 @@ export const completions: Array<CompletionItem> = [
         label: 'display'
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nfunction changescreen(screenName)\n```\n\ndisplay.changescreen(display.SCREEN_\\*)\n\
+            value: '```lua\nfunction changescreen(screenName)\n```\n\
 \n\
 Change the currently displayed front-panel screen.'
         },
@@ -38,7 +36,7 @@ Change the currently displayed front-panel screen.'
         label: 'changescreen',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -49,7 +47,7 @@ Clear the text from the front-panel USER_SWIPE screen.'
         label: 'clear',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(promptID)\n```\n\ndisplay.delete(promptID)\n\
@@ -60,7 +58,7 @@ Remove the given prompt reference from the front-panel dispay.'
         label: 'delete',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.lightstate\n```\n\
@@ -74,7 +72,7 @@ a power cycle.'
         label: 'lightstate',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction prompt(buttonSet, promptText)\n```\n\
@@ -93,7 +91,7 @@ To capture return values, use the display.waitevent() command.'
         label: 'prompt',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.readingformat\n```\n\
@@ -109,12 +107,10 @@ This setting persists through reset() and power cycles.'
         label: 'readingformat',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction settext(position, userDisplayText)\n```\n\
-\n\
-display.settext(display.TEXT\\*, userDisplayText)\n\
 \n\
 Set USER_SWIPE screen messages.\n\
 \n\
@@ -124,12 +120,12 @@ Entering too many characters will cause a warning to be logged and the given tex
         label: 'settext',
     },
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nfunction waitevent()\n```\n\
+            value: '```lua\nfunction waitevent(timeout)\n```\n\
 \n\
-display.waitevent() -> number, display.BUTTON_YES | BUTTON_NO | BUTTON_OK | BUTTON_CANCEL\n\
+display.waitevent([timeout]) -> number, display.BUTTON_YES | BUTTON_NO | BUTTON_OK | BUTTON_CANCEL\n\
 \n\
 Returns `promptID, buttonReturned` where \
 *promptID* is a reference to the prompt object \
@@ -142,31 +138,19 @@ This command waits until a user responds to a front‑panel prompt that was crea
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.changescreen(screenName)',
         parameters: [
             {
-                documentation: 'One of:\n\
-display.SCREEN_HOME\n\
-display.SCREEN_HOME_LARGE_READING\n\
-display.SCREEN_READING_TABLE\n\
-display.SCREEN_GRAPH\n\
-display.SCREEN_HISTOGRAM\n\
-display.SCREEN_GRAPH_SWIPE\n\
-display.SCREEN_SETTINGS_SWIPE\n\
-display.SCREEN_SOURCE_SWIPE\n\
-display.SCREEN_STATS_SWIPE\n\
-display.SCREEN_USER_SWIPE',
+                documentation: 'Some display.SCREEN_*.',
                 label: 'screenName',
             },
         ],
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.delete(promptID)',
         parameters: [
             {
@@ -177,17 +161,10 @@ display.SCREEN_USER_SWIPE',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.prompt(buttonSet, promptText)',
         parameters: [
             {
-                documentation: 'One of:\n\
-display.BUTTONS_NONE\n\
-display.BUTTONS_OK\n\
-display.BUTTONS_CANCEL\n\
-display.BUTTONS_OKCANCEL\n\
-display.BUTTONS_YESNO\n\
-display.BUTTONS_YESNOCANCEL',
+                documentation: 'Some display.BUTTONS_*.',
                 label: 'buttonSet',
             },
             {
@@ -198,7 +175,6 @@ display.BUTTONS_YESNOCANCEL',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.settext(position, userDisplayText)',
         parameters: [
             {
@@ -216,18 +192,12 @@ characters are available.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.waitevent([timeout])',
         parameters: [
             {
                 documentation: 'The amount of time to wait before timing out; time is 0 to 300 s, where 0 (default) \
 waits indefinitely.',
                 label: 'timeout',
-            },
-            {
-                documentation: 'The returned value after a button is pressed on the front panel. One of \
-display.BUTTON_YES, BUTTON_NO, BUTTON_OK, or BUTTON_CANCEL.',
-                label: 'subID',
             },
         ],
     },

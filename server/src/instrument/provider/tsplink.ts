@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'tsplink'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntsplink.group\n```\n\
@@ -42,7 +40,7 @@ When a TSP-Link node is powered off, its group number changes to 0.'
         label: 'group',
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction initialize(expectedNodes)\n```\n\
@@ -56,7 +54,7 @@ expectedNodes is specified and the return value is lower, then an error is logge
         label: 'initialize',
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntsplink.master\n```\n\ntsplink.master -> number\n\
@@ -67,7 +65,7 @@ Returns the node of the TSP-Link master as a number from 1 to 64.'
         label: 'master',
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntsplink.node\n```\n\
@@ -83,7 +81,7 @@ Each TSP-Link node in the same system must be assigned a unique node number.'
         label: 'node',
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction readport()\n```\n\ntsplink.readport() -> number\n\
@@ -100,7 +98,8 @@ line 2 is set high (1).'
         label: 'readport',
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
+        deprecated: true,
         documentation: {
             kind: MarkupKind.Markdown,
             value: '*deprecated* — use tsplink.initialize()'
@@ -109,7 +108,7 @@ line 2 is set high (1).'
         label: 'reset'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntsplink.state\n```\n\ntsplink.state -> "online" | "offline"\n\
@@ -122,7 +121,7 @@ Until tsplink.initialize() is successful, the state is offline.'
         label: 'state',
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction writeport(pattern)\n```\n\ntsplink.writeport(pattern)\n\
@@ -137,10 +136,9 @@ while line 2 is set high (1).'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tsplink.initialize([expectedNodes])',
         parameters: [
             {
@@ -152,7 +150,6 @@ An error is logged if the return value is not equal to this number.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'tsplink.writeport(pattern)',
         parameters: [
             {

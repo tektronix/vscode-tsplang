@@ -15,36 +15,44 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['file'],
+        data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_APPEND'
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_READ'
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_WRITE'
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'READ_ALL'
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'READ_LINE'
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'READ_NUMBER'
     },

@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'protect'
     },
     {
-        data: ['protect', 'source', 'smu'],
+        data: { domains: ['protect', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.protect.level\n```\n\
@@ -39,7 +41,7 @@ positive and negative output voltages.'
         label: 'level',
     },
     {
-        data: ['protect', 'source', 'smu'],
+        data: { domains: ['protect', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.protect.tripped\n```\n\nsmu.source.protect.tripped -> smu.OFF | smu.ON\n\

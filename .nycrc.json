@@ -1,0 +1,23 @@
+
+{
+    "all": true,
+    "clean": true,
+    "extension": [
+        ".ts",
+        ".tsx"
+    ],
+    "include": [
+        "server/src"
+    ],
+    "exclude": [
+        "server/src/instrument/2461",
+        "server/src/instrument/6500"
+    ],
+    "reporter": [
+        "json",
+        "html",
+        "lcov",
+        "mocha",
+        "text"
+    ]
+}

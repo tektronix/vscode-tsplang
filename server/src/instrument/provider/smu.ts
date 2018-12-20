@@ -15,7 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -23,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'smu'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n```\n\

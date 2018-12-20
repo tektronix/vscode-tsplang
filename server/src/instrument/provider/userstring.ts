@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'userstring'
     },
     {
-        data: ['userstring'],
+        data: { domains: ['userstring'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction add(name, value)\n```\n\nuserstring.add(name, value)\n\
@@ -38,7 +36,7 @@ Add a user-defined string to nonvolatile memory.'
         label: 'add',
     },
     {
-        data: ['userstring'],
+        data: { domains: ['userstring'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction catalog()\n```\n\nuserstring.catalog() -> key iterator\n\
@@ -49,7 +47,7 @@ Returns an iterator containing all userstring keys in no particular order.'
         label: 'catalog',
     },
     {
-        data: ['userstring'],
+        data: { domains: ['userstring'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(name)\n```\n\nuserstring.delete(name)\n\
@@ -60,7 +58,7 @@ Delete the string associated with the given name from nonvolatile memory.'
         label: 'delete',
     },
     {
-        data: ['userstring'],
+        data: { domains: ['userstring'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction get(name)\n```\n\nuserstring.get(name) -> string | nil\n\
@@ -72,10 +70,9 @@ Returns a string if the given name exists; otherwise nil is returned and an erro
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'userstring.add(name, value)',
         parameters: [
             {
@@ -90,7 +87,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'userstring.delete(name)',
         parameters: [
             {
@@ -101,7 +97,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'userstring.get(name)',
         parameters: [
             {

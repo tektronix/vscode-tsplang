@@ -15,101 +15,105 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'AUDIBLE_FAIL'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'AUDIBLE_NONE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'AUDIBLE_PASS'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'DELAY_AUTO'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'DIGITS_3_5'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'DIGITS_4_5'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'DIGITS_5_5'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'DIGITS_6_5'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FAIL_BOTH'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FAIL_HIGH'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FAIL_LOW'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FAIL_NONE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FILTER_MOVING_AVG'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FILTER_REPEAT_AVG'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_DC_CURRENT'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_DC_VOLTAGE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_RESISTANCE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'INFINITE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Adjust measurement *x* by some factors *m* and *b*.'
@@ -118,7 +122,7 @@ export const completions: Array<CompletionItem> = [
         label: 'MATH_MXB'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Percentage of deviation from the reference constant supplied by the math percent attribute.'
@@ -127,7 +131,7 @@ export const completions: Array<CompletionItem> = [
         label: 'MATH_PERCENT'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Take the reciprocal of measurement *x*.'
@@ -136,12 +140,12 @@ export const completions: Array<CompletionItem> = [
         label: 'MATH_RECIPROCAL'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'OFF'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire and the voltage limit to 10% of \
@@ -152,7 +156,7 @@ is set to 0V.'
         label: 'OFFMODE_GUARD'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire and opens the output relay. \
@@ -163,7 +167,7 @@ tests that toggle the output state frequently.'
         label: 'OFFMODE_HIGHZ'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire, selects the voltage source and \
@@ -173,7 +177,7 @@ sets it to 0V, and sets the current limit to 10% of the present measurement auto
         label: 'OFFMODE_NORMAL'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Turning the source off sets the measurement sense type to 2-Wire, selects the voltage source and \
@@ -185,124 +189,127 @@ current range, whichever is greater; otherwise the current limit is not changed.
         label: 'OFFMODE_ZERO'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ON'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_2V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_5V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_10V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_20V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_40V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_60V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_80V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_100V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_120V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_140V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_160V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_180V'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'PROTECT_NONE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Automatically choose the most sensitive range for each source level in the sweep.'
         },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'RANGE_AUTO'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Automatically choose the most sensitive range for all source levels in the sweep.'
         },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'RANGE_BEST'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Use whatever range was configured at the start of the sweep.'
         },
+        exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'RANGE_FIXED'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SENSE_2WIRE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'SENSE_4WIRE'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERMINALS_FRONT'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERMINALS_REAR'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Only available for Current measurements.'
@@ -311,7 +318,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
         label: 'UNIT_AMP'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Available for all measurement functions.'
@@ -320,7 +327,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
         label: 'UNIT_OHM'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Only available for Voltage measurements.'
@@ -329,7 +336,7 @@ current range, whichever is greater; otherwise the current limit is not changed.
         label: 'UNIT_VOLT'
     },
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Only available for Current or Voltage measurements.'

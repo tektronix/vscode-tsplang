@@ -15,26 +15,28 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERM_CR'
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERM_CRLF'
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERM_LF'
     },
     {
-        data: ['tspnet'],
+        data: { domains: ['tspnet'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERM_LFCR'
     },

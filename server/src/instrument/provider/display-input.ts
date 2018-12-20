@@ -15,20 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['display'],
+        data: { domains: ['display'] },
         kind: CompletionItemKind.Module,
         label: 'input'
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction number(dialogTitle, numberFormat, defaultValue, minimumValue, maximumValue)\n\
@@ -45,7 +43,7 @@ The prompt is displayed until it has been responded to.'
         label: 'number',
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\n\
@@ -68,7 +66,7 @@ The prompt is displayed until it has been responded to.'
         label: 'option',
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction prompt(buttonSet, dialogTitle)\n```\n\
@@ -84,7 +82,7 @@ The prompt is displayed until it has been responded to by the user.'
         label: 'prompt',
     },
     {
-        data: ['input', 'display'],
+        data: { domains: ['input', 'display'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction string(dialogTitle, textFormat)\n```\n\
@@ -100,10 +98,9 @@ The prompt is displayed until it has been responded to.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.number(dialogTitle[, numberFormat][, defaultValue][, minimumValue][, maximumValue])',
         parameters: [
             {
@@ -112,11 +109,7 @@ front-panel display; can be up to 32 characters.',
                 label: 'dialogTitle',
             },
             {
-                documentation: 'One of:\n\
-display.NFORMAT_INTEGER (default)\n\
-display.NFORMAT_DECIMAL\n\
-display.NFORMAT_EXPONENT\n\
-display.NFORMAT_PREFIX',
+                documentation: 'Some display.NFORMAT_*. Defaults to display.NFORMAT_INTEGER.',
                 label: 'numberFormat',
             },
             {
@@ -135,7 +128,6 @@ display.NFORMAT_PREFIX',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.option(dialogTitle, buttonTitle1, buttonTitle2[, buttonTitle3][, buttonTitle4][, \
 buttonTitle5][, buttonTitle6][, buttonTitle7][, buttonTitle8][, buttonTitle9][, buttonTitle10])',
         parameters: [
@@ -192,16 +184,10 @@ front-panel display; can be up to 32 characters.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.prompt(buttonSet[, dialogTitle])',
         parameters: [
             {
-                documentation: 'One of:\n\
-display.BUTTONS_OK\n\
-display.BUTTONS_CANCEL\n\
-display.BUTTONS_OKCANCEL\n\
-display.BUTTONS_YESNO\n\
-display.BUTTONS_YESNOCANCEL',
+                documentation: 'Some display.BUTTONS_*.',
                 label: 'buttonSet',
             },
             {
@@ -213,7 +199,6 @@ front-panel display; can be up to 127 characters.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'display.input.string(dialogTitle[, textFormat])',
         parameters: [
             {
@@ -222,11 +207,7 @@ front-panel display; can be up to 32 characters.',
                 label: 'dialogTitle',
             },
             {
-                documentation: 'One of:\n\
-display.SFORMAT_ANY (default)\n\
-display.SFORMAT_UPPER_LOWER\n\
-display.SFORMAT_UPPER\n\
-display.SFORMAT_BUFFER_NAME',
+                documentation: 'Some display.SFORMAT_*. Defaults to display.SFORMAT_ANY.',
                 label: 'textFormat',
             },
         ],

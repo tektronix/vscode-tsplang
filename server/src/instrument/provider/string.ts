@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'string'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction byte(s, index)\n```\n\nstring.byte(s[, index]) -> number | nil\n\
@@ -39,7 +37,7 @@ then index defaults to 1.'
         label: 'byte'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction char(...)\n```\n\nstring.char([...]) -> string\n\
@@ -51,7 +49,7 @@ representation.'
         label: 'char'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction dump(f)\n```\n\nstring.dump(f) -> string\n\
@@ -62,7 +60,7 @@ Returns a binary string representation of the given function f.'
         label: 'dump'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction find(s, pattern, start, plain)\n```\n\
@@ -77,7 +75,7 @@ returned as extra results. If plain is true, then a plain-text search is perform
         label: 'find'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction format(formatstring, ...)\n```\n\
@@ -91,7 +89,7 @@ printf syntax.'
         label: 'format'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction gsub(s, pattern, repl, n)\n```\n\
@@ -112,7 +110,7 @@ repl function returns a string, then it is used as the replacement; otherwise an
         label: 'gsub'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction len(s)\n```\n\nstring.len(s) -> number\n\
@@ -123,7 +121,7 @@ Returns the length of the given string s, including any embedded null characters
         label: 'len'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction lower(s)\n```\n\nstring.lower(s) -> string\n\
@@ -134,7 +132,7 @@ Returns a copy of the string s with all cased characters converted to lowercase.
         label: 'lower'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction rep(s, n)\n```\n\nstring.rep(s, n) -> string\n\
@@ -145,7 +143,7 @@ Returns a string that is the concatenation of n copies of the string s.'
         label: 'rep'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sub(s, start, end)\n```\n\nstring.sub(s, start[, end]) -> string\n\
@@ -157,7 +155,7 @@ inclusive. If omitted, the end index defaults to -1 (the last index).'
         label: 'sub'
     },
     {
-        data: ['string'],
+        data: { domains: ['string'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction upper(s)\n```\n\nstring.upper(s) -> string\n\
@@ -169,10 +167,9 @@ Returns a copy of the string s with all cased characters converted to uppercase.
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.byte(s[, index])',
         parameters: [
             {
@@ -187,7 +184,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.char([...])',
         parameters: [
             {
@@ -198,7 +194,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.dump(f)',
         parameters: [
             {
@@ -209,7 +204,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.find(s, pattern[, start[, plain]])',
         parameters: [
             {
@@ -232,7 +226,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.format(formatstring[, ...])',
         parameters: [
             {
@@ -247,7 +240,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.gsub(s, pattern, repl[, n])',
         parameters: [
             {
@@ -271,7 +263,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.len(s)',
         parameters: [
             {
@@ -282,7 +273,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.lower(s)',
         parameters: [
             {
@@ -293,7 +283,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.rep(s, n)',
         parameters: [
             {
@@ -308,7 +297,6 @@ match substitution.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.sub(s, start[, end])',
         parameters: [
             {
@@ -328,7 +316,6 @@ Defaults to -1.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'string.upper(s)',
         parameters: [
             {

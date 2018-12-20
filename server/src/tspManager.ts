@@ -15,27 +15,20 @@
  */
 'use strict'
 
-import { TextDocumentItem } from 'vscode-languageserver'
+import { TextDocuments } from 'vscode-languageserver'
 
-import { ApiSpec, CommandSet, InstrumentSpec } from './instrument'
-import { getLuaApiSpec, getLuaInstrumentSpec } from './instrument/lua'
-import { generateCommandSet } from './instrument/provider'
 import { Model } from './model'
 import { Shebang } from './shebang'
-import { PoolEntry, TspPool } from './tspPool'
-
-export interface TspItem {
-    commandSet: CommandSet
-    node?: Map<number, CommandSet>
-    rawShebang?: string
-    shebang?: Array<Shebang.ShebangToken>
-}
+import { TspItem } from './tspItem'
+import { TspPool } from './tspPool'
 
 export class TspManager {
     private dict: Map<string, TspItem>
+    private readonly documents: TextDocuments
     private pool: TspPool
 
-    constructor() {
+    constructor(documents: TextDocuments) {
+        this.documents = documents
         this.dict = new Map()
         this.pool = new TspPool()
     }
@@ -48,32 +41,46 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    async register(document: TextDocumentItem): Promise<void> {
+    async register(uri: string): Promise<void> {
         return new Promise<void>(async (
             resolve: (value?: void) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
             // check if the doc has already been registered
-            if (this.dict.has(document.uri)) {
-                reject(new Error('Document already registered'))
+            if (this.dict.has(uri)) {
+                reject(new Error('Document already registered.'))
 
                 return
             }
 
-            const shebangLine = this.getShebangLine(document)
+            const document = this.documents.get(uri)
+
+            if (document === undefined) {
+                reject(new Error('Unable to fetch document from document manager.'))
+
+                return
+            }
+
+            const firstLine = document.getText({
+                end: { character: 0, line: 0 },
+                start: { character: 0, line: 1 }
+            }).trim()
 
             try {
-                // try to make a new entry item for this document
-                let item = await this.generateBasicItem(shebangLine)
+                // Try to parse the shebang.
+                const shebang = Shebang.tokenize(firstLine)
 
-                // use valid shebang to populate model-specific items
-                item = await this.getPoolItems(item)
+                // Try to make a new TspItem instance.
+                const tspItem = await TspItem.create(document, shebang, this.pool)
 
-                this.dict.set(document.uri, item)
+                tspItem.context.update()
+                tspItem.context.walk()
+
+                this.dict.set(document.uri, tspItem)
 
                 resolve()
             } catch (e) {
-                reject(new Error('Document Registration ' + e.toString()))
+                reject(e)
             }
         })
     }
@@ -85,234 +92,66 @@ export class TspManager {
             return false
         }
 
-        if (tspCompletion.shebang === undefined) {
-            if (this.dict.has(uri)) {
-                return this.dict.delete(uri)
-            }
+        // Unregister the master model.
+        this.pool.unregister(tspCompletion.shebang.master)
 
-            return true
+        // Unregister any node models.
+        if (tspCompletion.shebang.nodes !== undefined) {
+            tspCompletion.shebang.nodes.forEach((model: Model) => {
+                this.pool.unregister(model)
+            })
         }
-
-        this.getModels(tspCompletion.shebang)
-            .forEach((element: Model) => {
-                this.pool.unregister(element)
-        })
 
         return this.dict.delete(uri)
     }
 
-    async update(document: TextDocumentItem): Promise<void> {
+    async update(uri: string): Promise<void> {
         return new Promise<void>(async (
             resolve: (value?: void) => void,
             reject: (reason?: Error) => void
         ): Promise<void> => {
             // check if the doc has not been registered
-            if (!this.dict.has(document.uri)) {
-                reject(new Error('Document is not registered'))
+            if (!this.dict.has(uri)) {
+                reject(new Error('Document is not registered.'))
 
                 return
             }
 
-            const shebangLine = this.getShebangLine(document)
+            const document = this.documents.get(uri)
 
-            // if the shebang is no longer valid, then un-register
-            if (shebangLine === undefined) {
-                const tspCompletion = this.dict.get(document.uri)
+            if (document === undefined) {
+                reject(new Error('Unable to fetch document from document manager.'))
 
-                if (tspCompletion === undefined) {
-                    reject(new Error('Unable to load TSP information'))
+                return
+            }
 
-                    return
-                }
+            // We already checked that the key exists in the Map.
+            const item = this.dict.get(uri) as TspItem
 
-                if (tspCompletion.shebang === undefined) {
-                    resolve()
+            const firstLine = document.getText({
+                end: { character: 0, line: 0 },
+                start: { character: 0, line: 1 }
+            }).trim()
 
-                    return
-                }
+            // If the shebang has changed.
+            if (firstLine.localeCompare(item.shebang.text) !== 0) {
+                // Unregister everything.
+                this.unregister(uri)
 
-                this.getModels(tspCompletion.shebang)
-                    .forEach((element: Model) => {
-                        this.pool.unregister(element)
-                })
-                this.dict.delete(document.uri)
+                // Re-register everything.
+                await this.register(uri)
 
+                // The context was updated by register, so we can resolve.
                 resolve()
 
                 return
             }
 
-            const oldItem = this.dict.get(document.uri)
-
-            if (oldItem === undefined) {
-                reject(new Error('Unable to load TSP information'))
-
-                return
-            }
-
-            // if the shebang has not changed, then no update is needed
-            if (oldItem.rawShebang !== undefined && oldItem.rawShebang.localeCompare(shebangLine) === 0) {
-                resolve()
-
-                return
-            }
-
-            // try to make a new entry item for this document
-            let item = await this.generateBasicItem(shebangLine)
-
-            // if document shebang is invalid
-            if (item === undefined) {
-                const tspCompletion = this.dict.get(document.uri)
-
-                if (tspCompletion === undefined) {
-                    reject(new Error('Unable to load TSP information'))
-
-                    return
-                }
-
-                if (tspCompletion.shebang === undefined) {
-                    resolve()
-
-                    return
-                }
-
-                this.getModels(tspCompletion.shebang)
-                    .forEach((element: Model) => {
-                        this.pool.unregister(element)
-                })
-                this.dict.delete(document.uri)
-
-                resolve()
-
-                return
-            }
-
-            // use valid shebang to populate completion items
-            item = await this.getPoolItems(item)
-
-            this.dict.set(document.uri, item)
+            // Update this item's context.
+            item.context.update()
+            item.context.walk()
 
             resolve()
         })
-    }
-
-    private generateBasicItem = async (shebangLine: string | undefined): Promise<TspItem> => {
-        return new Promise<TspItem>(async (
-            resolve: (value?: TspItem) => void,
-            reject: (reason?: Error) => void
-        ): Promise<void> => {
-            let shebangTokens: Array<Shebang.ShebangToken>
-            try {
-                // get native Lua completions
-                const apiLua: Array<ApiSpec> = await getLuaApiSpec()
-                const specLua: InstrumentSpec = await getLuaInstrumentSpec()
-
-                // parse shebang tokens
-                shebangTokens = await Shebang.tokenize((shebangLine === undefined) ? '' : shebangLine)
-                    .catch((reason: Error) => {
-                        console.warn('Shebang Tokenizer: ' + reason.message)
-
-                        return new Array<Shebang.ShebangToken>()
-                    })
-
-                const basicTspItem: TspItem = {
-                    commandSet: await generateCommandSet(apiLua, specLua)
-                }
-
-                if (shebangLine !== undefined) {
-                    basicTspItem.rawShebang = shebangLine
-                }
-
-                if (shebangTokens.length > 0) {
-                    basicTspItem.shebang = shebangTokens
-                }
-
-                resolve(basicTspItem)
-            } catch (e) {
-                // a VALID shebang is required for document registration
-                reject(new Error('Lua Completions: ' + e.toString()))
-            }
-        })
-    }
-
-    private getModels = (tokens: Array<Shebang.ShebangToken>): Array<Model> => {
-        const result: Array<Model> = new Array()
-        tokens.forEach((element: Shebang.ShebangToken) => {
-            result.push(element.model)
-        })
-
-        return result
-    }
-
-    /**
-     * Add previously loaded Completions and Signatures to the given TspItem.
-     * @param item - Item to fill.
-     */
-    private async getPoolItems(item: TspItem): Promise<TspItem> {
-        return new Promise<TspItem>(async (
-            resolve: (value?: TspItem) => void,
-            reject: (reason?: Error) => void
-        ): Promise<void> => {
-            const result: TspItem = item
-
-            // if no shebang is present, then return what we were given
-            if (result.shebang === undefined) {
-                resolve(result)
-
-                return
-            }
-
-            // get models from shebang
-            for (const token of result.shebang) {
-                // try to get the entry for this model
-                let entry: PoolEntry
-                try {
-                    entry = await this.pool.register(token.model)
-                }
-                catch (e) {
-                    reject(new Error('Pool Item Lookup ' + e.toString()))
-
-                    return
-                }
-
-                // if element has no node number, then assume master model
-                if (token.node === undefined) {
-                    result.commandSet = entry.commandSet
-                }
-                else {
-                    if (result.node === undefined) {
-                        result.node = new Map()
-                    }
-
-                    if (entry.commandSet !== undefined) {
-                        result.node.set(
-                            token.node,
-                            entry.commandSet
-                        )
-                    }
-                }
-            }
-
-            resolve(result)
-        })
-    }
-
-    private getShebangLine = (document: TextDocumentItem): string | undefined => {
-        // get the entire shebang line
-        const matches = document.text.match(
-            (Shebang.prefix).concat('.*')
-        )
-
-        if (matches === null) {
-            return undefined
-        }
-
-        const firstElement = matches.shift()
-
-        if (firstElement === undefined) {
-            return undefined
-        }
-
-        return firstElement.trim()
     }
 }

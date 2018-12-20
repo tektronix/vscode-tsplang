@@ -23,7 +23,7 @@ import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } f
 export function activate(context: ExtensionContext): void {
     // The server is implemented in node
     const serverModule = context.asAbsolutePath(
-        path.join('out', 'server', 'server.js')
+        path.join('out', 'server', 'src', 'server.js')
     )
     // The debug options for the server
     const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] }

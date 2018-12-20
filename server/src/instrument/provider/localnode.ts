@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'localnode'
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.access\n```\n\
@@ -48,7 +46,7 @@ interface, the command is ignored and the message "FAILURE: A script is running,
         label: 'access',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction gettime()\n```\n\nlocalnode.gettime() -> number\n\
@@ -59,7 +57,7 @@ Returns the number of seconds since January 1, 1970.'
         label: 'gettime',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.linefreq\n```\n\nlocalnode.linefreq -> number\n\
@@ -70,7 +68,7 @@ Returns the power line frequency setting used for NPLC calculations. Is either 5
         label: 'linefreq',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.model\n```\n\nlocalnode.model -> string\n\
@@ -81,7 +79,7 @@ Returns the model number of the instrument as a string.'
         label: 'model',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.password\n```\n\nlocalnode.password = string\n\
@@ -97,7 +95,7 @@ The password can be reset to its default value from the front panel or by perfor
         label: 'password',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.prompts\n```\n\
@@ -115,7 +113,7 @@ Prompts are generated when the instrument is ready to receive another command.'
         label: 'prompts',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.prompts4882\n```\n\
@@ -131,7 +129,7 @@ localnode.prompts setting.'
         label: 'prompts4882',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.serialno\n```\n\nlocalnode.serialno -> string\n\
@@ -142,7 +140,7 @@ Returns the serial number of the instrument as a string.'
         label: 'serialno',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction settime()\n```\n\
@@ -159,7 +157,7 @@ Set the date and time of the instrument. Accepts UTC time as formatted by os.tim
         label: 'settime',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.showevents\n```\n\
@@ -175,7 +173,7 @@ Events are output after a command but before the prompt, should prompts be enabl
         label: 'showevents',
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlocalnode.version\n```\n\nlocalnode.version -> string\n\
@@ -187,10 +185,9 @@ Returns the firmware version of the instrument as a string.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'localnode.settime(utcTime)',
         parameters: [
             {
@@ -201,7 +198,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'localnode.settime(hour, minute, second)',
         parameters: [
             {
@@ -232,7 +228,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'localnode.settime(year, month, day, hour, minute, second)',
         parameters: [
             {

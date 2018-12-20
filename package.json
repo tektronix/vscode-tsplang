@@ -88,47 +88,20 @@
         "typescript": "^2.9.2"
     },
     "scripts": {
-        "compile": "tsc -p ./tsconfig.json && cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json",
+        "compile": "tsc -p ./tsconfig.json && cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json && tsc -p server/antlr4-tsplang/tsconfig.json",
         "compile:client": "tsc -p ./tsconfig.json",
         "compile:server": "cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json",
+        "compile:antlr4-tsplang": "tsc -p server/antlr4-tsplang/tsconfig.json",
         "lint": "node ./node_modules/tslint/bin/tslint --project .",
         "prepackage": "npm run compile && npm run lint && npm run test",
         "package": "vsce package",
         "postinstall": "cd server && npm install && cd .. && npm run update-vscode",
-        "test": "npm run lint -s & mocha",
-        "test:coverage": "nyc mocha",
+        "test": "npm run lint -s & mocha --opts server/mocha.opts",
+        "test:coverage": "nyc mocha --opts server/mocha.opts",
+        "test:mocha": "mocha --bail --full-trace --opts server/mocha.opts",
         "update-vscode": "node ./node_modules/vscode/bin/install",
         "watch:client": "tsc -w -p ./tsconfig.json",
-        "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json"
-    },
-    "nyc": {
-        "all": true,
-        "clean": true,
-        "extension": [
-            ".ts",
-            ".tsx"
-        ],
-        "include": [
-            "server/src/**/*.ts"
-        ],
-        "exclude": [
-            "**/*.d.ts",
-            "**/*.test.ts",
-            "./coverage/**",
-            "./out/**",
-            "./client/**",
-            "./src/extension.ts",
-            "./server/src/instrument/2460/*",
-            "./server/src/instrument/2461/*",
-            "./server/src/instrument/6500/*",
-            "./server/src/instrument/raw-tsb-help/*"
-        ],
-        "reporter": [
-            "json",
-            "html",
-            "lcov",
-            "mocha",
-            "text"
-        ]
+        "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json",
+        "watch:antlr4-tsplang": "tsc -w -p server/antlr4-tsplang/tsconfig.json"
     }
 }

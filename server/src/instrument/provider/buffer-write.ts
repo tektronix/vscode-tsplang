@@ -15,22 +15,20 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 /* TODO: buffer.write.reading parameter 'status' is not helpful */
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['buffer'],
+        data: { domains: ['buffer'] },
         kind: CompletionItemKind.Module,
         label: 'write'
     },
     {
-        data: ['write', 'buffer'],
+        data: { domains: ['write', 'buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction format(bufferVar, units, displayDigits, extraUnits, extraDigits)\n```\n\
@@ -46,7 +44,7 @@ shown in the reading buffer and what is shown on the front‑panel Home, Histogr
         label: 'format'
     },
     {
-        data: ['write', 'buffer'],
+        data: { domains: ['write', 'buffer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reading(bufferVar, readingValue, seconds, fractionalSeconds, status)\n```\n\
@@ -64,10 +62,9 @@ you entered.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.format(bufferVar, units, displayDigits[, extraUnits][, extraDigits])',
         parameters: [
             {
@@ -95,8 +92,11 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 0
+        },
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, seconds][, fractionalSeconds][, status])',
         parameters: [
             {
@@ -123,8 +123,11 @@ as displayDigits (only valid for buffer style WRITABLE_FULL); if not specified, 
         ],
     },
     {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 1
+        },
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'buffer.write.reading(bufferVar, readingValue[, extraValue][, seconds][, fractionalSeconds][, status])',
         parameters: [
             {

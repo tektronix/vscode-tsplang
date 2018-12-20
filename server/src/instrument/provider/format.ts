@@ -15,7 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -23,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'format'
     },
     {
-        data: ['format'],
+        data: { domains: ['format'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nformat.asciiprecision\n```\n\
@@ -37,7 +39,7 @@ There is always one digit to the left of the decimal point; be sure to include t
         label: 'asciiprecision',
     },
     {
-        data: ['format'],
+        data: { domains: ['format'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nformat.byteorder\n```\n\
@@ -50,7 +52,7 @@ The byte order is only used with the format.REAL32 and format.REAL64 data format
         label: 'byteorder',
     },
     {
-        data: ['format'],
+        data: { domains: ['format'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nformat.data\n```\n\

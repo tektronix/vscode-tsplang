@@ -15,23 +15,28 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['standard', 'status'],
+        allowBitwise: true,
+        data: { domains: ['standard', 'status'] },
         detail: 'status.standard.OPC: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'OPC'
     },
     {
-        data: ['standard', 'status'],
+        allowBitwise: true,
+        data: { domains: ['standard', 'status'] },
         detail: 'status.standard.QYE: 4',
         kind: CompletionItemKind.EnumMember,
         label: 'QYE'
     },
     {
-        data: ['standard', 'status'],
+        allowBitwise: true,
+        data: { domains: ['standard', 'status'] },
         detail: 'status.standard.PON: 128',
         kind: CompletionItemKind.EnumMember,
         label: 'PON'

@@ -15,20 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'configlist'
     },
     {
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction catalog()\n```\n\nsmu.source.configlist.catalog() -> string | nil\n\
@@ -43,7 +41,7 @@ next call will resume at the beginning of the list.'
         label: 'catalog',
     },
     {
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction create(listName)\n```\n\nsmu.source.configlist.create(listName)\n\
@@ -57,7 +55,7 @@ between power cycles.'
         label: 'create',
     },
     {
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(listName, index)\n```\n\
@@ -73,7 +71,7 @@ When an index is deleted from a configuration list, the index numbers of subsequ
         label: 'delete',
     },
     {
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction query(listName, index, fieldSeparator)\n```\n\
@@ -87,7 +85,7 @@ the given fieldSeparator string; otherwise fieldSeparator defaults to a comma.'
         label: 'query',
     },
     {
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction recall(listName, index)\n```\n\
@@ -105,7 +103,7 @@ Recall source configurations before measurement configurations.'
         label: 'recall',
     },
     {
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction size(listName)\n```\n\nsmu.source.configlist.size(listName) -> number\n\
@@ -118,7 +116,7 @@ Returns the size of the specified configuration list as a number.'
     {
         // Chose to exclude the index parameter due to the instrument (2461 @ 1.6.5b)
         // bugging out when it was not contiguous.
-        data: ['configlist', 'source', 'smu'],
+        data: { domains: ['configlist', 'source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction store(listName)\n```\n\nsmu.source.configlist.store(listName)\n\
@@ -133,10 +131,9 @@ between power cycles.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.create(listName)',
         parameters: [
             {
@@ -147,7 +144,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.delete(listName[, index])',
         parameters: [
             {
@@ -163,7 +159,6 @@ Deletes the entire configuration list by default.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.query(listName, index[, fieldSeparator])',
         parameters: [
             {
@@ -183,7 +178,6 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.recall(listName[, index])',
         parameters: [
             {
@@ -199,7 +193,6 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.size(listName)',
         parameters: [
             {
@@ -210,7 +203,6 @@ Defaults to the first configuration index.',
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.configlist.store(listName)',
         parameters: [
             {

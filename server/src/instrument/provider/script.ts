@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'script'
     },
     {
-        data: ['script'],
+        data: { domains: ['script'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(scriptName)\n```\n\nscript.delete(scriptName)\n\
@@ -41,7 +39,7 @@ calling this function is necessary if you wish to reuse the variable name.'
         label: 'delete',
     },
     {
-        data: ['script'],
+        data: { domains: ['script'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction load(fileName)\n```\n\nscript.load(fileName) -> scriptVar\n\
@@ -55,10 +53,9 @@ For scripts residing on a USB flash drive, the given fileName should be absolute
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'script.delete(scriptName)',
         parameters: [
             {
@@ -69,7 +66,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'script.load(fileName)',
         parameters: [
             {

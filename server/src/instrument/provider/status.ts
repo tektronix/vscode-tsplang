@@ -15,7 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -23,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'status'
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -36,7 +38,7 @@ Does not affect the Questionable Event Enable or Operation Event Enable register
         label: 'clear',
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.condition\n```\n\nstatus.condition -> number\n\
@@ -65,7 +67,7 @@ then B6 is the Request for Service (RQS) bit. When set, it indicates that a seri
         label: 'condition',
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction preset()\n```\n\
@@ -79,7 +81,7 @@ Event Status (ESR) registers.'
         label: 'preset',
     },
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.request_enable\n```\n\

@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'lan'
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction ipconfig(method, ipV4Address, subnetMask, gateway)\n```\n\
@@ -53,7 +51,7 @@ The previous settings are used if method is set lan.MODE_MANUAL and no other arg
         label: 'ipconfig',
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlan.lxidomain\n```\n\
@@ -67,7 +65,7 @@ they have the specified domain number.'
         label: 'lxidomain',
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nlan.macaddress\n```\n\
@@ -82,10 +80,9 @@ separated by a colon.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'lan.ipconfig([method][, ipV4Address][, subnetMask][, gateway])',
         parameters: [
             {

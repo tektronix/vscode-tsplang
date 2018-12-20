@@ -1,5 +1,6 @@
 // Place your settings in this file to overwrite default and user settings.
 {
+    "files.eol": "\n",
     "files.exclude": {
         "out": false // set this to true to hide the "out" folder with the compiled JS files
     },
@@ -19,7 +20,7 @@
         ],
         "editor.tabSize": 4
     },
-    "mocha.files.glob": "test/**/*.test.ts",
+    "mocha.files.glob": "server/test/**/*.test.ts",
     "mocha.options": {
         "recursive": true
     },
@@ -27,4 +28,5 @@
         "ts-node/register",
         "source-map-support/register"
     ],
+    "mocha.parallelTests": 10,
 }

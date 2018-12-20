@@ -15,40 +15,35 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation } from '.'
-
-export const completionDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [
         'smu.interlock.tripped',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.interlock.tripped\n```\n\nsmu.interlock.tripped -> smu.OFF | smu.ON\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.interlock.tripped\n\`\`\`\n\nsmu.interlock.tripped -> smu.OFF | smu.ON\n\
 \n\
 Get the status of the interlock.\n\
 \n\
-If smu.OFF is returned the %{0} range is disabled, nominal output is limited to ±%{1}V, and attempting to source more \
-than ±%{2}V will generate an error message; otherwise all voltage ranges are available.'
-                    .replace('%{1}', spec.voltage.measure.range.high.toString())
-                    .replace('%{1}', spec.smuInterlock.maxNominalVoltageTripped.toString())
-                    .replace('%{2}', spec.smuInterlock.maxSourceVoltageTripped.toString())
-            },
-        }
+If smu.OFF is returned the ${spec.voltage.measure.range.high} range is disabled, nominal output is limited to \
+±${spec.smuInterlock.maxNominalVoltageTripped}V, and attempting to source more than \
+±${spec.smuInterlock.maxSourceVoltageTripped}V will generate an error message; otherwise all voltage ranges are \
+available.`
     ],
 ])
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.Module,
         label: 'interlock'
     },
     {
-        data: ['interlock', 'smu'],
+        data: { domains: ['interlock', 'smu'] },
         kind: CompletionItemKind.Constant,
         label: 'tripped',
     },

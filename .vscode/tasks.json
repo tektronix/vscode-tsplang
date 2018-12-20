@@ -5,7 +5,8 @@
             "label": "compile",
             "dependsOn": [
                 "compile:client",
-                "compile:server"
+                "compile:server",
+                "compile:antlr4-tsplang"
             ],
             "problemMatcher": []
         },
@@ -36,10 +37,24 @@
             ]
         },
         {
+            "label": "compile:antlr4-tsplang",
+            "type": "npm",
+            "script": "compile:antlr4-tsplang",
+            "group": "build",
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "never"
+            },
+            "problemMatcher": [
+                "$tsc"
+            ]
+        },
+        {
             "label": "watch",
             "dependsOn": [
                 "watch:client",
-                "watch:server"
+                "watch:server",
+                "compile:antlr4-tsplang"
             ],
             "group": {
                 "kind": "build",
@@ -67,6 +82,19 @@
             "script": "watch:server",
             "isBackground": true,
             "group": "build",
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "never"
+            },
+            "problemMatcher": [
+                "$tsc-watch"
+            ]
+        },
+        {
+            "label": "watch:antlr4-tsplang",
+            "type": "npm",
+            "script": "watch:antlr4-tsplang",
+            "isBackground": true,
             "presentation": {
                 "panel": "dedicated",
                 "reveal": "never"

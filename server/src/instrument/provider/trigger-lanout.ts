@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available LAN events. Indexed from 1 to 8.'
@@ -28,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'lanout'
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction assert()\n```\n\
@@ -39,7 +41,7 @@ Assert a trigger event on the currently indexed LAN trigger, returning before it
         label: 'assert',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction connect()\n```\n\
@@ -54,7 +56,7 @@ changed.'
         label: 'connect',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanout[N].connected\n```\n\ntrigger.lanout[N].connected -> boolean\n\
@@ -69,7 +71,7 @@ address closes the connection.'
         label: 'connected',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction disconnect()\n```\n\
@@ -84,7 +86,7 @@ changed.'
         label: 'disconnect',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanout[N].ipaddress\n```\n\
@@ -99,7 +101,7 @@ attribute.'
         label: 'ipaddress',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanout[N].logic\n```\n\
@@ -111,7 +113,7 @@ Defaults to trigger.LOGIC_NEGATIVE.'
         label: 'logic',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanout[N].protocol\n```\n\
@@ -132,7 +134,7 @@ attribute.'
         label: 'protocol',
     },
     {
-        data: ['lanout', 'trigger'],
+        data: { domains: ['lanout', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.lanout[N].stimulus\n```\n\

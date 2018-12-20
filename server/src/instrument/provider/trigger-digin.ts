@@ -15,15 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available digital I/O lines. Indexed from 1 to 6.'
@@ -32,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'digin'
     },
     {
-        data: ['digin', 'trigger'],
+        data: { domains: ['digin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -43,7 +41,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
         label: 'clear',
     },
     {
-        data: ['digin', 'trigger'],
+        data: { domains: ['digin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digin[N].edge\n```\n\
@@ -58,7 +56,7 @@ line mode is set for open drain, the edge settings assert a transistor-transisto
         label: 'edge',
     },
     {
-        data: ['digin', 'trigger'],
+        data: { domains: ['digin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.digin[N].overrun\n```\n\ntrigger.digin[N].overrun -> boolean\n\
@@ -69,7 +67,7 @@ Returns true if an event was ignored because the event detector was already in t
         label: 'overrun',
     },
     {
-        data: ['digin', 'trigger'],
+        data: { domains: ['digin', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.digin[N].wait(timeout) -> boolean\n\
@@ -86,10 +84,9 @@ number of events detected.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.digin[].wait(timeout)',
         parameters: [
             {

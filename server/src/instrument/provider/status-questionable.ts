@@ -15,20 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         kind: CompletionItemKind.Module,
         label: 'questionable'
     },
     {
-        data: ['questionable', 'status'],
+        data: { domains: ['questionable', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.questionable.condition\n```\n\nstatus.questionable.condition -> number\n\
@@ -42,7 +40,7 @@ When a mapped event occurs, its associated bit in the Questionable Condition Reg
         label: 'condition',
     },
     {
-        data: ['questionable', 'status'],
+        data: { domains: ['questionable', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.questionable.enable\n```\n\
@@ -57,7 +55,7 @@ the Measurement Status Bit (MSB) and Questionable Summary Bit (QSB) of the Statu
         label: 'enable',
     },
     {
-        data: ['questionable', 'status'],
+        data: { domains: ['questionable', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.questionable.event\n```\n\nstatus.questionable.event -> number\n\
@@ -69,7 +67,7 @@ set in the register.'
         label: 'event',
     },
     {
-        data: ['questionable', 'status'],
+        data: { domains: ['questionable', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getmap(bitNumber)\n```\n\
@@ -85,7 +83,7 @@ If either is 0, then that event is not mapped.'
         label: 'getmap',
     },
     {
-        data: ['questionable', 'status'],
+        data: { domains: ['questionable', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction setmap(bitNumber, setEvent, clearEvent)\n```\n\
@@ -104,10 +102,9 @@ Register is set to 0 upon detection.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'status.questionable.getmap(bitNumber)',
         parameters: [
             {
@@ -118,7 +115,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'status.questionable.setmap(bitNumber, setEvent[, clearEvent])',
         parameters: [
             {

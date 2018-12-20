@@ -15,7 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -23,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'timer'
     },
     {
-        data: ['timer'],
+        data: { domains: ['timer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction cleartime()\n```\n\
@@ -34,7 +36,7 @@ Reset timer to 0 seconds.'
         label: 'cleartime',
     },
     {
-        data: ['timer'],
+        data: { domains: ['timer'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction gettime()\n```\n\ntimer.gettime() -> number\n\

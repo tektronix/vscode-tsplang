@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -31,7 +29,7 @@ export const completions: Array<CompletionItem> = [
         label: 'node'
     },
     {
-        data: ['node'],
+        data: { domains: ['node'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction execute(scriptCode)\n```\n\nnode[N].execute(scriptCode)\n\
@@ -47,7 +45,7 @@ Can only be called when the group number of the target node is different than th
         label: 'execute',
     },
     {
-        data: ['node'],
+        data: { domains: ['node'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction getglobal(name)\n```\n\nnode[N].getglobal(name) -> any\n\
@@ -58,7 +56,7 @@ Get the value of a global variable on a subordinate node from the TSP-Link maste
         label: 'getglobal',
     },
     {
-        data: ['node'],
+        data: { domains: ['node'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction setglobal(name, value)\n```\n\nnode[N].setglobal(name, value)\n\
@@ -70,10 +68,9 @@ Set the value of a global variable on a subordinate node from the TSP-Link maste
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'node[].execute(scriptCode)',
         parameters: [
             {
@@ -84,7 +81,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'node[].getglobal(name)',
         parameters: [
             {
@@ -95,7 +91,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'node[].setglobal(name, value)',
         parameters: [
             {

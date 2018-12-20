@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'file'
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction close(fileNumber)\n```\n\nfile.close(fileNumber)\n\
@@ -40,7 +38,7 @@ Files are automatically closed when file descriptors are garbage collected.'
         label: 'close',
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction flush(fileNumber)\n```\n\nfile.flush(fileNumber)\n\
@@ -54,7 +52,7 @@ function is recommended before exiting your script to prevent loss of data.'
         label: 'flush',
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction mkdir(path)\n```\n\nfile.mkdir(path)\n\
@@ -69,7 +67,7 @@ The "/usb1/" prefix is optional.'
         label: 'mkdir',
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction open(fileName, accessType)\n```\n\nfile.open(fileName, file.MODE_\\*) -> number\n\
@@ -82,7 +80,7 @@ The given fileName should be absolute and begin with "/usb1/".'
         label: 'open',
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction read(fileNumber, readAction)\n```\n\
@@ -98,7 +96,7 @@ Should the next set of characters not be limited to digits, then "<ERR>" is retu
         label: 'read',
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction usbdriveexists()\n```\n\nfile.usbdriveexists() -> 0 | 1\n\
@@ -109,7 +107,7 @@ Returns 1 if a flash drive is detected in the front-panel USB port and 0 otherwi
         label: 'usbdriveexists',
     },
     {
-        data: ['file'],
+        data: { domains: ['file'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction write(fileNumber, data)\n```\n\nfile.write(fileNumber, data)\n\
@@ -126,10 +124,9 @@ Files should be closed before script exit via file.close().'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'file.close(fileNumber)',
         parameters: [
             {
@@ -140,7 +137,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'file.flush(fileNumber)',
         parameters: [
             {
@@ -151,7 +147,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'file.mkdir(path)',
         parameters: [
             {
@@ -162,7 +157,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'file.open(fileName, accessType)',
         parameters: [
             {
@@ -170,14 +164,13 @@ export const signatures: Array<FormattableSignatureInformation> = [
                 label: 'fileName',
             },
             {
-                documentation: 'Some: file.MODE_*',
+                documentation: 'Some file.MODE_*',
                 label: 'accessType',
             },
         ],
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'file.read(fileNumber, readAction)',
         parameters: [
             {
@@ -192,7 +185,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'file.write(fileNumber, data)',
         parameters: [
             {

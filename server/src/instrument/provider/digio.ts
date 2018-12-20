@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'digio'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction readport()\n```\n\ndigio.readport() -> number\n\
@@ -42,7 +40,7 @@ All six lines must be configured as digital control lines or an error will be lo
         label: 'readport',
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction writeport(data)\n```\n\ndigio.writeport(data)\n\
@@ -58,10 +56,9 @@ All six lines must be configured as digital control lines or an error will be lo
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'digio.writeport(data)',
         parameters: [
             {

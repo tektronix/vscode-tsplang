@@ -150,7 +150,7 @@ const table: ApiSpec = {
     label: 'table'
 }
 
-export function getLuaApiSpec(): Array<ApiSpec> {
+export function getApiSpec(): Array<ApiSpec> {
     return [
         coroutine,
         functions,
@@ -162,15 +162,15 @@ export function getLuaApiSpec(): Array<ApiSpec> {
     ]
 }
 
-export function getLuaInstrumentSpec(): InstrumentSpec {
+export function getInstrumentSpec(): InstrumentSpec {
     return {
         beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
         current: {
-            measure: { level: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
+            measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
             source: { rangeDefault: NaN, ranges: [ NaN ] }
         },
         overflow: NaN,
-        resistance: { level: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
+        resistance: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
         smuInterlock: { maxNominalVoltageTripped: NaN, maxSourceVoltageTripped: NaN },
         smuMeasureAutorange: {
             currentLowDefault: NaN,
@@ -180,7 +180,7 @@ export function getLuaInstrumentSpec(): InstrumentSpec {
         },
         smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
         voltage: {
-            measure: { level: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
+            measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
             source: { rangeDefault: NaN, ranges: [ NaN ] }
         }
     }

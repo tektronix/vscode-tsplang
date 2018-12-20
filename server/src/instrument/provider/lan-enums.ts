@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_AUTO'
     },
     {
-        data: ['lan'],
+        data: { domains: ['lan'] },
         kind: CompletionItemKind.EnumMember,
         label: 'MODE_MANUAL'
     },

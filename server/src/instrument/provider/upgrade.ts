@@ -15,7 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -23,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'upgrade',
     },
     {
-        data: ['upgrade'],
+        data: { domains: ['upgrade'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction previous()\n```\n\
@@ -37,7 +39,7 @@ An error is logged if no suitable firmware file is found.'
         label: 'previous',
     },
     {
-        data: ['upgrade'],
+        data: { domains: ['upgrade'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction unit()\n```\n\

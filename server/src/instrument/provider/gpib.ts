@@ -15,7 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -23,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'gpib'
     },
     {
-        data: ['gpib'],
+        data: { domains: ['gpib'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ngpib.address\n```\n\

@@ -15,15 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['trigger'],
+        data: { domains: ['trigger'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Array of available event blenders. Indexed from 1 to 2.'
@@ -32,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'blender'
     },
     {
-        data: ['blender', 'trigger'],
+        data: { domains: ['blender', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction clear()\n```\n\
@@ -43,7 +41,7 @@ Clear the event detector and reset the overrun indicator of the currently indexe
         label: 'clear',
     },
     {
-        data: ['blender', 'trigger'],
+        data: { domains: ['blender', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.blender[N].orenable\n```\n\
@@ -59,7 +57,7 @@ When set to AND operations (false), the blender waits for all stimulus before si
         label: 'orenable',
     },
     {
-        data: ['blender', 'trigger'],
+        data: { domains: ['blender', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.blender[N].overrun\n```\n\ntrigger.blender[N].overrun -> boolean\n\
@@ -70,7 +68,7 @@ Returns true if an event was ignored because the event detector was already in t
         label: 'overrun',
     },
     {
-        data: ['blender', 'trigger'],
+        data: { domains: ['blender', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction reset()\n\
@@ -85,7 +83,7 @@ It also clears "trigger.blender[N].overrun".'
         label: 'reset',
     },
     {
-        data: ['blender', 'trigger'],
+        data: { domains: ['blender', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.blender[N].stimulus[M]\n```\n\
@@ -98,7 +96,7 @@ trigger.EVENT_NONE.'
         label: 'stimulus',
     },
     {
-        data: ['blender', 'trigger'],
+        data: { domains: ['blender', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction wait(timeout)\n```\n\ntrigger.blender[N].wait(timeout) -> boolean\n\
@@ -115,10 +113,9 @@ number of events detected.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'trigger.blender[].wait(timeout)',
         parameters: [
             {

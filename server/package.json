@@ -13,10 +13,11 @@
         "url": "https://github.com/tektronix/vscode-tsplang"
     },
     "dependencies": {
+        "@types/antlr4": "^4.7.0",
         "@types/escape-string-regexp": "^1.0.0",
-        "@types/luaparse": "file:types/luaparse",
+        "antlr4": "^4.7.1",
+        "antlr4-tsplang": "file:antlr4-tsplang",
         "escape-string-regexp": "^1.0.5",
-        "luaparse": "^0.2.1",
         "vscode-languageserver": "^4.4.2"
     },
     "scripts": {

@@ -15,12 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
-import { ContentHandler } from './contentHandler'
 import { TspManager } from './tspManager'
-
-const manager: TspManager = new TspManager()
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -32,8 +29,12 @@ const connection: IConnection = createConnection(
 // only
 const documents: TextDocuments = new TextDocuments()
 
-// Create a content parser to provide regular-expression based document parsing
-const parser: ContentHandler = new ContentHandler(documents)
+// Create a TSP Manager to provide command set completions.
+const manager: TspManager = new TspManager(documents)
+
+// We need the last document URI to request a completion to prevent a bunch of
+// expensive completion lookups.
+let lastCompletionUri: string | undefined
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
@@ -60,20 +61,13 @@ connection.onInitialize((params: InitializedParams): InitializeResult => {
 // The content of a text document has changed. This event is emitted when the text document first
 // opened or when its content has changed.
 documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
-    const docItem: TextDocumentItem = {
-        languageId: change.document.languageId,
-        text: change.document.getText(),
-        uri: change.document.uri,
-        version: change.document.version
-    }
-
     // if document is registered, then update
-    if (manager.has(docItem.uri)) {
-        manager.update(docItem)
+    if (manager.has(change.document.uri)) {
+        manager.update(change.document.uri)
     }
     // if document is unregistered, then register
     else {
-            manager.register(docItem)
+        manager.register(change.document.uri)
     }
 })
 
@@ -87,28 +81,30 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 
 // This handler provides the initial list of completion items.
 connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
+    lastCompletionUri = params.textDocument.uri
+
     const tspItem = manager.get(params.textDocument.uri)
 
     if (tspItem === undefined) {
         return
     }
 
-    return parser.getCompletions(params.textDocument.uri, params.position, tspItem)
+    return tspItem.context.getCompletionItems(params.position)
 })
 
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    if (parser.lastCompletionUri === undefined) {
+    if (lastCompletionUri === undefined) {
         return item
     }
 
-    const tspItem = manager.get(parser.lastCompletionUri)
+    const tspItem = manager.get(lastCompletionUri)
 
     if (tspItem === undefined) {
         return item
     }
 
-    return parser.getCompletionDoc(item, tspItem)
+    return tspItem.context.resolveCompletion(item)
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
@@ -118,7 +114,7 @@ connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp |
         return
     }
 
-    return parser.getSignatures(params.textDocument.uri, params.position, tspItem)
+    return tspItem.context.getSignatureHelp(params.position)
 })
 
 // Make the text document manager listen on the connection for open, change and close text

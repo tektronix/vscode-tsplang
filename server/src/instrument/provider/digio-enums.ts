@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Automatically detect externally generated logic levels. \
@@ -29,7 +31,7 @@ Input lines can be read from but not written to.'
         label: 'MODE_DIGITAL_IN'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Line serves as input, output, or both. \
@@ -39,7 +41,7 @@ A 1 must be written to a line used as an input in open-drain mode.'
         label: 'MODE_DIGITAL_OPEN_DRAIN'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Can be configured as logic low (default; 0 V) or as logic high (+5 V). \
@@ -49,7 +51,7 @@ Output lines are actively driven high or low.'
         label: 'MODE_DIGITAL_OUT'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Automatically detect and respond to externally generated triggers. \
@@ -59,7 +61,7 @@ Input can be rising, falling, or either-edged as specified by the trigger.digin[
         label: 'MODE_TRIGGER_IN'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Line serves as input trigger detection and output trigger generator. \
@@ -69,7 +71,7 @@ Input edge state is specified by the trigger.digin[N].edge attribute.'
         label: 'MODE_TRIGGER_OPEN_DRAIN'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Automatically set high or low depending on the output logic setting. \
@@ -80,7 +82,7 @@ edge trigger.'
         label: 'MODE_TRIGGER_OUT'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Detect falling-edge trigger input and automatically latch and drive the trigger \
@@ -90,7 +92,7 @@ line low. Assert an output trigger to release the latched line.'
         label: 'MODE_SYNCHRONOUS_ACCEPTOR'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Detect rising-edge trigger input and assert a transistor-transistor logic low pulse \
@@ -100,13 +102,13 @@ as output.'
         label: 'MODE_SYNCHRONOUS_MASTER'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         detail: 'digio.STATE_HIGH: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_HIGH'
     },
     {
-        data: ['digio'],
+        data: { domains: ['digio'] },
         detail: 'digio.STATE_LOW: 0',
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LOW'

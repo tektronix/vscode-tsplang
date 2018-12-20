@@ -15,11 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
-
-import { FormattableSignatureInformation } from '.'
+import { CompletionItem, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
@@ -27,7 +25,7 @@ export const completions: Array<CompletionItem> = [
         label: 'math'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction abs(x)\n```\n\nmath.abs(x) -> number\n\
@@ -38,7 +36,7 @@ Returns the absolute value of x.'
         label: 'abs'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction acos(x)\n```\n\nmath.acos(x) -> number\n\
@@ -50,7 +48,7 @@ given x is outside this interval.'
         label: 'acos'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction asin(x)\n```\n\nmath.asin(x) -> number\n\
@@ -62,7 +60,7 @@ x is outside this interval.'
         label: 'asin'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction atan(x)\n```\n\nmath.atan(x) -> number\n\
@@ -73,7 +71,7 @@ Returns the arc tangent, in radians, of the value x.'
         label: 'atan'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction atan2(y, x)\n```\n\nmath.atan2(y, x) -> number\n\
@@ -84,7 +82,7 @@ Returns the arc tangent, in radians, of the value y/x.'
         label: 'atan2'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction ceil(x)\n```\n\nmath.ceil(x) -> number\n\
@@ -95,7 +93,7 @@ Rounds x upward, returning the smallest integer value greater than or equal to x
         label: 'ceil'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction cos(x)\n```\n\nmath.cos(x) -> number\n\
@@ -106,7 +104,7 @@ Returns the cosine of angle x in radians.'
         label: 'cos'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction deg(x)\n```\n\nmath.deg(x) -> number\n\
@@ -117,7 +115,7 @@ Convert from radians to degrees and return the result.'
         label: 'deg'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction exp(x)\n```\n\nmath.exp(x) -> number\n\
@@ -128,7 +126,7 @@ Returns the base-e exponential function of x (e^x).'
         label: 'exp'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction floor(x)\n```\n\nmath.floor(x) -> number\n\
@@ -139,7 +137,7 @@ Rounds x downward, returning the largest integer value less than or equal to x.'
         label: 'floor'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction frexp(x)\n```\n\nmath.frexp(x) -> number, number\n\
@@ -156,7 +154,7 @@ The significand and exponent are calculated from the expression:\n\
         label: 'frexp'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction ldexp(x, exp)\n```\n\nmath.ldexp(x, exp) -> number\n\
@@ -169,7 +167,7 @@ Returns the result of the following expression:\n\
         label: 'ldexp'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction log(x)\n```\n\nmath.log(x) -> number\n\
@@ -180,7 +178,7 @@ Returns the natural logarithm of x.'
         label: 'log'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction log10(x)\n```\n\nmath.log10(x) -> number\n\
@@ -191,7 +189,7 @@ Returns the common (base-10) logarithm of x.'
         label: 'log10'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction max(...)\n```\n\nmath.max(...) -> number\n\
@@ -202,7 +200,7 @@ Returns the maximum value of its numeric arguments.'
         label: 'max'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction min(...)\n```\n\nmath.min(...) -> number\n\
@@ -213,7 +211,7 @@ Returns the minimum value of its numeric arguments.'
         label: 'min'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction pow(base, exp)\n```\n\nmath.pow(base, exp) -> number\n\
@@ -224,7 +222,7 @@ Returns the result of base raised to the power exp.'
         label: 'pow'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction rad(x)\n```\n\nmath.rad(x) -> number\n\
@@ -235,7 +233,7 @@ Convert from degrees to radians and return the result.'
         label: 'rad'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction random(x, y)\n```\n\nmath.random([x[, y]]) -> number\n\
@@ -247,7 +245,7 @@ this interval is [1, x]. When both x and y are specified, the interval is [x, y]
         label: 'random'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction randomseed(x)\n```\n\
@@ -258,7 +256,7 @@ Use the given seed x for the pseudo-random number generator.'
         label: 'randomseed'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sin(x)\n```\n\nmath.sin(x) -> number\n\
@@ -269,7 +267,7 @@ Returns the sine of angle x in radians.'
         label: 'sin'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sqrt(x)\n```\n\nmath.sqrt(x) -> number\n\
@@ -280,7 +278,7 @@ Return the square root of x. An error is logged if x is negative.'
         label: 'sqrt'
     },
     {
-        data: ['math'],
+        data: { domains: ['math'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction tan(x)\n```\n\nmath.tan(x) -> number\n\
@@ -292,10 +290,9 @@ Returns the tangent of angle x in radians.'
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.abs(x)',
         parameters: [
             {
@@ -305,7 +302,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.acos(x)',
         parameters: [
             {
@@ -316,7 +312,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.asin(x)',
         parameters: [
             {
@@ -327,7 +322,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.atan(x)',
         parameters: [
             {
@@ -337,7 +331,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.atan2(y, x)',
         parameters: [
             {
@@ -352,7 +345,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.ceil(x)',
         parameters: [
             {
@@ -363,7 +355,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.cos(x)',
         parameters: [
             {
@@ -374,7 +365,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.deg(x)',
         parameters: [
             {
@@ -385,7 +375,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.exp(x)',
         parameters: [
             {
@@ -396,7 +385,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.floor(x)',
         parameters: [
             {
@@ -407,7 +395,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.frexp(x)',
         parameters: [
             {
@@ -418,7 +405,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.ldexp(x, exp)',
         parameters: [
             {
@@ -433,7 +419,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.log(x)',
         parameters: [
             {
@@ -443,7 +428,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.log10(x)',
         parameters: [
             {
@@ -453,7 +437,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.max(...)',
         parameters: [
             {
@@ -464,7 +447,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.min(...)',
         parameters: [
             {
@@ -475,7 +457,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.pow(base, exp)',
         parameters: [
             {
@@ -488,7 +469,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.rad(x)',
         parameters: [
             {
@@ -499,7 +479,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.random(x)',
         parameters: [
             {
@@ -510,7 +489,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.random(x, y)',
         parameters: [
             {
@@ -525,7 +503,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.randomseed(x)',
         parameters: [
             {
@@ -535,7 +512,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.sin(x)',
         parameters: [
             {
@@ -546,7 +522,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.sqrt(x)',
         parameters: [
             {
@@ -557,7 +532,6 @@ export const signatures: Array<FormattableSignatureInformation> = [
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'math.tan(x)',
         parameters: [
             {

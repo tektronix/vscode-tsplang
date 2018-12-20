@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['status'],
+        data: { domains: ['status'] },
         kind: CompletionItemKind.Module,
         label: 'standard'
     },
     {
-        data: ['standard', 'status'],
+        data: { domains: ['standard', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.standard.enable\n```\n\
@@ -59,7 +61,7 @@ the OPC (1) and PON (129) registers are set.'
         label: 'enable',
     },
     {
-        data: ['standard', 'status'],
+        data: { domains: ['standard', 'status'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nstatus.standard.event\n```\n\nstatus.standard.event -> number\n\

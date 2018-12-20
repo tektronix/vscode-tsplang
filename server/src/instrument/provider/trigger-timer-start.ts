@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['timer', 'trigger'],
+        data: { domains: ['timer', 'trigger'] },
         kind: CompletionItemKind.Module,
         label: 'start'
     },
     {
-        data: ['start', 'timer', 'trigger'],
+        data: { domains: ['start', 'timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].start.fractionalseconds\n```\n\
@@ -38,7 +40,7 @@ When enabled, the timer will start immediately if it is configured for a start t
         label: 'fractionalseconds',
     },
     {
-        data: ['start', 'timer', 'trigger'],
+        data: { domains: ['start', 'timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].start.generate\n```\n\
@@ -55,7 +57,7 @@ This generates a trigger.EVENT_TIMER<N>, where <N> is the currently indexed time
         label: 'generate',
     },
     {
-        data: ['start', 'timer', 'trigger'],
+        data: { domains: ['start', 'timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].start.overrun\n```\n\ntrigger.timer[N].start.overrun -> boolean\n\
@@ -66,7 +68,7 @@ Returns true if an event was ignored because the event detector was already in t
         label: 'overrun',
     },
     {
-        data: ['start', 'timer', 'trigger'],
+        data: { domains: ['start', 'timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].start.seconds\n```\n\
@@ -80,7 +82,7 @@ When enabled, the timer will start immediately if it is configured for a start t
         label: 'seconds',
     },
     {
-        data: ['start', 'timer', 'trigger'],
+        data: { domains: ['start', 'timer', 'trigger'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\ntrigger.timer[N].start.stimulus\n```\n\

@@ -15,80 +15,60 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem, MarkupContent, MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../decorators'
 
 import { InstrumentSpec } from '..'
 
-import { CommandDocumentation, FormattableSignatureInformation } from '.'
-
-export const completionDocs: Map<string, CommandDocumentation> = new Map([
+export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [
         'smu.source.level',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.source.level\n```\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.source.level\n\`\`\`\n\
 \n\
 Get or set the output level of the active source function as a number. Defaults to 0 for all source functions.\n\
 \n\
-When the source function is set to Current, the valid range of this attribute is %{0} to %{1}.\n\
+When the source function is set to Current, the valid range of this attribute is \
+${spec.current.measure.level.high * -1} to ${spec.current.measure.level.high}.\n\
 \n\
-When the source function is set to Voltage, the valid range of this attribute is %{2} to %{3}.\n\
+When the source function is set to Voltage, the valid range of this attribute is \
+${spec.voltage.source.rangeDefault * -1} to ${spec.voltage.source.rangeDefault}.\n\
 \n\
-If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.'
-                    .replace('%{0}', (spec.current.measure.level.high * -1).toString())
-                    .replace('%{1}', spec.current.measure.level.high.toString())
-                    .replace('%{2}', (spec.voltage.source.rangeDefault * -1).toString())
-                    .replace('%{3}', spec.voltage.source.rangeDefault.toString())
-            }
-        }
+If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.`
     ],
     [
         'smu.source.range',
-        {
-            kind: MarkupKind.Markdown,
-            toString: (spec: InstrumentSpec): string => {
-                return '```lua\nsmu.source.range\n```\n\
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.source.range\n\`\`\`\n\
 \n\
 Get or set the source range of the active source function by passing the expected source level as a number.\n\
 \n\
-When the source function is set to Current, the valid range of this attribute is %{0} to %{1} and defaults to %{2}. \
-Fixed Current ranges include %{3}.\n\
+When the source function is set to Current, the valid range of this attribute is \
+${spec.current.source.ranges[spec.current.source.ranges.length - 1] * -1} to \
+${spec.current.source.ranges[spec.current.source.ranges.length - 1]} and defaults to \
+${spec.current.source.rangeDefault}. Fixed Current ranges include ${spec.current.source.ranges.join(', ')}.\n\
 \n\
-When the source function is set to Voltage, this range is %{4} to %{5} and defaults to %{6}. Fixed Voltage ranges \
-include %{7}.\n\
+When the source function is set to Voltage, this range is \
+${spec.voltage.source.ranges[spec.voltage.source.ranges.length - 1] * -1} to \
+${spec.voltage.source.ranges[spec.voltage.source.ranges.length - 1]} and defaults to \
+${spec.voltage.source.rangeDefault}. Fixed Voltage ranges include ${spec.voltage.source.ranges.join(', ')}.\n\
 \n\
 While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
 less than supplied source level.\n\
 \n\
-This attribute is saved with the active function and retained until the next instrument reset or power cycle.'
-                    .replace(
-                        '%{0}',
-                        (spec.current.source.ranges[spec.current.source.ranges.length - 1] * -1).toString()
-                    )
-                    .replace('%{1}', spec.current.source.ranges[spec.current.source.ranges.length - 1].toString())
-                    .replace('%{2}', spec.current.source.rangeDefault.toString())
-                    .replace('%{3}', spec.current.source.ranges.join(', '))
-                    .replace(
-                        '%{4}',
-                        (spec.voltage.source.ranges[spec.voltage.source.ranges.length - 1] * -1).toString()
-                    )
-                    .replace('%{5}', spec.voltage.source.ranges[spec.voltage.source.ranges.length - 1].toString())
-                    .replace('%{6}', spec.voltage.source.rangeDefault.toString())
-                    .replace('%{7}', spec.voltage.source.ranges.join(', '))
-            }
-        }
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
 ])
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['smu'],
+        data: { domains: ['smu'] },
         kind: CompletionItemKind.Module,
         label: 'source'
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.autodelay\n```\n\
@@ -103,7 +83,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'autodelay',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.autorange\n```\n\
@@ -123,7 +103,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'autorange',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.delay\n```\n\
@@ -139,7 +119,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'delay',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.func\n```\n\
@@ -152,7 +132,7 @@ When the active source function is changed, settings that are retained on a per-
         label: 'func',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.highc\n```\n\
@@ -166,12 +146,12 @@ any overshoot, ringing, or instability.'
         label: 'highc',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'level',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.offmode\n```\n\
@@ -182,7 +162,7 @@ Get or set the instrument state when output is turned off to smu.OFFMODE_\\*. De
         label: 'offmode',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.output\n```\n\
@@ -193,12 +173,12 @@ Get or set the present source output state to smu.ON or OFF. Defaults to smu.OFF
         label: 'output',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         kind: CompletionItemKind.Property,
         label: 'range',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.source.readback\n```\n\
@@ -215,7 +195,7 @@ recorded in the buffer alongside each measurement.'
         label: 'readback',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplinear(configListName, start, stop, points, delay, count, rangeType, \
@@ -233,7 +213,7 @@ the trigger model to start the sweep.'
         label: 'sweeplinear',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplinearstep(configListName, start, stop, step, delay, count, rangeType, \
@@ -251,7 +231,7 @@ uniform series of ascending or descending output steps. Initiate the trigger mod
         label: 'sweeplinearstep',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplist(configListName, index, delay, count, failAbort, bufferName)\n```\n\
@@ -267,7 +247,7 @@ model. Initiate the trigger model to start the sweep.'
         label: 'sweeplist',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction sweeplog(configListName, start, stop, points, delay, count, rangeType, \
@@ -285,7 +265,7 @@ the trigger model to start the sweep.'
         label: 'sweeplog',
     },
     {
-        data: ['source', 'smu'],
+        data: { domains: ['source', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.userdelay[N]\n```\n\
@@ -300,7 +280,7 @@ This attribute is saved with the active function and retained until the next ins
     },
 ]
 
-export const signatures: Array<FormattableSignatureInformation> = [
+export const signatures: Array<SignatureInformation> = [
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
@@ -313,6 +293,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 1,
                     label: 'start'
                 },
                 {
@@ -323,6 +304,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 2,
                     label: 'stop'
                 },
             ]
@@ -382,6 +364,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 1,
                     label: 'start'
                 },
                 {
@@ -392,6 +375,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.voltage.measure.level.low.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 2,
                     label: 'stop'
                 },
             ]
@@ -441,7 +425,6 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     },
     {
         documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => new Array(),
         label: 'smu.source.sweeplist(configListName[, index][, delay][, count][, failAbort][, bufferName])',
         parameters: [
             {
@@ -487,6 +470,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 1,
                     label: 'start'
                 },
                 {
@@ -497,6 +481,7 @@ Voltage range: %{2} to %{3}'
                         .replace('%{1}', spec.current.measure.level.high.toString())
                         .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
                         .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    index: 2,
                     label: 'stop'
                 },
             ]

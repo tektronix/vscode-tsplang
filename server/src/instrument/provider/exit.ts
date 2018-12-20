@@ -15,11 +15,12 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        detail: 'This function stops a script that is presently running.',
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nfunction exit()\n```\n\

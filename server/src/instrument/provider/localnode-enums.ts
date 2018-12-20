@@ -15,36 +15,38 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ACCESS_EXCLUSIVE'
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ACCESS_FULL'
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ACCESS_LOCKOUT'
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ACCESS_PROTECTED'
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         kind: CompletionItemKind.EnumMember,
         label: 'DISABLE'
     },
     {
-        data: ['localnode'],
+        data: { domains: ['localnode'] },
         kind: CompletionItemKind.EnumMember,
         label: 'ENABLE'
     },

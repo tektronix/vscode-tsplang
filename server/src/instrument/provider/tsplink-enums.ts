@@ -15,11 +15,13 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Line serves as input, output, or both.'
@@ -28,7 +30,7 @@ export const completions: Array<CompletionItem> = [
         label: 'MODE_DIGITAL_OPEN_DRAIN'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Line serves as input trigger detection and output trigger generator.'
@@ -37,7 +39,7 @@ export const completions: Array<CompletionItem> = [
         label: 'MODE_TRIGGER_OPEN_DRAIN'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Detect falling-edge trigger input and automatically latch and drive the trigger \
@@ -47,7 +49,7 @@ line low. Assert an output trigger to release the latched line.'
         label: 'MODE_SYNCHRONOUS_ACCEPTOR'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: 'Detect rising-edge trigger input and assert a transistor-transistor logic low pulse \
@@ -57,12 +59,12 @@ as output.'
         label: 'MODE_SYNCHRONOUS_MASTER'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_HIGH'
     },
     {
-        data: ['tsplink'],
+        data: { domains: ['tsplink'] },
         kind: CompletionItemKind.EnumMember,
         label: 'STATE_LOW'
     },

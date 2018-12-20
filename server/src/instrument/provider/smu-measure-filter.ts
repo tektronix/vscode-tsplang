@@ -15,16 +15,18 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {
-        data: ['measure', 'smu'],
+        data: { domains: ['measure', 'smu'] },
         kind: CompletionItemKind.Module,
         label: 'filter'
     },
     {
-        data: ['filter', 'measure', 'smu'],
+        data: { domains: ['filter', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.filter.count\n```\n\
@@ -39,7 +41,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'count',
     },
     {
-        data: ['filter', 'measure', 'smu'],
+        data: { domains: ['filter', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.filter.enable\n```\n\
@@ -54,7 +56,7 @@ This attribute is saved with the active function and retained until the next ins
         label: 'enable',
     },
     {
-        data: ['filter', 'measure', 'smu'],
+        data: { domains: ['filter', 'measure', 'smu'] },
         documentation: {
             kind: MarkupKind.Markdown,
             value: '```lua\nsmu.measure.filter.type\n```\n\
