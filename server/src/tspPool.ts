@@ -138,8 +138,7 @@ export class TspPool {
                         // If this is not a Lua model, then merge the Lua entry.
                         if (luaEntry !== undefined) {
                             api.push(...luaEntry.apiSpec)
-                            cmdSet.add(
-                                {
+                            cmdSet.add({
                                 completionDocs: luaEntry.commandSet.completionDocs,
                                 completions: luaEntry.commandSet.completions,
                                 signatures: luaEntry.commandSet.signatures
