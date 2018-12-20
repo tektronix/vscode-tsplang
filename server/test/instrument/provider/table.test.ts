@@ -19,8 +19,8 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { CommandSetInterface } from '../../../src/instrument'
 import { SignatureInformation } from '../../../src/decorators'
+import { CommandSetInterface } from '../../../src/instrument'
 
 import { expectSignatureFormat } from './helpers'
 
