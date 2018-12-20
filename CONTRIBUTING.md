@@ -1,6 +1,6 @@
 # Contributing Guide
 
-TSPLang is a part-time effort from a small team, so contributions are welcome! This document 
+TSPLang is a part-time effort from a small team, so contributions are welcome! This document shows you how to get the project, run all provided tests, and generate a production-ready build.
 
 ## Dependencies
 

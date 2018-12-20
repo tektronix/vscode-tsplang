@@ -32,7 +32,7 @@ import { getFormatCompletions, getFormatSignatures } from './format'
 import { getGpibCompletions, getGpibSignatures } from './gpib'
 import { getLanCompletions, getLanSignatures } from './lan'
 import { getLocalnodeCompletions, getLocalnodeSignatures } from './localnode'
-import { getNodeCompletions, getNodeSignatures } from './node'
+// TODO: Import node completions and signatures.
 import { getOpcCompletions, getOpcSignatures } from './opc'
 import { getPrintbufferCompletions, getPrintbufferSignatures } from './printbuffer'
 import { getPrintnumberCompletions, getPrintnumberSignatures } from './printnumber'
@@ -72,7 +72,6 @@ export async function get6500Completions(): Promise<Array<CompletionItem>> {
         .concat(await getGpibCompletions())
         .concat(await getLanCompletions())
         .concat(await getLocalnodeCompletions())
-        // .concat(await getNodeCompletions())
         .concat(await getOpcCompletions())
         .concat(await getPrintbufferCompletions())
         .concat(await getPrintnumberCompletions())
@@ -110,7 +109,6 @@ export async function get6500Signatures(): Promise<Array<SignatureInformation>> 
         .concat(await getGpibSignatures())
         .concat(await getLanSignatures())
         .concat(await getLocalnodeSignatures())
-        // .concat(await getNodeSignatures())
         .concat(await getOpcSignatures())
         .concat(await getPrintbufferSignatures())
         .concat(await getPrintnumberSignatures())

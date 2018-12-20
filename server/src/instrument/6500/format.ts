@@ -16,7 +16,7 @@
 /* tslint:disable:max-line-length */
 'use strict'
 
-import { CompletionItem, CompletionItemKind, MarkupKind, ParameterInformation, SignatureInformation } from 'vscode-languageserver'
+import { CompletionItem, CompletionItemKind, MarkupKind, SignatureInformation } from 'vscode-languageserver'
 
 const formatCompletions: Array<CompletionItem> = [
     {

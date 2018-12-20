@@ -24,6 +24,16 @@
             "url": "https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg",
             "href": "https://codecov.io/gh/tektronix/vscode-tsplang",
             "description": "Test Coverage (Codecov)"
+        },
+        {
+            "url": "https://img.shields.io/lgtm/grade/javascript/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18",
+            "href": "https://lgtm.com/projects/g/tektronix/vscode-tsplang/context:javascript",
+            "description": "Code Quality: JavaScript (LGTM)"
+        },
+        {
+            "url": "https://img.shields.io/lgtm/alerts/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18",
+            "href": "https://lgtm.com/projects/g/tektronix/vscode-tsplang/alerts",
+            "description": "Total Alerts (LGTM)"
         }
     ],
     "engines": {
