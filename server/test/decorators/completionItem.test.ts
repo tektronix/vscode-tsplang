@@ -19,7 +19,11 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { Token } from 'antlr4'
+
 import { CompletionItem } from '../../src/decorators'
+
+import { makeStringArray, makeTestToken } from '../testTypes'
 
 describe('Decorators', () => {
     describe('CompletionItem', () => {
@@ -311,6 +315,47 @@ describe('Decorators', () => {
                         CompletionItem.resolveNamespace(test),
                         `failed to properly resolve completion "${JSON.stringify(test)}"`
                     ).to.equal(expected)
+                })
+            })
+        })
+
+        describe('.tokensMatch()', () => {
+            const foo = makeTestToken('foo')
+            const bar = makeTestToken('bar')
+            const baz = makeTestToken('baz')
+            const dot = makeTestToken('.')
+
+            it('returns true given an empty Token array', () => {
+                expect(CompletionItem.tokensMatch([], singleDomainCompletion)).to.be.true
+            })
+
+            it('returns true if the Token array matches the CompletionItem', () => {
+                const testCases: Map<CompletionItem, Array<Token>> = new Map([
+                    [noDomainCompletion, [foo]],
+                    [singleDomainCompletion, [foo, dot, bar]],
+                    [multiDomainCompletion, [foo, dot, bar, dot, baz]]
+                ])
+
+                testCases.forEach((itemA: Array<Token>, itemB: CompletionItem) => {
+                    expect(
+                        CompletionItem.tokensMatch(itemA, itemB),
+                        `"${JSON.stringify(makeStringArray(...itemA))}" did not match "${JSON.stringify(itemB)}"`
+                    ).to.be.true
+                })
+            })
+
+            it('returns false if the Token array does not match the CompletionItem', () => {
+                const testCases: Map<CompletionItem, Array<Token>> = new Map([
+                    [noDomainCompletion, [foo, dot, bar, dot, baz]],
+                    [singleDomainCompletion, [foo]],
+                    [multiDomainCompletion, [foo, dot, bar]]
+                ])
+
+                testCases.forEach((itemA: Array<Token>, itemB: CompletionItem) => {
+                    expect(
+                        CompletionItem.tokensMatch(itemA, itemB),
+                        `"${JSON.stringify(makeStringArray(...itemA))}" matched "${JSON.stringify(itemB)}"`
+                    ).to.be.false
                 })
             })
         })
