@@ -42,9 +42,7 @@ export interface SignatureInformation extends vscode_ls.SignatureInformation, Ba
 }
 export namespace SignatureInformation {
     export function depth(signature: SignatureInformation): number {
-        // We don't need to coerce negative numbers to zero since string.split() always returns
-        // an array with one member.
-        return resolveNamespace(signature).split('.').length - 1
+        return ResolvedNamespace.depth(resolveNamespace(signature))
     }
 
     /**

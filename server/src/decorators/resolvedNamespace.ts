@@ -45,9 +45,9 @@ export namespace ResolvedNamespace {
     }
 
     export function depth(value: ResolvedNamespace): number {
-        const rawDepth = value.split('.').length - 1
-
-        return (rawDepth < 0) ? 0 : rawDepth
+        // We don't need to coerce negative numbers to zero since string.split() always returns
+        // an array with one member.
+        return value.split('.').length - 1
     }
 
     export function equal(a: ResolvedNamespace, b: ResolvedNamespace): boolean {
