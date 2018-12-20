@@ -15,7 +15,7 @@
  */
 import * as antlr4 from 'antlr4'
 
-export class Token extends antlr4.Token {
+class Token extends antlr4.Token {
     private _text: string
 
     constructor() {
@@ -28,4 +28,11 @@ export class Token extends antlr4.Token {
     set text(value: string) {
         this._text = value
     }
+}
+
+export function makeTestToken(text: string): Token {
+    const result = new Token()
+    result.text = text
+
+    return result
 }

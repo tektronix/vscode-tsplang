@@ -14,4 +14,4 @@
  *  limitations under the License.
  */
 
-export { Token } from './token'
+export { makeTestToken } from './token'

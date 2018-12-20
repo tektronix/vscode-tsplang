@@ -19,9 +19,11 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { Token } from 'antlr4'
+
 import { TokenUtil } from '../../src/language-comprehension'
 
-import { Token } from '../testTypes'
+import { makeTestToken } from '../testTypes'
 
 describe('Language Comprehension', () => {
     describe('TokenUtil', () => {
@@ -33,14 +35,11 @@ describe('Language Comprehension', () => {
             })
 
             it('returns an accurate representation of the given Token array', () => {
-                const fooToken = new Token()
-                fooToken.text = 'foo'
+                const fooToken = makeTestToken('foo')
 
-                const dotToken = new Token()
-                dotToken.text = '.'
+                const dotToken = makeTestToken('.')
 
-                const barToken = new Token()
-                barToken.text = 'bar'
+                const barToken = makeTestToken('bar')
 
                 const scenario = new Map<string, Array<Token>>([
                     ['foo', [fooToken]],
