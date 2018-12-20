@@ -19,7 +19,12 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { Token } from 'antlr4'
+
 import { ResolvedNamespace } from '../../src/decorators'
+import { TokenUtil } from '../../src/language-comprehension'
+
+import { makeTestToken } from '../testTypes'
 
 describe('Decorators', () => {
     describe('ResolvedNamespace', () => {
@@ -30,9 +35,85 @@ describe('Decorators', () => {
         })
 
         describe('.create()', () => {
-            it.skip('returns a resolved namespace given a string')
+            it('returns an empty string given an empty string', () => {
+                expect(ResolvedNamespace.create('')).to.be.empty
+            })
 
-            it.skip('returns a resolved namespace given a Token array')
+            it('returns an empty string given an empty array', () => {
+                expect(ResolvedNamespace.create([])).to.be.empty
+            })
+
+            it('returns a resolved namespace given a string', () => {
+                const scenarios: Map<string, Array<string>> = new Map([
+                    ['foo', ['foo', 'foo[1]', 'foo[999](', 'foo(bar(']],
+                    ['foo.bar', ['foo.bar', 'foo[42].bar(', 'foo[1].bar[999](baz(']]
+                ])
+
+                scenarios.forEach((testCases: Array<string>, expected: string) => {
+                    testCases.forEach((test: string) => {
+                        expect(
+                            ResolvedNamespace.create(test),
+                            `"${test}" did not resolve to "${expected}"`
+                        ).to.equal(expected)
+                    })
+                })
+            })
+
+            it('returns a resolved namespace given a Token array', () => {
+                const foo = makeTestToken('foo')
+                const bar = makeTestToken('bar')
+                const baz = makeTestToken('baz')
+                const one = makeTestToken('1')
+                const fourTwo = makeTestToken('42')
+                const nineNineNine = makeTestToken('999')
+                const dot = makeTestToken('.')
+                const openParen = makeTestToken('(')
+                const openBracket = makeTestToken('[')
+                const closeBracket = makeTestToken(']')
+
+                const scenarios: Map<string, Array<Array<Token>>> = new Map([
+                    ['foo', [
+                        // foo
+                        [foo],
+                        // foo[1]
+                        [foo, openBracket, one, closeBracket],
+                        // foo[999](
+                        [foo, openBracket, nineNineNine, closeBracket, openParen],
+                        // foo(bar(
+                        [foo, openParen, bar, openParen]
+                    ]],
+                    ['foo.bar', [
+                        // foo.bar
+                        [foo, dot, bar],
+                        // foo[42].bar(
+                        [foo, openBracket, fourTwo, closeBracket, dot, bar, openParen],
+                        // foo[1].bar[999](baz(
+                        [
+                            foo,
+                            openBracket,
+                            one,
+                            closeBracket,
+                            dot,
+                            bar,
+                            openBracket,
+                            nineNineNine,
+                            closeBracket,
+                            openParen,
+                            baz,
+                            openParen
+                        ]
+                    ]]
+                ])
+
+                scenarios.forEach((testCases: Array<Array<Token>>, expected: string) => {
+                    testCases.forEach((test: Array<Token>) => {
+                        expect(
+                            ResolvedNamespace.create(test),
+                            `"${TokenUtil.getString(...test)}" did not resolve to "${expected}"`
+                        ).to.equal(expected)
+                    })
+                })
+            })
         })
 
         describe('.depth()', () => {
