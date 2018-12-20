@@ -425,10 +425,15 @@ export class DocumentContext extends TspListener {
                 return
             }
 
+            let text: string | undefined = this.document.getText(value.range).trim()
+            if (text.length === 0) {
+                text = undefined
+            }
+
             this.fuzzyOffsets.fuzz(allContent, key)
             this.exclusives.set(key, {
-                completions: value.completions,
-                text: this.document.getText(value.range).trim()
+                text,
+                completions: value.completions
             })
         })
     }
