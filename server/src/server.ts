@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, DidChangeConfigurationNotification, DidChangeConfigurationParams, IConnection, InitializedParams, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentItem, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, DidChangeConfigurationNotification, DidChangeConfigurationParams, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
 import { TsplangSettings } from './settings'
 import { TspManager } from './tspManager'
