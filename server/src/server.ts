@@ -138,14 +138,18 @@ connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
 
 connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
     if (hasWorkspaceSettings) {
-        // Update all open documents.
+        // Update all open document contexts.
         documents.all().forEach(async (document: TextDocument) => {
-            const settings: TsplangSettings = await connection.workspace.getConfiguration({
+            const settings = await connection.workspace.getConfiguration({
                 scopeUri: document.uri,
                 section: 'tsplang'
             })
 
-            manager.updateSettings(document.uri, settings)
+            const tspItem = manager.get(document.uri)
+
+            if (tspItem !== undefined) {
+                tspItem.context.settings = settings
+            }
         })
     }
     else {

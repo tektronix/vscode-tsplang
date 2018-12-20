@@ -140,7 +140,7 @@ export class TspManager {
                 this.unregister(uri)
 
                 // Re-register everything.
-                await this.register(uri, item.settings)
+                await this.register(uri, item.context.settings)
 
                 // The context was updated by register, so we can resolve.
                 resolve()
@@ -154,11 +154,5 @@ export class TspManager {
 
             resolve()
         })
-    }
-
-    updateSettings(uri: string, settings: TsplangSettings): void {
-        this.unregister(uri)
-        this.pool.update(settings)
-        this.register(uri, settings)
     }
 }

@@ -24,7 +24,6 @@ import { TspPool } from './tspPool'
 
 export interface TspItem {
     context: DocumentContext
-    settings: TsplangSettings
     shebang: Shebang
 }
 export namespace TspItem {
@@ -39,12 +38,11 @@ export namespace TspItem {
             reject: (reason?: Error) => void
         ): Promise<void> => {
             try {
-                const entry = await pool.register(shebang.master, settings)
+                const entry = await pool.register(shebang.master)
 
                 resolve({
-                    settings,
                     shebang,
-                    context: new DocumentContext(entry.commandSet, registrant)
+                    context: new DocumentContext(entry.commandSet, registrant, settings)
                 })
             }
             catch (e) {

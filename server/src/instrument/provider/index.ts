@@ -17,7 +17,6 @@
 
 import { ApiSpec, BaseApiSpec, ChildApiSpec, CommandSet, CommandSetInterface, ExclusiveCompletionApiSpec, InstrumentSpec, SignatureDataApiSpec } from '..'
 import { CompletionItem, MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../decorators'
-import { EnumerationSuggestionValue, TsplangSettings } from '../../settings'
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes
@@ -380,11 +379,7 @@ function formatSignatures(
     return result
 }
 
-export async function generateCommandSet(
-    apiSpecs: Array<ApiSpec>,
-    spec: InstrumentSpec,
-    settings: TsplangSettings
-): Promise<CommandSet> {
+export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
     return new Promise<CommandSet>((
         resolve: (value?: CommandSet) => void,
         reject: (reason?: Error) => void

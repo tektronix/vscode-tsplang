@@ -22,7 +22,7 @@ import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
 // tslint:disable-next-line:ordered-imports
 import { TspLexer, TspListener, TspParser } from 'antlr4-tsplang'
-import { Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
+import { CompletionItemKind, Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 
 import { CompletionItem, ResolvedNamespace, SignatureInformation } from './decorators'
 import { CommandSet } from './instrument'
@@ -30,6 +30,7 @@ import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
+import { EnumerationSuggestionValue, TsplangSettings } from './settings'
 
 declare class CorrectRecogException extends RecognitionException {
     startToken?: Token
@@ -38,6 +39,7 @@ declare class CorrectRecogException extends RecognitionException {
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
     readonly document: TextDocument
+    settings: TsplangSettings
     private enteredStatementException: boolean
     /**
      * A Map keyed to the ending offset of an assignment operator (`=`) or
@@ -59,11 +61,12 @@ export class DocumentContext extends TspListener {
     private readonly tableIndexRegexp: RegExp
     private tokenStream: CommonTokenStream
 
-    constructor(commandSet: CommandSet, document: TextDocument) {
+    constructor(commandSet: CommandSet, document: TextDocument, settings: TsplangSettings) {
         super()
 
         this.commandSet = commandSet
         this.document = document
+        this.settings = settings
 
         this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
@@ -331,6 +334,29 @@ export class DocumentContext extends TspListener {
             offset = this.fuzzyOffsets.get(offset) || offset
         }
 
+        const addSortText = (completions?: Array<CompletionItem>): Array<CompletionItem> | undefined => {
+            if (completions === undefined) {
+                return
+            }
+
+            return completions.map((value: CompletionItem) => {
+                if (value.kind === CompletionItemKind.EnumMember) {
+                    value.sortText = EnumerationSuggestionValue.addSortCharacter(
+                        value.label,
+                        this.settings.enumerationSuggestions
+                    )
+                }
+                else {
+                    value.sortText = EnumerationSuggestionValue.addSortCharacter(
+                        value.label,
+                        EnumerationSuggestionValue.INLINE
+                    )
+                }
+
+                return value
+            })
+        }
+
         // Get available exclusive completion items.
         const exclusiveContext = this.exclusives.get(offset)
 
@@ -354,11 +380,11 @@ export class DocumentContext extends TspListener {
             }
 
             if (exclusiveResult.length > 0) {
-                return exclusiveResult
+                return addSortText(exclusiveResult)
             }
         }
 
-        return this.commandSet.completionDepthMap.get(0)
+        return addSortText(this.commandSet.completionDepthMap.get(0))
     }
 
     getSignatureHelp(cursor: Position): SignatureHelp | undefined {

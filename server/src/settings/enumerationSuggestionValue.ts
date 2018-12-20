@@ -15,8 +15,6 @@
  */
 'use strict'
 
-import { CompletionItem } from 'vscode-languageserver'
-
 export namespace EnumerationSuggestionValue {
     export const BOTTOM = 'bottom'
     export const INLINE = 'inline'
@@ -34,37 +32,14 @@ export namespace EnumerationSuggestionValue {
     export function addSortCharacter(target: string, type: EnumerationSuggestionValue): string {
         switch (type) {
             case EnumerationSuggestionValue.BOTTOM:
-                return bottomSortCharacter + target
+                return bottomSortCharacter + target.toLocaleLowerCase()
 
             case EnumerationSuggestionValue.TOP:
-                return topSortCharacter + target
+                return topSortCharacter + target.toLocaleLowerCase()
 
             default:
-                return target
+                return target.toLocaleLowerCase()
         }
-    }
-
-    /**
-     * Calculates the appropriate CompletionItem.sortText value.
-     * @param target The CompletionItem to resolve.
-     * @param type How to resolve the sortText property.
-     * @returns The appropriate value for the sortText property of the given CompletionItem.
-     */
-    export function resolveSortText(target: CompletionItem, type: EnumerationSuggestionValue): string | undefined {
-        const result = target
-
-        // Remove the sortText property if "inline" is the current setting.
-        if (type === EnumerationSuggestionValue.INLINE
-                && result.sortText !== undefined) {
-            result.sortText = undefined
-
-            return result
-        }
-
-        // Add the appropriate sort character if "bottom" or "top" is the current setting.
-        result.sortText = addSortCharacter(result.label, type)
-
-        return result
     }
 }
 export type EnumerationSuggestionValue = 'bottom' | 'inline' | 'top'

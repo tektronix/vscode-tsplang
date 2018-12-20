@@ -21,6 +21,7 @@ import 'mocha'
 
 import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformation } from '../../src/decorators'
 import { CommandSet, CommandSetInterface } from '../../src/instrument'
+import { TsplangSettings } from '../../src/settings'
 
 import { emptySpec } from '../instrument/emptySpec'
 
@@ -207,39 +208,41 @@ describe('Instrument', () => {
     })
 
     describe('CommandSet', () => {
+        const settings = TsplangSettings.defaults()
+
         describe('#completionDepthMap', () => {
             it('is empty on instantiation', () => {
-                expect(new CommandSet(emptySpec).completionDepthMap).to.be.empty
+                expect(new CommandSet(emptySpec, settings).completionDepthMap).to.be.empty
             })
         })
 
         describe('#completionDocs', () => {
             it('is empty on instantiation', () => {
-                expect(new CommandSet(emptySpec).completionDocs).to.be.empty
+                expect(new CommandSet(emptySpec, settings).completionDocs).to.be.empty
             })
         })
 
         describe('#completions', () => {
             it('is empty on instantiation', () => {
-                expect(new CommandSet(emptySpec).completions).to.be.empty
+                expect(new CommandSet(emptySpec, settings).completions).to.be.empty
             })
         })
 
         describe('#signatureDepthMap', () => {
             it('is empty on instantiation', () => {
-                expect(new CommandSet(emptySpec).signatureDepthMap).to.be.empty
+                expect(new CommandSet(emptySpec, settings).signatureDepthMap).to.be.empty
             })
         })
 
         describe('#signatures', () => {
             it('is empty on instantiation', () => {
-                expect(new CommandSet(emptySpec).signatures).to.be.empty
+                expect(new CommandSet(emptySpec, settings).signatures).to.be.empty
             })
         })
 
         describe('#specification', () => {
             it('contains the passed InstrumentSpec', () => {
-                expect(new CommandSet(emptySpec).specification).to.deep.equal(emptySpec)
+                expect(new CommandSet(emptySpec, settings).specification).to.deep.equal(emptySpec)
             })
         })
 
@@ -248,7 +251,7 @@ describe('Instrument', () => {
                 const emptyCommandSetInterface: CommandSetInterface = {
                     completions: []
                 }
-                const commandSet = new CommandSet(emptySpec)
+                const commandSet = new CommandSet(emptySpec, settings)
 
                 before('Add an empty CommandSet', () => {
                     commandSet.add(emptyCommandSetInterface)
@@ -270,7 +273,7 @@ describe('Instrument', () => {
             })
 
             context('When adding to an empty CommandSet', () => {
-                const commandSet = new CommandSet(emptySpec)
+                const commandSet = new CommandSet(emptySpec, settings)
 
                 const completionDepthMapA: Map<number, Array<CompletionItem>> = new Map([
                     [0, [rootACompl]],
@@ -315,7 +318,7 @@ describe('Instrument', () => {
             })
 
             context('When adding duplicates to the CommandSet', () => {
-                const commandSet = new CommandSet(emptySpec)
+                const commandSet = new CommandSet(emptySpec, settings)
 
                 const completionDepthMapB: Map<number, Array<CompletionItem>> = new Map([
                     [0, [rootACompl, rootACompl, rootACompl, rootACompl]],
