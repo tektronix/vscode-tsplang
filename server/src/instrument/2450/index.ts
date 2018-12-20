@@ -32,7 +32,7 @@ namespace Buffer {
         { label: 'buffer.DIGITS_5_5' },
         { label: 'buffer.DIGITS_6_5' },
         { label: 'buffer.DIGITS_7_5' },
-        { label: 'buffer.DIGITS_3_5' },
+        { label: 'buffer.DIGITS_8_5' },
     ]
     const bufferEnumSave: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.SAVE_FORMAT_TIME' },
