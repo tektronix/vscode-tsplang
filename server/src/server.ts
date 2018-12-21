@@ -15,8 +15,9 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, IConnection, InitializedParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, DidChangeConfigurationNotification, DidChangeConfigurationParams, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
+import { TsplangSettings } from './settings'
 import { TspManager } from './tspManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
@@ -36,10 +37,15 @@ const manager: TspManager = new TspManager(documents)
 // expensive completion lookups.
 let lastCompletionUri: string | undefined
 
+let hasWorkspaceSettings = false
+let globalSettings: TsplangSettings = TsplangSettings.defaults()
+
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
-connection.onInitialize((params: InitializedParams): InitializeResult => {
+connection.onInitialize((params: InitializeParams): InitializeResult => {
     console.log('tsplang connection initialized')
+
+    hasWorkspaceSettings = !!(params.capabilities.workspace && !!params.capabilities.workspace.configuration)
 
     return {
         capabilities: {
@@ -58,6 +64,12 @@ connection.onInitialize((params: InitializedParams): InitializeResult => {
     }
 })
 
+connection.onInitialized(() => {
+    if (hasWorkspaceSettings) {
+        connection.client.register(DidChangeConfigurationNotification.type, { section: 'tsplang' })
+    }
+})
+
 // The content of a text document has changed. This event is emitted when the text document first
 // opened or when its content has changed.
 documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
@@ -67,7 +79,24 @@ documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
     }
     // if document is unregistered, then register
     else {
-        manager.register(change.document.uri)
+        // Register this document with global settings.
+        let settings = globalSettings
+
+        // Override global settings with any workspace settings.
+        if (hasWorkspaceSettings) {
+            connection.workspace.getConfiguration({
+                scopeUri: change.document.uri,
+                section: 'tsplang'
+            })
+            .then(
+                (value: TsplangSettings) => {
+                    settings = value
+                },
+                (reason: Error) => { return }
+            )
+        }
+
+        manager.register(change.document.uri, settings)
     }
 })
 
@@ -105,6 +134,27 @@ connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
     }
 
     return tspItem.context.resolveCompletion(item)
+})
+
+connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
+    if (hasWorkspaceSettings) {
+        // Update all open document contexts.
+        documents.all().forEach(async (document: TextDocument) => {
+            const settings = await connection.workspace.getConfiguration({
+                scopeUri: document.uri,
+                section: 'tsplang'
+            })
+
+            const tspItem = manager.get(document.uri)
+
+            if (tspItem !== undefined) {
+                tspItem.context.settings = settings
+            }
+        })
+    }
+    else {
+        globalSettings = params.settings.tsplang || TsplangSettings.defaults()
+    }
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {

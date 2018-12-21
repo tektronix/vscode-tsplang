@@ -47,6 +47,27 @@
     ],
     "main": "./out/src/extension",
     "contributes": {
+        "configuration": {
+            "title": "TSPLang",
+            "properties": {
+                "tsplang.enumerationSuggestions": {
+                    "type": "string",
+                    "enum": [
+                        "top",
+                        "bottom",
+                        "inline"
+                    ],
+                    "default": "inline",
+                    "title": "Enumeration Suggestions",
+                    "description": "Controls how enumeration suggestions are sorted.",
+                    "enumDescriptions": [
+                        "Show enumeration suggestions above other suggestions.",
+                        "Show enumeration suggestions below other suggestions.",
+                        "Show enumeration suggestions with other suggestions."
+                    ]
+                }
+            }
+        },
         "languages": [
             {
                 "id": "tsp",
