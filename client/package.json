@@ -6,19 +6,18 @@
     "publisher": "Keithley",
     "license": "Apache-2.0",
     "engines": {
-        "node": "*"
+        "vscode": "^1.30.0"
     },
     "repository": {
         "type": "git",
         "url": "https://github.com/tektronix/vscode-tsplang"
     },
     "dependencies": {
-        "@types/antlr4": "^4.7.0",
-        "@types/escape-string-regexp": "^1.0.0",
-        "antlr4": "^4.7.1",
-        "antlr4-tsplang": "file:antlr4-tsplang",
-        "escape-string-regexp": "^1.0.5",
-        "vscode-languageserver": "^5.2.1"
+        "vscode": "^1.1.26",
+        "vscode-languageclient": "^5.2.1"
     },
-    "scripts": {}
+    "scripts": {
+        "update-vscode": "vscode-install",
+        "postinstall": "vscode-install"
+    }
 }
