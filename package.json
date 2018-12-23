@@ -37,7 +37,7 @@
         }
     ],
     "engines": {
-        "vscode": "^1.26.0"
+        "vscode": "^1.30.0"
     },
     "categories": [
         "Programming Languages"
@@ -45,7 +45,7 @@
     "activationEvents": [
         "onLanguage:tsp"
     ],
-    "main": "./out/src/extension",
+    "main": "./client/out/extension",
     "contributes": {
         "configuration": {
             "title": "TSPLang",
@@ -90,10 +90,6 @@
             }
         ]
     },
-    "dependencies": {
-        "vscode": "^1.1.21",
-        "vscode-languageclient": "^4.4.2"
-    },
     "devDependencies": {
         "@types/chai": "^4.1.4",
         "@types/mocha": "^2.2.42",
@@ -101,28 +97,23 @@
         "chai": "^4.1.2",
         "istanbul": "^0.4.5",
         "license-compatibility-checker": "^0.3.3",
+        "mocha": "^5.2.0",
         "mocha-typescript": "^1.1.17",
         "nyc": "^12.0.2",
         "source-map-support": "^0.5.9",
         "ts-node": "^7.0.0",
-        "tslint": "^5.11.0",
-        "typescript": "^2.9.2"
+        "tslint": "^5.12.0",
+        "typescript": "^3.2.2"
     },
     "scripts": {
-        "compile": "tsc -p ./tsconfig.json && cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json && tsc -p server/antlr4-tsplang/tsconfig.json",
-        "compile:client": "tsc -p ./tsconfig.json",
-        "compile:server": "cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json",
-        "compile:antlr4-tsplang": "tsc -p server/antlr4-tsplang/tsconfig.json",
-        "lint": "node ./node_modules/tslint/bin/tslint --project .",
-        "prepackage": "npm run compile && npm run lint && npm run test",
+        "compile": "tsc -b",
+        "lint": "tslint -p ./client/tsconfig.json && tslint -p ./server/tsconfig.json",
+        "prepackage": "npm run compile && npm run test",
         "package": "vsce package",
-        "postinstall": "cd server && npm install && cd .. && npm run update-vscode",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "test": "npm run lint -s & mocha --opts server/mocha.opts",
         "test:coverage": "nyc mocha --opts server/mocha.opts",
         "test:mocha": "mocha --bail --full-trace --opts server/mocha.opts",
-        "update-vscode": "node ./node_modules/vscode/bin/install",
-        "watch:client": "tsc -w -p ./tsconfig.json",
-        "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json",
-        "watch:antlr4-tsplang": "tsc -w -p server/antlr4-tsplang/tsconfig.json"
+        "watch": "tsc -b -w"
     }
 }

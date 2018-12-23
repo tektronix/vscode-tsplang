@@ -15,16 +15,14 @@
  */
 'use strict'
 
-import { TspParser } from 'antlr4-tsplang'
 // tslint:disable-next-line:no-submodule-imports
 import { TerminalNode } from 'antlr4/tree/Tree'
 import { TextDocument } from 'vscode-languageserver'
 
+import { TspParser } from '../../../antlr4-tsplang'
 import { CompletionItem, ResolvedNamespace } from '../../../decorators'
 import { CommandSet } from '../../../instrument'
-
 import { ExclusiveContext } from '../../exclusive-completion'
-
 import { getTerminals } from '../getTerminals'
 
 /**

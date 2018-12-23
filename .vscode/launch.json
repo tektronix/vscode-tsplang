@@ -33,9 +33,12 @@
             "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [
-                "${workspaceRoot}/out/**/*.js"
+                "${workspaceRoot}/client/out/**/*.js"
             ],
-            "preLaunchTask": "watch:client"
+            "preLaunchTask": {
+                "type": "npm",
+                "script": "watch"
+            }
         },
         {
             "name": "Attach to Server",
@@ -44,10 +47,10 @@
             "protocol": "inspector",
             "port": 6009,
             "sourceMaps": true,
+            "restart": true,
             "outFiles": [
-                "${workspaceRoot}/out/server/**/*.js"
-            ],
-            "preLaunchTask": "watch:server"
+                "${workspaceRoot}/server/out/**/*.js"
+            ]
         }
     ]
 }

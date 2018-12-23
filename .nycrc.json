@@ -10,8 +10,10 @@
         "server/src"
     ],
     "exclude": [
+        "server/src/antlr4-tsplang",
         "server/src/instrument/2461",
-        "server/src/instrument/6500"
+        "server/src/instrument/6500",
+        "server/src/test"
     ],
     "reporter": [
         "json",
