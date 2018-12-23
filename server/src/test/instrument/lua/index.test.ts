@@ -28,7 +28,7 @@ describe('Instrument Specification', () => {
 
         before(() => {
             // tslint:disable-next-line:no-require-imports
-            instrumentModule = require('../../../src/instrument/lua')
+            instrumentModule = require('../../../instrument/lua')
         })
 
         it('exports "getApiSpec"', () => {

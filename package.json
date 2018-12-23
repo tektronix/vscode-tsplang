@@ -97,6 +97,7 @@
         "chai": "^4.1.2",
         "istanbul": "^0.4.5",
         "license-compatibility-checker": "^0.3.3",
+        "mocha": "^5.2.0",
         "mocha-typescript": "^1.1.17",
         "nyc": "^12.0.2",
         "source-map-support": "^0.5.9",
@@ -106,19 +107,13 @@
     },
     "scripts": {
         "compile": "tsc -b",
-        "compile:client": "tsc -p ./tsconfig.json",
-        "compile:server": "cd server && npm run install-server && cd .. && tsc -p server/tsconfig.json",
-        "compile:antlr4-tsplang": "tsc -p server/antlr4-tsplang/tsconfig.json",
-        "lint": "node ./node_modules/tslint/bin/tslint --project .",
-        "prepackage": "npm run compile && npm run lint && npm run test",
+        "lint": "tslint -p ./client/tsconfig.json && tslint -p ./server/tsconfig.json",
+        "prepackage": "npm run compile && npm run test",
         "package": "vsce package",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "test": "npm run lint -s & mocha --opts server/mocha.opts",
         "test:coverage": "nyc mocha --opts server/mocha.opts",
         "test:mocha": "mocha --bail --full-trace --opts server/mocha.opts",
-        "update-vscode": "node ./node_modules/vscode/bin/install",
-        "watch:client": "tsc -w -p ./tsconfig.json",
-        "watch:server": "cd server && npm run install-server && cd .. && tsc -w -p server/tsconfig.json",
-        "watch:antlr4-tsplang": "tsc -w -p server/antlr4-tsplang/tsconfig.json"
+        "watch": "tsc -b -w"
     }
 }

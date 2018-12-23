@@ -12,6 +12,6 @@
     "exclude": [
         "node_modules",
         ".vscode-test",
-        "antlr4-tsplang"
+        "src/antlr4-tsplang"
     ]
 }

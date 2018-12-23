@@ -19,7 +19,6 @@ import { Token } from 'antlr4'
 import { CompletionItemKind, Position, Range } from 'vscode-languageserver'
 
 import { CompletionItem, SignatureInformation } from '../../decorators'
-
 import { TokenUtil } from '../tokenUtil'
 
 import { ParameterContext } from './parameterContext'

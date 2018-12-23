@@ -17,9 +17,8 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { CompletionItem, ParameterInformation, SignatureInformation } from '../../decorators'
-
 import { InstrumentSpec } from '..'
+import { CompletionItem, ParameterInformation, SignatureInformation } from '../../decorators'
 
 export const completions: Array<CompletionItem> = [
     {

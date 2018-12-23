@@ -16,14 +16,13 @@
 'use strict'
 
 import * as path from 'path'
-
 import { ExtensionContext, workspace } from 'vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient'
 
 export function activate(context: ExtensionContext): void {
     // The server is implemented in node
     const serverModule = context.asAbsolutePath(
-        path.join('out', 'server', 'src', 'server.js')
+        path.join('server', 'out', 'server.js')
     )
     // The debug options for the server
     const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] }

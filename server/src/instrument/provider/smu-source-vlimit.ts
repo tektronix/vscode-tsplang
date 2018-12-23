@@ -17,9 +17,8 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
-
 import { InstrumentSpec } from '..'
+import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [

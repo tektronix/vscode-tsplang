@@ -16,6 +16,7 @@
     ],
     "references": [
         { "path": "./client" },
+        { "path": "./server/src/antlr4-tsplang" },
         { "path": "./server" }
     ]
 }
