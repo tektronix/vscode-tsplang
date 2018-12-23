@@ -60,7 +60,7 @@ export function activate(context: ExtensionContext): void {
     // Create the language client and start the client.
     const disposable = new LanguageClient(
         'tsplang',
-        'TSP Command Autocomplete',
+        'TSPLang',
         serverOptions,
         clientOptions,
         true
