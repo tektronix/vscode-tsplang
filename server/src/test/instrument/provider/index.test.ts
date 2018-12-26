@@ -24,5 +24,19 @@ import { generateCommandSet } from '../../../instrument/provider'
 describe('Instrument Provider', () => {
     describe('generateCommandSet()', () => {
         it.skip('needs test coverage')
+
+        it.skip('returns a CommandSet containing items which match the given ApiSpec')
+        it.skip('returns a CommandSet whose signatures have been formatted according the given InstrumentSpec')
+        it.skip('returns a CommandSet without extra items')
+
+        it.skip('assignment completions')
+        it.skip('populates same-namespace enumeration specs')
+        it.skip('populates cross-namespace enumeration specs')
+
+        it.skip('parameter completions')
+        it.skip('populates the correct parameter')
+        it.skip('populates the correct signature qualifier')
+        it.skip('populates same-namespace enumeration specs')
+        it.skip('populates cross-namespace enumeration specs')
     })
 })
