@@ -19,7 +19,7 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { generateCommandSet } from '../../instrument/provider'
+import { generateCommandSet } from '../../../instrument/provider'
 
 describe('Instrument Provider', () => {
     describe('generateCommandSet()', () => {
