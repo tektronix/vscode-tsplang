@@ -379,49 +379,40 @@ function formatSignatures(
     return result
 }
 
-export async function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): Promise<CommandSet> {
-    return new Promise<CommandSet>((
-        resolve: (value?: CommandSet) => void,
-        reject: (reason?: Error) => void
-    ): void => {
-        try {
-            // Load all enumeration completions first to allow cross-namespace enumeration
-            // requests in the ApiSpec.
-            const enumerations = new Array<CompletionItem>()
+export function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): CommandSet {
+    // Load all enumeration completions first to allow cross-namespace enumeration
+    // requests in the ApiSpec.
+    const enumerations = new Array<CompletionItem>()
 
-            apiSpecs.forEach((api: ApiSpec) => {
-                if (api.enums === undefined) {
-                    return
-                }
-
-                const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
-
-                enumerations.push(...enumModule.completions)
-            })
-
-            const result: CommandSet = new CommandSet(spec)
-
-            apiSpecs.forEach((api: ApiSpec) => {
-                let cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
-
-                // Filter and resolve exclusive completions.
-                cmdModule = filter(api, cmdModule, enumerations)
-
-                // Format signatures.
-                if (cmdModule.signatures !== undefined) {
-                    cmdModule.signatures = formatSignatures(spec, cmdModule.signatures)
-                }
-
-                // Add this command set interface to the final command set.
-                result.add(cmdModule)
-            })
-
-            // Add non-exclusive enumeration completions to the final command set.
-            result.add({ completions: dropExclusiveCompletions(enumerations) })
-
-            resolve(result)
-        } catch (e) {
-            reject(e)
+    apiSpecs.forEach((api: ApiSpec) => {
+        if (api.enums === undefined) {
+            return
         }
+
+        const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
+
+        enumerations.push(...enumModule.completions)
     })
+
+    const result: CommandSet = new CommandSet(spec)
+
+    apiSpecs.forEach((api: ApiSpec) => {
+        let cmdModule: CommandSetInterface = require(labelToModuleName(api.label))
+
+        // Filter and resolve exclusive completions.
+        cmdModule = filter(api, cmdModule, enumerations)
+
+        // Format signatures.
+        if (cmdModule.signatures !== undefined) {
+            cmdModule.signatures = formatSignatures(spec, cmdModule.signatures)
+        }
+
+        // Add this command set interface to the final command set.
+        result.add(cmdModule)
+    })
+
+    // Add non-exclusive enumeration completions to the final command set.
+    result.add({ completions: dropExclusiveCompletions(enumerations) })
+
+    return result
 }

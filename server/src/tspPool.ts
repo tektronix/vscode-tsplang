@@ -33,29 +33,17 @@ export class TspPool {
         this.pool = new Map()
     }
 
-    async register(model: Model): Promise<PoolEntry> {
-        return new Promise<PoolEntry>(async (
-            resolve: (value?: PoolEntry) => void,
-            reject: (reason?: Error) => void
-        ): Promise<void> => {
-            // If the model has already been loaded.
-            if (this.pool.has(model)) {
-                resolve(this.get(model))
+    register(model: Model): PoolEntry {
+        // If the model has already been loaded.
+        if (this.pool.has(model)) {
+            return this.get(model)
+        }
 
-                return
-            }
+        const newEntry = this.load(model)
+        // add new model to the current pool
+        this.pool.set(model, newEntry)
 
-            try {
-                const newEntry = await this.load(model)
-                // add new model to the current pool
-                this.pool.set(model, newEntry)
-
-                resolve(newEntry)
-            }
-            catch (e) {
-                reject(e)
-            }
-        })
+        return newEntry
     }
 
     unregister(model: Model): void {
@@ -101,66 +89,49 @@ export class TspPool {
         return entry
     }
 
-    private load = async (model: Model): Promise<PoolEntry> => {
-        return new Promise<PoolEntry>(async (
-            resolve: (value?: PoolEntry) => void,
-            reject: (reason?: Error) => void
-        ) : Promise<void> => {
-            let luaEntry: PoolEntry | undefined
+    private load = (model: Model): PoolEntry => {
+        let luaEntry: PoolEntry | undefined
 
-            // All models need the Lua entry, except the Lua model.
-            if (model !== Model.LUA) {
-                try {
-                    luaEntry = await this.register(Model.LUA)
+        // All models need the Lua entry, except the Lua model.
+        if (model !== Model.LUA) {
+            luaEntry = this.register(Model.LUA)
 
-                    // If the current model is undefined, then we can resolve as a Lua entry.
-                    if (model === undefined) {
-                        resolve(luaEntry)
-                    }
-                }
-                catch (e) {
-                    reject(e)
-                }
+            // If the current model is undefined, then we can return a Lua entry.
+            if (model === undefined) {
+                return luaEntry
             }
+        }
 
-            switch (model) {
-                case Model.KI2450:
-                case Model.KI2460:
-                case Model.LUA:
-                    try {
-                        const instrModule: InstrumentModule = require(`./instrument/${model}`)
+        switch (model) {
+            case Model.KI2450:
+            case Model.KI2460:
+            case Model.LUA:
+                const instrModule: InstrumentModule = require(`./instrument/${model}`)
 
-                        const api: Array<ApiSpec> = await instrModule.getApiSpec()
-                        const spec: InstrumentSpec = await instrModule.getInstrumentSpec()
+                const api: Array<ApiSpec> = instrModule.getApiSpec()
+                const spec: InstrumentSpec = instrModule.getInstrumentSpec()
 
-                        const cmdSet: CommandSet = await generateCommandSet(api, spec)
+                const cmdSet: CommandSet = generateCommandSet(api, spec)
 
-                        // If this is not a Lua model, then merge the Lua entry.
-                        if (luaEntry !== undefined) {
-                            api.push(...luaEntry.apiSpec)
-                            cmdSet.add({
-                                completionDocs: luaEntry.commandSet.completionDocs,
-                                completions: luaEntry.commandSet.completions,
-                                signatures: luaEntry.commandSet.signatures
-                            })
-                        }
+                // If this is not a Lua model, then merge the Lua entry.
+                if (luaEntry !== undefined) {
+                    api.push(...luaEntry.apiSpec)
+                    cmdSet.add({
+                        completionDocs: luaEntry.commandSet.completionDocs,
+                        completions: luaEntry.commandSet.completions,
+                        signatures: luaEntry.commandSet.signatures
+                    })
+                }
 
-                        resolve({
-                            apiSpec: api,
-                            commandSet: cmdSet,
-                            instrumentSpec: spec,
-                            references: 1
-                        })
-                    }
-                    catch (e) {
-                        reject(e)
-                    }
+                return {
+                    apiSpec: api,
+                    commandSet: cmdSet,
+                    instrumentSpec: spec,
+                    references: 1
+                }
 
-                    break
-
-                default:
-                    reject(new Error(`Model ${model} not supported`))
-            }
-        })
+            default:
+                throw new Error(`Model ${model} not supported`)
+        }
     }
 }
