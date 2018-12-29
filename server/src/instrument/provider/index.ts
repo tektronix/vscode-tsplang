@@ -391,7 +391,7 @@ export function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpe
 
         const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
 
-        enumerations.push(...enumModule.completions)
+        enumerations.push(...filterEnums(api, enumModule))
     })
 
     const result: CommandSet = new CommandSet(spec)
