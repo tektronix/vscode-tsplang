@@ -20,197 +20,468 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
 import { CompletionItem, ResolvedNamespace, SignatureInformation } from '../../../decorators'
-import { ApiSpec, CommandSet } from '../../../instrument'
+import { ApiSpec, CommandSet, InstrumentSpec } from '../../../instrument'
 import { generateCommandSet } from '../../../instrument/provider'
 import { emptySpec } from '../emptySpec'
 
 import { expectSignatureFormat } from './helpers'
 
+interface Given {
+    api: Array<ApiSpec>
+    spec: InstrumentSpec
+}
+
+interface ExpectedSignature {
+    exclusives?: Map<number, Array<string>>
+    formattable?: boolean
+    loaded: boolean
+    qualifier?: number
+}
+
+interface ExpectedCompletion {
+    /**
+     * Exclusive assignment completion labels.
+     */
+    exclusives?: Array<string>
+    /**
+     * Whether this CompletionItem has a corresponding entry
+     * in the resulting CommandSet.completionDocs Map.
+     */
+    formattable?: boolean
+    label: string
+    /**
+     * All corresponding SignatureInformation.
+     */
+    signatures?: Array<ExpectedSignature>
+}
+
+interface TestCase {
+    expected: Array<ExpectedCompletion>
+    given: Given
+    /**
+     * A **descriptive** test name.
+     */
+    name: string
+}
+
 describe('Instrument Provider', () => {
     describe('generateCommandSet()', () => {
-        // Gets completions
-        const basicSpec: Array<ApiSpec> = [
+        const testCases: Array<TestCase> = [
             {
-                children: [
-                    // Gets signatures
-                    // Formats parameters based on the given InstrumentSpec
-                    { label: 'beeper.beep' }
+                expected: [
+                    {
+                        label: 'beeper'
+                    },
+                    {
+                        label: 'beeper.beep',
+                        signatures: [
+                            {
+                                formattable: true,
+                                loaded: false
+                            }
+                        ]
+                    },
+                    {
+                        label: 'smu.measure'
+                    },
+                    {
+                        formattable: true,
+                        label: 'smu.measure.range'
+                    }
                 ],
-                label: 'beeper'
+                given: {
+                    api: [
+                        {
+                            children: [
+                                // Gets signatures
+                                // Formats parameters based on the given InstrumentSpec
+                                { label: 'beeper.beep' }
+                            ],
+                            label: 'beeper'
+                        },
+                        {
+                            children: [
+                                // Gets completion documentation
+                                { label: 'smu.measure.range' }
+                            ],
+                            label: 'smu.measure'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Basic Test'
             },
             {
-                children: [
-                    // Gets completion documentation
-                    { label: 'smu.measure.range' }
-                ],
-                label: 'smu.measure'
-            }
-        ]
-        let commandSet: CommandSet
-
-        before('Generate', () => {
-            commandSet = generateCommandSet(basicSpec, emptySpec)
-        })
-
-        describe('return', () => {
-            describe('#completionDocs', () => {
-                const expectedLabels: Array<string> = ['smu.measure.range']
-
-                expectedLabels.forEach((label: string) => {
-                    it(`Contains a "${label}" key`, () => {
-                        expect([...commandSet.completionDocs.keys()]).to.contain('smu.measure.range')
-                    })
-                })
-
-                it('Contains no additional items', () => {
-                    expect(commandSet.completionDocs.size).to.equal(expectedLabels.length)
-                })
-            })
-
-            describe('#completions', () => {
-                const expectedLabels: Array<string> = [
-                    'beeper',
-                    'beeper.beep',
-                    'smu.measure',
-                    'smu.measure.range'
-                ]
-
-                expectedLabels.forEach((label: string) => {
-                    it(`Contains a "${label}" completion`, () => {
-                        expect(commandSet.completions.some(
-                            (completion: CompletionItem) => CompletionItem.namespaceMatch(label, completion)
-                        )).to.be.true
-                    })
-                })
-
-                it('Contains no additional items', () => {
-                    expect(commandSet.completions.length).to.equal(expectedLabels.length)
-                })
-            })
-
-            describe('#signatures', () => {
-                const expectedLabels: Array<string> = ['beeper.beep']
-                const formattableLabels: Array<string> = expectedLabels
-
-                expectedLabels.forEach((label: string) => {
-                    it(`Contains a "${label}" signature`, () => {
-                        expect(commandSet.signatures.some(
-                            (signature: SignatureInformation) => ResolvedNamespace.equal(
-                                label,
-                                SignatureInformation.resolveNamespace(signature)
-                            )
-                        )).to.be.true
-                    })
-                })
-
-                formattableLabels.forEach((label: string) => {
-                    it(`Signature "${label}" should be formatted`, () => {
-                        expectSignatureFormat(commandSet.signatures.find(
-                            (signature: SignatureInformation) => ResolvedNamespace.equal(
-                                label,
-                                SignatureInformation.resolveNamespace(signature)
-                            )
-                        ))
-                    })
-                })
-
-                it('Contains no additional items', () => {
-                    expect(commandSet.signatures.length).to.equal(expectedLabels.length)
-                })
-            })
-        })
-
-        // Same-namespace exclusives
-        const specB: Array<ApiSpec> = [
-            {
-                children: [
+                expected: [
                     {
-                        // Populates assignment exclusives
-                        assignmentExclusives: [
-                            { label: 'buffer.FILL_CONTINUOUS' },
-                            { label: 'buffer.FILL_ONCE' }
+                        label: 'display'
+                    }
+                ],
+                given: {
+                    api: [
+                        {
+                            enums: [
+                                { label: 'display.NFORMAT_DECIMAL' }
+                            ],
+                            label: 'display'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Removes Exclusive Enumerations'
+            },
+            {
+                expected: [
+                    {
+                        label: 'eventlog'
+                    },
+                    {
+                        exclusives: [
+                            'smu',
+                            'smu.ON'
+                        ],
+                        label: 'eventlog.getcount',
+                        signatures: [
+                            {
+                                loaded: false
+                            }
+                        ]
+                    },
+                    {
+                        label: 'smu'
+                    },
+                    {
+                        label: 'smu.ON'
+                    }
+                ],
+                given: {
+                    api: [
+                        {
+                            children: [
+                                {
+                                    assignmentExclusives: [
+                                        { label: 'smu.ON' }
+                                    ],
+                                    label: 'eventlog.getcount'
+                                }
+                            ],
+                            label: 'eventlog'
+                        },
+                        {
+                            enums: [
+                                { label: 'smu.ON' }
+                            ],
+                            label: 'smu'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Cross-Namespace Exclusives'
+            },
+            {
+                expected: [
+                    {
+                        label: 'buffer'
+                    },
+                    {
+                        label: 'buffer.FILL_CONTINUOUS'
+                    },
+                    {
+                        label: 'buffer.FILL_ONCE'
+                    },
+                    {
+                        label: 'buffer.OFF'
+                    },
+                    {
+                        label: 'buffer.ON'
+                    },
+                    {
+                        label: 'buffer.write'
+                    },
+                    {
+                        exclusives: [
+                            'buffer',
+                            'buffer.FILL_CONTINUOUS',
+                            'buffer.FILL_ONCE'
                         ],
                         label: 'buffer.write.reading',
-                        // Populates signature exclusives
-                        signatureExclusives: [
-                            // Respects signature qualifiers
+                        signatures: [
                             {
-                                parameters: new Map([
+                                exclusives: new Map([
                                     [
                                         4,
                                         [
-                                            { label: 'buffer.OFF' }
+                                            'buffer',
+                                            'buffer.OFF'
                                         ]
-                                    ],
+                                    ]
                                 ]),
+                                loaded: false,
                                 qualifier: 0
                             },
                             {
-                                parameters: new Map([
+                                exclusives: new Map([
                                     [
                                         5,
                                         [
-                                            { label: 'buffer.ON' }
+                                            'buffer',
+                                            'buffer.ON'
                                         ]
-                                    ],
+                                    ]
                                 ]),
+                                loaded: false,
                                 qualifier: 1
-                            },
+                            }
                         ]
                     }
                 ],
-                label: 'buffer.write'
-            },
-            {
-                enums: [
-                    { label: 'buffer.FILL_CONTINUOUS' },
-                    { label: 'buffer.FILL_ONCE' },
-                    { label: 'buffer.OFF' },
-                    { label: 'buffer.ON' }
-                ],
-                label: 'buffer'
+                given: {
+                    api: [
+                        {
+                            children: [
+                                {
+                                    // Populates assignment exclusives
+                                    assignmentExclusives: [
+                                        { label: 'buffer.FILL_CONTINUOUS' },
+                                        { label: 'buffer.FILL_ONCE' }
+                                    ],
+                                    label: 'buffer.write.reading',
+                                    // Populates signature exclusives
+                                    signatureExclusives: [
+                                        // Respects signature qualifiers
+                                        {
+                                            parameters: new Map([
+                                                [
+                                                    4,
+                                                    [
+                                                        { label: 'buffer.OFF' }
+                                                    ]
+                                                ],
+                                            ]),
+                                            qualifier: 0
+                                        },
+                                        {
+                                            parameters: new Map([
+                                                [
+                                                    5,
+                                                    [
+                                                        { label: 'buffer.ON' }
+                                                    ]
+                                                ],
+                                            ]),
+                                            qualifier: 1
+                                        },
+                                    ]
+                                }
+                            ],
+                            label: 'buffer.write'
+                        },
+                        {
+                            enums: [
+                                { label: 'buffer.FILL_CONTINUOUS' },
+                                { label: 'buffer.FILL_ONCE' },
+                                { label: 'buffer.OFF' },
+                                { label: 'buffer.ON' }
+                            ],
+                            label: 'buffer'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Same-Namespace Exclusives'
             }
         ]
-        // Cross-namespace exclusives
-        const specC: Array<ApiSpec> = [
-            {
-                children: [
-                    {
-                        assignmentExclusives: [
-                            { label: 'smu.ON' }
-                        ],
-                        label: 'eventlog.clear'
+
+        testCases.forEach((test: TestCase) => {
+            let commandSet: CommandSet
+            let completionDocLength: number
+            const completionLength = test.expected.length
+            let signatureLength: number
+
+            beforeEach('Generate', () => {
+                commandSet = generateCommandSet(test.given.api, emptySpec)
+                completionDocLength = test.expected.filter((value: ExpectedCompletion) => !!value.formattable).length
+                signatureLength = 0
+                test.expected.forEach((value: ExpectedCompletion) => {
+                    if (value.signatures !== undefined) {
+                        signatureLength += value.signatures.length
                     }
-                ],
-                label: 'eventlog'
-            },
-            {
-                enums: [
-                    { label: 'smu.ON' }
-                ],
-                label: 'smu'
-            }
-        ]
-        // Removes exclusive enumerations
-        const specD: ApiSpec = {
-            enums: [
-                { label: 'display.NFORMAT_DECIMAL' }
-            ],
-            label: 'display'
-        }
+                })
+            })
 
-        // it.skip('returns a CommandSet containing items which match the given ApiSpec')
-        // it.skip('returns a CommandSet whose signatures have been formatted according the given InstrumentSpec')
-        // it.skip('returns a CommandSet without extra items')
+            describe(`${test.name}`, () => {
+                test.expected.forEach((apiEntry: ExpectedCompletion) => {
+                    let matchingCompletion: CompletionItem
 
-        // it.skip('assignment completions')
-        // it.skip('populates same-namespace enumeration specs')
-        // it.skip('populates cross-namespace enumeration specs')
+                    // #completionDocs
+                    if (apiEntry.formattable === true) {
+                        it(`${apiEntry.label}: has a #completionDocs entry`, () => {
+                            expect([...commandSet.completionDocs.keys()]).to.contain(apiEntry.label)
+                        })
 
-        // it.skip('parameter completions')
-        // it.skip('populates the correct parameter')
-        // it.skip('populates the correct signature qualifier')
-        // it.skip('populates same-namespace enumeration specs')
-        // it.skip('populates cross-namespace enumeration specs')
+                        completionDocLength++
+                    }
+                    else {
+                        it(`${apiEntry.label}: does not have a #completionDocs entry`, () => {
+                            expect([...commandSet.completionDocs.keys()]).to.not.contain(apiEntry.label)
+                        })
+                    }
+
+                    // #completions
+                    it(`${apiEntry.label}: has a single #completions entry`, () => {
+                        const matches = commandSet.completions.filter(
+                            (completion: CompletionItem) => CompletionItem.namespaceMatch(apiEntry.label, completion)
+                        )
+
+                        expect(matches.length, 'found duplicate completions').to.be.lessThan(2)
+
+                        expect(matches, 'no completion matches found').to.not.be.empty
+
+                        matchingCompletion = matches.pop()
+                    })
+
+                    // exclusive assignment completions
+                    if (apiEntry.exclusives !== undefined) {
+                        it(`${apiEntry.label}: provides ${apiEntry.exclusives.length} assignment exclusives`, () => {
+                            expect(matchingCompletion.data.types.length).to.equal(apiEntry.exclusives.length)
+                        })
+
+                        apiEntry.exclusives.forEach((value: string) => {
+                            it(`${apiEntry.label}: has a "${value}" assignment exclusive`, () => {
+                                expect(matchingCompletion.data.types.some(
+                                    (completion: CompletionItem) => CompletionItem.namespaceMatch(
+                                        value,
+                                        completion
+                                    )
+                                )).to.be.true
+                            })
+                        })
+                    }
+                    else {
+                        it(`${apiEntry.label}: provides no assignment exclusives`, () => {
+                            expect(
+                                matchingCompletion.data === undefined || matchingCompletion.data.types === undefined
+                            ).to.be.true
+                        })
+                    }
+
+                    // #signatures
+                    if (apiEntry.signatures !== undefined) {
+                        apiEntry.signatures.forEach((signatureEntry: ExpectedSignature, index: number) => {
+                            let matchingSignature: SignatureInformation
+
+                            it(`${apiEntry.label}: has a #signatures entry`, () => {
+                                const matchingLabelSignatures = commandSet.signatures.filter(
+                                    (value: SignatureInformation) => ResolvedNamespace.equal(
+                                        apiEntry.label,
+                                        SignatureInformation.resolveNamespace(value)
+                                    )
+                                )
+
+                                if (signatureEntry.qualifier !== undefined) {
+                                    const fullMatch = matchingLabelSignatures.filter(
+                                        (value: SignatureInformation) => {
+                                            return value.data !== undefined
+                                                && value.data.qualifier === signatureEntry.qualifier
+                                        }
+                                    )
+
+                                    expect(
+                                        fullMatch.length,
+                                        `found duplicate signature qualifiers for "${apiEntry.label}"`
+                                    ).to.be.lessThan(2)
+
+                                    expect(
+                                        fullMatch,
+                                        'no signature matches found for '
+                                            + `"${apiEntry.label}" (#${signatureEntry.qualifier})`
+                                    ).to.not.be.empty
+
+                                    matchingSignature = fullMatch.pop()
+                                }
+                                else {
+                                    expect(
+                                        matchingLabelSignatures.length,
+                                        `found multiple signature matches, but no test case qualifier was given`
+                                    ).to.be.lessThan(2)
+
+                                    expect(
+                                        matchingLabelSignatures,
+                                        `no signature matches found for "${apiEntry.label}"`
+                                    ).to.not.be.empty
+
+                                    matchingSignature = matchingLabelSignatures.pop()
+                                }
+                            })
+
+                            if (signatureEntry.formattable === true) {
+                                it(`${apiEntry.label}: parameters are formatted correctly`, () => {
+                                    expectSignatureFormat(matchingSignature)
+                                })
+                            }
+                            else {
+                                it(`${apiEntry.label}: does not have a parameter formatter`, () => {
+                                    expect(matchingSignature.getFormattedParameters).to.be.undefined
+                                })
+                            }
+
+                            // exclusive parameter completions
+                            if (signatureEntry.exclusives !== undefined) {
+                                signatureEntry.exclusives.forEach(
+                                    (exclusivesExpected: Array<string>, param: number) => {
+                                        it(
+                                            `${apiEntry.label} (#${index}): provides expected parameter exclusives`,
+                                            () => {
+                                                // convert all available Array<CompletionItem> to Array<string>
+                                                const exclusivesActual = new Array<string>()
+                                                matchingSignature.data.parameterTypes.get(param).forEach(
+                                                    (completion: CompletionItem) => {
+                                                        exclusivesActual.push(
+                                                            CompletionItem.resolveNamespace(completion)
+                                                        )
+                                                    }
+                                                )
+
+                                                expect(exclusivesActual).to.have.members(exclusivesExpected)
+                                            }
+                                        )
+                                    }
+                                )
+                            }
+                            else {
+                                it(`${apiEntry.label} (#${index}): provides no parameter exclusives`, () => {
+                                    expect(
+                                        matchingSignature.data === undefined
+                                        || matchingSignature.data.qualifier === undefined
+                                    ).to.be.true
+                                })
+                            }
+                        })
+                    }
+                    else {
+                        it(`${apiEntry.label}: does not have a #signatures entry`, () => {
+                            expect(commandSet.signatures.some(
+                                (signature: SignatureInformation) => ResolvedNamespace.equal(
+                                    apiEntry.label,
+                                    SignatureInformation.resolveNamespace(signature)
+                                )
+                            )).to.be.false
+                        })
+                    }
+                })
+
+                it('Contains no additional #completionDocs', () => {
+                    expect(commandSet.completionDocs.size).to.equal(completionDocLength)
+                })
+
+                it('Contains no additional #completions', () => {
+                    expect(commandSet.completions.length).to.equal(completionLength)
+                })
+
+                it('Contains no additional #signatures', () => {
+                    expect(commandSet.signatures.length).to.equal(signatureLength)
+                })
+            })
+        })
     })
 })
