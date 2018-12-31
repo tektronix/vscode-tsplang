@@ -59,7 +59,19 @@ interface TestCase {
     expected: Array<ExpectedCompletion>
     given: Given
     /**
-     * A **descriptive** test name.
+     * The test name.
+     */
+    name: string
+}
+
+interface ErrorCase {
+    /**
+     * The expected error message.
+     */
+    expected: string
+    given: Given
+    /**
+     * The test name.
      */
     name: string
 }
@@ -365,7 +377,7 @@ describe('Instrument Provider', () => {
                 })
             })
 
-            describe(`${test.name}`, () => {
+            describe(test.name, () => {
                 test.expected.forEach((apiEntry: ExpectedCompletion) => {
                     let matchingCompletion: CompletionItem
 
@@ -542,6 +554,62 @@ describe('Instrument Provider', () => {
 
                 it('Contains no additional #signatures', () => {
                     expect(commandSet.signatures.length).to.equal(signatureLength)
+                })
+            })
+        })
+
+        const errorCases: Array<ErrorCase> = [
+            {
+                expected: 'Unable to satisfy assignment exclusives for "smu.reset"',
+                given: {
+                    api: [
+                        {
+                            children: [
+                                {
+                                    assignmentExclusives: [
+                                        { label: 'foo' }
+                                    ],
+                                    label: 'smu.reset'
+                                }
+                            ],
+                            label: 'smu'
+                        },
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Errors when no assignment exclusives can be satisfied'
+            },
+            {
+                expected: 'Unable to satisfy assignment exclusives for "smu.reset"',
+                given: {
+                    api: [
+                        {
+                            children: [
+                                {
+                                    assignmentExclusives: [
+                                        { label: 'smu.ON' },
+                                        { label: 'foo.BAR' }
+                                    ],
+                                    label: 'smu.reset'
+                                }
+                            ],
+                            label: 'smu'
+                        },
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Errors when some assignment exclusives cannot be satisfied'
+            }
+        ]
+
+        describe('Error Tests', () => {
+            errorCases.forEach((errorTest: ErrorCase) => {
+                it(errorTest.name, () => {
+                    expect(
+                        () => {
+                            generateCommandSet(errorTest.given.api, errorTest.given.spec)
+                        }
+                    ).to.throw(errorTest.expected)
                 })
             })
         })
