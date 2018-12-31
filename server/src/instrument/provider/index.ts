@@ -58,71 +58,40 @@ function filter(
     }
 
     const filteredModule: CommandSetInterface = {
-        completions: new Array()
+        completionDocs: new Map(),
+        completions: new Array(),
+        signatures: new Array()
     }
 
-    // The following labels are not to be treated as root namespaces.
-    if (namespace.label.localeCompare('keywords') !== 0
-        && namespace.label.localeCompare('functions') !== 0) {
-        // If this module contains completion docs for the namespace label.
-        if (providerMap.completionDocs.has(namespace.label)) {
-            const completionDocs = providerMap.completionDocs.get(namespace.label)
+    // If this module contains completion docs for the namespace label.
+    if (providerMap.completionDocs.has(namespace.label)) {
+        const completionDocs = providerMap.completionDocs.get(namespace.label)
 
-            if (completionDocs === undefined) {
-                throw new Error(`Filter Error: no completionDocs found with the label "${namespace.label}".`)
-            }
+        // Add root namespace documentation to the results.
+        filteredModule.completionDocs.set(namespace.label, completionDocs)
+    }
 
-            if (filteredModule.completionDocs === undefined) {
-                filteredModule.completionDocs = new Map()
-            }
+    // If this module contains a completion with the namespace label.
+    if (providerMap.completions.has(namespace.label)) {
+        const completions = providerMap.completions.get(namespace.label)
 
-            // Add root namespace documentation to the results.
-            filteredModule.completionDocs.set(namespace.label, completionDocs)
-        }
+        // Add root namespaces to the results.
+        filteredModule.completions.push(...completions)
+    }
 
-        // If this module contains a completion with the namespace label.
-        if (providerMap.completions.has(namespace.label)) {
-            const completions = providerMap.completions.get(namespace.label)
+    // If this module contains a signature with the namespace label.
+    if (providerMap.signatures.has(namespace.label)) {
+        const signatures = providerMap.signatures.get(namespace.label)
 
-            if (completions === undefined) {
-                throw new Error(`Filter Error: no completions found with the label "${namespace.label}".`)
-            }
-
-            // Add root namespaces to the results.
-            filteredModule.completions.push(...completions)
-        }
-
-        // If this module contains a signature with the namespace label.
-        if (providerMap.signatures.has(namespace.label)) {
-            const signatures = providerMap.signatures.get(namespace.label)
-
-            if (signatures === undefined) {
-                throw new Error(`Filter Error: no signatures found with the label "${namespace.label}".`)
-            }
-
-            if (filteredModule.signatures === undefined) {
-                filteredModule.signatures = new Array()
-            }
-
-            // Add root namespace signatures to the results.
-            filteredModule.signatures.push(...signatures)
-        }
+        // Add root namespace signatures to the results.
+        filteredModule.signatures.push(...signatures)
     }
 
     if (namespace.children !== undefined) {
         namespace.children.forEach((child: ChildApiSpec) => {
             // Get any completionDocs for this child.
             if (providerMap.completionDocs.has(child.label)) {
-                // Instantiate the property if we have yet to do so.
-                if (filteredModule.completionDocs === undefined) {
-                    filteredModule.completionDocs = new Map()
-                }
-
                 const completionDoc = providerMap.completionDocs.get(child.label)
-
-                if (completionDoc === undefined) {
-                    throw new Error(`Filter Error: no completion documentation with the label "${child.label}".`)
-                }
 
                 filteredModule.completionDocs.set(child.label, completionDoc)
             }
@@ -130,10 +99,6 @@ function filter(
             // Get any completions for this child.
             if (providerMap.completions.has(child.label)) {
                 let completions = providerMap.completions.get(child.label)
-
-                if (completions === undefined) {
-                    throw new Error(`Filter Error: no completions found with the label "${child.label}".`)
-                }
 
                 if (child.assignmentExclusives !== undefined) {
                     completions = addAssignmentExclusives(
@@ -148,16 +113,7 @@ function filter(
 
             // Get any signatures for this child.
             if (providerMap.signatures.has(child.label)) {
-                // Instantiate the property if we have yet to do so.
-                if (filteredModule.signatures === undefined) {
-                    filteredModule.signatures = new Array()
-                }
-
                 let signatures = providerMap.signatures.get(child.label)
-
-                if (signatures === undefined) {
-                    throw new Error(`Filter Error: no signatures found with the label "${child.label}".`)
-                }
 
                 // Add any parameter exclusive completions.
                 if (child.signatureExclusives !== undefined) {
@@ -173,6 +129,14 @@ function filter(
         })
     }
 
+    if (filteredModule.completionDocs.size === 0) {
+        filteredModule.completionDocs = undefined
+    }
+
+    if (filteredModule.signatures.length === 0) {
+        filteredModule.signatures = undefined
+    }
+
     return filteredModule
 }
 
@@ -180,7 +144,7 @@ function filter(
  * Returns all Enumeration elements of the CommandSetInterface that can be found in the ApiSpec.
  */
 function filterEnums(
-    namespace: ApiSpec,
+    enums: Array<ExclusiveCompletionApiSpec>,
     enumModule: CommandSetInterface
 ): Array<CompletionItem> {
     // Create an object of Maps whose keys will match against ApiSpec labels.
@@ -188,20 +152,14 @@ function filterEnums(
 
     const filteredEnumerations = new Array<CompletionItem>()
 
-    if (namespace.enums !== undefined) {
-        namespace.enums.forEach((enumeration: BaseApiSpec) => {
-            // Get any completions for this enumeration.
-            if (completionMap.has(enumeration.label)) {
-                const enumerations = completionMap.get(enumeration.label)
+    enums.forEach((enumeration: BaseApiSpec) => {
+        // Get any completions for this enumeration.
+        if (completionMap.has(enumeration.label)) {
+            const enumerations = completionMap.get(enumeration.label)
 
-                if (enumerations === undefined) {
-                    throw new Error(`Filter Error: no enumerations found with the label "${enumeration.label}".`)
-                }
-
-                filteredEnumerations.push(...enumerations)
-            }
-        })
-    }
+            filteredEnumerations.push(...enumerations)
+        }
+    })
 
     return filteredEnumerations
 }
@@ -259,10 +217,9 @@ function addAssignmentExclusives(
         }
 
         // Collect an array of enumerations as listed in the assignment completion spec.
-        const enumApiSpec: ApiSpec = { enums: exclusives, label: '' }
         const enumModule: CommandSetInterface = { completions: enumerations }
 
-        const filteredEnums = filterEnums(enumApiSpec, enumModule)
+        const filteredEnums = filterEnums(exclusives, enumModule)
 
         // Something went wrong if we are here but have nothing to show for it.
         if (filteredEnums.length === 0) {
@@ -310,10 +267,9 @@ function addSignatureExclusives(
             // Collect an array of enumerations as listed in each parameter completion spec of the
             // current signature spec.
             spec.parameters.forEach((paramCompletionSpec: Array<ExclusiveCompletionApiSpec>, key: number) => {
-                const enumApiSpec: ApiSpec = { enums: paramCompletionSpec, label: '' }
                 const enumModule: CommandSetInterface = { completions: enumerations }
 
-                const filteredEnums = filterEnums(enumApiSpec, enumModule)
+                const filteredEnums = filterEnums(paramCompletionSpec, enumModule)
 
                 if (filteredEnums.length === 0) {
                     return
@@ -391,7 +347,7 @@ export function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpe
 
         const enumModule: CommandSetInterface = require(labelToModuleName(api.label, true))
 
-        enumerations.push(...filterEnums(api, enumModule))
+        enumerations.push(...filterEnums(api.enums, enumModule))
     })
 
     const result: CommandSet = new CommandSet(spec)
