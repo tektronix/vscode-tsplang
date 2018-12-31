@@ -27,27 +27,17 @@ export interface TspItem {
     shebang: Shebang
 }
 export namespace TspItem {
-    export async function create(
+    export function create(
         registrant: TextDocument,
         shebang: Shebang,
         settings: TsplangSettings,
         pool: TspPool
-    ): Promise<TspItem> {
-        return new Promise<TspItem>(async (
-            resolve: (value?: TspItem) => void,
-            reject: (reason?: Error) => void
-        ): Promise<void> => {
-            try {
-                const entry = await pool.register(shebang.master)
+    ): TspItem {
+        const entry = pool.register(shebang.master)
 
-                resolve({
-                    shebang,
-                    context: new DocumentContext(entry.commandSet, registrant, settings)
-                })
-            }
-            catch (e) {
-                reject(e)
-            }
-        })
+        return {
+            shebang,
+            context: new DocumentContext(entry.commandSet, registrant, settings)
+        }
     }
 }

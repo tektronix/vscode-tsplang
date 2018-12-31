@@ -42,48 +42,33 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    async register(uri: string, documentSettings: TsplangSettings): Promise<void> {
-        return new Promise<void>(async (
-            resolve: (value?: void) => void,
-            reject: (reason?: Error) => void
-        ): Promise<void> => {
-            // check if the doc has already been registered
-            if (this.dict.has(uri)) {
-                reject(new Error('Document already registered.'))
+    register(uri: string, documentSettings: TsplangSettings): void {
+        // check if the doc has already been registered
+        if (this.dict.has(uri)) {
+            throw new Error('Document already registered.')
+        }
 
-                return
-            }
+        const document = this.documents.get(uri)
 
-            const document = this.documents.get(uri)
+        if (document === undefined) {
+            throw new Error('Unable to fetch document from document manager.')
+        }
 
-            if (document === undefined) {
-                reject(new Error('Unable to fetch document from document manager.'))
+        const firstLine = document.getText({
+            end: { character: 0, line: 0 },
+            start: { character: 0, line: 1 }
+        }).trim()
 
-                return
-            }
+        // Try to parse the shebang.
+        const shebang = Shebang.tokenize(firstLine)
 
-            const firstLine = document.getText({
-                end: { character: 0, line: 0 },
-                start: { character: 0, line: 1 }
-            }).trim()
+        // Try to make a new TspItem instance.
+        const tspItem = TspItem.create(document, shebang, documentSettings, this.pool)
 
-            try {
-                // Try to parse the shebang.
-                const shebang = Shebang.tokenize(firstLine)
+        tspItem.context.update()
+        tspItem.context.walk()
 
-                // Try to make a new TspItem instance.
-                const tspItem = await TspItem.create(document, shebang, documentSettings, this.pool)
-
-                tspItem.context.update()
-                tspItem.context.walk()
-
-                this.dict.set(document.uri, tspItem)
-
-                resolve()
-            } catch (e) {
-                reject(e)
-            }
-        })
+        this.dict.set(document.uri, tspItem)
     }
 
     unregister(uri: string): boolean {
@@ -106,53 +91,40 @@ export class TspManager {
         return this.dict.delete(uri)
     }
 
-    async update(uri: string): Promise<void> {
-        return new Promise<void>(async (
-            resolve: (value?: void) => void,
-            reject: (reason?: Error) => void
-        ): Promise<void> => {
-            // check if the doc has not been registered
-            if (!this.dict.has(uri)) {
-                reject(new Error('Document is not registered.'))
+    update(uri: string): void {
+        // check if the doc has not been registered
+        if (!this.dict.has(uri)) {
+            throw new Error('Document is not registered.')
+        }
 
-                return
-            }
+        const document = this.documents.get(uri)
 
-            const document = this.documents.get(uri)
+        if (document === undefined) {
+            throw new Error('Unable to fetch document from document manager.')
+        }
 
-            if (document === undefined) {
-                reject(new Error('Unable to fetch document from document manager.'))
+        // We already checked that the key exists in the Map.
+        const item = this.dict.get(uri) as TspItem
 
-                return
-            }
+        const firstLine = document.getText({
+            end: { character: 0, line: 0 },
+            start: { character: 0, line: 1 }
+        }).trim()
 
-            // We already checked that the key exists in the Map.
-            const item = this.dict.get(uri) as TspItem
+        // If the shebang has changed.
+        if (firstLine.localeCompare(item.shebang.text) !== 0) {
+            // Unregister everything.
+            this.unregister(uri)
 
-            const firstLine = document.getText({
-                end: { character: 0, line: 0 },
-                start: { character: 0, line: 1 }
-            }).trim()
+            // Re-register everything.
+            this.register(uri, item.context.settings)
 
-            // If the shebang has changed.
-            if (firstLine.localeCompare(item.shebang.text) !== 0) {
-                // Unregister everything.
-                this.unregister(uri)
+            // The context was updated by register, so we're done.
+            return
+        }
 
-                // Re-register everything.
-                await this.register(uri, item.context.settings)
-
-                // The context was updated by register, so we can resolve.
-                resolve()
-
-                return
-            }
-
-            // Update this item's context.
-            item.context.update()
-            item.context.walk()
-
-            resolve()
-        })
+        // Update this item's context.
+        item.context.update()
+        item.context.walk()
     }
 }

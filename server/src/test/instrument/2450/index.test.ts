@@ -111,11 +111,12 @@ describe('Instrument Specification', () => {
                 specs = instrumentModule.getApiSpec()
             })
 
-            it('contains all known namespaces', () => {
-                knownNamespaces.forEach((namespace: string) => {
-                    const result = specs.some((spec: ApiSpec) => spec.label.localeCompare(namespace) === 0)
-
-                    expect(result, `failed to contain the "${namespace}" namespace`).to.be.true
+            knownNamespaces.forEach((label: string) => {
+                it(`contains the ${label} namespace`, () => {
+                    expect(
+                        specs.some((spec: ApiSpec) => spec.label.localeCompare(label) === 0),
+                        `failed to contain the "${label}" namespace`
+                    ).to.be.true
                 })
             })
 
