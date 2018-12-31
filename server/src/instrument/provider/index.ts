@@ -211,11 +211,6 @@ function addAssignmentExclusives(
 ): Array<CompletionItem> {
     // Modify each completion item.
     const modifiedCompletions = completions.map((completion: CompletionItem) => {
-        // Return an unmodified completion item if it is a root namespace.
-        if (completion.data === undefined) {
-            return completion
-        }
-
         // Collect an array of enumerations as listed in the assignment completion spec.
         const enumModule: CommandSetInterface = { completions: enumerations }
 
