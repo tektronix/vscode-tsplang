@@ -192,11 +192,6 @@ function generateRoots(completions: Array<CompletionItem>): Array<CompletionItem
     uniqueNamespaces.forEach((uniqueItem: CompletionItem) => {
         const fullyQualifiedCompletion = CompletionItem.resolveNamespace(uniqueItem)
 
-        // Throw an error if this completion has no domain.
-        if (uniqueItem.data === undefined || uniqueItem.data.domains.length === 0) {
-            throw new Error(`Unable to generate root completion for '${fullyQualifiedCompletion}'.`)
-        }
-
         // Create root completion items and add them to the results.
         results.push(...CompletionItem.createRootItems(fullyQualifiedCompletion, true))
     })
