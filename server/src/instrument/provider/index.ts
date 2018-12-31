@@ -266,8 +266,12 @@ function addSignatureExclusives(
 
                 const filteredEnums = filterEnums(paramCompletionSpec, enumModule)
 
-                if (filteredEnums.length === 0) {
-                    return
+                // Throw an error so ApiSpec bugs can be differentiated language comprehension bugs.
+                if (filteredEnums.length !== paramCompletionSpec.length) {
+                    throw new Error(
+                        `Unable to satisfy exclusives for parameter ${key} of `
+                            + `"${SignatureInformation.resolveNamespace(signature)}"`
+                    )
                 }
 
                 // Add all root namespace completions to the array of enumeration completions.
@@ -276,14 +280,6 @@ function addSignatureExclusives(
                 parameterMap.set(key, filteredEnums)
             })
         })
-
-        // Something went wrong if we are here but have nothing to show for it.
-        if (parameterMap.size === 0) {
-            throw new Error([
-                'No parameter completions available for',
-                `'${SignatureInformation.resolveNamespace(signature)}'.`
-            ].join(' '))
-        }
 
         signature.data.parameterTypes = parameterMap
 
