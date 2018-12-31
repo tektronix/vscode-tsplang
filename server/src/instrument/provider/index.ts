@@ -216,12 +216,12 @@ function addAssignmentExclusives(
 
         const filteredEnums = filterEnums(exclusives, enumModule)
 
-        // Something went wrong if we are here but have nothing to show for it.
-        if (filteredEnums.length === 0) {
-            throw new Error([
-                'No assignment completions available for',
-                `'${CompletionItem.resolveNamespace(completion)}'.`
-            ].join(' '))
+        // Throw an error so ApiSpec bugs can be differentiated language comprehension bugs.
+        if (filteredEnums.length !== exclusives.length) {
+            throw new Error(
+                'Unable to satisfy assignment exclusives for '
+                    + `"${CompletionItem.resolveNamespace(completion)}"`,
+            )
         }
 
         // Add all root namespace completions to the array of enumeration completions.
