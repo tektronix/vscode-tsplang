@@ -267,6 +267,23 @@ describe('Instrument Provider', () => {
                         label: 'buffer.write'
                     },
                     {
+                        label: 'buffer.write.format',
+                        signatures: [
+                            {
+                                exclusives: new Map([
+                                    [
+                                        0,
+                                        [
+                                            'buffer',
+                                            'buffer.OFF'
+                                        ]
+                                    ]
+                                ]),
+                                loaded: false
+                            }
+                        ]
+                    },
+                    {
                         exclusives: [
                             'buffer',
                             'buffer.FILL_CONTINUOUS',
@@ -307,6 +324,22 @@ describe('Instrument Provider', () => {
                     api: [
                         {
                             children: [
+                                {
+                                    // Creates SignatureInformation.data during parameter exclusive population.
+                                    label: 'buffer.write.format',
+                                    signatureExclusives: [
+                                        {
+                                            parameters: new Map([
+                                                [
+                                                    0,
+                                                    [
+                                                        { label: 'buffer.OFF' }
+                                                    ]
+                                                ]
+                                            ])
+                                        }
+                                    ]
+                                },
                                 {
                                     // Populates assignment exclusives
                                     assignmentExclusives: [
@@ -593,12 +626,74 @@ describe('Instrument Provider', () => {
                                     label: 'smu.reset'
                                 }
                             ],
+                            enums: [
+                                { label: 'smu.ON' }
+                            ],
                             label: 'smu'
                         },
                     ],
                     spec: emptySpec
                 },
                 name: 'Errors when some assignment exclusives cannot be satisfied'
+            },
+            {
+                expected: 'Unable to satisfy exclusives for parameter 0 of "buffer.make"',
+                given: {
+                    api: [
+                        {
+                            children: [
+                                {
+                                    label: 'buffer.make',
+                                    signatureExclusives: [
+                                        {
+                                            parameters: new Map([
+                                                [0, [{ label: 'foo' }]]
+                                            ])
+                                        }
+                                    ]
+                                }
+                            ],
+                            label: 'buffer'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Errors when no parameter exclusives can be satisfied'
+            },
+            {
+                expected: 'Unable to satisfy exclusives for parameter 1 of "buffer.make"',
+                given: {
+                    api: [
+                        {
+                            children: [
+                                {
+                                    label: 'buffer.make',
+                                    signatureExclusives: [
+                                        {
+                                            parameters: new Map([
+                                                [0, [{ label: 'buffer.UNIT_X' }]],
+                                                [
+                                                    1,
+                                                    [
+                                                        { label: 'buffer.STAT_TERMINAL' },
+                                                        { label: 'foo.BAR' }
+                                                    ]
+                                                ]
+                                            ])
+                                        }
+                                    ]
+                                }
+                            ],
+                            enums: [
+                                { label: 'buffer.STAT_TERMINAL' },
+                                { label: 'buffer.UNIT_X' }
+                            ],
+                            label: 'buffer'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Errors when some parameter exclusives cannot be satisfied'
             }
         ]
 
