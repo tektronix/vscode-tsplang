@@ -13,6 +13,7 @@
         "server/src/antlr4-tsplang",
         "server/src/instrument/2461",
         "server/src/instrument/6500",
+        "server/src/instrument/provider/test",
         "server/src/test"
     ],
     "reporter": [

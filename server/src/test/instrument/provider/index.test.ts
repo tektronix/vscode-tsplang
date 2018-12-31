@@ -82,11 +82,23 @@ describe('Instrument Provider', () => {
                         ]
                     },
                     {
+                        label: 'reset',
+                        signatures: [
+                            {
+                                loaded: false
+                            }
+                        ]
+                    },
+                    {
                         label: 'smu.measure'
                     },
                     {
                         formattable: true,
                         label: 'smu.measure.range'
+                    },
+                    {
+                        formattable: true,
+                        label: 'test/root.completion.docs'
                     }
                 ],
                 given: {
@@ -100,16 +112,58 @@ describe('Instrument Provider', () => {
                             label: 'beeper'
                         },
                         {
+                            // Gets root namespace signatures.
+                            label: 'reset'
+                        },
+                        {
                             children: [
-                                // Gets completion documentation
+                                // Gets completion documentation.
                                 { label: 'smu.measure.range' }
                             ],
                             label: 'smu.measure'
+                        },
+                        {
+                            // Gets root namespace completion documentation.
+                            label: 'test/root.completion.docs'
+                        },
+                        // Get a provider file that doesn't export a completion with the same name.
+                        {
+                            label: 'keywords'
                         }
                     ],
                     spec: emptySpec
                 },
                 name: 'Basic Test'
+            },
+            {
+                expected: [
+                    {
+                        label: 'beeper'
+                    },
+                    {
+                        label: 'beeper.beep',
+                        signatures: [
+                            {
+                                formattable: true,
+                                loaded: true
+                            }
+                        ]
+                    }
+                ],
+                given: {
+                    api: [
+                        {
+                            children: [
+                                { label: 'beeper.beep' },
+                                // Try to get a completion that shouldn't exist here.
+                                { label: 'smu.measure.range' }
+                            ],
+                            label: 'beeper'
+                        }
+                    ],
+                    spec: emptySpec
+                },
+                name: 'Loaded Signature Test'
             },
             {
                 expected: [
@@ -121,7 +175,9 @@ describe('Instrument Provider', () => {
                     api: [
                         {
                             enums: [
-                                { label: 'display.NFORMAT_DECIMAL' }
+                                { label: 'display.NFORMAT_DECIMAL' },
+                                // Try to get an enumeration that shouldn't exist here
+                                { label: 'smu.ON' }
                             ],
                             label: 'display'
                         }
@@ -413,6 +469,12 @@ describe('Instrument Provider', () => {
                                     matchingSignature = matchingLabelSignatures.pop()
                                 }
                             })
+
+                            if (signatureEntry.loaded) {
+                                it(`${apiEntry.label}: has already been loaded`, () => {
+                                    expect(matchingSignature._loaded).to.be.true
+                                })
+                            }
 
                             if (signatureEntry.formattable === true) {
                                 it(`${apiEntry.label}: parameters are formatted correctly`, () => {
