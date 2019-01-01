@@ -150,6 +150,13 @@ export interface RangeSpec {
     low: number
 }
 
+export interface SmuContactSpec {
+    /**
+     * 2461: 'smu.THRESHOLD_50_OHM'
+     */
+    defaultThreshold: string
+}
+
 export interface SmuInterlockSpec {
     /**
      * 2450: 42
@@ -211,9 +218,7 @@ export interface SmuSourceSweepLog {
 
 export interface InstrumentSpec {
     beeper: BeeperSpec
-    contactThreshold: {
-        default?: string | DefaultFillValue;
-    }
+    contact?: SmuContactSpec
     current: {
         measure: MeasureCurrentSpec;
         source: SourceCurrentSpec;
@@ -222,7 +227,7 @@ export interface InstrumentSpec {
     resistance: MeasureResistanceSpec
     smuInterlock: SmuInterlockSpec
     smuMeasureAutorange: SmuMeasureAutorangeSpec
-    smuSourceSweepLog: SmuSourceSweepLog,
+    smuSourceSweepLog: SmuSourceSweepLog
     voltage: {
         measure: MeasureVoltageSpec;
         source: SourceVoltageSpec;

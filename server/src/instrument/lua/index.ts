@@ -165,7 +165,6 @@ export function getApiSpec(): Array<ApiSpec> {
 export function getInstrumentSpec(): InstrumentSpec {
     return {
         beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
-        contactThreshold: {},
         current: {
             measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
             source: { rangeDefault: NaN, ranges: [ NaN ] }

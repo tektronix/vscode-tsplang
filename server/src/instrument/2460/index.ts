@@ -1824,7 +1824,6 @@ export function getInstrumentSpec(): InstrumentSpec {
             minHertz: 20,
             minSeconds: 0.001
         },
-        contactThreshold: {},
         current: {
             measure: {
                 level: {

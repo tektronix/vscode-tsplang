@@ -27,7 +27,7 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 \`\`\`lua\nsmu.contact.threshold\n\`\`\`\n\
 \n\
 Get or set the resistance value that must be exceeded before a failure is indicated to smu.THRESHOLD_\\*. Defaults to \
-${spec.contactThreshold.default || DefaultFillValue}.`
+${(spec.contact) ? spec.contact.defaultThreshold : DefaultFillValue}.`
     ]
 ])
 

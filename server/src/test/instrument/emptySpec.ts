@@ -19,7 +19,7 @@ import { InstrumentSpec } from '../../instrument'
 
 export const emptySpec: InstrumentSpec = {
     beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
-    contactThreshold: { default: 'foo' },
+    contact: { defaultThreshold: 'foo' },
     current: {
         measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
         source: { rangeDefault: NaN, ranges: [ NaN ] }
@@ -42,7 +42,6 @@ export const emptySpec: InstrumentSpec = {
 
 export const emptySpecUndefinedOptionals: InstrumentSpec = {
     beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
-    contactThreshold: {},
     current: {
         measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
         source: { rangeDefault: NaN, ranges: [ NaN ] }
