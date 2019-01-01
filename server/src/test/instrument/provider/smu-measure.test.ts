@@ -62,8 +62,7 @@ describe('Instrument Provider', () => {
 
             applicableCompletionDocs.forEach((label: string) => {
                 // Typecast because we just validated its existance.
-                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>)
-                    .get('smu.measure.range')
+                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>).get(label)
 
                 expect(
                     completionDoc,
