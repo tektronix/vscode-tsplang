@@ -156,6 +156,12 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['trigger'] },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
+        label: 'BLOCK_SOURCE_PULSE_OUTPUT'
+    },
+    {
+        data: { domains: ['trigger'] },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_WAIT'
     },
     {

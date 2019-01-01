@@ -1091,4 +1091,26 @@ set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop
             },
         ],
     },
+    {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 23
+        },
+        documentation: 'Sets the pulse source to the specified output state.',
+        label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_SOURCE_PULSE_OUTPUT, state)',
+        parameters: [
+            {
+                documentation: 'The sequence of the block in the trigger model.',
+                label: 'blockNumber',
+            },
+            {
+                documentation: 'The "trigger.BLOCK_SOURCE_PULSE_OUTPUT" enumeration.',
+                label: 'trigger.BLOCK_SOURCE_PULSE_OUTPUT',
+            },
+            {
+                documentation: 'Either smu.OFF to turn off the pulse output source or smu.ON to turn it on.',
+                label: 'state',
+            },
+        ],
+    },
 ]

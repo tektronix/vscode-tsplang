@@ -45,5 +45,5 @@ smu.source.pulsesweeplinearstep()
 smu.source.pulsesweeplinear()
 smu.source.pulsesweeplog()
 smu.source.pulsesweeplist()
-trigger.model.setblock() — trigger.BLOCK_SOURCE_PULSE_OUTPUT
+-trigger.model.setblock() — trigger.BLOCK_SOURCE_PULSE_OUTPUT
 smu.source.pulse.xlimit.level
