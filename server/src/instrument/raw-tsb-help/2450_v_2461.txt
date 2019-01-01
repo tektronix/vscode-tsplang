@@ -23,7 +23,7 @@ smu.digitize.rel.level
 smu.digitize.rel.enable
 smu.digitize.count
 smu.digitize.range
-trigger.model.setblock() — trigger.BLOCK_DIGITIZE
+-trigger.model.setblock() — trigger.BLOCK_DIGITIZE
 smu.digitize.func
 smu.digitize.aperture
 smu.digitize.samplerate

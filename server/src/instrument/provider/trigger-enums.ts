@@ -114,6 +114,12 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['trigger'] },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
+        label: 'BLOCK_DIGITIZE'
+    },
+    {
+        data: { domains: ['trigger'] },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
         label: 'BLOCK_LOG_EVENT'
     },
     {
