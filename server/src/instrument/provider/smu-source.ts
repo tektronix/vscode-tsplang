@@ -527,7 +527,7 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
                 label: 'bufferName'
             },
             {
-                documentation: 'The value of the asymtotic curve at either positive or negative infinity, depending \
+                documentation: 'The value of the asymptotic curve at either positive or negative infinity, depending \
 on the direction of the sweep. Defaults to 0.\n\
 Asymtotic value cannot be less than or equal to the sweep bounds.',
                 label: 'asymptote'
