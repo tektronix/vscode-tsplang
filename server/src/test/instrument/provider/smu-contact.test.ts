@@ -22,7 +22,7 @@ import 'mocha'
 import { MarkupContentCallback } from '../../../decorators'
 import { CommandSetInterface } from '../../../instrument'
 
-import { expectCompletionDocFormat } from './helpers'
+import { expectCompletionDocFormat, expectCompletionDocUndefinedFormat } from './helpers'
 
 describe('Instrument Provider', () => {
     describe('smu-contact', () => {
@@ -50,6 +50,27 @@ describe('Instrument Provider', () => {
 
             providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
+            })
+        })
+
+        it('formats completionDocs when some specs values are undefined', () => {
+            expect(providerModule.completionDocs).to.not.be.empty
+
+            const applicableCompletionDocs: Array<string> = [
+                'smu.contact.threshold'
+            ]
+
+            applicableCompletionDocs.forEach((label: string) => {
+                // Typecast because we just validated its existance.
+                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>).get(label)
+
+                expect(
+                    completionDoc,
+                    `"${label}" does not exist in the set of available completionDocs`
+                ).to.not.be.undefined
+
+                // Typecast because we just failed the test if the variable was undefined.
+                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label)
             })
         })
     })
