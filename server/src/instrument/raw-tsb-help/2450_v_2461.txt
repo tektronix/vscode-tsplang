@@ -29,13 +29,12 @@ smu.digitize.aperture
 smu.digitize.samplerate
 smu.digitize.readwithtime()
 smu.digitize.limit[Y].audible
-acal.lastrun.internaltemp
-acal.lastrun.time
-acal.lastrun.time
 -acal.count
+-acal.lastrun.internaltemp
+-acal.lastrun.time
 -acal.run()
 smu.digitize.unit
-acal.lastrun.tempdiff
+-acal.lastrun.tempdiff
 smu.contact.enable
 smu.contact.threshold
 smu.contact.check()
