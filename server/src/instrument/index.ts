@@ -201,6 +201,17 @@ export interface SmuMeasureAutorangeSpec {
     voltageLowDefault: number
 }
 
+export interface SmuSourcePulseSpec {
+    /**
+     * 2461: 10.5A, 105V
+     */
+    high: number
+    /**
+     * 2461: -10.5A, 105V
+     */
+    low: number
+}
+
 export interface SmuSourceSweepLog {
     /**
      * 2450: 1e-12
@@ -221,6 +232,7 @@ export interface InstrumentSpec {
     contact?: SmuContactSpec
     current: {
         measure: MeasureCurrentSpec;
+        pulse?: SmuSourcePulseSpec;
         source: SourceCurrentSpec;
     }
     overflow: number
@@ -230,6 +242,7 @@ export interface InstrumentSpec {
     smuSourceSweepLog: SmuSourceSweepLog
     voltage: {
         measure: MeasureVoltageSpec;
+        pulse?: SmuSourcePulseSpec;
         source: SourceVoltageSpec;
     }
 }
