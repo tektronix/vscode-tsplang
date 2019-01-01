@@ -2,8 +2,8 @@
 smu.measure.terminals
 
 2461_tsb
-script.catalog()
 -smu.terminals
+-script.catalog()
 smu.digitize.read()
 smu.digitize.displaydigits
 smu.digitize.limit[Y].autoclear
