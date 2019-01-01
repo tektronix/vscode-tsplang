@@ -46,9 +46,7 @@ describe('Instrument Provider', () => {
         })
 
         it('formats completionDocs', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+            expect(providerModule.completionDocs).to.not.be.empty
 
             providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)

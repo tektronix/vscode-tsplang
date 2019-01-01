@@ -46,9 +46,7 @@ describe('Instrument Provider', () => {
         })
 
         it('formats signatures', () => {
-            if (providerModule.signatures === undefined) {
-                return
-            }
+            expect(providerModule.signatures).to.not.be.empty
 
             providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)

@@ -46,9 +46,7 @@ describe('Instrument Provider', () => {
         })
 
         it('formats completionDocs', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+            expect(providerModule.completionDocs).to.not.be.empty
 
             providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
@@ -56,9 +54,7 @@ describe('Instrument Provider', () => {
         })
 
         it('formats completionDocs when some specs values are undefined', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+            expect(providerModule.completionDocs).to.not.be.empty
 
             const applicableCompletionDocs: Array<string> = [
                 'smu.measure.range'
@@ -80,9 +76,7 @@ describe('Instrument Provider', () => {
         })
 
         it('formats signatures', () => {
-            if (providerModule.signatures === undefined) {
-                return
-            }
+            expect(providerModule.signatures).to.not.be.empty
 
             providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)
