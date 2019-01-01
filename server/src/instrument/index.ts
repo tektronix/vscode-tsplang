@@ -150,6 +150,12 @@ export interface RangeSpec {
     low: number
 }
 
+export interface RangeSpecDefiniteDefault {
+    default: number
+    high: number
+    low: number
+}
+
 export interface SmuContactSpec {
     /**
      * 2461: 'smu.THRESHOLD_50_OHM'
@@ -206,6 +212,19 @@ export interface SmuSourcePulseSpec {
      * 2461: 10.5A, 105V
      */
     high: number
+    /**
+     * ## 2461
+     * ### Current
+     * * Default &mdash; 105e-6
+     * * High &mdash; 10.5
+     * * Low &mdash; 10e-9
+     *
+     * ### Voltage
+     * * Default &mdash; 7.35
+     * * High &mdash; 105
+     * * Low &mdash; 2e-3
+     */
+    level: RangeSpecDefiniteDefault
     /**
      * 2461: -10.5A, 105V
      */
