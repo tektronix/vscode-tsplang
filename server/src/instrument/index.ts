@@ -211,6 +211,9 @@ export interface SmuSourceSweepLog {
 
 export interface InstrumentSpec {
     beeper: BeeperSpec
+    contactThreshold: {
+        default?: string;
+    }
     current: {
         measure: MeasureCurrentSpec;
         source: SourceCurrentSpec;

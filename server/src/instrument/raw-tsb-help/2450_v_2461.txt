@@ -35,10 +35,10 @@ smu.digitize.limit[Y].audible
 -acal.run()
 smu.digitize.unit
 -acal.lastrun.tempdiff
-smu.contact.enable
-smu.contact.threshold
-smu.contact.check()
-smu.contact.checkall()
+-smu.contact.enable
+-smu.contact.threshold
+-smu.contact.check()
+-smu.contact.checkall()
 smu.source.pulse.level
 smu.source.pulsetrain()
 smu.source.pulsesweeplinearstep()

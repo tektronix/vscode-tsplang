@@ -310,6 +310,21 @@ current range, whichever is greater; otherwise the current limit is not changed.
     },
     {
         data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'THRESHOLD_2_OHM'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'THRESHOLD_15_OHM'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'THRESHOLD_50_OHM'
+    },
+    {
+        data: { domains: ['smu'] },
         documentation: {
             kind: MarkupKind.PlainText,
             value: 'Only available for Current measurements.'
