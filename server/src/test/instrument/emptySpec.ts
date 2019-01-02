@@ -22,8 +22,18 @@ export const emptySpec: InstrumentSpec = {
     contact: { defaultThreshold: 'foo' },
     current: {
         measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
-        pulse: { high: NaN, level: { default: NaN, high: NaN, low: NaN }, low: NaN },
+        pulse: { bias: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
         source: { rangeDefault: NaN, ranges: [ NaN ] }
+    },
+    extendedOperatingArea: {
+        currentSource: NaN,
+        percentDutyCycle: NaN,
+        sourceTime: { high: NaN, low: NaN },
+        voltageSource: NaN
+    },
+    operatingArea: {
+        percentDutyCycle: NaN,
+        sourceTime: { high: NaN, low: NaN }
     },
     overflow: NaN,
     resistance: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
@@ -37,7 +47,7 @@ export const emptySpec: InstrumentSpec = {
     smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
     voltage: {
         measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
-        pulse: { high: NaN, level: { default: NaN, high: NaN, low: NaN }, low: NaN },
+        pulse: { bias: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
         source: { rangeDefault: NaN, ranges: [ NaN ] }
     }
 }

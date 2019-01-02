@@ -39,11 +39,11 @@ smu.digitize.unit
 -smu.contact.threshold
 -smu.contact.check()
 -smu.contact.checkall()
-smu.source.pulse.level
-smu.source.pulsetrain()
-smu.source.pulsesweeplinearstep()
-smu.source.pulsesweeplinear()
-smu.source.pulsesweeplog()
-smu.source.pulsesweeplist()
+-smu.source.pulse.level
+-smu.source.pulsetrain()
+-smu.source.pulsesweeplinearstep()
+-smu.source.pulsesweeplinear()
+-smu.source.pulsesweeplog()
+-smu.source.pulsesweeplist()
 -trigger.model.setblock() — trigger.BLOCK_SOURCE_PULSE_OUTPUT
-smu.source.pulse.xlimit.level
+-smu.source.pulse.xlimit.level

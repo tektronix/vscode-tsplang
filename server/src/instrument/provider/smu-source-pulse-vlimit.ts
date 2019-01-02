@@ -28,10 +28,10 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 \`\`\`lua\nsmu.source.pulse.vlimit.level\n\`\`\`\n\
 \n\
 Get or set the source limit for voltage to a number from \
-${(spec.voltage.pulse) ? spec.voltage.pulse.level.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.level.high : DefaultFillValue}. Changing the source function will reset \
+${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}. Changing the source function will reset \
 this attribute to its default value of \
-${(spec.voltage.pulse) ? spec.voltage.pulse.level.default : DefaultFillValue}.\n\
+${(spec.voltage.pulse) ? spec.voltage.pulse.range.default : DefaultFillValue}.\n\
 \n\
 Specified values must be more than 1% of the measurement range unless the instrument is in autorange mode. If set \
 to an invalid level, the instrument will use the nearest valid level and log a warning.\n\

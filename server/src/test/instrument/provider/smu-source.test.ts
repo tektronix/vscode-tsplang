@@ -19,7 +19,7 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { MarkupContentCallback, SignatureInformation } from '../../../decorators'
+import { MarkupContentCallback, ResolvedNamespace, SignatureInformation } from '../../../decorators'
 import { CommandSetInterface } from '../../../instrument'
 
 import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
@@ -58,6 +58,37 @@ describe('Instrument Provider', () => {
 
             providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)
+            })
+        })
+
+        it('formats signatures when some specs values are undefined', () => {
+            expect(providerModule.signatures).to.not.be.empty
+
+            const applicableSignatures: Array<string> = [
+                'smu.source.pulsesweeplinear',
+                'smu.source.pulsesweeplinearstep',
+                'smu.source.pulsesweeplist',
+                'smu.source.pulsesweeplog',
+                'smu.source.pulsetrain'
+            ]
+
+            applicableSignatures.forEach((label: string) => {
+                // Typecast because we just validated its existance.
+                const signatures = (providerModule.signatures as Array<SignatureInformation>).filter(
+                    (signature: SignatureInformation) => ResolvedNamespace.equal(
+                        label,
+                        SignatureInformation.resolveNamespace(signature)
+                    )
+                )
+
+                expect(
+                    signatures,
+                    `"${label}" does not exist in the set of available signatures`
+                ).to.not.be.empty
+
+                signatures.forEach((signature: SignatureInformation) => {
+                    expectSignatureFormat(signature, true)
+                })
             })
         })
     })

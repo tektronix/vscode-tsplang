@@ -30,12 +30,12 @@ Get or set a fixed amplitude of the active pulse source function as a number. De
 functions.\n\
 \n\
 When the pulse source function is set to Current, the valid range of this attribute is \
-${(spec.current.pulse) ? spec.current.pulse.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.high : DefaultFillValue}.\n\
+${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}.\n\
 \n\
 When the pulse source function is set to Voltage, the valid range of this attribute is \
-${(spec.voltage.pulse) ? spec.voltage.pulse.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.high : DefaultFillValue}.\n\
+${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}.\n\
 \n\
 If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.`
     ]

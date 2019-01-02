@@ -52,21 +52,23 @@ export function expectCompletionDocUndefinedFormat(completionDoc: MarkupContentC
         `useless command documentation entry for ${label}`
     ).to.not.be.empty
 
-    // The string "UNDEFINED" should be filled-in for optional spec values.
+    // The default fill value should be filled-in for optional spec values.
     expect(
         undefinedSpecValueRegExp.test(formattedDocumentation.value),
-        `could not find "UNDEFINED" in the formatted command documentation for ${label}`
+        `could not find "${DefaultFillValue}" in the formatted command documentation for ${label}`
     ).to.be.true
 }
 
-export function expectSignatureFormat(signature: SignatureInformation): void {
+export function expectSignatureFormat(signature: SignatureInformation, useUndefinedSpec: boolean = false): void {
     const signatureLabel = SignatureInformation.resolveNamespace(signature)
 
     if (signature.getFormattedParameters === undefined) {
         return
     }
 
-    const formattedParameters = signature.getFormattedParameters(emptySpec)
+    const formattedParameters = signature.getFormattedParameters(
+        (useUndefinedSpec) ? emptySpecUndefinedOptionals : emptySpec
+    )
 
     // If the function returns nothing, then it should be left undefined.
     expect(
@@ -99,13 +101,21 @@ export function expectSignatureFormat(signature: SignatureInformation): void {
             documentation = parameter.documentation as string
         }
 
-        // All replacement strings should be filled-in
-        expect(
-            undefinedSpecValueRegExp.test(documentation),
-            [
-                'found a replacement string in the formatted parameter',
-                `"${parameter.label}" of signature "${signatureLabel}"`
-            ].join(' ')
-        ).to.be.false
+        const containsDefaultFillValue = undefinedSpecValueRegExp.test(documentation)
+
+        if (useUndefinedSpec) {
+            expect(
+                containsDefaultFillValue,
+                `could not find "${DefaultFillValue}" in the formatted parameter `
+                    + `"${parameter.label}" of signature "${signatureLabel}"`
+            ).to.be.true
+        }
+        else {
+            expect(
+                containsDefaultFillValue,
+                `found "${DefaultFillValue}" in the formatted parameter `
+                    + `"${parameter.label}" of signature "${signatureLabel}"`
+            ).to.be.false
+        }
     })
 }

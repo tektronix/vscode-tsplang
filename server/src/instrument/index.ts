@@ -114,6 +114,36 @@ export interface MeasureVoltageSpec {
     range: RangeSpec
 }
 
+export interface OperatingArea {
+    /**
+     * A number from 0 to 100.
+     */
+    percentDutyCycle: number
+    /**
+     * ## 2461
+     * ### Extended Operating Area
+     * * Default &mdash; undefined
+     * * High &mdash; 1e-3
+     * * Low &mdash; 150e-6
+     * ### Normal Operating Area
+     * * Default &mdash; undefined
+     * * High &mdash; 10e+3
+     * * Low &mdash; 150e-6
+     */
+    sourceTime: RangeSpec
+}
+
+export interface ExtendedOperatingArea extends OperatingArea {
+    /**
+     * 2461: 10
+     */
+    currentSource: number
+    /**
+     * 2461: 100
+     */
+    voltageSource: number
+}
+
 export interface SourceCurrentSpec {
     /**
      * 2450: 1e-8
@@ -209,9 +239,18 @@ export interface SmuMeasureAutorangeSpec {
 
 export interface SmuSourcePulseSpec {
     /**
-     * 2461: 10.5A, 105V
+     * ## 2461
+     * ### Current
+     * * Default &mdash; undefined
+     * * High &mdash; 7.35
+     * * Low &mdash; -7.35
+     *
+     * ### Voltage
+     * * Default &mdash; undefined
+     * * High &mdash; 105
+     * * Low &mdash; -105
      */
-    high: number
+    bias: RangeSpec
     /**
      * ## 2461
      * ### Current
@@ -224,11 +263,7 @@ export interface SmuSourcePulseSpec {
      * * High &mdash; 105
      * * Low &mdash; 2e-3
      */
-    level: RangeSpecDefiniteDefault
-    /**
-     * 2461: -10.5A, 105V
-     */
-    low: number
+    range: RangeSpecDefiniteDefault
 }
 
 export interface SmuSourceSweepLog {
@@ -254,6 +289,8 @@ export interface InstrumentSpec {
         pulse?: SmuSourcePulseSpec;
         source: SourceCurrentSpec;
     }
+    extendedOperatingArea?: ExtendedOperatingArea
+    operatingArea?: OperatingArea
     overflow: number
     resistance: MeasureResistanceSpec
     smuInterlock: SmuInterlockSpec

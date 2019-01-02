@@ -28,10 +28,10 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 \`\`\`lua\nsmu.source.pulse.ilimit.level\n\`\`\`\n\
 \n\
 Get or set the source limit for current to a number from \
-${(spec.current.pulse) ? spec.current.pulse.level.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.level.high : DefaultFillValue}. Changing the source function will reset \
+${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}. Changing the source function will reset \
 this attribute to its default value of \
-${(spec.current.pulse) ? spec.current.pulse.level.default : DefaultFillValue}.\n\
+${(spec.current.pulse) ? spec.current.pulse.range.default : DefaultFillValue}.\n\
 \n\
 Specified values must be more than 1% of the measurement range unless the instrument is in autorange mode. If set \
 to an invalid level, the instrument will use the nearest valid level and log a warning.`
