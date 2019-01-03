@@ -146,7 +146,7 @@ Does not affect the trigger model.'
             value: '```lua\nsmu.measure.displaydigits\n```\n\
 \n\
 Get or set the number of measurement digits to display on the front-panel to smu.DIGITS_\\*. Defaults to \
-smu.DIGITS_5_5. New digit settings will be after the next measurement.\n\
+smu.DIGITS_5_5. New digit settings will be displayed after the next measurement.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.\n\
 \n\
