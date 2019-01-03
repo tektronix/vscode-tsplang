@@ -12,7 +12,7 @@ smu.measure.terminals
 -smu.contact.threshold
 -smu.contact.check()
 -smu.contact.checkall()
-smu.digitize.limit[Y].high.value
+-smu.digitize.limit[Y].high.value
 -smu.digitize.limit[Y].low.value
 -smu.digitize.limit[Y].audible
 -smu.digitize.limit[Y].autoclear
