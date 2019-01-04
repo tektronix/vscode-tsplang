@@ -22,7 +22,7 @@ import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../deco
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [
-        'smu.source.ilimit.level',
+        'smu.source.vlimit.level',
         // tslint:disable:no-magic-numbers
         (spec: InstrumentSpec): MarkupContent => MarkupContent`\
 \`\`\`lua\nsmu.source.vlimit.level\n\`\`\`\n\
