@@ -19,8 +19,8 @@ smu.measure.terminals
 -smu.digitize.limit[Y].clear() 
 -smu.digitize.limit[Y].fail
 -smu.digitize.limit[Y].enable
-smu.digitize.math.mxb.bfactor
-smu.digitize.math.mxb.mfactor
+-smu.digitize.math.mxb.bfactor
+-smu.digitize.math.mxb.mfactor
 -smu.digitize.math.enable
 -smu.digitize.math.format
 -smu.digitize.math.percent
