@@ -313,10 +313,6 @@ export const signatures: Array<SignatureInformation> = [
         label: 'smu.measure.read([bufferName])',
         parameters: [
             {
-                documentation: 'The last reading of the measurement process.',
-                label: 'reading',
-            },
-            {
                 documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
 defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.',
                 label: 'bufferName',
