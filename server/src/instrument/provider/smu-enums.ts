@@ -104,6 +104,21 @@ export const completions: Array<CompletionItem> = [
     {
         data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
+        label: 'FUNC_DIGITIZE_CURRENT'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'FUNC_DIGITIZE_VOLTAGE'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'FUNC_NONE'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
         label: 'FUNC_RESISTANCE'
     },
     {
