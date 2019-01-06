@@ -1819,70 +1819,40 @@ export function getApiSpec(): Array<ApiSpec> {
 export function getInstrumentSpec(): InstrumentSpec {
     return {
         beeper: {
-            maxHertz: 8000,
-            maxSeconds: 100,
-            minHertz: 20,
-            minSeconds: 0.001
+            hertz: { max: 8000, min: 20 },
+            seconds: { max: 100, min: 0.001 }
         },
-        current: {
+        defaults: {
             measure: {
-                level: {
-                    high: 1.05,
-                    low: -1.05
-                },
                 range: {
-                    default: 1e-4,
-                    high: 1,
-                    low: 1e-9
+                    current: 100e-6,
+                    resistance: 200e3,
+                    voltage: 20e-3
                 }
             },
             source: {
-                rangeDefault: 1e-8,
-                ranges: [10e-9, 100e-9, 1e-6, 10e-6, 100e-6, 1e-3, 10e-3, 100e-3, 1]
+                ilimit: {
+                    level: 1.05e-4
+                },
+                vlimit: {
+                    level: 21
+                }
             }
+        },
+        interlock: {
+            maxNominal: 42,
+            maxSource: 21
         },
         overflow: 9.9e37,
-        resistance: {
-            level: {
-                high: 2.1e6,
-                low: -2.1e6
+        ranges: {
+            autolow: {
+                maxCurrent: 1,
+                maxResistance: 200e6,
+                maxVoltage: 200
             },
-            range: {
-                default: 200000,
-                high: 200e6,
-                low: 20
-            }
-        },
-        smuInterlock: {
-            maxNominalVoltageTripped: 42,
-            maxSourceVoltageTripped: 21
-        },
-        smuMeasureAutorange: {
-            currentLowDefault: 10e-9,
-            resistanceHighDefault: 200e6,
-            resistanceLowDefault: 20,
-            voltageLowDefault: 20
-        },
-        smuSourceSweepLog: {
-            currentLevelLow: 1e-12,
-            voltageLevelLow: 1e-12
-        },
-        voltage: {
-            measure: {
-                level: {
-                    high: 210,
-                    low: -210
-                },
-                range: {
-                    default: 0.02,
-                    high: 200,
-                    low: 0.02
-                }
-            },
-            source: {
-                rangeDefault: 2e-2,
-                ranges: [20e-3, 200e-3, 2, 20, 200]
-            }
+            current: [10e-9, 100e-9, 1e-6, 10e-6, 100e-6, 1e-3, 10e-3, 100e-3, 1],
+            resistance: [2, 20, 200, 2e3, 20e3, 200e3, 2e6, 20e6, 200e6],
+            voltage: [20e-3, 200e-3, 2, 20, 200]
         }
     }
 }

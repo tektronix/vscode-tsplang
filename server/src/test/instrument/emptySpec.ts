@@ -18,58 +18,32 @@
 import { InstrumentSpec } from '../../instrument'
 
 export const emptySpec: InstrumentSpec = {
-    beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
-    contact: { defaultThreshold: 'foo' },
-    current: {
-        measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
-        pulse: { bias: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
-        source: { rangeDefault: NaN, ranges: [ NaN ] }
+    beeper: { hertz: { max: NaN, min: NaN }, seconds: { max: NaN, min: NaN } },
+    defaults: {
+        contact: { threshold: 'foo' },
+        measure: { range: { current: NaN, resistance: NaN, voltage: NaN } },
+        source: { ilimit: { level: NaN }, vlimit: { level: NaN } }
     },
-    extendedOperatingArea: {
-        currentSource: NaN,
-        percentDutyCycle: NaN,
-        sourceTime: { high: NaN, low: NaN },
-        voltageSource: NaN
-    },
-    operatingArea: {
-        percentDutyCycle: NaN,
-        sourceTime: { high: NaN, low: NaN }
-    },
+    extendedRanges: { current: [NaN] },
+    interlock: { maxNominal: NaN, maxSource: NaN },
     overflow: NaN,
-    resistance: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
-    smuInterlock: { maxNominalVoltageTripped: NaN, maxSourceVoltageTripped: NaN },
-    smuMeasureAutorange: {
-        currentLowDefault: NaN,
-        resistanceHighDefault: NaN,
-        resistanceLowDefault: NaN,
-        voltageLowDefault: NaN
-    },
-    smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
-    voltage: {
-        measure: { level: { high: NaN, low: NaN }, range: { default: 1, high: NaN, low: NaN } },
-        pulse: { bias: { high: NaN, low: NaN }, range: { default: NaN, high: NaN, low: NaN } },
-        source: { rangeDefault: NaN, ranges: [ NaN ] }
+    ranges: {
+        autolow: { maxCurrent: NaN, maxResistance: NaN, maxVoltage: NaN },
+        current: [NaN],
+        resistance: [NaN],
+        voltage: [NaN]
     }
 }
 
 export const emptySpecUndefinedOptionals: InstrumentSpec = {
-    beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
-    current: {
-        measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-        source: { rangeDefault: NaN, ranges: [ NaN ] }
-    },
+    beeper: { hertz: { max: NaN, min: NaN }, seconds: { max: NaN, min: NaN } },
+    defaults: { measure: { range: { current: NaN, resistance: NaN, voltage: NaN } } },
+    interlock: { maxNominal: NaN, maxSource: NaN },
     overflow: NaN,
-    resistance: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-    smuInterlock: { maxNominalVoltageTripped: NaN, maxSourceVoltageTripped: NaN },
-    smuMeasureAutorange: {
-        currentLowDefault: NaN,
-        resistanceHighDefault: NaN,
-        resistanceLowDefault: NaN,
-        voltageLowDefault: NaN
-    },
-    smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
-    voltage: {
-        measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-        source: { rangeDefault: NaN, ranges: [ NaN ] }
+    ranges: {
+        autolow: { maxCurrent: NaN, maxResistance: NaN, maxVoltage: NaN },
+        current: [NaN],
+        resistance: [NaN],
+        voltage: [NaN]
     }
 }

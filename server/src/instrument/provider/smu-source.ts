@@ -21,6 +21,7 @@ import { DefaultFillValue, InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
+    // tslint:disable:max-line-length no-magic-numbers
     [
         'smu.source.level',
         (spec: InstrumentSpec): MarkupContent => MarkupContent`\
@@ -29,13 +30,18 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 Get or set the output level of the active source function as a number. Defaults to 0 for all source functions.\n\
 \n\
 When the source function is set to Current, the valid range of this attribute is \
-${spec.current.measure.level.high * -1} to ${spec.current.measure.level.high}.\n\
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}.\n\
 \n\
 When the source function is set to Voltage, the valid range of this attribute is \
-${spec.voltage.source.rangeDefault * -1} to ${spec.voltage.source.rangeDefault}.\n\
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}.\n\
 \n\
 If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.`
     ],
+    // tslint:enable:max-line-length no-magic-numbers
     [
         'smu.source.range',
         (spec: InstrumentSpec): MarkupContent => MarkupContent`\
@@ -44,14 +50,12 @@ If manual source ranging is enabled, then this attribute cannot exceed the prese
 Get or set the source range of the active source function by passing the expected source level as a number.\n\
 \n\
 When the source function is set to Current, the valid range of this attribute is \
-${spec.current.source.ranges[spec.current.source.ranges.length - 1] * -1} to \
-${spec.current.source.ranges[spec.current.source.ranges.length - 1]} and defaults to \
-${spec.current.source.rangeDefault}. Fixed Current ranges include ${spec.current.source.ranges.join(', ')}.\n\
+${spec.ranges.current[spec.ranges.current.length - 1] * -1} to ${spec.ranges.current[spec.ranges.current.length - 1]} \
+and defaults to ${spec.ranges.current[0]}. Fixed Current ranges include ${spec.ranges.current.join(', ')}.\n\
 \n\
 When the source function is set to Voltage, this range is \
-${spec.voltage.source.ranges[spec.voltage.source.ranges.length - 1] * -1} to \
-${spec.voltage.source.ranges[spec.voltage.source.ranges.length - 1]} and defaults to \
-${spec.voltage.source.rangeDefault}. Fixed Voltage ranges include ${spec.voltage.source.ranges.join(', ')}.\n\
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1} to ${spec.ranges.voltage[spec.ranges.voltage.length - 1]} \
+and defaults to ${spec.ranges.voltage[0]}. Fixed Voltage ranges include ${spec.ranges.voltage.join(', ')}.\n\
 \n\
 While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
 less than supplied source level.\n\
@@ -370,569 +374,575 @@ This attribute is saved with the active function and retained until the next ins
 ]
 
 export const signatures: Array<SignatureInformation> = [
+//     {
+//         documentation: undefined,
+//         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+//             return [
+//                 {
+//                     documentation: `The source level to output before and after each pulse.\n\
+// Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 1,
+//                     label: 'biasLevel'
+//                 },
+//                 {
+//                     documentation: `The source level at which the pulse sweep starts as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 2,
+//                     label: 'start'
+//                 },
+//                 {
+//                     documentation: `The source level at which the pulse sweep stops as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 3,
+//                     label: 'stop'
+//                 },
+//                 {
+//                     documentation: `The output time of each pulse as a number in seconds.\n\
+// Extended operating area (\
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
+// Normal operating area (DC, \
+// ${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
+//                     index: 5,
+//                     label: 'width'
+//                 },
+//                 {
+//                     documentation: `The output limit for the given biasLevel as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 11,
+//                     label: 'biasLimit'
+//                 },
+//                 {
+//                     documentation: `The output limit for each pulse as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 12,
+//                     label: 'pulseLimit'
+//                 },
+//             ]
+//         },
+//         label: 'smu.source.pulsesweeplinear(configListName, biasLevel, start, stop, points, width[, measEnable]\
+// [, bufferName][, delay][, offTime][, count][, biasLimit][, pulseLimit][, failAbort][, dual])',
+//         parameters: [
+//             {
+//                 documentation: 'The name of the source configuration list to use as a string.',
+//                 label: 'configListName'
+//             },
+//             // 1) biasLevel
+//             // 2) start
+//             // 3) stop
+//             {
+//                 documentation: 'The number of pulse-measure points between the start and stop values of the pulse \
+// sweep as a number from +2.0 to +1e+6.',
+//                 label: 'points'
+//             },
+//             // 5) width
+//             {
+//                 documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
+// measurements. Defaults to smu.ON',
+//                 label: 'measEnable'
+//             },
+//             {
+//                 documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+// name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+//                 label: 'bufferName'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
+// 0 to +10e+3 seconds. Defaults to 0.',
+//                 label: 'delay'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
+// to +10e+3 seconds. Defaults to 0.',
+//                 label: 'offTime'
+//             },
+//             {
+//                 documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+// smu.INFINITE. Defaults to 1.',
+//                 label: 'count'
+//             },
+//             // 11) biasLimit
+//             // 12) pulseLimit
+//             {
+//                 documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+// exceeded. Defaults to smu.ON.',
+//                 label: 'failAbort'
+//             },
+//             {
+//                 documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
+// back to start. Defaults to smu.OFF.',
+//                 label: 'dual'
+//             },
+//         ]
+//     },
+//     {
+//         documentation: undefined,
+//         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+//             return [
+//                 {
+//                     documentation: `The source level to output before and after each pulse.\n\
+// Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 1,
+//                     label: 'biasLevel'
+//                 },
+//                 {
+//                     documentation: `The source level at which the pulse sweep starts as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 2,
+//                     label: 'start'
+//                 },
+//                 {
+//                     documentation: `The source level at which the pulse sweep stops as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 3,
+//                     label: 'stop'
+//                 },
+//                 {
+//                     documentation: `The output time of each pulse as a number in seconds.\n\
+// Extended operating area (\
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
+// Normal operating area (DC, \
+// ${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
+//                     index: 5,
+//                     label: 'width'
+//                 },
+//                 {
+//                     documentation: `The output limit for the given biasLevel as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 11,
+//                     label: 'biasLimit'
+//                 },
+//                 {
+//                     documentation: `The output limit for each pulse as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 12,
+//                     label: 'pulseLimit'
+//                 },
+//             ]
+//         },
+//         label: 'smu.source.pulsesweeplinearstep(configListName, biasLevel, start, stop, step, width[, measEnable]\
+// [, bufferName][, delay][, offTime][, count][, biasLimit][, pulseLimit][, failAbort][, dual])',
+//         parameters: [
+//             {
+//                 documentation: 'The name of the source configuration list to use as a string.',
+//                 label: 'configListName'
+//             },
+//             // 1) biasLevel
+//             // 2) start
+//             // 3) stop
+//             {
+//                 documentation: 'The magnitude by which the output level will change for each step as a number greater \
+// than 0.',
+//                 label: 'step'
+//             },
+//             // 5) width
+//             {
+//                 documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
+// measurements. Defaults to smu.ON',
+//                 label: 'measEnable'
+//             },
+//             {
+//                 documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+// name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+//                 label: 'bufferName'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
+// 0 to +10e+3 seconds. Defaults to 0.',
+//                 label: 'delay'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
+// to +10e+3 seconds. Defaults to 0.',
+//                 label: 'offTime'
+//             },
+//             {
+//                 documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+// smu.INFINITE. Defaults to 1.',
+//                 label: 'count'
+//             },
+//             // 11) biasLimit
+//             // 12) pulseLimit
+//             {
+//                 documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+// exceeded. Defaults to smu.ON.',
+//                 label: 'failAbort'
+//             },
+//             {
+//                 documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
+// back to start. Defaults to smu.OFF.',
+//                 label: 'dual'
+//             },
+//         ]
+//     },
+//     {
+//         documentation: undefined,
+//         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+//             return [
+//                 {
+//                     documentation: `The output time of each pulse as a number in seconds.\n\
+// Extended operating area (\
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
+// Normal operating area (DC, \
+// ${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
+//                     index: 1,
+//                     label: 'width'
+//                 },
+//             ]
+//         },
+//         label: 'smu.source.pulsesweeplist(configListName, width[, measEnable][, bufferName][, index][, count][, delay]\
+// [, offTime][, failAbort])',
+//         parameters: [
+//             {
+//                 documentation: 'The name of the source configuration list to use as a string.',
+//                 label: 'configListName'
+//             },
+//             // 1) width
+//             {
+//                 documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
+// measurements. Defaults to smu.ON',
+//                 label: 'measEnable'
+//             },
+//             {
+//                 documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+// name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+//                 label: 'bufferName'
+//             },
+//             {
+//                 documentation: 'A number that defines a specific configuration index in the configuration list. \
+// Defaults to the first configuration index.',
+//                 label: 'index'
+//             },
+//             {
+//                 documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+// smu.INFINITE. Defaults to 1.',
+//                 label: 'count'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
+// 0 to +10e+3 seconds. Defaults to 0.',
+//                 label: 'delay'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
+// to +10e+3 seconds. Defaults to 0.',
+//                 label: 'offTime'
+//             },
+//             {
+//                 documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+// exceeded. Defaults to smu.ON.',
+//                 label: 'failAbort'
+//             },
+//         ]
+//     },
+//     {
+//         documentation: undefined,
+//         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+//             return [
+//                 {
+//                     documentation: `The source level to output before and after each pulse.\n\
+// Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 1,
+//                     label: 'biasLevel'
+//                 },
+//                 {
+//                     documentation: `The source level at which the pulse sweep starts as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 2,
+//                     label: 'start'
+//                 },
+//                 {
+//                     documentation: `The source level at which the pulse sweep stops as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 3,
+//                     label: 'stop'
+//                 },
+//                 {
+//                     documentation: `The output time of each pulse as a number in seconds.\n\
+// Extended operating area (\
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
+// Normal operating area (DC, \
+// ${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
+//                     index: 5,
+//                     label: 'width'
+//                 },
+//                 {
+//                     documentation: `The output limit for the given biasLevel as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 11,
+//                     label: 'biasLimit'
+//                 },
+//                 {
+//                     documentation: `The output limit for each pulse as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 12,
+//                     label: 'pulseLimit'
+//                 },
+//             ]
+//         },
+//         label: 'smu.source.pulsesweeplog(configListName, biasLevel, start, stop, points, width[, measEnable]\
+// [, bufferName][, delay][, offTime][, count][, biasLimit][, pulseLimit][, failAbort][, dual][, asymptote])',
+//         parameters: [
+//             {
+//                 documentation: 'The name of the source configuration list to use as a string.',
+//                 label: 'configListName'
+//             },
+//             // 1) biasLevel
+//             // 2) start
+//             // 3) stop
+//             {
+//                 documentation: 'The number of pulse-measure points between the start and stop values of the pulse \
+// sweep as a number from +2.0 to +1e+6.',
+//                 label: 'points'
+//             },
+//             // 5) width
+//             {
+//                 documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
+// measurements. Defaults to smu.ON',
+//                 label: 'measEnable'
+//             },
+//             {
+//                 documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+// name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+//                 label: 'bufferName'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
+// 0 to +10e+3 seconds. Defaults to 0.',
+//                 label: 'delay'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
+// to +10e+3 seconds. Defaults to 0.',
+//                 label: 'offTime'
+//             },
+//             {
+//                 documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+// smu.INFINITE. Defaults to 1.',
+//                 label: 'count'
+//             },
+//             // 11) biasLimit
+//             // 12) pulseLimit
+//             {
+//                 documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+// exceeded. Defaults to smu.ON.',
+//                 label: 'failAbort'
+//             },
+//             {
+//                 documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
+// back to start. Defaults to smu.OFF.',
+//                 label: 'dual'
+//             },
+//             {
+//                 documentation: 'The value of the asymptotic curve at either positive or negative infinity, depending \
+// on the direction of the sweep. Defaults to 0.\n\
+// Asymtotic value cannot be less than or equal to the sweep bounds.',
+//                 label: 'asymptote'
+//             },
+//         ]
+//     },
+//     {
+//         documentation: undefined,
+//         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+//             return [
+//                 {
+//                     documentation: `The source level to output before and after each pulse.\n\
+// Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 1,
+//                     label: 'biasLevel'
+//                 },
+//                 {
+//                     documentation: `The source level to output during each pulse (from 0).\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 2,
+//                     label: 'pulseLevel'
+//                 },
+//                 {
+//                     documentation: `The output time of each pulse as a number in seconds.\n\
+// Extended operating area (\
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
+// Normal operating area (DC, \
+// ${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
+// ${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
+//                     index: 3,
+//                     label: 'pulseWidth'
+//                 },
+//                 {
+//                     documentation: `The output limit for the given biasLevel as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+//                     index: 9,
+//                     label: 'biasLimit'
+//                 },
+//                 {
+//                     documentation: `The output limit for each pulse as a number.\n\
+// Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
+// ${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
+// Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
+// ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
+//                     index: 10,
+//                     label: 'pulseLimit'
+//                 },
+//             ]
+//         },
+//         label: 'smu.source.pulsetrain(configListName, biasLevel, pulseLevel, pulseWidth, count[, measEnable]\
+// [, bufferName][, delay][, offTime][, biasLimit][, pulseLimit][, failAbort])',
+//         parameters: [
+//             {
+//                 documentation: 'The name of the source configuration list to use as a string.',
+//                 label: 'configListName'
+//             },
+//             // 1) biasLevel
+//             // 2) pulseLevel
+//             // 3) pulseWidth
+//             {
+//                 documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
+// smu.INFINITE. Defaults to 1.',
+//                 label: 'count'
+//             },
+//             {
+//                 documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
+// measurements. Defaults to smu.ON',
+//                 label: 'measEnable'
+//             },
+//             {
+//                 documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
+// name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
+//                 label: 'bufferName'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
+// 0 to +10e+3 seconds. Defaults to 0.',
+//                 label: 'delay'
+//             },
+//             {
+//                 documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
+// to +10e+3 seconds. Defaults to 0.',
+//                 label: 'offTime'
+//             },
+//             // 9) biasLimit
+//             // 10) pulseLimit
+//             {
+//                 documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
+// exceeded. Defaults to smu.ON.',
+//                 label: 'failAbort'
+//             },
+//         ]
+//     },
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            // tslint:disable:max-line-length no-magic-numbers
             return [
                 {
-                    documentation: `The source level to output before and after each pulse.\n\
-Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
+                    documentation: `The source level at which to start sweeping as a number.\n\
+Current range: \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
+Voltage range: \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
                     index: 1,
-                    label: 'biasLevel'
-                },
-                {
-                    documentation: `The source level at which the pulse sweep starts as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 2,
                     label: 'start'
                 },
                 {
-                    documentation: `The source level at which the pulse sweep stops as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 3,
-                    label: 'stop'
-                },
-                {
-                    documentation: `The output time of each pulse as a number in seconds.\n\
-Extended operating area (\
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
-Normal operating area (DC, \
-${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
-                    index: 5,
-                    label: 'width'
-                },
-                {
-                    documentation: `The output limit for the given biasLevel as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 11,
-                    label: 'biasLimit'
-                },
-                {
-                    documentation: `The output limit for each pulse as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 12,
-                    label: 'pulseLimit'
-                },
-            ]
-        },
-        label: 'smu.source.pulsesweeplinear(configListName, biasLevel, start, stop, points, width[, measEnable]\
-[, bufferName][, delay][, offTime][, count][, biasLimit][, pulseLimit][, failAbort][, dual])',
-        parameters: [
-            {
-                documentation: 'The name of the source configuration list to use as a string.',
-                label: 'configListName'
-            },
-            // 1) biasLevel
-            // 2) start
-            // 3) stop
-            {
-                documentation: 'The number of pulse-measure points between the start and stop values of the pulse \
-sweep as a number from +2.0 to +1e+6.',
-                label: 'points'
-            },
-            // 5) width
-            {
-                documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
-measurements. Defaults to smu.ON',
-                label: 'measEnable'
-            },
-            {
-                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
-name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
-                label: 'bufferName'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
-0 to +10e+3 seconds. Defaults to 0.',
-                label: 'delay'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
-to +10e+3 seconds. Defaults to 0.',
-                label: 'offTime'
-            },
-            {
-                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
-smu.INFINITE. Defaults to 1.',
-                label: 'count'
-            },
-            // 11) biasLimit
-            // 12) pulseLimit
-            {
-                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
-exceeded. Defaults to smu.ON.',
-                label: 'failAbort'
-            },
-            {
-                documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
-back to start. Defaults to smu.OFF.',
-                label: 'dual'
-            },
-        ]
-    },
-    {
-        documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
-            return [
-                {
-                    documentation: `The source level to output before and after each pulse.\n\
-Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 1,
-                    label: 'biasLevel'
-                },
-                {
-                    documentation: `The source level at which the pulse sweep starts as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 2,
-                    label: 'start'
-                },
-                {
-                    documentation: `The source level at which the pulse sweep stops as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 3,
-                    label: 'stop'
-                },
-                {
-                    documentation: `The output time of each pulse as a number in seconds.\n\
-Extended operating area (\
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
-Normal operating area (DC, \
-${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
-                    index: 5,
-                    label: 'width'
-                },
-                {
-                    documentation: `The output limit for the given biasLevel as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 11,
-                    label: 'biasLimit'
-                },
-                {
-                    documentation: `The output limit for each pulse as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 12,
-                    label: 'pulseLimit'
-                },
-            ]
-        },
-        label: 'smu.source.pulsesweeplinearstep(configListName, biasLevel, start, stop, step, width[, measEnable]\
-[, bufferName][, delay][, offTime][, count][, biasLimit][, pulseLimit][, failAbort][, dual])',
-        parameters: [
-            {
-                documentation: 'The name of the source configuration list to use as a string.',
-                label: 'configListName'
-            },
-            // 1) biasLevel
-            // 2) start
-            // 3) stop
-            {
-                documentation: 'The magnitude by which the output level will change for each step as a number greater \
-than 0.',
-                label: 'step'
-            },
-            // 5) width
-            {
-                documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
-measurements. Defaults to smu.ON',
-                label: 'measEnable'
-            },
-            {
-                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
-name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
-                label: 'bufferName'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
-0 to +10e+3 seconds. Defaults to 0.',
-                label: 'delay'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
-to +10e+3 seconds. Defaults to 0.',
-                label: 'offTime'
-            },
-            {
-                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
-smu.INFINITE. Defaults to 1.',
-                label: 'count'
-            },
-            // 11) biasLimit
-            // 12) pulseLimit
-            {
-                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
-exceeded. Defaults to smu.ON.',
-                label: 'failAbort'
-            },
-            {
-                documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
-back to start. Defaults to smu.OFF.',
-                label: 'dual'
-            },
-        ]
-    },
-    {
-        documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
-            return [
-                {
-                    documentation: `The output time of each pulse as a number in seconds.\n\
-Extended operating area (\
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
-Normal operating area (DC, \
-${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
-                    index: 1,
-                    label: 'width'
-                },
-            ]
-        },
-        label: 'smu.source.pulsesweeplist(configListName, width[, measEnable][, bufferName][, index][, count][, delay]\
-[, offTime][, failAbort])',
-        parameters: [
-            {
-                documentation: 'The name of the source configuration list to use as a string.',
-                label: 'configListName'
-            },
-            // 1) width
-            {
-                documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
-measurements. Defaults to smu.ON',
-                label: 'measEnable'
-            },
-            {
-                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
-name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
-                label: 'bufferName'
-            },
-            {
-                documentation: 'A number that defines a specific configuration index in the configuration list. \
-Defaults to the first configuration index.',
-                label: 'index'
-            },
-            {
-                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
-smu.INFINITE. Defaults to 1.',
-                label: 'count'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
-0 to +10e+3 seconds. Defaults to 0.',
-                label: 'delay'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
-to +10e+3 seconds. Defaults to 0.',
-                label: 'offTime'
-            },
-            {
-                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
-exceeded. Defaults to smu.ON.',
-                label: 'failAbort'
-            },
-        ]
-    },
-    {
-        documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
-            return [
-                {
-                    documentation: `The source level to output before and after each pulse.\n\
-Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 1,
-                    label: 'biasLevel'
-                },
-                {
-                    documentation: `The source level at which the pulse sweep starts as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 2,
-                    label: 'start'
-                },
-                {
-                    documentation: `The source level at which the pulse sweep stops as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 3,
-                    label: 'stop'
-                },
-                {
-                    documentation: `The output time of each pulse as a number in seconds.\n\
-Extended operating area (\
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
-Normal operating area (DC, \
-${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
-                    index: 5,
-                    label: 'width'
-                },
-                {
-                    documentation: `The output limit for the given biasLevel as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 11,
-                    label: 'biasLimit'
-                },
-                {
-                    documentation: `The output limit for each pulse as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 12,
-                    label: 'pulseLimit'
-                },
-            ]
-        },
-        label: 'smu.source.pulsesweeplog(configListName, biasLevel, start, stop, points, width[, measEnable]\
-[, bufferName][, delay][, offTime][, count][, biasLimit][, pulseLimit][, failAbort][, dual][, asymptote])',
-        parameters: [
-            {
-                documentation: 'The name of the source configuration list to use as a string.',
-                label: 'configListName'
-            },
-            // 1) biasLevel
-            // 2) start
-            // 3) stop
-            {
-                documentation: 'The number of pulse-measure points between the start and stop values of the pulse \
-sweep as a number from +2.0 to +1e+6.',
-                label: 'points'
-            },
-            // 5) width
-            {
-                documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
-measurements. Defaults to smu.ON',
-                label: 'measEnable'
-            },
-            {
-                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
-name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
-                label: 'bufferName'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
-0 to +10e+3 seconds. Defaults to 0.',
-                label: 'delay'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
-to +10e+3 seconds. Defaults to 0.',
-                label: 'offTime'
-            },
-            {
-                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
-smu.INFINITE. Defaults to 1.',
-                label: 'count'
-            },
-            // 11) biasLimit
-            // 12) pulseLimit
-            {
-                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
-exceeded. Defaults to smu.ON.',
-                label: 'failAbort'
-            },
-            {
-                documentation: 'smu.OFF to sweep from start to stop only or smu.ON to sweep from start to stop, then \
-back to start. Defaults to smu.OFF.',
-                label: 'dual'
-            },
-            {
-                documentation: 'The value of the asymptotic curve at either positive or negative infinity, depending \
-on the direction of the sweep. Defaults to 0.\n\
-Asymtotic value cannot be less than or equal to the sweep bounds.',
-                label: 'asymptote'
-            },
-        ]
-    },
-    {
-        documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
-            return [
-                {
-                    documentation: `The source level to output before and after each pulse.\n\
-Current range: ${(spec.current.pulse) ? spec.current.pulse.bias.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage range: ${(spec.voltage.pulse) ? spec.voltage.pulse.bias.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 1,
-                    label: 'biasLevel'
-                },
-                {
-                    documentation: `The source level to output during each pulse (from 0).\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 2,
-                    label: 'pulseLevel'
-                },
-                {
-                    documentation: `The output time of each pulse as a number in seconds.\n\
-Extended operating area (\
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.currentSource : DefaultFillValue}A at \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.voltageSource : DefaultFillValue}V, \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.extendedOperatingArea) ? spec.extendedOperatingArea.sourceTime.high : DefaultFillValue} (load dependent)\n\
-Normal operating area (DC, \
-${(spec.operatingArea) ? spec.operatingArea.percentDutyCycle : DefaultFillValue}% duty cycle): \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.low : DefaultFillValue} to \
-${(spec.operatingArea) ? spec.operatingArea.sourceTime.high : DefaultFillValue}`,
-                    index: 3,
-                    label: 'pulseWidth'
-                },
-                {
-                    documentation: `The output limit for the given biasLevel as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.bias.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.bias.high : DefaultFillValue}`,
-                    index: 9,
-                    label: 'biasLimit'
-                },
-                {
-                    documentation: `The output limit for each pulse as a number.\n\
-Current: ${(spec.current.pulse) ? spec.current.pulse.range.low : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}\n\
-Voltage: ${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}`,
-                    index: 10,
-                    label: 'pulseLimit'
-                },
-            ]
-        },
-        label: 'smu.source.pulsetrain(configListName, biasLevel, pulseLevel, pulseWidth, count[, measEnable]\
-[, bufferName][, delay][, offTime][, biasLimit][, pulseLimit][, failAbort])',
-        parameters: [
-            {
-                documentation: 'The name of the source configuration list to use as a string.',
-                label: 'configListName'
-            },
-            // 1) biasLevel
-            // 2) pulseLevel
-            // 3) pulseWidth
-            {
-                documentation: 'The number of times to run the sweep as a number from 1 to 268 435 455 or \
-smu.INFINITE. Defaults to 1.',
-                label: 'count'
-            },
-            {
-                documentation: 'smu.ON to take a measurement at the top of each pulse or smu.OFF to disable pulse \
-measurements. Defaults to smu.ON',
-                label: 'measEnable'
-            },
-            {
-                documentation: 'The name of a reading buffer; the default buffers (defbuffer1 or defbuffer2) or the \
-name of a user‑defined buffer; if no buffer is specified, this parameter defaults to defbuffer1.',
-                label: 'bufferName'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel before each pulse as a number from \
-0 to +10e+3 seconds. Defaults to 0.',
-                label: 'delay'
-            },
-            {
-                documentation: 'The amount of time to stay at the given biasLevel after each pulse as a number from 0 \
-to +10e+3 seconds. Defaults to 0.',
-                label: 'offTime'
-            },
-            // 9) biasLimit
-            // 10) pulseLimit
-            {
-                documentation: 'smu.ON to abort the sweep if the source limit is exceeded or smu.OFF to complete if \
-exceeded. Defaults to smu.ON.',
-                label: 'failAbort'
-            },
-        ]
-    },
-    {
-        documentation: undefined,
-        getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
-            return [
-                {
-                    documentation: 'The source level at which to start sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-                        .replace('%{0}', spec.current.measure.level.low.toString())
-                        .replace('%{1}', spec.current.measure.level.high.toString())
-                        .replace('%{2}', spec.voltage.measure.level.low.toString())
-                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
-                    index: 1,
-                    label: 'start'
-                },
-                {
-                    documentation: 'The source level at which to stop sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-                        .replace('%{0}', spec.current.measure.level.low.toString())
-                        .replace('%{1}', spec.current.measure.level.high.toString())
-                        .replace('%{2}', spec.voltage.measure.level.low.toString())
-                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    documentation: `The source level at which to stop sweeping as a number.\n\
+Current range: \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
+Voltage range: \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
                     index: 2,
                     label: 'stop'
                 },
             ]
+            // tslint:enable:max-line-length no-magic-numbers
         },
         label: 'smu.source.sweeplinear(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
 [, dual][, bufferName])',
@@ -980,30 +990,36 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            // tslint:disable:max-line-length no-magic-numbers
             return [
                 {
-                    documentation: 'The source level at which to start sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-                        .replace('%{0}', spec.current.measure.level.low.toString())
-                        .replace('%{1}', spec.current.measure.level.high.toString())
-                        .replace('%{2}', spec.voltage.measure.level.low.toString())
-                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    documentation: `The source level at which to start sweeping as a number.\n\
+Current range: \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
+Voltage range: \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
                     index: 1,
                     label: 'start'
                 },
                 {
-                    documentation: 'The source level at which to stop sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-                        .replace('%{0}', spec.current.measure.level.low.toString())
-                        .replace('%{1}', spec.current.measure.level.high.toString())
-                        .replace('%{2}', spec.voltage.measure.level.low.toString())
-                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    documentation: `The source level at which to stop sweeping as a number.\n\
+Current range: \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
+Voltage range: \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
                     index: 2,
                     label: 'stop'
                 },
             ]
+            // tslint:enable:max-line-length no-magic-numbers
         },
         label: 'smu.source.sweeplinearstep(configListName, start, stop, step[, delay][, count][, rangeType]\
 [, failAbort][, dual][, bufferName])',
@@ -1086,30 +1102,36 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
     {
         documentation: undefined,
         getFormattedParameters: (spec: InstrumentSpec): Array<ParameterInformation> => {
+            // tslint:disable:max-line-length no-magic-numbers
             return [
                 {
-                    documentation: 'The source level at which to start sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-                        .replace('%{0}', spec.smuSourceSweepLog.currentLevelLow.toString())
-                        .replace('%{1}', spec.current.measure.level.high.toString())
-                        .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
-                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    documentation: `The source level at which to start sweeping as a number.\n\
+Current range: \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
+Voltage range: \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
                     index: 1,
                     label: 'start'
                 },
                 {
-                    documentation: 'The source level at which to stop sweeping as a number.\n\
-Current range: %{0} to %{1}\n\
-Voltage range: %{2} to %{3}'
-                        .replace('%{0}', spec.smuSourceSweepLog.currentLevelLow.toString())
-                        .replace('%{1}', spec.current.measure.level.high.toString())
-                        .replace('%{2}', spec.smuSourceSweepLog.voltageLevelLow.toString())
-                        .replace('%{3}', spec.voltage.measure.level.high.toString()),
+                    documentation: `The source level at which to stop sweeping as a number.\n\
+Current range: \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
+Voltage range: \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
                     index: 2,
                     label: 'stop'
                 },
             ]
+            // tslint:enable:max-line-length no-magic-numbers
         },
         label: 'smu.source.sweeplog(configListName, start, stop, points[, delay][, count][, rangeType][, failAbort]\
 [, dual][, bufferName][, asymptote])',

@@ -17,7 +17,7 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
+import { DefaultFillValue, InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
@@ -27,9 +27,10 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
         (spec: InstrumentSpec): MarkupContent => MarkupContent`\
 \`\`\`lua\nsmu.source.vlimit.level\n\`\`\`\n\
 \n\
-Get or set the source limit for voltage to a number from ${spec.voltage.measure.range.low}V to \
-${spec.voltage.measure.level.high}V. Changing the source function will reset this attribute to its default value of \
-+${spec.voltage.measure.level.high * 0.1}.\n\
+Get or set the source limit for voltage to a number from ${spec.ranges.voltage[0]}V to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}\
+V. Changing the source function will reset this attribute to its default value of \
+${(spec.defaults.source) ? spec.defaults.source.vlimit.level : DefaultFillValue}.\n\
 \n\
 Specified values must be more than 0.1% of the measurement range unless the instrument is in autorange mode. If set \
 to an invalid level, the instrument will use the nearest valid level and log a warning.\n\
