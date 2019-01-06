@@ -15,8 +15,6 @@
  */
 'use strict'
 
-export { ApiSpec, BaseApiSpec, ChildApiSpec, ExclusiveCompletionApiSpec, SignatureDataApiSpec } from './apiSpec'
-export { CommandSet, CommandSetInterface } from './commandSet'
-export { DefaultFillValue } from './defaultFillValue'
-export { InstrumentModule } from './instrumentModule'
-export { InstrumentSpec } from './instrumentSpec'
+export declare type DefaultFillValue = 'UNDEFINED'
+// tslint:disable-next-line:variable-name
+export const DefaultFillValue: DefaultFillValue = 'UNDEFINED'

@@ -15,8 +15,10 @@
  */
 'use strict'
 
-export { ApiSpec, BaseApiSpec, ChildApiSpec, ExclusiveCompletionApiSpec, SignatureDataApiSpec } from './apiSpec'
-export { CommandSet, CommandSetInterface } from './commandSet'
-export { DefaultFillValue } from './defaultFillValue'
-export { InstrumentModule } from './instrumentModule'
-export { InstrumentSpec } from './instrumentSpec'
+import { ApiSpec } from './apiSpec'
+import { InstrumentSpec } from './instrumentSpec'
+
+export interface InstrumentModule {
+    getApiSpec(): Array<ApiSpec>
+    getInstrumentSpec(): InstrumentSpec
+}

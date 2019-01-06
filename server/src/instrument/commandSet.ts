@@ -17,7 +17,7 @@
 
 import { CompletionItem, MarkupContentCallback, SignatureInformation } from '../decorators'
 
-import { InstrumentSpec } from '.'
+import { InstrumentSpec } from './instrumentSpec'
 
 export interface CommandSetInterface {
     completionDocs?: Map<string, MarkupContentCallback>
