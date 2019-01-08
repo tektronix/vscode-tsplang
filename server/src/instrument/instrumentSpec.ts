@@ -62,6 +62,14 @@ export interface InstrumentSpec {
         maxSource: number;
     }
     overflow: number
+    pulse?: {
+        extended?: {
+            percentDutyCycle: number;
+            time: Range;
+        };
+        percentDutyCycle: number;
+        time: Range;
+    }
     ranges: {
         autolow: {
             maxCurrent: number;
