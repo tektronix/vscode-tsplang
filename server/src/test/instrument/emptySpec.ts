@@ -24,7 +24,7 @@ export const emptySpec: InstrumentSpec = {
         measure: { range: { current: NaN, resistance: NaN, voltage: NaN } },
         source: { ilimit: { level: NaN }, vlimit: { level: NaN } }
     },
-    extendedRanges: { current: [NaN] },
+    extendedRanges: { current: [NaN], voltage: [NaN] },
     interlock: { maxNominal: NaN, maxSource: NaN },
     overflow: NaN,
     ranges: {

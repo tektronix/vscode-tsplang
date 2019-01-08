@@ -40,6 +40,14 @@ export interface InstrumentSpec {
             ilimit: {
                 level: number;
             };
+            pulse?: {
+                ilimit: {
+                    level: number;
+                };
+                vlimit: {
+                    level: number;
+                };
+            };
             vlimit: {
                 level: number;
             };
@@ -47,6 +55,7 @@ export interface InstrumentSpec {
     }
     extendedRanges?: {
         current: Array<number>;
+        voltage: Array<number>;
     }
     interlock: {
         maxNominal: number;

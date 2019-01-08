@@ -21,24 +21,26 @@ import { DefaultFillValue, InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
+    // tslint:disable:max-line-length no-magic-numbers
     [
         'smu.source.pulse.vlimit.level',
-        // tslint:disable:no-magic-numbers
         (spec: InstrumentSpec): MarkupContent => MarkupContent`\
 \`\`\`lua\nsmu.source.pulse.vlimit.level\n\`\`\`\n\
 \n\
 Get or set the source limit for voltage to a number from \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.low : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}. Changing the source function will reset \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[0] : DefaultFillValue} \
+to \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] : DefaultFillValue}. \
+Changing the source function will reset \
 this attribute to its default value of \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.default : DefaultFillValue}.\n\
+${(spec.defaults.source) ? (spec.defaults.source.pulse) ? spec.defaults.source.pulse.vlimit.level : DefaultFillValue : DefaultFillValue}.\n\
 \n\
 Specified values must be more than 1% of the measurement range unless the instrument is in autorange mode. If set \
 to an invalid level, the instrument will use the nearest valid level and log a warning.\n\
 \n\
 Values that can be set for this attribute are limited by the overvoltage protection limit.`
-        // tslint:enable:no-magic-numbers
     ],
+    // tslint:enable:max-line-length no-magic-numbers
 ])
 
 export const completions: Array<CompletionItem> = [

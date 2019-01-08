@@ -21,6 +21,7 @@ import { DefaultFillValue, InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
+    // tslint:disable:max-line-length no-magic-numbers
     [
         'smu.source.pulse.level',
         (spec: InstrumentSpec): MarkupContent => MarkupContent`
@@ -30,15 +31,18 @@ Get or set a fixed amplitude of the active pulse source function as a number. De
 functions.\n\
 \n\
 When the pulse source function is set to Current, the valid range of this attribute is \
-${(spec.current.pulse) ? spec.current.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.current.pulse) ? spec.current.pulse.range.high : DefaultFillValue}.\n\
+${(spec.extendedRanges) ? spec.extendedRanges.current[spec.extendedRanges.current.length - 1] * -1 : DefaultFillValue} \
+to \
+${(spec.extendedRanges) ? spec.extendedRanges.current[spec.extendedRanges.current.length - 1] : DefaultFillValue}.\n\
 \n\
 When the pulse source function is set to Voltage, the valid range of this attribute is \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high * -1 : DefaultFillValue} to \
-${(spec.voltage.pulse) ? spec.voltage.pulse.range.high : DefaultFillValue}.\n\
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] * -1 : DefaultFillValue} \
+to \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] : DefaultFillValue}.\n\
 \n\
 If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.`
     ]
+    // tslint:enable:max-line-length no-magic-numbers
 ])
 
 export const completions: Array<CompletionItem> = [
