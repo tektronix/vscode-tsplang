@@ -31,19 +31,16 @@ Get or set the value used by the relative offset calculation to some number. Def
 functions.\n\
 \n\
 When the measurement function is set to Current, the valid range of this attribute is \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}.\n\
+${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}.\n\
 \n\
 When the measurement function is set to Resistance, the valid range of this attribute is \
-${spec.ranges.resistance[spec.ranges.resistance.length - 1] + (spec.ranges.resistance[spec.ranges.resistance.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.resistance[spec.ranges.resistance.length - 1] + (spec.ranges.resistance[spec.ranges.resistance.length - 1] * 0.05)}.\n\
+${spec.ranges.resistance[spec.ranges.resistance.length - 1] * -1.05} to \
+${spec.ranges.resistance[spec.ranges.resistance.length - 1] * 1.05}.\n\
 \n\
 When the measurement function is set to Voltage, the valid range of this attribute is \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}.\n\
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],

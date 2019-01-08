@@ -28,9 +28,8 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 \`\`\`lua\nsmu.source.ilimit.level\n\`\`\`\n\
 \n\
 Get or set the source limit for current to a number from ${spec.ranges.current[0]}A to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\
-A. Changing the source function will reset this attribute to its default value of \
-${(spec.defaults.source) ? spec.defaults.source.ilimit.level : DefaultFillValue}.\n\
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}A. Changing the source function will reset this \
+attribute to its default value of ${(spec.defaults.source) ? spec.defaults.source.ilimit.level : DefaultFillValue}.\n\
 \n\
 Specified values must be more than 0.1% of the measurement range unless the instrument is in autorange mode. If set \
 to an invalid level, the instrument will use the nearest valid level and log a warning.`

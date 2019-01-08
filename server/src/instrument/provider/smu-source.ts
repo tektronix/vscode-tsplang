@@ -30,14 +30,14 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 Get or set the output level of the active source function as a number. Defaults to 0 for all source functions.\n\
 \n\
 When the source function is set to Current, the valid range of this attribute is \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
+${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} \
 to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}.\n\
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}.\n\
 \n\
 When the source function is set to Voltage, the valid range of this attribute is \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} \
 to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}.\n\
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}.\n\
 \n\
 If manual source ranging is enabled, then this attribute cannot exceed the present source range setting.`
     ],
@@ -917,27 +917,19 @@ export const signatures: Array<SignatureInformation> = [
             return [
                 {
                     documentation: `The source level at which to start sweeping as a number.\n\
-Current range: \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
-Voltage range: \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
+Current range: ${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}\n\
+Voltage range: ${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}`,
                     index: 1,
                     label: 'start'
                 },
                 {
                     documentation: `The source level at which to stop sweeping as a number.\n\
-Current range: \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
-Voltage range: \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
+Current range: ${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}\n\
+Voltage range: ${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}`,
                     index: 2,
                     label: 'stop'
                 },
@@ -994,27 +986,19 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
             return [
                 {
                     documentation: `The source level at which to start sweeping as a number.\n\
-Current range: \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
-Voltage range: \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
+Current range: ${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}\n\
+Voltage range: ${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}`,
                     index: 1,
                     label: 'start'
                 },
                 {
                     documentation: `The source level at which to stop sweeping as a number.\n\
-Current range: \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
-Voltage range: \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
+Current range: ${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}\n\
+Voltage range: ${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}`,
                     index: 2,
                     label: 'stop'
                 },
@@ -1106,27 +1090,19 @@ name of a user‑defined buffer; if no buffer is specified, this parameter defau
             return [
                 {
                     documentation: `The source level at which to start sweeping as a number.\n\
-Current range: \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
-Voltage range: \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
+Current range: ${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}\n\
+Voltage range: ${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}`,
                     index: 1,
                     label: 'start'
                 },
                 {
                     documentation: `The source level at which to stop sweeping as a number.\n\
-Current range: \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.current[spec.ranges.current.length - 1] + (spec.ranges.current[spec.ranges.current.length - 1] * 0.05)}\n\
-Voltage range: \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05) * -1} \
-to \
-${spec.ranges.voltage[spec.ranges.voltage.length - 1] + (spec.ranges.voltage[spec.ranges.voltage.length - 1] * 0.05)}`,
+Current range: ${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}\n\
+Voltage range: ${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}`,
                     index: 2,
                     label: 'stop'
                 },

@@ -30,7 +30,7 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 Get or set the source limit for voltage to a number from \
 ${(spec.extendedRanges) ? spec.extendedRanges.voltage[0] : DefaultFillValue} \
 to \
-${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] : DefaultFillValue}. \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] * 1.05 : DefaultFillValue}. \
 Changing the source function will reset \
 this attribute to its default value of \
 ${(spec.defaults.source) ? (spec.defaults.source.pulse) ? spec.defaults.source.pulse.vlimit.level : DefaultFillValue : DefaultFillValue}.\n\
