@@ -21,15 +21,32 @@ export const emptySpec: InstrumentSpec = {
     beeper: { hertz: { max: NaN, min: NaN }, seconds: { max: NaN, min: NaN } },
     defaults: {
         contact: { threshold: 'foo' },
+        digitize: { range: { current: NaN, voltage: NaN } },
         measure: { range: { current: NaN, resistance: NaN, voltage: NaN } },
-        source: { ilimit: { level: NaN }, vlimit: { level: NaN } }
+        source: {
+            ilimit: { level: NaN },
+            pulse: {
+                ilimit: { level: NaN },
+                vlimit: { level: NaN }
+            },
+            vlimit: { level: NaN }
+        }
     },
     extendedRanges: { current: [NaN], voltage: [NaN] },
     interlock: { maxNominal: NaN, maxSource: NaN },
     overflow: NaN,
+    pulse: {
+        extended: { percentDutyCycle: NaN, time: { max: NaN, min: NaN } },
+        percentDutyCycle: NaN,
+        time: { max: NaN, min: NaN }
+    },
     ranges: {
         autolow: { maxCurrent: NaN, maxResistance: NaN, maxVoltage: NaN },
         current: [NaN],
+        digitize: {
+            aperture: { max: NaN, min: NaN, resolution: 'foo' },
+            count: { max: NaN, min: NaN }
+        },
         resistance: [NaN],
         voltage: [NaN]
     }

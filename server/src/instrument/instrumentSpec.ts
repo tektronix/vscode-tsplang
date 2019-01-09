@@ -29,6 +29,12 @@ export interface InstrumentSpec {
         contact?: {
             threshold: string;
         };
+        digitize?: {
+            range: {
+                current: number;
+                voltage: number;
+            };
+        };
         measure: {
             range: {
                 current: number;
@@ -77,6 +83,12 @@ export interface InstrumentSpec {
             maxVoltage: number;
         };
         current: Array<number>;
+        digitize?: {
+            aperture: Range & {
+                resolution: string;
+            };
+            count: Range;
+        };
         resistance: Array<number>;
         voltage: Array<number>;
     }
