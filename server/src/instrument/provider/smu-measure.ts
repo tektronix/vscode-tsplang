@@ -17,7 +17,7 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { DefaultFillValue, InstrumentSpec } from '..'
+import { InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformation } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
@@ -65,8 +65,9 @@ This attribute is saved with the active function and retained until the next ins
 Get or set the measurement range of the active measure function as a number.\n\
 \n\
 When the measurement function is set to Current, the valid range of this attribute is \
-${spec.ranges.current[0]} to ${spec.ranges.current[spec.ranges.current.length - 1]} and defaults to \
-${spec.defaults.measure.range.current}.\n\
+${spec.ranges.current[0]} to ${spec.ranges.current[spec.ranges.current.length - 1]} \
+${(spec.extendedRanges) ? `(${spec.extendedRanges.current[spec.extendedRanges.current.length - 1]} pulsed)` : ''} \
+and defaults to ${spec.defaults.measure.range.current}.\n\
 \n\
 When the measurement function is set to Voltage, this range is ${spec.ranges.voltage[0]} to \
 ${spec.ranges.voltage[spec.ranges.voltage.length - 1]} and defaults to ${spec.defaults.measure.range.voltage}.\n\
