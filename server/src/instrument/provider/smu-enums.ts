@@ -37,6 +37,11 @@ export const completions: Array<CompletionItem> = [
     },
     {
         data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'APERTURE_AUTO'
+    },
+    {
+        data: { domains: ['smu'] },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'DELAY_AUTO'
