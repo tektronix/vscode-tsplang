@@ -23,15 +23,55 @@ import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformat
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
     [
         'smu.digitize.aperture',
-        (spec: InstrumentSpec): MarkupContent => MarkupContent`TODO`
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`
+\`\`\`lua\nsmu.digitize.aperture\n\`\`\`\n\
+\n\
+Get or set the measurement length to some number in seconds or smu.APERTURE_AUTO. Defaults to smu.APERTURE_AUTO.\n\
+\n\
+The valid range of this attribute is \
+${(spec.ranges.digitize) ? spec.ranges.digitize.aperture.min : DefaultFillValue} to \`1 / sample rate\`, depending on \
+the current sample rate, up to the absolute maximum of \
+${(spec.ranges.digitize) ? spec.ranges.digitize.aperture.max : DefaultFillValue}.\n\
+\n\
+All values are rounded down to the nearest \
+${(spec.ranges.digitize) ? spec.ranges.digitize.aperture.resolution : DefaultFillValue} resolution.\n\
+\n\
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
     [
         'smu.digitize.count',
-        (spec: InstrumentSpec): MarkupContent => MarkupContent`TODO`
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.digitize.count\n\`\`\`\n\
+\n\
+Get or set the measurements to digitize per read request to some number between \
+${(spec.ranges.digitize) ? spec.ranges.digitize.count.min : DefaultFillValue} and \
+${(spec.ranges.digitize) ? spec.ranges.digitize.count.max : DefaultFillValue}.\n\
+\n\
+This attribute does not affect the trigger model.\n\
+\n\
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
     [
         'smu.digitize.range',
-        (spec: InstrumentSpec): MarkupContent => MarkupContent`TODO`
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`
+\`\`\`lua\nsmu.digitize.range\n\`\`\`\n\
+\n\
+Get or set the measurement range of the active digitizer function as a number.\n\
+\n\
+When the measurement function is set to Current, the valid range of this attribute is \
+${(spec.extendedRanges) ? spec.extendedRanges.current[0] : DefaultFillValue} to \
+${(spec.extendedRanges) ? spec.extendedRanges.current[spec.extendedRanges.current.length - 1] : DefaultFillValue} \
+and defaults to ${(spec.defaults.digitize) ? spec.defaults.digitize.range.current : DefaultFillValue}.\n\
+\n\
+When the measurement function is set to Voltage, the valid range of this attribute is \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[0] : DefaultFillValue} to \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] : DefaultFillValue} \
+and defaults to ${(spec.defaults.digitize) ? spec.defaults.digitize.range.voltage : DefaultFillValue}.\n\
+\n\
+While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
+greater than or equal to the supplied value.\n\
+\n\
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
 ])
 

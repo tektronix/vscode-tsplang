@@ -29,11 +29,11 @@ smu.measure.terminals
 -smu.digitize.rel.enable
 -smu.digitize.displaydigits
 -smu.digitize.read()
-smu.digitize.count
-smu.digitize.range
-smu.digitize.func
-smu.digitize.aperture
-smu.digitize.samplerate
+-smu.digitize.count
+-smu.digitize.range
+-smu.digitize.func
+-smu.digitize.aperture
+-smu.digitize.samplerate
 -smu.digitize.readwithtime()
 -smu.digitize.unit
 -smu.digitize.userdelay[N]
