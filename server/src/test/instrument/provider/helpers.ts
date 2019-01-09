@@ -21,7 +21,7 @@ import 'mocha'
 import { MarkupKind } from 'vscode-languageserver'
 
 import { MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../../decorators'
-import { DefaultFillValue } from '../../../instrument'
+import { DefaultFillValue, InstrumentSpec } from '../../../instrument'
 import { emptySpec, emptySpecUndefinedOptionals } from '../emptySpec'
 
 // const replacementStringRegExp = new RegExp(/%\{[0-9]+\}/)
@@ -43,8 +43,17 @@ export function expectCompletionDocFormat(completionDoc: MarkupContentCallback, 
     ).to.be.false
 }
 
-export function expectCompletionDocUndefinedFormat(completionDoc: MarkupContentCallback, label: string): void {
-    const formattedDocumentation = completionDoc(emptySpecUndefinedOptionals)
+export function containsDefaultFill(content: string): boolean {
+    return undefinedSpecValueRegExp.test(content)
+}
+
+export function expectCompletionDocUndefinedFormat(
+    completionDoc: MarkupContentCallback,
+    label: string,
+    defaultFill: boolean = true,
+    spec?: InstrumentSpec
+): void {
+    const formattedDocumentation = completionDoc((spec) ? spec : emptySpecUndefinedOptionals)
 
     // completionDoc items should return meaningful documenation or be removed.
     expect(
@@ -52,23 +61,59 @@ export function expectCompletionDocUndefinedFormat(completionDoc: MarkupContentC
         `useless command documentation entry for ${label}`
     ).to.not.be.empty
 
-    // The default fill value should be filled-in for optional spec values.
-    expect(
-        undefinedSpecValueRegExp.test(formattedDocumentation.value),
-        `could not find "${DefaultFillValue}" in the formatted command documentation for ${label}`
-    ).to.be.true
+    // The default fill value should be filled-in for optional spec values (unless otherwise specified).
+    if (defaultFill) {
+        expect(
+            containsDefaultFill(formattedDocumentation.value),
+            `could not find "${DefaultFillValue}" in the formatted command documentation for ${label}`
+        ).to.be.true
+    }
+    else {
+        expect(
+            containsDefaultFill(formattedDocumentation.value),
+            `found "${DefaultFillValue}" in the formatted command documentation for ${label}`
+        ).to.be.false
+    }
 }
 
-export function expectSignatureFormat(signature: SignatureInformation, useUndefinedSpec: boolean = false): void {
+export enum SpecType {
+    STANDARD,
+    UNDEFINED,
+    CUSTOM
+}
+
+/**
+ * An InstrumentSpec given by `spec` is only used if `specType` is `SpecType.CUSTOM`.
+ */
+export function expectSignatureFormat(
+    signature: SignatureInformation,
+    specType: SpecType = SpecType.STANDARD,
+    defaultableParameters?: Array<string>,
+    spec?: InstrumentSpec
+): void {
     const signatureLabel = SignatureInformation.resolveNamespace(signature)
 
     if (signature.getFormattedParameters === undefined) {
         return
     }
 
-    const formattedParameters = signature.getFormattedParameters(
-        (useUndefinedSpec) ? emptySpecUndefinedOptionals : emptySpec
-    )
+    let useSpec: InstrumentSpec
+    if (specType === SpecType.UNDEFINED) {
+        useSpec = emptySpecUndefinedOptionals
+    }
+    else if (specType === SpecType.CUSTOM) {
+        if (spec !== undefined) {
+            useSpec = spec
+        }
+        else {
+            throw Error('SpecType is CUSTOM but no custom InstrumentSpec was given')
+        }
+    }
+    else {
+        useSpec = emptySpec
+    }
+
+    const formattedParameters = signature.getFormattedParameters(useSpec)
 
     // If the function returns nothing, then it should be left undefined.
     expect(
@@ -103,7 +148,18 @@ export function expectSignatureFormat(signature: SignatureInformation, useUndefi
 
         const containsDefaultFillValue = undefinedSpecValueRegExp.test(documentation)
 
-        if (useUndefinedSpec) {
+        let defaultable = false
+        if (defaultableParameters) {
+            // Determine whether the current parameter label is in the list of parameters which may contain
+            // the Default Fill Value.
+            defaultable = defaultableParameters.some((paramLabel: string) => {
+                if (typeof parameter.label === 'string') {
+                    return parameter.label.localeCompare(paramLabel) === 0
+                }
+            })
+        }
+
+        if (defaultable) {
             expect(
                 containsDefaultFillValue,
                 `could not find "${DefaultFillValue}" in the formatted parameter `

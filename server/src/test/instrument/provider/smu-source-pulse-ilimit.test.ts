@@ -20,12 +20,27 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
 import { MarkupContentCallback } from '../../../decorators'
-import { CommandSetInterface } from '../../../instrument'
+import { CommandSetInterface, InstrumentSpec } from '../../../instrument'
 
 import { expectCompletionDocFormat, expectCompletionDocUndefinedFormat } from './helpers'
 
 describe('Instrument Provider', () => {
     describe('smu-source-pulse-ilimit', () => {
+        const altUndefinedSpec: InstrumentSpec = {
+            beeper: { hertz: { max: NaN, min: NaN }, seconds: { max: NaN, min: NaN } },
+            defaults: {
+                measure: { range: { current: NaN, resistance: NaN, voltage: NaN } },
+                source: { ilimit: { level: NaN }, vlimit: { level: NaN } }
+            },
+            interlock: { maxNominal: NaN, maxSource: NaN },
+            overflow: NaN,
+            ranges: {
+                autolow: { maxCurrent: NaN, maxResistance: NaN, maxVoltage: NaN },
+                current: [NaN],
+                resistance: [NaN],
+                voltage: [NaN]
+            }
+        }
         let providerModule: CommandSetInterface
 
         before(() => {
@@ -53,14 +68,14 @@ describe('Instrument Provider', () => {
             })
         })
 
-        it('formats completionDocs when some specs values are undefined', () => {
+        it('formats completionDocs when some spec values are undefined', () => {
             expect(providerModule.completionDocs).to.not.be.empty
 
-            const applicableCompletionDocs: Array<string> = [
-                'smu.source.pulse.ilimit.level'
+            const applicableCompletionDocs: Array<[string, boolean]> = [
+                ['smu.source.pulse.ilimit.level', true]
             ]
 
-            applicableCompletionDocs.forEach((label: string) => {
+            applicableCompletionDocs.forEach(([label, testAltSpec]: [string, boolean]) => {
                 // Typecast because we just validated its existance.
                 const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>).get(label)
 
@@ -71,6 +86,11 @@ describe('Instrument Provider', () => {
 
                 // Typecast because we just failed the test if the variable was undefined.
                 expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label)
+
+                if (testAltSpec) {
+                    expectCompletionDocUndefinedFormat(
+                        completionDoc as MarkupContentCallback, label, undefined, altUndefinedSpec)
+                }
             })
         })
     })

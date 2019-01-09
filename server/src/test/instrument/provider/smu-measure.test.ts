@@ -53,7 +53,7 @@ describe('Instrument Provider', () => {
             })
         })
 
-        it('formats completionDocs when some specs values are undefined', () => {
+        it('formats completionDocs when some spec values are undefined', () => {
             expect(providerModule.completionDocs).to.not.be.empty
 
             const applicableCompletionDocs: Array<string> = [
@@ -70,7 +70,7 @@ describe('Instrument Provider', () => {
                 ).to.not.be.undefined
 
                 // Typecast because we just failed the test if the variable was undefined.
-                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label)
+                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label, false)
             })
         })
 

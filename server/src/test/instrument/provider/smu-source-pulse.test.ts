@@ -53,7 +53,7 @@ describe('Instrument Provider', () => {
             })
         })
 
-        it('formats completionDocs when some specs values are undefined', () => {
+        it('formats completionDocs when some spec values are undefined', () => {
             expect(providerModule.completionDocs).to.not.be.empty
 
             const applicableCompletionDocs: Array<string> = [

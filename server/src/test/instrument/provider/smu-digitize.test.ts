@@ -25,12 +25,12 @@ import { CommandSetInterface } from '../../../instrument'
 import { expectCompletionDocFormat, expectCompletionDocUndefinedFormat } from './helpers'
 
 describe('Instrument Provider', () => {
-    describe('smu-contact', () => {
+    describe('smu-digitize', () => {
         let providerModule: CommandSetInterface
 
         before(() => {
             // tslint:disable-next-line:no-require-imports
-            providerModule = require('../../../instrument/provider/smu-contact')
+            providerModule = require('../../../instrument/provider/smu-digitize')
         })
 
         it('exports "completionDocs"', () => {
@@ -41,8 +41,8 @@ describe('Instrument Provider', () => {
             expect(providerModule).to.haveOwnProperty('completions')
         })
 
-        it('does not export "signatures"', () => {
-            expect(providerModule).to.not.haveOwnProperty('signatures')
+        it('exports "signatures"', () => {
+            expect(providerModule).to.haveOwnProperty('signatures')
         })
 
         it('formats completionDocs', () => {
@@ -57,7 +57,9 @@ describe('Instrument Provider', () => {
             expect(providerModule.completionDocs).to.not.be.empty
 
             const applicableCompletionDocs: Array<string> = [
-                'smu.contact.threshold'
+                'smu.digitize.aperture',
+                'smu.digitize.count',
+                'smu.digitize.range'
             ]
 
             applicableCompletionDocs.forEach((label: string) => {
