@@ -701,11 +701,6 @@ namespace Smu {
         { label: 'smu.PROTECT_40V' },
         { label: 'smu.PROTECT_60V' },
         { label: 'smu.PROTECT_80V' },
-        { label: 'smu.PROTECT_100V' },
-        { label: 'smu.PROTECT_120V' },
-        { label: 'smu.PROTECT_140V' },
-        { label: 'smu.PROTECT_160V' },
-        { label: 'smu.PROTECT_180V' },
         { label: 'smu.PROTECT_NONE' },
     ]
     const smuEnumRange: Array<ExclusiveCompletionApiSpec> = [
