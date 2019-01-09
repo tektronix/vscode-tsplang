@@ -17,14 +17,32 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { InstrumentSpec } from '..'
+import { DefaultFillValue, InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
+    // tslint:disable:max-line-length no-magic-numbers
     [
         'smu.digitize.rel.level',
-        (spec: InstrumentSpec): MarkupContent => MarkupContent`TODO`
+        (spec: InstrumentSpec): MarkupContent => MarkupContent`\
+\`\`\`lua\nsmu.digitize.rel.level\n\`\`\`\n\
+\n\
+Get or set the value used by the relative offset calculation to some number. Defaults to 0 for all digitize \
+functions.\n\
+\n\
+When the digitize function is set to Current, the valid range of this attribute is \
+${(spec.extendedRanges) ? spec.extendedRanges.current[spec.extendedRanges.current.length - 1] * -1.05 : DefaultFillValue} \
+to \
+${(spec.extendedRanges) ? spec.extendedRanges.current[spec.extendedRanges.current.length - 1] * 1.05 : DefaultFillValue}.\n\
+\n\
+When the digitize function is set to Voltage, the valid range of this attribute is \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] * -1.05 : DefaultFillValue} \
+to \
+${(spec.extendedRanges) ? spec.extendedRanges.voltage[spec.extendedRanges.voltage.length - 1] * 1.05 : DefaultFillValue}.\n\
+\n\
+This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
+    // tslint:enable:max-line-length no-magic-numbers
 ])
 
 export const completions: Array<CompletionItem> = [
