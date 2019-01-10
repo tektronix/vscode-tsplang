@@ -15,6 +15,8 @@
  */
 'use strict'
 
+import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver'
+
 import { Model } from './model'
 
 /**
@@ -37,6 +39,21 @@ export namespace Shebang {
         '^\\s*node\\s*\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
     )
 
+    function itemRange(item: string, index: number, offset: number): Range {
+        const start = PREFIX.length + ((SEPARATOR.length) * index) + offset
+
+        return {
+            end: {
+                character: start,
+                line: 0
+            },
+            start: {
+                character: start + item.length,
+                line: 0
+            }
+        }
+    }
+
     export function tokenize(line: string): Shebang {
         // Test that the line begins with a shebang prefix.
         if (!shebangRegExp.test(line)) {
@@ -48,27 +65,44 @@ export namespace Shebang {
         }
 
         // Remove the prefix and split on the separator.
-        const rawBangArray = line.replace(shebangRegExp, '').trim().split(Shebang.SEPARATOR)
-
-        // Drop all empty string entries.
-        const bangArray = rawBangArray.filter((value: string) => value.length > 0)
+        const rawBangArray = line.replace(shebangRegExp, '').split(Shebang.SEPARATOR)
 
         const result: Shebang = { master: undefined, text: line }
 
-        for (const item of bangArray) {
+        const errors: Array<Diagnostic> = new Array()
+
+        let encounteredCharacters = 0
+        rawBangArray.forEach((item: string, index: number) => {
+            if (item.length === 0) {
+                return
+            }
+
             const niceItem = item.toLowerCase().trim()
+
+            if (niceItem.length === 0) {
+                return
+            }
 
             // Check for the required master model.
             if (result.master === undefined) {
                 const supportedModel = Model.fromString(niceItem)
 
                 if (supportedModel === undefined) {
-                    throw new Error(`Model "${item.trim()}" is an invalid or unsupported model.`)
+                    errors.push(Diagnostic.create(
+                        itemRange(item, index, encounteredCharacters),
+                        `Model "${item.trim()}" is an invalid or unsupported model.`,
+                        DiagnosticSeverity.Error,
+                        'shebang-model',
+                        'tsplang'
+                    ))
                 }
-
-                result.master = supportedModel
+                else {
+                    result.master = supportedModel
+                }
             }
             else if (nodeRegExp.test(niceItem)) {
+                let error = false
+
                 // We have already tested that the string matches, so we are safe to type-cast.
                 const nodeMatch = niceItem.match(nodeRegExp) as RegExpMatchArray
 
@@ -86,14 +120,28 @@ export namespace Shebang {
 
                 // If we have already defined this node.
                 if (result.nodes !== undefined && result.nodes.has(nodeNumber)) {
-                    throw new Error(`Node ${nodeNumber} has already been used.`)
+                    errors.push(Diagnostic.create(
+                        itemRange(item, index, encounteredCharacters),
+                        `Node ${nodeNumber} has already been used.`,
+                        DiagnosticSeverity.Error,
+                        'shebang-node-defined',
+                        'tsplang'
+                    ))
+
+                    error = true
                 }
 
                 // If the node number is out of bounds.
                 if (nodeNumber < 1 || nodeNumber > Shebang.MAX_NODE_NUMBER) {
-                    throw new Error(
-                        `Node number ${nodeNumber} is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`
-                    )
+                    errors.push(Diagnostic.create(
+                        itemRange(item, index, encounteredCharacters),
+                        `Node number ${nodeNumber} is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`,
+                        DiagnosticSeverity.Error,
+                        'shebang-node-index',
+                        'tsplang'
+                    ))
+
+                    error = true
                 }
 
                 const supportedNodeModel = Model.fromString(nodeModel)
@@ -105,7 +153,15 @@ export namespace Shebang {
                     // lastIndexOf returns -1 on not found and string.slice(0) returns the original string.)
                     const originalModelString = item.slice(item.lastIndexOf(nodeAssignmentOp) + 1)
 
-                    throw new Error(`Model "${originalModelString}" is an invalid or unsupported model.`)
+                    errors.push(Diagnostic.create(
+                        itemRange(item, index, encounteredCharacters),
+                        `Model "${originalModelString}" is an invalid or unsupported model.`,
+                        DiagnosticSeverity.Error,
+                        'shebang-model',
+                        'tsplang'
+                    ))
+
+                    error = true
                 }
 
                 // Instantiate the node Map if we have not done so already.
@@ -113,11 +169,25 @@ export namespace Shebang {
                     result.nodes = new Map()
                 }
 
-                result.nodes.set(nodeNumber, supportedNodeModel)
+                if (!error) {
+                    result.nodes.set(nodeNumber, supportedNodeModel)
+                }
             }
             else {
-                throw new Error(`Invalid node expression "${item}".`)
+                errors.push(Diagnostic.create(
+                    itemRange(item, index, encounteredCharacters),
+                    `Invalid node expression "${item}".`,
+                    DiagnosticSeverity.Error,
+                    'shebang-node-expression',
+                    'tsplang'
+                ))
             }
+
+            encounteredCharacters += item.length
+        })
+
+        if (errors.length > 0) {
+            throw errors
         }
 
         return result

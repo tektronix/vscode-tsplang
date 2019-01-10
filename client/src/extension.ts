@@ -16,7 +16,7 @@
 'use strict'
 
 import * as path from 'path'
-import { ExtensionContext, workspace } from 'vscode'
+import { ExtensionContext, languages, workspace } from 'vscode'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient'
 
 export function activate(context: ExtensionContext): void {
@@ -57,6 +57,8 @@ export function activate(context: ExtensionContext): void {
         }
     }
 
+    const diagnosticsCollection = languages.createDiagnosticCollection('TSP')
+
     // Create the language client and start the client.
     const disposable = new LanguageClient(
         'tsplang',
@@ -68,5 +70,5 @@ export function activate(context: ExtensionContext): void {
 
     // Push the disposable to the context's subscriptions so that the client can be deactivated on
     // extension deactivation
-    context.subscriptions.push(disposable)
+    context.subscriptions.push(disposable, diagnosticsCollection)
 }

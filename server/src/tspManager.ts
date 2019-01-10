@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { TextDocuments } from 'vscode-languageserver'
+import { Diagnostic, TextDocuments } from 'vscode-languageserver'
 
 import { Model } from './model'
 import { TsplangSettings } from './settings'
@@ -42,7 +42,7 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    register(uri: string, documentSettings: TsplangSettings): void {
+    register(uri: string, documentSettings: TsplangSettings): Array<Diagnostic> | undefined {
         // check if the doc has already been registered
         if (this.dict.has(uri)) {
             throw new Error('Document already registered.')
@@ -60,7 +60,13 @@ export class TspManager {
         }).trim()
 
         // Try to parse the shebang.
-        const shebang = Shebang.tokenize(firstLine)
+        let shebang: Shebang
+        try {
+            shebang = Shebang.tokenize(firstLine)
+        }
+        catch (errors) {
+            return errors as Array<Diagnostic>
+        }
 
         // Try to make a new TspItem instance.
         const tspItem = TspItem.create(document, shebang, documentSettings, this.pool)
@@ -91,7 +97,7 @@ export class TspManager {
         return this.dict.delete(uri)
     }
 
-    update(uri: string): void {
+    update(uri: string): Array<Diagnostic> | undefined {
         // check if the doc has not been registered
         if (!this.dict.has(uri)) {
             throw new Error('Document is not registered.')
@@ -117,7 +123,12 @@ export class TspManager {
             this.unregister(uri)
 
             // Re-register everything.
-            this.register(uri, item.context.settings)
+            try {
+                this.register(uri, item.context.settings)
+            }
+            catch (errors) {
+                return errors as Array<Diagnostic>
+            }
 
             // The context was updated by register, so we're done.
             return
