@@ -42,4 +42,4 @@ Licensed under Apache 2.0
 <br/>
 <br/>
 <br/>
-Made with :heart: at Keithley Instruments
+Made with &#10084; at Keithley Instruments
