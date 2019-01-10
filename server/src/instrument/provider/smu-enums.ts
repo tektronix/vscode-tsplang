@@ -37,6 +37,11 @@ export const completions: Array<CompletionItem> = [
     },
     {
         data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'APERTURE_AUTO'
+    },
+    {
+        data: { domains: ['smu'] },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'DELAY_AUTO'
@@ -100,6 +105,21 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'FUNC_DC_VOLTAGE'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'FUNC_DIGITIZE_CURRENT'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'FUNC_DIGITIZE_VOLTAGE'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'FUNC_NONE'
     },
     {
         data: { domains: ['smu'] },
@@ -307,6 +327,21 @@ current range, whichever is greater; otherwise the current limit is not changed.
         data: { domains: ['smu'] },
         kind: CompletionItemKind.EnumMember,
         label: 'TERMINALS_REAR'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'THRESHOLD_2_OHM'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'THRESHOLD_15_OHM'
+    },
+    {
+        data: { domains: ['smu'] },
+        kind: CompletionItemKind.EnumMember,
+        label: 'THRESHOLD_50_OHM'
     },
     {
         data: { domains: ['smu'] },

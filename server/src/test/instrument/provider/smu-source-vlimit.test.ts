@@ -22,7 +22,7 @@ import 'mocha'
 import { MarkupContentCallback } from '../../../decorators'
 import { CommandSetInterface } from '../../../instrument'
 
-import { expectCompletionDocFormat } from './helpers'
+import { expectCompletionDocFormat, expectCompletionDocUndefinedFormat } from './helpers'
 
 describe('Instrument Provider', () => {
     describe('smu-source-vlimit', () => {
@@ -46,12 +46,31 @@ describe('Instrument Provider', () => {
         })
 
         it('formats completionDocs', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+            expect(providerModule.completionDocs).to.not.be.empty
 
             providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
+            })
+        })
+
+        it('formats completionDocs when some spec values are undefined', () => {
+            expect(providerModule.completionDocs).to.not.be.empty
+
+            const applicableCompletionDocs: Array<string> = [
+                'smu.source.vlimit.level'
+            ]
+
+            applicableCompletionDocs.forEach((label: string) => {
+                // Typecast because we just validated its existance.
+                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>).get(label)
+
+                expect(
+                    completionDoc,
+                    `"${label}" does not exist in the set of available completionDocs`
+                ).to.not.be.undefined
+
+                // Typecast because we just failed the test if the variable was undefined.
+                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label)
             })
         })
     })

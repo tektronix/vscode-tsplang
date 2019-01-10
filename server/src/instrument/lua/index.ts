@@ -164,24 +164,15 @@ export function getApiSpec(): Array<ApiSpec> {
 
 export function getInstrumentSpec(): InstrumentSpec {
     return {
-        beeper: { maxHertz: NaN, maxSeconds: NaN, minHertz: NaN, minSeconds: NaN },
-        current: {
-            measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-            source: { rangeDefault: NaN, ranges: [ NaN ] }
-        },
+        beeper: { hertz: { max: NaN, min: NaN }, seconds: { max: NaN, min: NaN } },
+        defaults: { measure: { range: { current: NaN, resistance: NaN, voltage: NaN } } },
+        interlock: { maxNominal: NaN, maxSource: NaN },
         overflow: NaN,
-        resistance: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-        smuInterlock: { maxNominalVoltageTripped: NaN, maxSourceVoltageTripped: NaN },
-        smuMeasureAutorange: {
-            currentLowDefault: NaN,
-            resistanceHighDefault: NaN,
-            resistanceLowDefault: NaN,
-            voltageLowDefault: NaN
-        },
-        smuSourceSweepLog: { currentLevelLow: NaN, voltageLevelLow: NaN },
-        voltage: {
-            measure: { level: { high: NaN, low: NaN }, range: { high: NaN, low: NaN } },
-            source: { rangeDefault: NaN, ranges: [ NaN ] }
+        ranges: {
+            autolow: { maxCurrent: NaN, maxResistance: NaN, maxVoltage: NaN },
+            current: [NaN],
+            resistance: [NaN],
+            voltage: [NaN]
         }
     }
 }

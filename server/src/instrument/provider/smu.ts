@@ -35,4 +35,17 @@ Turn off instrument output and reset smu. commands to their default values.'
         kind: CompletionItemKind.Function,
         label: 'reset',
     },
+    {
+        data: { domains: ['smu'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '```lua\nsmu.terminals\n```\n\
+\n\
+Get or set the terminals used during measurements to smu.TERMINALS_\\*. Defaults to smu.TERMINALS_FRONT.\n\
+\n\
+Output is turned off before switching active terminals.'
+        },
+        kind: CompletionItemKind.Property,
+        label: 'terminals',
+    },
 ]

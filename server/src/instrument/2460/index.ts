@@ -701,11 +701,6 @@ namespace Smu {
         { label: 'smu.PROTECT_40V' },
         { label: 'smu.PROTECT_60V' },
         { label: 'smu.PROTECT_80V' },
-        { label: 'smu.PROTECT_100V' },
-        { label: 'smu.PROTECT_120V' },
-        { label: 'smu.PROTECT_140V' },
-        { label: 'smu.PROTECT_160V' },
-        { label: 'smu.PROTECT_180V' },
         { label: 'smu.PROTECT_NONE' },
     ]
     const smuEnumRange: Array<ExclusiveCompletionApiSpec> = [
@@ -1819,72 +1814,40 @@ export function getApiSpec(): Array<ApiSpec> {
 export function getInstrumentSpec(): InstrumentSpec {
     return {
         beeper: {
-            maxHertz: 8000,
-            maxSeconds: 100,
-            minHertz: 20,
-            minSeconds: 0.001
+            hertz: { max: 8000, min: 20 },
+            seconds: { max: 100, min: 0.001 }
         },
-        current: {
+        defaults: {
             measure: {
-                level: {
-                    high: 7.35,
-                    low: -7.35
-                },
                 range: {
-                    default: 1e-6,
-                    high: 7,
-                    low: 1e-6
+                    current: 1e-6,
+                    resistance: 200e6,
+                    voltage: 2
                 }
             },
             source: {
-                rangeDefault: 1e-6,
-                // tslint:disable-next-line:no-magic-numbers
-                ranges: [1e-6, 10e-6, 100e-6, 1e-3, 10e-3, 100e-3, 1, 4, 5, 7]
+                ilimit: {
+                    level: 1.05e-4
+                },
+                vlimit: {
+                    level: 7.35
+                }
             }
+        },
+        interlock: {
+            maxNominal: 42,
+            maxSource: 21
         },
         overflow: 9.9e37,
-        resistance: {
-            level: {
-                high: 210e6,
-                low: -210e6
+        ranges: {
+            autolow: {
+                maxCurrent: 5,
+                maxResistance: 20e6,
+                maxVoltage: 20
             },
-            range: {
-                default: 200e6,
-                high: 200e6,
-                low: 2
-            }
-        },
-        smuInterlock: {
-            maxNominalVoltageTripped: 42,
-            maxSourceVoltageTripped: 21
-        },
-        smuMeasureAutorange: {
-            currentLowDefault: 1e-6,
-            resistanceHighDefault: 200e6,
-            resistanceLowDefault: 2,
-            voltageLowDefault: 200e-3
-        },
-        smuSourceSweepLog: {
-            currentLevelLow: 1e-6,
-            voltageLevelLow: 200e-3
-        },
-        voltage: {
-            measure: {
-                level: {
-                    high: 105,
-                    low: -105
-                },
-                range: {
-                    default: 2,
-                    high: 100,
-                    low: 0.2
-                }
-            },
-            source: {
-                rangeDefault: 200e-3,
-                // tslint:disable-next-line:no-magic-numbers
-                ranges: [200e-3, 2, 7, 10, 20, 100]
-            }
+            current: [1e-6, 10e-6, 100e-6, 1e-3, 10e-3, 100e-3, 1, 4, 5, 7],
+            resistance: [2, 20, 200, 2e3, 20e3, 200e3, 2e6, 20e6, 200e6],
+            voltage: [200e-3, 2, 7, 10, 20, 100]
         }
     }
 }

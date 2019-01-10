@@ -17,7 +17,7 @@
 
 import { CompletionItemKind, MarkupKind } from 'vscode-languageserver'
 
-import { DefaultFillValue, InstrumentSpec } from '..'
+import { InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback, SignatureInformation } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
@@ -29,10 +29,11 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 Acts as a read-write attribute if and only if the present measurement function is set to Resistance; otherwise it \
 acts as a read-only attribute.\n\
 \n\
-For Resistance measurements, this attribute can be set to any number from ${spec.resistance.range.low} to \
-${spec.resistance.range.high} that is greater than or equal to the measure autorangelow attribute. Defaults to \
-${spec.smuMeasureAutorange.resistanceHighDefault}. Any set value is saved with the resistance function and retained \
-until the next instrument reset or power cycle.`
+For Resistance measurements, this attribute can be set to any number from ${spec.ranges.resistance[0]} to \
+${spec.ranges.resistance[spec.ranges.resistance.length - 1]} that is greater than or equal to the measure \
+autorangelow attribute. Defaults to ${spec.ranges.resistance[spec.ranges.resistance.length - 1]}.\n\
+\n\
+Any set value is saved with the resistance function and retained until the next instrument reset or power cycle.`
     ],
     [
         'smu.measure.autorangelow',
@@ -42,15 +43,14 @@ until the next instrument reset or power cycle.`
 Get or set the lowest range available to the autorange setting to a number.\n\
 \n\
 When the measurement function is set to Current, the valid range of this attribute is \
-${spec.current.measure.range.low} to ${spec.current.measure.range.high} and defaults to \
-${spec.smuMeasureAutorange.currentLowDefault}.\n\
+${spec.ranges.current[0]} to ${spec.ranges.autolow.maxCurrent} and defaults to ${spec.ranges.current[0]}.\n\
 \n\
-When the measurement function is set to Voltage, the valid range is ${spec.voltage.measure.range.low} to \
-${spec.voltage.measure.range.high} and defaults to ${spec.smuMeasureAutorange.voltageLowDefault}.\n\
+When the measurement function is set to Voltage, the valid range is ${spec.ranges.voltage[0]} to \
+${spec.ranges.autolow.maxVoltage} and defaults to ${spec.ranges.voltage[0]}.\n\
 \n\
-When the measurement function is set to Resistance, the valid range is any number ${spec.resistance.range.low} to \
-${spec.resistance.range.high} that is less than or equal to the measure autorangehigh attribute. Defaults to \
-${spec.smuMeasureAutorange.resistanceLowDefault}.\n\
+When the measurement function is set to Resistance, the valid range is any number ${spec.ranges.resistance[0]} to \
+${spec.ranges.autolow.maxResistance} that is less than or equal to the measure autorangehigh attribute. Defaults to \
+${spec.ranges.resistance[0]}.\n\
 \n\
 While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
 greater than or equal to the supplied value.\n\
@@ -65,14 +65,16 @@ This attribute is saved with the active function and retained until the next ins
 Get or set the measurement range of the active measure function as a number.\n\
 \n\
 When the measurement function is set to Current, the valid range of this attribute is \
-${spec.current.measure.range.low} to ${spec.current.measure.range.high} and defaults to \
-${spec.current.measure.range.default || DefaultFillValue}.\n\
+${spec.ranges.current[0]} to ${spec.ranges.current[spec.ranges.current.length - 1]} \
+${(spec.extendedRanges) ? `(${spec.extendedRanges.current[spec.extendedRanges.current.length - 1]} pulsed)` : ''} \
+and defaults to ${spec.defaults.measure.range.current}.\n\
 \n\
-When the measurement function is set to Voltage, this range is ${spec.voltage.measure.range.low} to \
-${spec.voltage.measure.range.high} and defaults to ${spec.voltage.measure.range.default || DefaultFillValue}.\n\
+When the measurement function is set to Voltage, this range is ${spec.ranges.voltage[0]} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1]} and defaults to ${spec.defaults.measure.range.voltage}.\n\
 \n\
-When the measurement function is set to Resistance, this range is ${spec.resistance.range.low} to \
-${spec.resistance.range.high} and defaults to ${spec.resistance.range.default || DefaultFillValue}.\n\
+When the measurement function is set to Resistance, this range is ${spec.ranges.resistance[0]} to \
+${spec.ranges.resistance[spec.ranges.resistance.length - 1]} and defaults to \
+${spec.defaults.measure.range.resistance}.\n\
 \n\
 While this attribute accepts any number in the applicable range, the instrument is set to the closest effective range \
 greater than or equal to the supplied value.\n\
@@ -146,7 +148,7 @@ Does not affect the trigger model.'
             value: '```lua\nsmu.measure.displaydigits\n```\n\
 \n\
 Get or set the number of measurement digits to display on the front-panel to smu.DIGITS_\\*. Defaults to \
-smu.DIGITS_5_5. New digit settings will be after the next measurement.\n\
+smu.DIGITS_5_5. New digit settings will be displayed after the next measurement.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.\n\
 \n\
@@ -312,10 +314,6 @@ export const signatures: Array<SignatureInformation> = [
         documentation: undefined,
         label: 'smu.measure.read([bufferName])',
         parameters: [
-            {
-                documentation: 'The last reading of the measurement process.',
-                label: 'reading',
-            },
             {
                 documentation: 'The name of the reading buffer, which may be a default buffer (defbuffer1 or \
 defbuffer2) or a user‑defined buffer; defaults to defbuffer1 if not specified.',

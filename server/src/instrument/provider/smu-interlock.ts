@@ -28,10 +28,9 @@ export const completionDocs: Map<string, MarkupContentCallback> = new Map([
 \n\
 Get the status of the interlock.\n\
 \n\
-If smu.OFF is returned the ${spec.voltage.measure.range.high} range is disabled, nominal output is limited to \
-±${spec.smuInterlock.maxNominalVoltageTripped}V, and attempting to source more than \
-±${spec.smuInterlock.maxSourceVoltageTripped}V will generate an error message; otherwise all voltage ranges are \
-available.`
+If smu.OFF is returned the ${spec.ranges.voltage[spec.ranges.voltage.length - 1]}V range is disabled, nominal output \
+is limited to ±${spec.interlock.maxNominal}V, and attempting to source more than ±${spec.interlock.maxSource}V will \
+generate an error message; otherwise all voltage ranges are available.`
     ],
 ])
 

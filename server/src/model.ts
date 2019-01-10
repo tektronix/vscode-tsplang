@@ -15,20 +15,22 @@
  */
 'use strict'
 
+export enum Model {
+    KI2450 = '2450',
+    KI2460 = '2460',
+    KI2461 = '2461',
+    KI2461SYS = '2461-sys',
+    KI6500 = '6500',
+    LUA = 'lua'
+}
 export namespace Model {
-    export const KI2450 = '2450'
-    export const KI2460 = '2460'
-    export const KI2461 = '2461'
-    export const KI2461SYS = '2461-sys'
-    export const KI6500 = '6500'
-    export const LUA = 'lua'
-    export function fromString(value: string): Model {
-        if (value === KI2450
-                || value === KI2460
-                || value === KI2461
-                || value === KI2461SYS
-                || value === KI6500
-                || value === LUA) {
+    export function fromString(value: string): Model | undefined {
+        if (value === Model.KI2450
+                || value === Model.KI2460
+                || value === Model.KI2461
+                || value === Model.KI2461SYS
+                || value === Model.KI6500
+                || value === Model.LUA) {
             return value as Model
         }
         else {
@@ -36,4 +38,3 @@ export namespace Model {
         }
     }
 }
-export type Model = '2450' | '2460' | '2461' | '2461-sys' | '6500' | 'lua' | undefined

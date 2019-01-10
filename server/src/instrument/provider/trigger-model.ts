@@ -1063,4 +1063,54 @@ execution to continue.',
             },
         ],
     },
+    {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 22
+        },
+        documentation: 'Take the specified number of measurements using a digitize function. If an infinite measure \
+count is given, then execution continues until the next DIGITIZE block.',
+        label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_DIGITIZE[, bufferName][, count])',
+        parameters: [
+            {
+                documentation: 'The sequence of the block in the trigger model.',
+                label: 'blockNumber',
+            },
+            {
+                documentation: 'The "trigger.BLOCK_DIGITIZE" enumeration.',
+                label: 'trigger.BLOCK_DIGITIZE',
+            },
+            {
+                documentation: 'The name of an existing buffer; if no buffer is defined, defbuffer1 is used.',
+                label: 'bufferName',
+            },
+            {
+                documentation: 'The number of readings to make before moving to the next block in the trigger model; \
+set to a specific number or trigger.COUNT_INFINITE or trigger.COUNT_STOP to stop infinite measurements.',
+                label: 'count',
+            },
+        ],
+    },
+    {
+        data: {
+            parameterTypes: new Map(),
+            qualifier: 23
+        },
+        documentation: 'Sets the pulse source to the specified output state.',
+        label: 'trigger.model.setblock(blockNumber, trigger.BLOCK_SOURCE_PULSE_OUTPUT, state)',
+        parameters: [
+            {
+                documentation: 'The sequence of the block in the trigger model.',
+                label: 'blockNumber',
+            },
+            {
+                documentation: 'The "trigger.BLOCK_SOURCE_PULSE_OUTPUT" enumeration.',
+                label: 'trigger.BLOCK_SOURCE_PULSE_OUTPUT',
+            },
+            {
+                documentation: 'Either smu.OFF to turn off the pulse output source or smu.ON to turn it on.',
+                label: 'state',
+            },
+        ],
+    },
 ]

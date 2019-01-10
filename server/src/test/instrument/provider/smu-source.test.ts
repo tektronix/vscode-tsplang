@@ -19,13 +19,30 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { MarkupContentCallback, SignatureInformation } from '../../../decorators'
-import { CommandSetInterface } from '../../../instrument'
+import { MarkupContentCallback, ResolvedNamespace, SignatureInformation } from '../../../decorators'
+import { CommandSetInterface, InstrumentSpec } from '../../../instrument'
 
-import { expectCompletionDocFormat, expectSignatureFormat } from './helpers'
+import { expectCompletionDocFormat, expectSignatureFormat, SpecType } from './helpers'
 
 describe('Instrument Provider', () => {
     describe('smu-source', () => {
+        const altUndefinedSpec: InstrumentSpec = {
+            beeper: { hertz: { max: NaN, min: NaN }, seconds: { max: NaN, min: NaN } },
+            defaults: {
+                measure: { range: { current: NaN, resistance: NaN, voltage: NaN } } },
+            interlock: { maxNominal: NaN, maxSource: NaN },
+            overflow: NaN,
+            pulse: {
+                percentDutyCycle: NaN,
+                time: { max: NaN, min: NaN }
+            },
+            ranges: {
+                autolow: { maxCurrent: NaN, maxResistance: NaN, maxVoltage: NaN },
+                current: [NaN],
+                resistance: [NaN],
+                voltage: [NaN]
+            }
+        }
         let providerModule: CommandSetInterface
 
         before(() => {
@@ -46,9 +63,7 @@ describe('Instrument Provider', () => {
         })
 
         it('formats completionDocs', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+            expect(providerModule.completionDocs).to.not.be.empty
 
             providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
@@ -56,12 +71,42 @@ describe('Instrument Provider', () => {
         })
 
         it('formats signatures', () => {
-            if (providerModule.signatures === undefined) {
-                return
-            }
+            expect(providerModule.signatures).to.not.be.empty
 
             providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)
+            })
+        })
+
+        it('formats signatures when some specs values are undefined', () => {
+            expect(providerModule.signatures).to.not.be.empty
+
+            const applicableSignatures: Map<string, Array<string>> = new Map([
+                ['smu.source.pulsesweeplinear', ['start', 'stop', 'width', 'pulseLimit']],
+                ['smu.source.pulsesweeplinearstep', ['start', 'stop', 'width', 'pulseLimit']],
+                ['smu.source.pulsesweeplist', ['width']],
+                ['smu.source.pulsesweeplog', ['start', 'stop', 'width', 'pulseLimit']],
+                ['smu.source.pulsetrain', ['pulseLevel', 'pulseWidth', 'pulseLimit']],
+            ])
+
+            applicableSignatures.forEach((defaultableParams: Array<string>, label: string) => {
+                // Typecast because we just validated its existance.
+                const signatures = (providerModule.signatures as Array<SignatureInformation>).filter(
+                    (signature: SignatureInformation) => ResolvedNamespace.equal(
+                        label,
+                        SignatureInformation.resolveNamespace(signature)
+                    )
+                )
+
+                expect(
+                    signatures,
+                    `"${label}" does not exist in the set of available signatures`
+                ).to.not.be.empty
+
+                signatures.forEach((signature: SignatureInformation) => {
+                    expectSignatureFormat(signature, SpecType.UNDEFINED, defaultableParams)
+                    expectSignatureFormat(signature, SpecType.CUSTOM, defaultableParams, altUndefinedSpec)
+                })
             })
         })
     })

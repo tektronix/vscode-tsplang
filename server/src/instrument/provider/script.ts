@@ -28,6 +28,20 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['script'] },
         documentation: {
             kind: MarkupKind.Markdown,
+            value: '```lua\nfunction catalog()\n```\n\nscript.catalog() -> iterator function\n\
+\n\
+Returns a function that iterates over the name of each script stored in nonvolatile memory in no particular order.\n\
+\n\
+Example:\n\
+```lua\nfor name in script.catalog() do\n\t// ...\nend\n```'
+        },
+        kind: CompletionItemKind.Function,
+        label: 'catalog',
+    },
+    {
+        data: { domains: ['script'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
             value: '```lua\nfunction delete(scriptName)\n```\n\nscript.delete(scriptName)\n\
 \n\
 Delete a script from run-time and nonvolatile memory.\n\

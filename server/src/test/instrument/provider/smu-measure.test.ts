@@ -46,19 +46,15 @@ describe('Instrument Provider', () => {
         })
 
         it('formats completionDocs', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+            expect(providerModule.completionDocs).to.not.be.empty
 
             providerModule.completionDocs.forEach((completionDoc: MarkupContentCallback, label: string) => {
                 expectCompletionDocFormat(completionDoc, label)
             })
         })
 
-        it('formats completionDocs when some specs values are undefined', () => {
-            if (providerModule.completionDocs === undefined) {
-                return
-            }
+        it('formats completionDocs when some spec values are undefined', () => {
+            expect(providerModule.completionDocs).to.not.be.empty
 
             const applicableCompletionDocs: Array<string> = [
                 'smu.measure.range'
@@ -66,8 +62,7 @@ describe('Instrument Provider', () => {
 
             applicableCompletionDocs.forEach((label: string) => {
                 // Typecast because we just validated its existance.
-                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>)
-                    .get('smu.measure.range')
+                const completionDoc = (providerModule.completionDocs as Map<string, MarkupContentCallback>).get(label)
 
                 expect(
                     completionDoc,
@@ -75,14 +70,12 @@ describe('Instrument Provider', () => {
                 ).to.not.be.undefined
 
                 // Typecast because we just failed the test if the variable was undefined.
-                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label)
+                expectCompletionDocUndefinedFormat(completionDoc as MarkupContentCallback, label, false)
             })
         })
 
         it('formats signatures', () => {
-            if (providerModule.signatures === undefined) {
-                return
-            }
+            expect(providerModule.signatures).to.not.be.empty
 
             providerModule.signatures.forEach((signature: SignatureInformation) => {
                 expectSignatureFormat(signature)

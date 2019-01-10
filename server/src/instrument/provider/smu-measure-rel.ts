@@ -21,6 +21,7 @@ import { InstrumentSpec } from '..'
 import { CompletionItem, MarkupContent, MarkupContentCallback } from '../../decorators'
 
 export const completionDocs: Map<string, MarkupContentCallback> = new Map([
+    // tslint:disable:max-line-length no-magic-numbers
     [
         'smu.measure.rel.level',
         (spec: InstrumentSpec): MarkupContent => MarkupContent`\
@@ -30,16 +31,20 @@ Get or set the value used by the relative offset calculation to some number. Def
 functions.\n\
 \n\
 When the measurement function is set to Current, the valid range of this attribute is \
-${spec.current.measure.level.low} to ${spec.current.measure.level.high}.\n\
+${spec.ranges.current[spec.ranges.current.length - 1] * -1.05} to \
+${spec.ranges.current[spec.ranges.current.length - 1] * 1.05}.\n\
 \n\
 When the measurement function is set to Resistance, the valid range of this attribute is \
-${spec.resistance.level.low} to ${spec.resistance.level.high}.\n\
+${spec.ranges.resistance[spec.ranges.resistance.length - 1] * -1.05} to \
+${spec.ranges.resistance[spec.ranges.resistance.length - 1] * 1.05}.\n\
 \n\
 When the measurement function is set to Voltage, the valid range of this attribute is \
-${spec.voltage.measure.level.low} to ${spec.voltage.measure.level.high}.\n\
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * -1.05} to \
+${spec.ranges.voltage[spec.ranges.voltage.length - 1] * 1.05}.\n\
 \n\
 This attribute is saved with the active function and retained until the next instrument reset or power cycle.`
     ],
+    // tslint:enable:max-line-length no-magic-numbers
 ])
 
 export const completions: Array<CompletionItem> = [
