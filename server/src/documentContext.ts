@@ -20,7 +20,6 @@ import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4
 import { RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
-// tslint:disable-next-line:ordered-imports
 import { CompletionItemKind, Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from './antlr4-tsplang'
