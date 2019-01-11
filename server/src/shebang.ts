@@ -44,11 +44,11 @@ export namespace Shebang {
 
         return {
             end: {
-                character: start,
+                character: start + item.length,
                 line: 0
             },
             start: {
-                character: start + item.length,
+                character: start,
                 line: 0
             }
         }
