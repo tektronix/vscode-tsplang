@@ -40,7 +40,7 @@ export namespace Shebang {
     )
 
     function itemRange(item: string, index: number, offset: number): Range {
-        const start = PREFIX.length + ((SEPARATOR.length) * index) + offset
+        const start = PREFIX.length + (SEPARATOR.length * index) + offset
 
         return {
             end: {
@@ -62,7 +62,7 @@ export namespace Shebang {
         }
 
         // Remove the prefix and split on the separator.
-        const rawBangArray = line.replace(shebangRegExp, '').split(SEPARATOR)
+        const rawBangArray = line.replace(PREFIX, '').split(SEPARATOR)
 
         const result: Shebang = { master : undefined, text: line }
 
