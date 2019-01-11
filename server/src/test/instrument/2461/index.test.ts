@@ -65,6 +65,7 @@ describe('Instrument Specification', () => {
                 'printbuffer',
                 'printnumber',
                 'reset',
+                'scpi',
                 'script',
                 'smu.contact',
                 'smu.digitize.limit.high',

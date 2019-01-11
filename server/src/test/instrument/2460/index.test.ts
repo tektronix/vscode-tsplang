@@ -63,6 +63,7 @@ describe('Instrument Specification', () => {
                 'printbuffer',
                 'printnumber',
                 'reset',
+                'scpi',
                 'script',
                 'smu.interlock',
                 'smu.measure.autozero',
