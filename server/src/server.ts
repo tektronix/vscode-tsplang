@@ -75,9 +75,11 @@ connection.onInitialized(() => {
 documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
     // if document is registered, then update
     if (manager.has(change.document.uri)) {
-        const diagnostics = manager.update(change.document.uri) || []
+        const diagnostics = manager.update(change.document.uri)
 
-        connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
+        if (diagnostics !== undefined) {
+            connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
+        }
     }
     // if document is unregistered, then register
     else {

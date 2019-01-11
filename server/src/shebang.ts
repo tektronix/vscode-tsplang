@@ -54,20 +54,17 @@ export namespace Shebang {
         }
     }
 
-    export function tokenize(line: string): Shebang {
+    export function tokenize(line: string): [Shebang, Array<Diagnostic>] {
         // Test that the line begins with a shebang prefix.
         if (!shebangRegExp.test(line)) {
             // Resolve to Lua completions should no shebang line exist.
-            return {
-                master: Model.LUA,
-                text: line
-            }
+            return [{ master: Model.LUA, text: line}, []]
         }
 
         // Remove the prefix and split on the separator.
         const rawBangArray = line.replace(shebangRegExp, '').split(Shebang.SEPARATOR)
 
-        const result: Shebang = { master: undefined, text: line }
+        const result: Shebang = { master : undefined, text: line }
 
         const errors: Array<Diagnostic> = new Array()
 
@@ -186,10 +183,11 @@ export namespace Shebang {
             encounteredCharacters += item.length
         })
 
-        if (errors.length > 0) {
-            throw errors
+        // Fall back on Lua suggestions if we failed to tokenize a master model.
+        if (result.master === undefined) {
+            return [{ master: Model.LUA, text: line}, errors]
         }
 
-        return result
+        return [result, errors]
     }
 }

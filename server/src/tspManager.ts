@@ -60,13 +60,7 @@ export class TspManager {
         }).trim()
 
         // Try to parse the shebang.
-        let shebang: Shebang
-        try {
-            shebang = Shebang.tokenize(firstLine)
-        }
-        catch (errors) {
-            return errors as Array<Diagnostic>
-        }
+        const [shebang, errors]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
 
         // Try to make a new TspItem instance.
         const tspItem = TspItem.create(document, shebang, documentSettings, this.pool)
@@ -75,6 +69,8 @@ export class TspManager {
         tspItem.context.walk()
 
         this.dict.set(document.uri, tspItem)
+
+        return errors
     }
 
     unregister(uri: string): boolean {
@@ -123,15 +119,8 @@ export class TspManager {
             this.unregister(uri)
 
             // Re-register everything.
-            try {
-                this.register(uri, item.context.settings)
-            }
-            catch (errors) {
-                return errors as Array<Diagnostic>
-            }
-
             // The context was updated by register, so we're done.
-            return
+            return this.register(uri, item.context.settings)
         }
 
         // Update this item's context.
