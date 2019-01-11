@@ -111,6 +111,8 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 
     if (manager.has(params.document.uri)) {
         manager.unregister(params.document.uri)
+
+        connection.sendDiagnostics({ diagnostics: [], uri: params.document.uri })
     }
 })
 
