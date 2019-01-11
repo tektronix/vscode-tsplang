@@ -42,6 +42,35 @@ describe('Model', () => {
         })
     })
 
+    describe('.KI2461', () => {
+        it('contained in Model', () => {
+            expect(Model).to.have.ownProperty('KI2461')
+        })
+
+        it('equals "2461"', () => {
+            expect(Model.KI2461).to.equal('2461')
+        })
+    })
+
+    describe('.KI2461SYS', () => {
+        it('contained in Model', () => {
+            expect(Model).to.have.ownProperty('KI2461SYS')
+        })
+
+        it('equals "2461-sys"', () => {
+            expect(Model.KI2461SYS).to.equal('2461-sys')
+        })
+    })
+    describe('.KI6500', () => {
+        it('contained in Model', () => {
+            expect(Model).to.have.ownProperty('KI6500')
+        })
+
+        it('equals "6500"', () => {
+            expect(Model.KI6500).to.equal('6500')
+        })
+    })
+
     describe('.LUA', () => {
         it('contained in Model', () => {
             expect(Model).to.have.ownProperty('LUA')
@@ -63,6 +92,24 @@ describe('Model', () => {
             const result = Model.fromString('2460')
 
             expect(result).to.equal(Model.KI2460)
+        })
+
+        it('returns a Model type when passed "2461"', () => {
+            const result = Model.fromString('2461')
+
+            expect(result).to.equal(Model.KI2461)
+        })
+
+        it('returns a Model type when passed "2461-sys"', () => {
+            const result = Model.fromString('2461-sys')
+
+            expect(result).to.equal(Model.KI2461SYS)
+        })
+
+        it('returns a Model type when passed "6500"', () => {
+            const result = Model.fromString('6500')
+
+            expect(result).to.equal(Model.KI6500)
         })
 
         it('returns a Model type when passed "lua"', () => {
