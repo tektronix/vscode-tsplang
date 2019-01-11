@@ -152,11 +152,23 @@ const table: ApiSpec = {
 
 export function getApiSpec(): Array<ApiSpec> {
     return [
+        { label: 'abort' },
+        { label: 'bit' },
         coroutine,
+        { label: 'endflash' },
+        { label: 'endscript' },
+        { label: 'flash' },
+        { label: 'fs' },
         functions,
+        { label: 'io' },
         keywords,
+        { label: 'loadandrunscript' },
+        { label: 'loadscript' },
+        { label: 'login' },
+        { label: 'logout' },
         math,
         os,
+        { label: 'prevflash' },
         _string,
         table
     ]
