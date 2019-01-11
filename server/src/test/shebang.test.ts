@@ -305,11 +305,11 @@ describe('Shebang', () => {
                         message: 'Node 1 has already been used.',
                         range: {
                             end: {
-                                character: 34 + 18,
+                                character: 36 + 18,
                                 line: 0
                             },
                             start: {
-                                character: 34,
+                                character: 36,
                                 line: 0
                             }
                         },
@@ -318,6 +318,7 @@ describe('Shebang', () => {
                     }
                 ]
                 // tslint:enable:no-magic-numbers
+                // "  --#!2461-SYS ; node [ 1 ] = 2450 ; node [ 1] = 6500 "
                 const line = [
                     `  ${Shebang.PREFIX}${master} `,
                     ` node [ 1 ] = ${Model.KI2450} `,
@@ -350,17 +351,20 @@ describe('Shebang', () => {
             describe('If that line contains invalid node numbers', () => {
                 const master = Model.KI2450
                 // tslint:disable:no-magic-numbers
+                const nodeMap = new Map<number, Model>([
+                    [ 10, Model.KI2461SYS ],
+                ])
                 const expectErrors: Array<Diagnostic> = [
                     {
                         code: 'shebang-node-index',
                         message: `Node number -1 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`,
                         range: {
                             end: {
-                                character: 10 + 15,
+                                character: 12 + 15,
                                 line: 0
                             },
                             start: {
-                                character: 10,
+                                character: 12,
                                 line: 0
                             }
                         },
@@ -372,11 +376,11 @@ describe('Shebang', () => {
                         message: `Node number 65 is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`,
                         range: {
                             end: {
-                                character: 26 + 17,
+                                character: 28 + 17,
                                 line: 0
                             },
                             start: {
-                                character: 26,
+                                character: 28,
                                 line: 0
                             }
                         },
@@ -385,10 +389,12 @@ describe('Shebang', () => {
                     }
                 ]
                 // tslint:enable:no-magic-numbers
+                // "  --#!2450 ; node[-1]=6500 ; node[+65]=2461  ; node[10] = 2461-SYS "
                 const line = [
                     `  ${Shebang.PREFIX}${master} `,
                     ` node[-1]=${Model.KI6500} `,
-                    ` node[+65]=${Model.KI2461}  `
+                    ` node[+65]=${Model.KI2461}  `,
+                    ` node[10] = ${Model.KI2461SYS} `
                 ].join(Shebang.SEPARATOR)
                 let shebang: Shebang
                 let errors: Array<Diagnostic>
@@ -405,8 +411,8 @@ describe('Shebang', () => {
                     expect(shebang.text).to.equal(line)
                 })
 
-                it('returns a shebang with an empty node map', () => {
-                    expect(shebang.nodes).to.be.empty
+                it('returns a shebang with an accurate nodes property', () => {
+                    expect(shebang.nodes).to.deep.equal(nodeMap)
                 })
 
                 it('returns expected errors', () => {
@@ -415,68 +421,148 @@ describe('Shebang', () => {
             })
 
             describe('If that line contains invalid node syntax', () => {
-                describe('throws an Error', () => {
-                    it('test 1', () => {
-                        const line = [
-                            `  ${Shebang.PREFIX}${Model.KI6500} `,
-                            ` node[1] = ${Model.KI2460} `,
-                            ` node{1] = ${Model.KI2461SYS} `,
-                            ` node(2) = ${Model.KI2461} `,
-                            ` node[3] = ${Model.KI2450}  `
-                        ].join(Shebang.SEPARATOR)
+                const master = Model.KI6500
+                // tslint:disable:no-magic-numbers
+                const nodeMap = new Map<number, Model>([
+                    [ 1, Model.KI2460 ],
+                    [ 3, Model.KI2450 ],
+                ])
+                const expectErrors: Array<Diagnostic> = [
+                    {
+                        code: 'shebang-node-expression',
+                        message: `Invalid node expression " node{1] = ${Model.KI2461SYS} ".`,
+                        range: {
+                            end: {
+                                character: 29 + 20,
+                                line: 0
+                            },
+                            start: {
+                                character: 29,
+                                line: 0
+                            }
+                        },
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    },
+                    {
+                        code: 'shebang-node-expression',
+                        message: `Invalid node expression "   node(2) = ${Model.KI2461} ".`,
+                        range: {
+                            end: {
+                                character: 50 + 18,
+                                line: 0
+                            },
+                            start: {
+                                character: 50,
+                                line: 0
+                            }
+                        },
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    }
+                ]
+                // tslint:enable:no-magic-numbers
+                // "  --#!6500 ; node[1] = 2460 ; node{1] = 2461-SYS ;   node(2) = 2461 ; node[3] = 2450  "
+                const line = [
+                    `  ${Shebang.PREFIX}${master} `,
+                    ` node[1] = ${Model.KI2460} `,
+                    ` node{1] = ${Model.KI2461SYS} `,
+                    `   node(2) = ${Model.KI2461} `,
+                    ` node[3] = ${Model.KI2450}  `
+                ].join(Shebang.SEPARATOR)
+                let shebang: Shebang
+                let errors: Array<Diagnostic>
 
-                        expect(() => Shebang.tokenize(line)).to.throw(
-                            `Invalid node expression " node{1] = ${Model.KI2461SYS} ".`
-                        )
-                    })
+                before(() => {
+                    [shebang, errors] = Shebang.tokenize(line)
+                })
 
-                    it('test 2', () => {
-                        const line = [
-                            `  ${Shebang.PREFIX}${Model.KI6500} `,
-                            ` node[1] = ${Model.KI2460} `,
-                            ` node[2] = ${Model.KI2461SYS} `,
-                            `    node(3) = ${Model.KI2461} `,
-                            ` node[4] = ${Model.KI2450}  `
-                        ].join(Shebang.SEPARATOR)
+                it('returns a shebang whose master property is the given master model', () => {
+                    expect(shebang.master).to.equal(master)
+                })
 
-                        expect(() => Shebang.tokenize(line)).to.throw(
-                            `Invalid node expression "    node(3) = ${Model.KI2461} ".`
-                        )
-                    })
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
 
-                    it('test 3', () => {
-                        const line = [
-                            `  ${Shebang.PREFIX}${Model.KI6500} `,
-                            ` node[1] = ${Model.KI2460} `,
-                            ` node[2] = ${Model.KI2461SYS} `,
-                            ` node[3] = ${Model.KI2461} `,
-                            `  <64L4QxLQ|$\\1ng4W<\\d  `
-                        ].join(Shebang.SEPARATOR)
+                it('returns a shebang with an accurate nodes property', () => {
+                    expect(shebang.nodes).to.deep.equal(nodeMap)
+                })
 
-                        expect(() => Shebang.tokenize(line)).to.throw(
-                            `Invalid node expression "  <64L4QxLQ|$\\1ng4W<\\d".`
-                        )
-                    })
+                it('returns expected errors', () => {
+                    expect(errors).to.deep.equal(expectErrors)
                 })
             })
 
             describe('If that line contains an invalid node assignment', () => {
-                describe('throws an Error', () => {
-                    it('test 1', () => {
-                        const line = '--#!2450;node[1]=VLXkyi(c&,^;node[2]=MeKrAY8I'
+                const master = Model.KI2450
+                // tslint:disable:no-magic-numbers
+                const nodeMap = new Map<number, Model>([
+                    [ 3, Model.KI6500 ],
+                ])
+                const expectErrors: Array<Diagnostic> = [
+                    {
+                        code: 'shebang-model',
+                        message: 'Model "VLXkyi(c&,^" is an invalid or unsupported model.',
+                        range: {
+                            end: {
+                                character: 10 + 19,
+                                line: 0
+                            },
+                            start: {
+                                character: 10,
+                                line: 0
+                            }
+                        },
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    },
+                    {
+                        code: 'shebang-model',
+                        message: 'Model "MeKrAY8I" is an invalid or unsupported model.',
+                        range: {
+                            end: {
+                                character: 30 + 18,
+                                line: 0
+                            },
+                            start: {
+                                character: 30,
+                                line: 0
+                            }
+                        },
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    }
+                ]
+                // tslint:enable:no-magic-numbers
+                // "--#!2450 ;node[1]=VLXkyi(c&,^;node[2 ] =MeKrAY8I;node[64] = 6500  "
+                const line = [
+                    `${Shebang.PREFIX}${master} `,
+                    'node[1]=VLXkyi(c&,^',
+                    'node[2 ] =MeKrAY8I',
+                    `node[3] = ${Model.KI6500}  `
+                ].join(Shebang.SEPARATOR)
+                let shebang: Shebang
+                let errors: Array<Diagnostic>
 
-                        expect(() => Shebang.tokenize(line)).to.throw(
-                            'Model "VLXkyi(c&,^" is an invalid or unsupported model.'
-                        )
-                    })
+                before(() => {
+                    [shebang, errors] = Shebang.tokenize(line)
+                })
 
-                    it('test 2', () => {
-                        const line = '--#!2450;node[1]=6500;node[2]=MeKrAY8I'
+                it('returns a shebang whose master property is the given master model', () => {
+                    expect(shebang.master).to.equal(master)
+                })
 
-                        expect(() => Shebang.tokenize(line)).to.throw(
-                            'Model "MeKrAY8I" is an invalid or unsupported model.'
-                        )
-                    })
+                it('returns a shebang whose text property is the given line', () => {
+                    expect(shebang.text).to.equal(line)
+                })
+
+                it('returns a shebang with an accurate nodes property', () => {
+                    expect(shebang.nodes).to.deep.equal(nodeMap)
+                })
+
+                it('returns expected errors', () => {
+                    expect(errors).to.deep.equal(expectErrors)
                 })
             })
         })
