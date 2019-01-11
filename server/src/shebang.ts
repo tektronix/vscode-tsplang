@@ -34,7 +34,7 @@ export namespace Shebang {
     export const MAX_NODE_NUMBER = 64
     export const SEPARATOR = ';'
     const nodeAssignmentOp = '='
-    const shebangRegExp = new RegExp('^\\s*'.concat(Shebang.PREFIX))
+    const shebangRegExp = new RegExp('^\\s*'.concat(PREFIX))
     const nodeRegExp = new RegExp(
         '^\\s*node\\s*\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
     )
@@ -62,7 +62,7 @@ export namespace Shebang {
         }
 
         // Remove the prefix and split on the separator.
-        const rawBangArray = line.replace(shebangRegExp, '').split(Shebang.SEPARATOR)
+        const rawBangArray = line.replace(shebangRegExp, '').split(SEPARATOR)
 
         const result: Shebang = { master : undefined, text: line }
 
@@ -129,10 +129,10 @@ export namespace Shebang {
                 }
 
                 // If the node number is out of bounds.
-                if (nodeNumber < 1 || nodeNumber > Shebang.MAX_NODE_NUMBER) {
+                if (nodeNumber < 1 || nodeNumber > MAX_NODE_NUMBER) {
                     errors.push(Diagnostic.create(
                         itemRange(item, index, encounteredCharacters),
-                        `Node number ${nodeNumber} is less than 1 or greater than ${Shebang.MAX_NODE_NUMBER}.`,
+                        `Node number ${nodeNumber} is less than 1 or greater than ${MAX_NODE_NUMBER}.`,
                         DiagnosticSeverity.Error,
                         'shebang-node-index',
                         'tsplang'
