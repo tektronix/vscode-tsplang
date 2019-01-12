@@ -127,8 +127,8 @@ export class ServerContext {
         }
     }
 
-    onInitialize(params: InitializeParams, documents: TextDocuments): InitializeResult {
-        console.log('tsplang connection initialized')
+    onInitialize(params: InitializeParams, connection: IConnection, documents: TextDocuments): InitializeResult {
+        connection.console.log('tsplang connection initialized')
 
         this.hasWorkspaceSettings = hasWorkspaceSettings(params.capabilities)
 
