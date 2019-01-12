@@ -38,7 +38,7 @@ const context = new ServerContext()
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
 connection.onInitialize((params: InitializeParams): InitializeResult => {
-    return context.onInitialize(params, documents)
+    return context.onInitialize(params, connection, documents)
 })
 
 connection.onInitialized(() => {

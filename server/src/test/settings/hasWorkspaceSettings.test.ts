@@ -13,18 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies no-unused-expression
+// tslint:disable:no-implicit-dependencies no-import-side-effect no-unused-expression
 import { expect } from 'chai'
-// tslint:disable-next-line:no-import-side-effect
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
-import { ClientCapabilities } from 'vscode-languageserver'
 
 import { hasWorkspaceSettings } from '../../settings'
-
-declare module 'vscode-languageserver' {
-    export interface ClientCapabilities { workspace?: { configuration?: boolean } }
-}
+import '../fixtures/vscode-languageserver.fixture'
 
 describe('Settings', () => {
     describe('hasWorkspaceSettings()', () => {
