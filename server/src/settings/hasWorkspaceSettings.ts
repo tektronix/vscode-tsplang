@@ -15,6 +15,12 @@
  */
 'use strict'
 
-export { EnumerationSuggestionValue } from './enumerationSuggestionValue'
-export { hasWorkspaceSettings } from './hasWorkspaceSettings'
-export { TsplangSettings } from './tsplangSettings'
+import { ClientCapabilities } from 'vscode-languageserver'
+
+export function hasWorkspaceSettings(clientCapabilities: ClientCapabilities): boolean {
+    if (clientCapabilities.workspace === undefined) {
+        return false
+    }
+
+    return clientCapabilities.workspace.configuration
+}
