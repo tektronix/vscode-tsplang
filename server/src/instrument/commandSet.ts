@@ -63,12 +63,14 @@ export namespace CommandSetInterface {
 export class CommandSet implements CommandSetInterface {
     readonly completionDepthMap: Map<number, Array<CompletionItem>>
     readonly completionDocs: Map<string, MarkupContentCallback>
+    readonly reserved: Array<CompletionItem>
     readonly signatureDepthMap: Map<number, Array<SignatureInformation>>
     readonly specification: InstrumentSpec
 
     constructor(spec: InstrumentSpec) {
         this.completionDepthMap = new Map()
         this.completionDocs = new Map()
+        this.reserved = new Array()
         this.signatureDepthMap = new Map()
         this.specification = spec
     }
@@ -102,9 +104,15 @@ export class CommandSet implements CommandSetInterface {
         // merge completion items
         set.completions.forEach((value: CompletionItem) => {
             const depth = (value.data === undefined) ? 0 : value.data.domains.length
-            const completions = this.completionDepthMap.get(depth) || new Array<CompletionItem>()
-            completions.push(value)
-            this.completionDepthMap.set(depth, completions)
+
+            if (value.reserved) {
+                this.reserved.push(value)
+            }
+            else {
+                const completions = this.completionDepthMap.get(depth) || new Array<CompletionItem>()
+                completions.push(value)
+                this.completionDepthMap.set(depth, completions)
+            }
         })
 
         // merge signatures

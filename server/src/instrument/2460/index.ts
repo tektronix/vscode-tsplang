@@ -634,6 +634,13 @@ const printnumber: ApiSpec = { label: 'printnumber' }
 
 const reset: ApiSpec = { label: 'reset' }
 
+const scpi: ApiSpec = {
+    children: [
+        { label: 'scpi.execute' }
+    ],
+    label: 'scpi'
+}
+
 const script: ApiSpec = {
     children: [
         { label: 'script.delete' },
@@ -1767,6 +1774,7 @@ export function getApiSpec(): Array<ApiSpec> {
         printbuffer,
         printnumber,
         reset,
+        scpi,
         script,
         Smu.smuInterlock,
         Smu.smuMeasureAutozero,

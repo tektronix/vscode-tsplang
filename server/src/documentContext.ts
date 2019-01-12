@@ -20,15 +20,14 @@ import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4
 import { RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
-// tslint:disable-next-line:ordered-imports
-import { CompletionItemKind, Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
+import { CompletionItemKind, Diagnostic, Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from './antlr4-tsplang'
 import { CompletionItem, ResolvedNamespace, SignatureInformation } from './decorators'
 import { CommandSet } from './instrument'
 import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
-import { getAssignmentCompletions } from './language-comprehension/parser-context-handler'
+import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { EnumerationSuggestionValue, TsplangSettings } from './settings'
 
@@ -39,6 +38,7 @@ declare class CorrectRecogException extends RecognitionException {
 export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
     readonly document: TextDocument
+    errors: Array<Diagnostic>
     settings: TsplangSettings
     private enteredStatementException: boolean
     /**
@@ -163,12 +163,12 @@ export class DocumentContext extends TspListener {
                 return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
             })
 
-            let newAssignmentExclusives: Map<number, ExclusiveContext> | undefined
+            let assignmentResults: AssignmentResults
             //  statement  --{1}-->  variableList
             //             --{1}-->  '='
             //             --{1}-->  expressionList
             if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
-                newAssignmentExclusives = getAssignmentCompletions(
+                assignmentResults = getAssignmentCompletions(
                     variableList,
                     assignmentTerminal,
                     expressionList,
@@ -177,8 +177,12 @@ export class DocumentContext extends TspListener {
                 )
             }
 
-            if (newAssignmentExclusives !== undefined) {
-                this.registerExclusiveEntries([...newAssignmentExclusives.entries()])
+            if (assignmentResults.errors.length > 0) {
+                this.errors.push(...assignmentResults.errors)
+            }
+
+            if (assignmentResults.assignments !== undefined) {
+                this.registerExclusiveEntries([...assignmentResults.assignments.entries()])
 
                 return
             }
@@ -226,7 +230,7 @@ export class DocumentContext extends TspListener {
                         || (lastToken.type === TspLexer.NAME || lastToken.line !== token.line)
 
                 // If we have cached namespace Tokens.
-                if (shouldRegisterNamespace) {
+                if (shouldRegisterNamespace && namespaceTokens.length > 0) {
                     resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
                     depth = ResolvedNamespace.depth(resolvedNamespace)
 
@@ -487,6 +491,7 @@ export class DocumentContext extends TspListener {
 
     update(): void {
         this.enteredStatementException = false
+        this.errors = new Array()
         this.exclusives = new Map()
         this.fuzzyOffsets = new FuzzyOffsetMap()
         this.fuzzySignatureOffsets = new FuzzyOffsetMap()
@@ -501,7 +506,9 @@ export class DocumentContext extends TspListener {
         this.parseTree = this.parser.chunk()
     }
 
-    walk(): void {
+    walk(): Array<Diagnostic> {
         ParseTreeWalker.DEFAULT.walk(this, this.parseTree)
+
+        return this.errors
     }
 }

@@ -16,6 +16,7 @@
 'use strict'
 
 import { Token } from 'antlr4'
+import { Range } from 'vscode-languageserver'
 
 export namespace TokenUtil {
     /**
@@ -31,5 +32,32 @@ export namespace TokenUtil {
         }
 
         return result
+    }
+
+    export function getRange(start: Token, stop: Token): Range {
+        if (start.line === stop.line) {
+            return {
+                end: {
+                    character: start.column + ((stop.stop + 1) - start.start),
+                    line: stop.line - 1
+                },
+                start: {
+                    character: start.column,
+                    line: start.line - 1
+                }
+            }
+        }
+        else {
+            return {
+                end: {
+                    character: stop.column + stop.text.length,
+                    line: stop.line - 1
+                },
+                start: {
+                    character: start.column,
+                    line: start.line - 1
+                }
+            }
+        }
     }
 }

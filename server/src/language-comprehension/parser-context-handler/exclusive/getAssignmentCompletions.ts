@@ -17,13 +17,19 @@
 
 // tslint:disable-next-line:no-submodule-imports
 import { TerminalNode } from 'antlr4/tree/Tree'
-import { TextDocument } from 'vscode-languageserver'
+import { CompletionItemKind, Diagnostic, DiagnosticSeverity, TextDocument } from 'vscode-languageserver'
 
 import { TspParser } from '../../../antlr4-tsplang'
 import { CompletionItem, ResolvedNamespace } from '../../../decorators'
 import { CommandSet } from '../../../instrument'
 import { ExclusiveContext } from '../../exclusive-completion'
+import { TokenUtil } from '../../tokenUtil'
 import { getTerminals } from '../getTerminals'
+
+export interface AssignmentResults {
+    assignments?: Map<number, ExclusiveContext>
+    errors: Array<Diagnostic>
+}
 
 /**
  * Get an ExclusiveMap for the command set given the components of an assignment context.
@@ -41,33 +47,88 @@ export function getAssignmentCompletions(
     expListContext: TspParser.ExpressionListContext,
     commandSet: CommandSet,
     document: TextDocument
-): Map<number, ExclusiveContext> | undefined {
+): AssignmentResults {
     // Keyed on the index of the variable with completions from the command set.
     // Think of it like partial results.
     const candidates = new Map<number, ExclusiveContext>()
+    const errors = new Array<Diagnostic>()
 
     const variables = varListContext.variable()
     for (let i = 0; i < variables.length; i++) {
         const candidate = variables[i]
-
-        // Empty array item check.
-        if (candidate === undefined) {
-            continue
-        }
-
-        // Candidates should have at least a prefix and an index contexts.
-        if (candidate.prefix() === null || candidate.index() === null) {
-            continue
-        }
 
         const candidateText = candidate.getText()
         const candidateDepth = ResolvedNamespace.depth(candidateText)
 
         const completionCandidates = commandSet.completionDepthMap.get(candidateDepth) || []
 
+        // Used to check for whole-item matches.
+        const resolvedCandidate = ResolvedNamespace.create(candidateText)
+
+        let hasReservation = false
+        // Create an error and skip this variable if it is a reserved word.
+        for (const reservation of commandSet.reserved) {
+            if (ResolvedNamespace.equal(resolvedCandidate, CompletionItem.resolveNamespace(reservation))) {
+                errors.push({
+                    code: 'forbidden-name',
+                    message: 'Variable name cannot be used in a TSP script.',
+                    range: TokenUtil.getRange(candidate.start, candidate.stop),
+                    severity: DiagnosticSeverity.Error,
+                    source: 'tsplang'
+                })
+
+                hasReservation = true
+                break
+            }
+        }
+
+        if (hasReservation) {
+            continue
+        }
+
         for (const item of completionCandidates) {
             // If the candidate matches an instrument completion item.
-            if (CompletionItem.namespaceMatch(ResolvedNamespace.create(candidateText), item)) {
+            if (CompletionItem.namespaceMatch(resolvedCandidate, item)) {
+                const equal = ResolvedNamespace.equal(resolvedCandidate, CompletionItem.resolveNamespace(item))
+
+                // Make an error the candidate exactly matches this item
+                // and if the item is not a Property.
+                if (equal && item.kind !== CompletionItemKind.Property) {
+                    if (item.kind === CompletionItemKind.Constant) {
+                        errors.push({
+                            code: 'readonly-assignment',
+                            message: 'Cannot set a readonly attribute.',
+                            range: TokenUtil.getRange(candidate.start, candidate.stop),
+                            severity: DiagnosticSeverity.Error,
+                            source: 'tsplang'
+                        })
+
+                        continue
+                    }
+
+                    let message = 'Cannot reassign a built-in'
+                    if (item.kind === CompletionItemKind.EnumMember) {
+                        message += ' enumeration'
+                    }
+                    else if (item.kind === CompletionItemKind.Function) {
+                        message += ' function'
+                    }
+                    else if (item.kind === CompletionItemKind.Module) {
+                        message += ' table'
+                    }
+                    message += '.'
+
+                    errors.push({
+                        message,
+                        code: 'builtin-assignment',
+                        range: TokenUtil.getRange(candidate.start, candidate.stop),
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    })
+
+                    continue
+                }
+
                 // The item should have a data.types property with content.
                 if (item.data !== undefined && item.data.types !== undefined && item.data.types.length > 0) {
                     candidates.set(i, {
@@ -118,7 +179,7 @@ export function getAssignmentCompletions(
         const exclusiveContext = candidates.get(candidates.keys().next().value)
 
         if (exclusiveContext === undefined) {
-            return
+            return { errors }
         }
 
         let exclusiveOffset = assignmentTerminal.symbol.stop + 1
@@ -139,7 +200,10 @@ export function getAssignmentCompletions(
             }
         }
 
-        return new Map<number, ExclusiveContext>([[exclusiveOffset, exclusiveContext]])
+        return {
+            errors,
+            assignments: new Map<number, ExclusiveContext>([[exclusiveOffset, exclusiveContext]]),
+        }
     }
 
     // Keyed on the index of the expressionList where the TerminalNodes were found.
@@ -227,5 +291,8 @@ export function getAssignmentCompletions(
         result.set(lastTerminal.symbol.stop + 1, partial)
     }
 
-    return (result.size !== 0) ? result : undefined
+    return {
+        errors,
+        assignments: (result.size !== 0) ? result : undefined
+    }
 }

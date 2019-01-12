@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { TextDocuments } from 'vscode-languageserver'
+import { Diagnostic, TextDocuments } from 'vscode-languageserver'
 
 import { Model } from './model'
 import { TsplangSettings } from './settings'
@@ -42,7 +42,7 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    register(uri: string, documentSettings: TsplangSettings): void {
+    register(uri: string, documentSettings: TsplangSettings): Array<Diagnostic> | undefined {
         // check if the doc has already been registered
         if (this.dict.has(uri)) {
             throw new Error('Document already registered.')
@@ -60,15 +60,17 @@ export class TspManager {
         }).trim()
 
         // Try to parse the shebang.
-        const shebang = Shebang.tokenize(firstLine)
+        const [shebang, errors]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
 
         // Try to make a new TspItem instance.
         const tspItem = TspItem.create(document, shebang, documentSettings, this.pool)
 
         tspItem.context.update()
-        tspItem.context.walk()
+        errors.push(...tspItem.context.walk())
 
         this.dict.set(document.uri, tspItem)
+
+        return errors
     }
 
     unregister(uri: string): boolean {
@@ -91,7 +93,7 @@ export class TspManager {
         return this.dict.delete(uri)
     }
 
-    update(uri: string): void {
+    update(uri: string): Array<Diagnostic> {
         // check if the doc has not been registered
         if (!this.dict.has(uri)) {
             throw new Error('Document is not registered.')
@@ -117,14 +119,13 @@ export class TspManager {
             this.unregister(uri)
 
             // Re-register everything.
-            this.register(uri, item.context.settings)
-
             // The context was updated by register, so we're done.
-            return
+            return this.register(uri, item.context.settings)
         }
 
         // Update this item's context.
         item.context.update()
-        item.context.walk()
+
+        return item.context.walk()
     }
 }

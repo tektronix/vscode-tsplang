@@ -41,11 +41,23 @@ describe('Instrument Specification', () => {
 
         describe('getApiSpec()', () => {
             const knownNamespaces = [
+                'abort',
+                'bit',
                 'coroutine',
+                'endflash',
+                'endscript',
+                'flash',
+                'fs',
                 'functions',
+                'io',
                 'keywords',
+                'loadandrunscript',
+                'loadscript',
+                'login',
+                'logout',
                 'math',
                 'os',
+                'prevflash',
                 'string',
                 'table'
             ]

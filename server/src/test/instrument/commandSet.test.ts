@@ -85,6 +85,25 @@ describe('Instrument', () => {
         label: 'baz'
     }
 
+    const reservedRootA: CompletionItem = {
+        label: 'flash',
+        reserved: true
+    }
+    const reservedRootB: CompletionItem = {
+        label: 'bit',
+        reserved: true
+    }
+    const reservedComplA: CompletionItem = {
+        data: { domains: ['flash'] },
+        label: 'prevflash',
+        reserved: true
+    }
+    const reservedComplB: CompletionItem = {
+        data: { domains: ['loadscript'] },
+        label: 'endscript',
+        reserved: true
+    }
+
     const rootAFooSig: SignatureInformation = {
         label: 'root.foo()'
     }
@@ -133,6 +152,15 @@ describe('Instrument', () => {
         rootASubrootBarCompl,
         rootASubrootBarCompl,
         rootAFooCompl
+    ]
+
+    const reservedSetA: Array<CompletionItem> = [
+        reservedRootA,
+        reservedRootB
+    ]
+    const reservedSetB: Array<CompletionItem> = [
+        reservedComplA,
+        reservedComplB
     ]
 
     const signatureSetA: Array<SignatureInformation> = [
@@ -224,6 +252,12 @@ describe('Instrument', () => {
             })
         })
 
+        describe('#reserved', () => {
+            it('is empty on instantiation', () => {
+                expect(new CommandSet(emptySpec).reserved).to.be.empty
+            })
+        })
+
         describe('#signatureDepthMap', () => {
             it('is empty on instantiation', () => {
                 expect(new CommandSet(emptySpec).signatureDepthMap).to.be.empty
@@ -262,6 +296,10 @@ describe('Instrument', () => {
                     expect(commandSet.completions).to.be.empty
                 })
 
+                it('does not add reservations when none are given', () => {
+                    expect(commandSet.reserved).to.be.empty
+                })
+
                 it('does not add signatures when undefined', () => {
                     expect(commandSet.signatureDepthMap).to.be.empty
                     expect(commandSet.signatures).to.be.empty
@@ -285,9 +323,11 @@ describe('Instrument', () => {
                 ])
 
                 before('Seed the CommandSet', () => {
+                    const allCompletionsSetA = ArrayUnion(completionSetA, reservedSetA)
+
                     commandSet.add({
                         completionDocs: documentationSetA,
-                        completions: completionSetA,
+                        completions: allCompletionsSetA,
                         signatures: signatureSetA
                     })
                 })
@@ -302,6 +342,10 @@ describe('Instrument', () => {
 
                 it('maps the namespace depth of each completion', () => {
                     expect(commandSet.completionDepthMap).to.deep.equal(completionDepthMapA)
+                })
+
+                it('adds reservations to the empty set', () => {
+                    expect(commandSet.reserved).to.contain.members(reservedSetA)
                 })
 
                 it('adds signatures to the empty set', () => {
@@ -343,17 +387,21 @@ describe('Instrument', () => {
                 ])
 
                 before('Seed the CommandSet', () => {
+                    const allCompletionsSetA = ArrayUnion(completionSetA, reservedSetA)
+
                     // Add an initial CommandSet.
                     commandSet.add({
                         completionDocs: documentationSetA,
-                        completions: completionSetA,
+                        completions: allCompletionsSetA,
                         signatures: signatureSetA
                     })
+
+                    const allCompletionsSetB = ArrayUnion(completionSetB, reservedSetB)
 
                     // Merge another set with our current CommandSet.
                     commandSet.add({
                         completionDocs: documentationSetB,
-                        completions: completionSetB,
+                        completions: allCompletionsSetB,
                         signatures: signatureSetB
                     })
                 })
@@ -368,6 +416,10 @@ describe('Instrument', () => {
 
                 it('maps the namespace depth of each completion', () => {
                     expect(commandSet.completionDepthMap).to.deep.equal(completionDepthMapB)
+                })
+
+                it('merges reservations into an existing set', () => {
+                    expect(commandSet.reserved).to.contain.members(ArrayUnion(reservedSetA, reservedSetB))
                 })
 
                 it('merges signatures into an existing set', () => {

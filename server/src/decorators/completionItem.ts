@@ -32,6 +32,7 @@ export interface CompletionItem extends vscode_ls.CompletionItem, BaseItem {
     allowBitwise?: boolean
     data?: CompletionItemData
     exclusive?: boolean
+    reserved?: boolean
 }
 export namespace CompletionItem {
     /**

@@ -15,4 +15,14 @@
  */
 'use strict'
 
-export { AssignmentResults, getAssignmentCompletions } from './getAssignmentCompletions'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { CompletionItem } from '../../decorators'
+
+export const completions: Array<CompletionItem> = [
+    {
+        kind: CompletionItemKind.Keyword,
+        label: 'flash',
+        reserved: true
+    }
+]

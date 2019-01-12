@@ -15,4 +15,4 @@
  */
 'use strict'
 
-export { getAssignmentCompletions } from './exclusive'
+export { AssignmentResults, getAssignmentCompletions } from './exclusive'

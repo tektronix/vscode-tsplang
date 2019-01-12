@@ -75,7 +75,11 @@ connection.onInitialized(() => {
 documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
     // if document is registered, then update
     if (manager.has(change.document.uri)) {
-        manager.update(change.document.uri)
+        const diagnostics = manager.update(change.document.uri)
+
+        if (diagnostics !== undefined) {
+            connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
+        }
     }
     // if document is unregistered, then register
     else {
@@ -96,7 +100,9 @@ documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
             )
         }
 
-        manager.register(change.document.uri, settings)
+        const diagnostics = manager.register(change.document.uri, settings) || []
+
+        connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
     }
 })
 
@@ -105,6 +111,8 @@ documents.onDidClose((params: TextDocumentChangeEvent) => {
 
     if (manager.has(params.document.uri)) {
         manager.unregister(params.document.uri)
+
+        connection.sendDiagnostics({ diagnostics: [], uri: params.document.uri })
     }
 })
 
