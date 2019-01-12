@@ -120,7 +120,10 @@ export class TspPool {
                     api.push(...luaEntry.apiSpec)
                     cmdSet.add({
                         completionDocs: luaEntry.commandSet.completionDocs,
-                        completions: luaEntry.commandSet.completions,
+                        completions: [
+                            ...luaEntry.commandSet.completions,
+                            ...luaEntry.commandSet.reserved
+                        ],
                         signatures: luaEntry.commandSet.signatures
                     })
                 }

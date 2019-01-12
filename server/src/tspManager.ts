@@ -66,7 +66,7 @@ export class TspManager {
         const tspItem = TspItem.create(document, shebang, documentSettings, this.pool)
 
         tspItem.context.update()
-        tspItem.context.walk()
+        errors.push(...tspItem.context.walk())
 
         this.dict.set(document.uri, tspItem)
 
@@ -93,7 +93,7 @@ export class TspManager {
         return this.dict.delete(uri)
     }
 
-    update(uri: string): Array<Diagnostic> | undefined {
+    update(uri: string): Array<Diagnostic> {
         // check if the doc has not been registered
         if (!this.dict.has(uri)) {
             throw new Error('Document is not registered.')
@@ -125,6 +125,7 @@ export class TspManager {
 
         // Update this item's context.
         item.context.update()
-        item.context.walk()
+
+        return item.context.walk()
     }
 }

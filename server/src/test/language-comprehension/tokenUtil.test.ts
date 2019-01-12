@@ -19,6 +19,7 @@ import { expect } from 'chai'
 // tslint:disable-next-line:no-import-side-effect
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
+import { Range } from 'vscode-languageserver'
 
 import { TokenUtil } from '../../language-comprehension'
 import { makeTestToken } from '../testTypes'
@@ -48,6 +49,66 @@ describe('Language Comprehension', () => {
                 scenario.forEach((given: Array<Token>, expected: string) => {
                     expect(TokenUtil.getString(...given)).to.equal(expected)
                 })
+            })
+        })
+
+        describe('.getRange()', () => {
+            it('returns the correct Range when on the same line', () => {
+                /**
+                 * "foo.bar"
+                 */
+
+                const fooToken = makeTestToken('foo')
+                fooToken.line = 1
+                fooToken.start = 0
+                fooToken.stop = fooToken.text.length - 1
+                fooToken.column = 0
+
+                const barToken = makeTestToken('bar')
+                barToken.line = fooToken.line
+                barToken.start = fooToken.text.length + '.'.length
+                barToken.stop = barToken.start + barToken.text.length - 1
+                barToken.column = barToken.start
+
+                const expected: Range = {
+                    end: {
+                        character: 'foo.bar'.length,
+                        line: 0
+                    },
+                    start: {
+                        character: 0,
+                        line: 0
+                    }
+                }
+
+                expect(TokenUtil.getRange(fooToken, barToken)).to.deep.equal(expected)
+            })
+
+            it('returns the correct Range when on different lines', () => {
+                /**
+                 * "foo.\n    bar"
+                 */
+
+                const fooToken = makeTestToken('foo')
+                fooToken.line = 1
+                fooToken.column = 0
+
+                const barToken = makeTestToken('bar')
+                barToken.line = fooToken.line + 1
+                barToken.column = '    '.length
+
+                const expected: Range = {
+                    end: {
+                        character: '    bar'.length,
+                        line: 1
+                    },
+                    start: {
+                        character: 0,
+                        line: 0
+                    }
+                }
+
+                expect(TokenUtil.getRange(fooToken, barToken)).to.deep.equal(expected)
             })
         })
     })

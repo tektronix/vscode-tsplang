@@ -15,4 +15,4 @@
  */
 'use strict'
 
-export { getAssignmentCompletions } from './getAssignmentCompletions'
+export { AssignmentResults, getAssignmentCompletions } from './getAssignmentCompletions'
