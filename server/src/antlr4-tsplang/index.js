@@ -13,8 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-'use strict'
-
-export { TspLexer } from './TspLexer'
-export { TspListener } from './TspListener'
-export { TspParser } from './TspParser'
+exports.TspLexer = require('./TspLexer').TspLexer;
+exports.TspListener = require('./TspListener').TspListener;
+exports.TspParser = require('./TspParser').TspParser;
