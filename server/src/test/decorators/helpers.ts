@@ -13,24 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import * as antlr4 from 'antlr4'
+'use strict'
 
-class Token extends antlr4.Token {
-    private _text: string
+import { Token } from 'antlr4'
 
-    constructor() {
-        super()
-    }
+// tslint:disable-next-line:no-import-side-effect
+import '../fixtures/antlr4.fixture'
 
-    get text(): string {
-        return this._text
-    }
-    set text(value: string) {
-        this._text = value
-    }
-}
-
-export function makeStringArray(...tokens: Array<antlr4.Token>): Array<string> {
+function makeStringArray(...tokens: Array<Token>): Array<string> {
     const result = new Array<string>()
 
     tokens.forEach((value: Token) => {
@@ -40,7 +30,7 @@ export function makeStringArray(...tokens: Array<antlr4.Token>): Array<string> {
     return result
 }
 
-export function makeTestToken(text: string): Token {
+function makeTestToken(text: string): Token {
     const result = new Token()
     result.text = text
 

@@ -21,7 +21,8 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
 import { CompletionItem } from '../../decorators'
-import { makeStringArray, makeTestToken } from '../testTypes'
+// tslint:disable-next-line:no-import-side-effect
+import '../fixtures/antlr4.fixture'
 
 describe('Decorators', () => {
     describe('CompletionItem', () => {
@@ -318,10 +319,14 @@ describe('Decorators', () => {
         })
 
         describe('.tokensMatch()', () => {
-            const foo = makeTestToken('foo')
-            const bar = makeTestToken('bar')
-            const baz = makeTestToken('baz')
-            const dot = makeTestToken('.')
+            const foo = new Token()
+            foo.text = 'foo'
+            const bar = new Token()
+            bar.text = 'bar'
+            const baz = new Token()
+            baz.text = 'baz'
+            const dot = new Token()
+            dot.text = '.'
 
             it('returns true given an empty Token array', () => {
                 expect(CompletionItem.tokensMatch([], singleDomainCompletion)).to.be.true
@@ -337,7 +342,7 @@ describe('Decorators', () => {
                 testCases.forEach((itemA: Array<Token>, itemB: CompletionItem) => {
                     expect(
                         CompletionItem.tokensMatch(itemA, itemB),
-                        `"${JSON.stringify(makeStringArray(...itemA))}" did not match "${JSON.stringify(itemB)}"`
+                        `"${JSON.stringify(Token.makeStringArray(...itemA))}" did not match "${JSON.stringify(itemB)}"`
                     ).to.be.true
                 })
             })
@@ -352,7 +357,7 @@ describe('Decorators', () => {
                 testCases.forEach((itemA: Array<Token>, itemB: CompletionItem) => {
                     expect(
                         CompletionItem.tokensMatch(itemA, itemB),
-                        `"${JSON.stringify(makeStringArray(...itemA))}" matched "${JSON.stringify(itemB)}"`
+                        `"${JSON.stringify(Token.makeStringArray(...itemA))}" matched "${JSON.stringify(itemB)}"`
                     ).to.be.false
                 })
             })

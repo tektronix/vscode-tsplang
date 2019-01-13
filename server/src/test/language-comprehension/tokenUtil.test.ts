@@ -22,7 +22,8 @@ import 'mocha'
 import { Range } from 'vscode-languageserver'
 
 import { TokenUtil } from '../../language-comprehension'
-import { makeTestToken } from '../testTypes'
+// tslint:disable-next-line:no-import-side-effect
+import '../fixtures/antlr4.fixture'
 
 describe('Language Comprehension', () => {
     describe('TokenUtil', () => {
@@ -34,11 +35,14 @@ describe('Language Comprehension', () => {
             })
 
             it('returns an accurate representation of the given Token array', () => {
-                const fooToken = makeTestToken('foo')
+                const fooToken = new Token()
+                fooToken.text = 'foo'
 
-                const dotToken = makeTestToken('.')
+                const dotToken = new Token()
+                dotToken.text = '.'
 
-                const barToken = makeTestToken('bar')
+                const barToken = new Token()
+                barToken.text = 'bar'
 
                 const scenario = new Map<string, Array<Token>>([
                     ['foo', [fooToken]],
@@ -58,13 +62,15 @@ describe('Language Comprehension', () => {
                  * "foo.bar"
                  */
 
-                const fooToken = makeTestToken('foo')
+                const fooToken = new Token()
+                fooToken.text = 'foo'
                 fooToken.line = 1
                 fooToken.start = 0
                 fooToken.stop = fooToken.text.length - 1
                 fooToken.column = 0
 
-                const barToken = makeTestToken('bar')
+                const barToken = new Token()
+                barToken.text = 'bar'
                 barToken.line = fooToken.line
                 barToken.start = fooToken.text.length + '.'.length
                 barToken.stop = barToken.start + barToken.text.length - 1
@@ -89,11 +95,13 @@ describe('Language Comprehension', () => {
                  * "foo.\n    bar"
                  */
 
-                const fooToken = makeTestToken('foo')
+                const fooToken = new Token()
+                fooToken.text = 'foo'
                 fooToken.line = 1
                 fooToken.column = 0
 
-                const barToken = makeTestToken('bar')
+                const barToken = new Token()
+                barToken.text = 'bar'
                 barToken.line = fooToken.line + 1
                 barToken.column = '    '.length
 
