@@ -177,14 +177,16 @@ export class DocumentContext extends TspListener {
                 )
             }
 
-            if (assignmentResults.errors.length > 0) {
-                this.errors.push(...assignmentResults.errors)
-            }
+            if (assignmentResults !== undefined) {
+                if (assignmentResults.errors.length > 0) {
+                    this.errors.push(...assignmentResults.errors)
+                }
 
-            if (assignmentResults.assignments !== undefined) {
-                this.registerExclusiveEntries([...assignmentResults.assignments.entries()])
+                if (assignmentResults.assignments !== undefined) {
+                    this.registerExclusiveEntries([...assignmentResults.assignments.entries()])
 
-                return
+                    return
+                }
             }
 
             startIndex = context.start.tokenIndex
