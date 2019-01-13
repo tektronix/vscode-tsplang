@@ -19,11 +19,12 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 import * as vsls from 'vscode-languageserver'
 
-import { SignatureInformation } from '../decorators'
+import { CompletionItem, SignatureInformation } from '../decorators'
 import { ServerContext } from '../serverContext'
 import { TsplangSettings } from '../settings'
 import { TspManager } from '../tspManager'
 
+import './fixtures/tspManager.fixture'
 import './fixtures/vscode-languageserver.fixture'
 
 class TextDocuments extends vsls.TextDocuments {
@@ -53,14 +54,20 @@ describe('ServerContext', () => {
         new vsls.IPCMessageReader(process),
         new vsls.IPCMessageWriter(process)
     )
+    const diagnostics = new Map<string, Array<vsls.Diagnostic>>()
     const documents = new TextDocuments()
     const manager = new TspManager(documents)
     const messages = new Array<string>()
+    const registeredUris = new Array<string>()
+    const unregisteredUri = 'file://unknown.tsp'
     let serverContext: ServerContext
 
     before('Instantiate', () => {
         connection.console.log = (message: string): void => {
             messages.push(message)
+        }
+        connection.sendDiagnostics = (params: vsls.PublishDiagnosticsParams): void => {
+            diagnostics.set(params.uri, params.diagnostics)
         }
 
         serverContext = new ServerContext()
@@ -70,12 +77,75 @@ describe('ServerContext', () => {
 
         documents.set(doc1Uri, document1)
         manager.register(doc1Uri, serverContext.globalSettings)
+        // XXX: remove once #onDidChangeContent tests have been created
+        diagnostics.set(doc1Uri, [])
+        registeredUris.push(doc1Uri)
 
-        const doc2Uri = 'file://signatureDoc.tsp'
-        const signatureDoc = vsls.TextDocument.create(doc2Uri, 'tsp', 1, 'assert(,)\nfoo()')
+        const doc2Uri = 'file://basicSignatures.tsp'
+        const basicSignatures = vsls.TextDocument.create(doc2Uri, 'tsp', 1, 'assert(,)\nfoo()')
 
-        documents.set(doc2Uri, signatureDoc)
+        documents.set(doc2Uri, basicSignatures)
         manager.register(doc2Uri, serverContext.globalSettings)
+        // XXX: remove once #onDidChangeContent tests have been created
+        diagnostics.set(doc2Uri, [])
+        registeredUris.push(doc2Uri)
+
+        const doc3Uri = 'file://basicCompletions.tsp'
+        const basicCompletions = vsls.TextDocument.create(
+            doc3Uri,
+            'tsp',
+            1,
+            '--#!2450\nsmu.measure.limit[1].\nfoo.source'
+        )
+
+        documents.set(doc3Uri, basicCompletions)
+        manager.register(doc3Uri, serverContext.globalSettings)
+        // XXX: remove once #onDidChangeContent tests have been created
+        diagnostics.set(doc3Uri, [])
+        registeredUris.push(doc3Uri)
+    })
+
+    after('Unregister', () => {
+        describe('ServerContext', () => {
+            describe('#onDidClose()', () => {
+                context('if the document was never registered', () => {
+                    let expectedManagerCount: number
+
+                    before('Close Unregistered File', () => {
+                        expect(manager.get(unregisteredUri)).to.be.undefined
+
+                        expectedManagerCount = manager.count()
+
+                        serverContext.onDidClose({ document: { uri: unregisteredUri } }, connection, manager)
+                    })
+
+                    it('does not affect TspManager', () => {
+                        expect(manager.count()).to.equal(expectedManagerCount)
+                    })
+
+                    it('never sent Diagnostics to the Client', () => {
+                        expect(diagnostics.get(unregisteredUri)).to.be.undefined
+                    })
+                })
+
+                context('if the document was registered', () => {
+                    registeredUris.forEach((uri: string) => {
+                        expect(manager.get(uri)).to.not.be.undefined
+                        expect(diagnostics.get(uri)).to.not.be.undefined
+
+                        serverContext.onDidClose({ document: { uri } }, connection, manager)
+
+                        it(`unregisters "${uri}"`, () => {
+                            expect(manager.get(uri)).to.be.undefined
+                        })
+
+                        it('clears all Diagnostics', () => {
+                            expect(diagnostics.get(uri)).to.be.empty
+                        })
+                    })
+                })
+            })
+        })
     })
 
     describe('#globalSettings', () => {
@@ -87,6 +157,63 @@ describe('ServerContext', () => {
     describe('#hasWorkspaceSettings', () => {
         it('is false on instantiation', () => {
             expect(serverContext.hasWorkspaceSettings).to.be.false
+        })
+    })
+
+    describe('#onCompletion()', () => {
+        const targetUri = 'file://basicCompletions.tsp'
+        const validTestCases: Array<[vsls.Position, Array<string>]> = [
+            [{ character: 3, line: 1 }, ['smu']],
+            [{ character: 11, line: 1 }, ['smu.measure']],
+            [{ character: 17, line: 1 }, ['smu.measure.limit']],
+            [{ character: 21, line: 1 }, [
+                'smu.measure.limit.audible',
+                'smu.measure.limit.autoclear',
+                'smu.measure.limit.clear',
+                'smu.measure.limit.enable',
+                'smu.measure.limit.fail',
+                'smu.measure.limit.high',
+                'smu.measure.limit.low',
+            ]],
+        ]
+        const invalidUriPositions: Array<vsls.Position> = [
+            { character: 3, line: 2 },
+            { character: 10, line: 2 },
+        ]
+
+        it('returns undefined if the TspManager does not have the URI', () => {
+            expect(serverContext.onCompletion(
+                {
+                    position: { character: 0, line: 0 },
+                    textDocument: { uri: unregisteredUri }
+                },
+                manager
+            )).to.be.undefined
+        })
+
+        validTestCases.forEach(([position, expected]: [vsls.Position, Array<string>]) => {
+            it('returns the expected CompletionItems given a valid document position', () => {
+                const actual = serverContext.onCompletion({ position, textDocument: { uri: targetUri }}, manager)
+
+                expect(actual).to.not.be.undefined
+
+                const labelArray = new Array<string>()
+                actual.forEach((value: CompletionItem) => {
+                    labelArray.push(CompletionItem.resolveNamespace(value))
+                })
+                expect(labelArray).to.contain.members(expected)
+            })
+        })
+
+        invalidUriPositions.forEach((position: vsls.Position) => {
+            it('returns undefined given a invalid document position', () => {
+                const actual = serverContext.onCompletion({ position, textDocument: { uri: targetUri }}, manager)
+
+                expect(
+                    actual,
+                    `failure at  Ln ${position.line + 1}, Col ${position.character + 1}  in  ${targetUri}`
+                ).to.contain.members(manager.get(targetUri).context.commandSet.completionDepthMap.get(0))
+            })
         })
     })
 
@@ -133,7 +260,7 @@ describe('ServerContext', () => {
             signatureLabels: Array<string>
         }
 
-        const targetUri = 'file://signatureDoc.tsp'
+        const targetUri = 'file://basicSignatures.tsp'
         const validTestCases: Array<[vsls.Position, ExpectedSignatureHelp]> = [
             [{ character: 7, line: 0 }, { activeParameter: 0, signatureLabels: ['assert'] }],
             [{ character: 8, line: 0 }, { activeParameter: 1, signatureLabels: ['assert'] }],
@@ -149,7 +276,7 @@ describe('ServerContext', () => {
             expect(serverContext.onSignatureHelp(
                 {
                     position: { character: 0, line: 0 },
-                    textDocument: { uri: 'file://unknown.tsp' }
+                    textDocument: { uri: unregisteredUri }
                 },
                 manager
             )).to.be.undefined
