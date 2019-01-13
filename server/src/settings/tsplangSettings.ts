@@ -15,10 +15,12 @@
  */
 'use strict'
 
-import { EnumerationSuggestionValue } from './enumerationSuggestionValue'
+import { CompletionItemKind } from 'vscode-languageserver'
+
+import { SuggestionSortKind } from './suggestionSortKind'
 
 export interface TsplangSettings {
-    enumerationSuggestions: EnumerationSuggestionValue
+    enumerationSuggestions: SuggestionSortKind
 }
 export namespace TsplangSettings {
     /**
@@ -27,7 +29,18 @@ export namespace TsplangSettings {
      */
     export function defaults(): TsplangSettings {
         return {
-            enumerationSuggestions: EnumerationSuggestionValue.INLINE
+            enumerationSuggestions: SuggestionSortKind.INLINE
         }
+    }
+
+    /**
+     * Returns a Map from the given settings that can be used as a recipe to create CompletionItem.sortText.
+     * @param settings The settings used to seed the sort map.
+     * @returns A Map object keyed on a CompletionItemKind whose key-value is the desired SuggestionSortKind.
+     */
+    export function sortMap(settings: TsplangSettings): Map<CompletionItemKind, SuggestionSortKind> {
+        return new Map([
+            [CompletionItemKind.EnumMember, settings.enumerationSuggestions]
+        ])
     }
 }

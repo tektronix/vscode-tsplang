@@ -18,18 +18,51 @@ import { expect } from 'chai'
 // tslint:disable-next-line:no-import-side-effect
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
+import { CompletionItemKind } from 'vscode-languageserver'
 
-import { EnumerationSuggestionValue, TsplangSettings } from '../../settings'
+import { SuggestionSortKind, TsplangSettings } from '../../settings'
 
 describe('Settings', () => {
     describe('TsplangSettings', () => {
+        const defaultSettings: TsplangSettings = {
+            enumerationSuggestions: SuggestionSortKind.INLINE
+        }
+        const defaultSortMap = new Map<CompletionItemKind, SuggestionSortKind>([
+            [CompletionItemKind.EnumMember, defaultSettings.enumerationSuggestions]
+        ])
+
         describe('.defaults()', () => {
             it('returns default settings', () => {
-                const expectedDefaults: TsplangSettings = {
-                    enumerationSuggestions: EnumerationSuggestionValue.INLINE
-                }
+                expect(TsplangSettings.defaults()).to.deep.equal(defaultSettings)
+            })
+        })
 
-                expect(TsplangSettings.defaults()).to.deep.equal(expectedDefaults)
+        describe('.sortMap()', () => {
+            const testCases: Array<[TsplangSettings, Map<CompletionItemKind, SuggestionSortKind>]> = [
+                [
+                    {
+                        enumerationSuggestions: SuggestionSortKind.BOTTOM
+                    },
+                    new Map<CompletionItemKind, SuggestionSortKind>([
+                        [CompletionItemKind.EnumMember, SuggestionSortKind.BOTTOM]
+                    ])
+                ]
+            ]
+
+            it('returns a default sort map given default settings', () => {
+                expect(TsplangSettings.sortMap(defaultSettings)).to.deep.equal(defaultSortMap)
+            })
+
+            testCases.forEach((
+                [given, expected]: [TsplangSettings, Map<CompletionItemKind, SuggestionSortKind>],
+                index: number
+            ) => {
+                it('returns the expected sort map for the given settings', () => {
+                    expect(
+                        TsplangSettings.sortMap(given),
+                        `failed testcase #${index}`
+                    ).to.deep.equal(expected)
+                })
             })
         })
     })
