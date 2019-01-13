@@ -19,6 +19,7 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 import * as vsls from 'vscode-languageserver'
 
+import { SignatureInformation } from '../decorators'
 import { ServerContext } from '../serverContext'
 import { TsplangSettings } from '../settings'
 import { TspManager } from '../tspManager'
@@ -69,6 +70,12 @@ describe('ServerContext', () => {
 
         documents.set(doc1Uri, document1)
         manager.register(doc1Uri, serverContext.globalSettings)
+
+        const doc2Uri = 'file://signatureDoc.tsp'
+        const signatureDoc = vsls.TextDocument.create(doc2Uri, 'tsp', 1, 'assert(,)\nfoo()')
+
+        documents.set(doc2Uri, signatureDoc)
+        manager.register(doc2Uri, serverContext.globalSettings)
     })
 
     describe('#globalSettings', () => {
@@ -117,6 +124,59 @@ describe('ServerContext', () => {
 
         it('returns expected Capabilities', () => {
             expect(actual).to.deep.equal(expected)
+        })
+    })
+
+    describe('#onSignatureHelp()', () => {
+        interface ExpectedSignatureHelp {
+            activeParameter: number
+            signatureLabels: Array<string>
+        }
+
+        const targetUri = 'file://signatureDoc.tsp'
+        const validTestCases: Array<[vsls.Position, ExpectedSignatureHelp]> = [
+            [{ character: 7, line: 0 }, { activeParameter: 0, signatureLabels: ['assert'] }],
+            [{ character: 8, line: 0 }, { activeParameter: 1, signatureLabels: ['assert'] }],
+        ]
+        const invalidUriPositions: Array<vsls.Position> = [
+            { character: 0, line: 0 },
+            { character: 6, line: 0 },
+            { character: 9, line: 0 },
+            { character: 4, line: 1 },
+        ]
+
+        it('returns undefined if the TspManager does not have the URI', () => {
+            expect(serverContext.onSignatureHelp(
+                {
+                    position: { character: 0, line: 0 },
+                    textDocument: { uri: 'file://unknown.tsp' }
+                },
+                manager
+            )).to.be.undefined
+        })
+
+        validTestCases.forEach(([position, expected]: [vsls.Position, ExpectedSignatureHelp]) => {
+            it('returns the expected SignatureHelp given a valid document position', () => {
+                const actual = serverContext.onSignatureHelp({ position, textDocument: { uri: targetUri }}, manager)
+
+                expect(actual).to.not.be.undefined
+
+                expect(actual.activeParameter).to.equal(expected.activeParameter)
+
+                const labelArray = new Array<string>()
+                actual.signatures.forEach((value: SignatureInformation) => {
+                    labelArray.push(SignatureInformation.resolveNamespace(value))
+                })
+                expect(labelArray).to.contain.members(expected.signatureLabels)
+            })
+        })
+
+        invalidUriPositions.forEach((position: vsls.Position) => {
+            it('returns undefined given an invalid document position', () => {
+                const actual = serverContext.onSignatureHelp({ position, textDocument: { uri: targetUri }}, manager)
+
+                expect(actual).to.be.undefined
+            })
         })
     })
 })
