@@ -17,6 +17,7 @@
 
 import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
 // tslint:disable:no-submodule-imports
+import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
 import { RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
@@ -30,6 +31,9 @@ import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclu
 import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { EnumerationSuggestionValue, TsplangSettings } from './settings'
+
+// tslint:disable-next-line:no-empty
+ConsoleErrorListener.prototype.syntaxError = (): void => {}
 
 declare class CorrectRecogException extends RecognitionException {
     startToken?: Token
