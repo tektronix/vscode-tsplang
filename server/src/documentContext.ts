@@ -30,7 +30,7 @@ import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
-import { EnumerationSuggestionValue, TsplangSettings } from './settings'
+import { SuggestionSortKind, TsplangSettings } from './settings'
 
 // tslint:disable-next-line:no-empty
 ConsoleErrorListener.prototype.syntaxError = (): void => {}
@@ -43,7 +43,8 @@ export class DocumentContext extends TspListener {
     readonly commandSet: CommandSet
     readonly document: TextDocument
     errors: Array<Diagnostic>
-    settings: TsplangSettings
+    private _settings: TsplangSettings
+    private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
     private enteredStatementException: boolean
     /**
      * A Map keyed to the ending offset of an assignment operator (`=`) or
@@ -75,6 +76,15 @@ export class DocumentContext extends TspListener {
         this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
         this.update()
+    }
+
+    get settings(): TsplangSettings {
+        return this._settings
+    }
+
+    set settings(value: TsplangSettings) {
+        this._settings = value
+        this._sortMap = TsplangSettings.sortMap(this._settings)
     }
 
     exitFunctionCall(context: TspParser.FunctionCallContext): void {
@@ -344,29 +354,6 @@ export class DocumentContext extends TspListener {
             offset = this.fuzzyOffsets.get(offset) || offset
         }
 
-        const addSortText = (completions?: Array<CompletionItem>): Array<CompletionItem> | undefined => {
-            if (completions === undefined) {
-                return
-            }
-
-            return completions.map((value: CompletionItem) => {
-                if (value.kind === CompletionItemKind.EnumMember) {
-                    value.sortText = EnumerationSuggestionValue.addSortCharacter(
-                        value.label,
-                        this.settings.enumerationSuggestions
-                    )
-                }
-                else {
-                    value.sortText = EnumerationSuggestionValue.addSortCharacter(
-                        value.label,
-                        EnumerationSuggestionValue.INLINE
-                    )
-                }
-
-                return value
-            })
-        }
-
         // Get available exclusive completion items.
         const exclusiveContext = this.exclusives.get(offset)
 
@@ -390,11 +377,17 @@ export class DocumentContext extends TspListener {
             }
 
             if (exclusiveResult.length > 0) {
-                return addSortText(exclusiveResult)
+                return CompletionItem.addSortText(this._sortMap, ...exclusiveResult)
             }
         }
 
-        return addSortText(this.commandSet.completionDepthMap.get(0))
+        const rootCompletions = this.commandSet.completionDepthMap.get(0)
+
+        if (rootCompletions === undefined || rootCompletions.length === 0) {
+            return
+        }
+
+        return CompletionItem.addSortText(this._sortMap, ...rootCompletions)
     }
 
     getSignatureHelp(cursor: Position): SignatureHelp | undefined {

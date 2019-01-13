@@ -19,8 +19,11 @@ import { expect } from 'chai'
 // tslint:disable-next-line:no-import-side-effect
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
+import { CompletionItemKind } from 'vscode-languageserver'
 
 import { CompletionItem } from '../../decorators'
+import { SuggestionSortKind } from '../../settings'
+import { SortCharacter } from '../../settings/suggestionSortKind'
 // tslint:disable-next-line:no-import-side-effect
 import '../fixtures/antlr4.fixture'
 
@@ -30,19 +33,95 @@ describe('Decorators', () => {
             label: ''
         }
         const noDomainCompletion: CompletionItem = {
-            kind: 9,
+            kind: CompletionItemKind.Module,
             label: 'foo'
         }
         const singleDomainCompletion: CompletionItem = {
             data: { domains: ['foo'] },
-            kind: 9,
+            kind: CompletionItemKind.Module,
             label: 'bar'
         }
         const multiDomainCompletion: CompletionItem = {
             data: { domains: ['bar', 'foo'] },
-            kind: 9,
+            kind: CompletionItemKind.Module,
             label: 'baz'
         }
+
+        describe('.addSortText()', () => {
+            interface Given {
+                items: Array<CompletionItem>
+                sort: Map<CompletionItemKind, SuggestionSortKind>
+            }
+
+            interface TestCase {
+                expected: Map<string, string>
+                given: Given
+            }
+
+            const constantCompletion: CompletionItem = {
+                kind: CompletionItemKind.Constant,
+                label: 'foo'
+            }
+            const enumMemberCompletion: CompletionItem = {
+                data: { domains: ['foo'] },
+                kind: CompletionItemKind.EnumMember,
+                label: 'bar'
+            }
+            const moduleCompletion: CompletionItem = {
+                data: { domains: ['bar', 'foo'] },
+                kind: CompletionItemKind.Module,
+                label: 'baz'
+            }
+            const propertyCompletion: CompletionItem = {
+                kind: CompletionItemKind.Property,
+                label: 'unmapped'
+            }
+            const undefinedCompletion: CompletionItem = {
+                label: 'nokind'
+            }
+
+            const testCases: Array<TestCase> = [
+                {
+                    expected: new Map([
+                        ['foo', SortCharacter.BOTTOM + 'foo'],
+                        ['bar', 'bar'],
+                        ['baz', SortCharacter.TOP + 'baz'],
+                        ['unmapped', 'unmapped'],
+                        ['nokind', 'nokind']
+                    ]),
+                    given: {
+                        items: [
+                            constantCompletion,
+                            enumMemberCompletion,
+                            moduleCompletion,
+                            propertyCompletion,
+                            undefinedCompletion
+                        ],
+                        sort: new Map<CompletionItemKind, SuggestionSortKind>([
+                            [CompletionItemKind.Constant, SuggestionSortKind.BOTTOM],
+                            [CompletionItemKind.EnumMember, SuggestionSortKind.INLINE],
+                            [CompletionItemKind.Module, SuggestionSortKind.TOP]
+                        ]),
+                    },
+                },
+            ]
+
+            it('returns an empty array if passed an empty array', () => {
+                expect(CompletionItem.addSortText(new Map(), ...[])).to.be.empty
+            })
+
+            testCases.forEach((test: TestCase) => {
+                it('returns an array with the expected sortText additions', () => {
+                    const actual = CompletionItem.addSortText(test.given.sort, ...test.given.items)
+
+                    expect(actual.length).to.equal(test.expected.size)
+
+                    actual.forEach((baseItem: CompletionItem) => {
+                        expect(baseItem.sortText).to.equal(test.expected.get(baseItem.label))
+                    })
+                })
+            })
+        })
 
         describe('.createRootItems()', () => {
             it('returns an empty array when the given string is empty', () => {

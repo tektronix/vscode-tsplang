@@ -19,37 +19,52 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { EnumerationSuggestionValue } from '../../settings'
+import { SuggestionSortKind } from '../../settings'
+import { SortCharacter } from '../../settings/suggestionSortKind'
 
 describe('Settings', () => {
-    describe('EnumerationSuggestionValue', () => {
+    describe('SortCharacter', () => {
         describe('.BOTTOM', () => {
-            it('contained in EnumerationSuggestionValue', () => {
-                expect(EnumerationSuggestionValue).to.have.ownProperty('BOTTOM')
-            })
-
-            it('equals "bottom"', () => {
-                expect(EnumerationSuggestionValue.BOTTOM).to.equal('bottom')
-            })
-        })
-
-        describe('.INLINE', () => {
-            it('contained in EnumerationSuggestionValue', () => {
-                expect(EnumerationSuggestionValue).to.have.ownProperty('INLINE')
-            })
-
-            it('equals "inline"', () => {
-                expect(EnumerationSuggestionValue.INLINE).to.equal('inline')
+            it('is greater than .TOP', () => {
+                expect(SortCharacter.BOTTOM.charCodeAt(0)).is.greaterThan(SortCharacter.TOP.charCodeAt(0))
             })
         })
 
         describe('.TOP', () => {
-            it('contained in EnumerationSuggestionValue', () => {
-                expect(EnumerationSuggestionValue).to.have.ownProperty('TOP')
+            it('is less than .BOTTOM', () => {
+                expect(SortCharacter.TOP.charCodeAt(0)).is.lessThan(SortCharacter.BOTTOM.charCodeAt(0))
+            })
+        })
+    })
+
+    describe('SuggestionSortKind', () => {
+        describe('.BOTTOM', () => {
+            it('contained in SuggestionSortKind', () => {
+                expect(SuggestionSortKind).to.have.ownProperty('BOTTOM')
+            })
+
+            it('equals "bottom"', () => {
+                expect(SuggestionSortKind.BOTTOM).to.equal('bottom')
+            })
+        })
+
+        describe('.INLINE', () => {
+            it('contained in SuggestionSortKind', () => {
+                expect(SuggestionSortKind).to.have.ownProperty('INLINE')
+            })
+
+            it('equals "inline"', () => {
+                expect(SuggestionSortKind.INLINE).to.equal('inline')
+            })
+        })
+
+        describe('.TOP', () => {
+            it('contained in SuggestionSortKind', () => {
+                expect(SuggestionSortKind).to.have.ownProperty('TOP')
             })
 
             it('equals "top"', () => {
-                expect(EnumerationSuggestionValue.TOP).to.equal('top')
+                expect(SuggestionSortKind.TOP).to.equal('top')
             })
         })
 
@@ -65,13 +80,13 @@ describe('Settings', () => {
             ])
 
             context('When type is BOTTOM', () => {
-                const sortType = EnumerationSuggestionValue.BOTTOM
+                const sortType = SuggestionSortKind.BOTTOM
 
                 it(`returns a string starting with "${bottomSortChar}" (${bottomSortLiteral})`, () => {
                     scenarios.forEach((testCases: Array<string>) => {
                         testCases.forEach((test: string) => {
                             expect(
-                                EnumerationSuggestionValue.addSortCharacter(test, sortType)[0],
+                                SuggestionSortKind.addSortCharacter(test, sortType)[0],
                                 `BOTTOM sortText character not equal to "${bottomSortChar}" (${bottomSortLiteral})`
                             ).to.equal(bottomSortChar)
                         })
@@ -82,7 +97,7 @@ describe('Settings', () => {
                     scenarios.forEach((testCases: Array<string>, expected: string) => {
                         testCases.forEach((test: string) => {
                             expect(
-                                EnumerationSuggestionValue.addSortCharacter(test, sortType)
+                                SuggestionSortKind.addSortCharacter(test, sortType)
                             ).to.equal(bottomSortChar + expected)
                         })
                     })
@@ -90,13 +105,13 @@ describe('Settings', () => {
             })
 
             context('When type is INLINE', () => {
-                const sortType = EnumerationSuggestionValue.INLINE
+                const sortType = SuggestionSortKind.INLINE
 
                 it('returns a string without a special starting character', () => {
                     scenarios.forEach((testCases: Array<string>) => {
                         testCases.forEach((test: string) => {
                             expect(
-                                EnumerationSuggestionValue.addSortCharacter(test, sortType)
+                                SuggestionSortKind.addSortCharacter(test, sortType)
                             ).to.equal(test.toLocaleLowerCase())
                         })
                     })
@@ -106,7 +121,7 @@ describe('Settings', () => {
                     scenarios.forEach((testCases: Array<string>, expected: string) => {
                         testCases.forEach((test: string) => {
                             expect(
-                                EnumerationSuggestionValue.addSortCharacter(test, sortType)
+                                SuggestionSortKind.addSortCharacter(test, sortType)
                             ).to.equal(expected)
                         })
                     })
@@ -114,13 +129,13 @@ describe('Settings', () => {
             })
 
             context('When type is TOP', () => {
-                const sortType = EnumerationSuggestionValue.TOP
+                const sortType = SuggestionSortKind.TOP
 
                 it(`returns a string starting with "${topSortChar}" (${topSortLiteral})`, () => {
                     scenarios.forEach((testCases: Array<string>) => {
                         testCases.forEach((test: string) => {
                             expect(
-                                EnumerationSuggestionValue.addSortCharacter(test, sortType)[0],
+                                SuggestionSortKind.addSortCharacter(test, sortType)[0],
                                 `TOP sortText character not equal to "${topSortChar}" (${topSortLiteral})`
                             ).to.equal(topSortChar)
                         })
@@ -131,7 +146,7 @@ describe('Settings', () => {
                     scenarios.forEach((testCases: Array<string>, expected: string) => {
                         testCases.forEach((test: string) => {
                             expect(
-                                EnumerationSuggestionValue.addSortCharacter(test, sortType)
+                                SuggestionSortKind.addSortCharacter(test, sortType)
                             ).to.equal(topSortChar + expected)
                         })
                     })
