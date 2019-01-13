@@ -72,37 +72,37 @@ describe('ServerContext', () => {
 
         serverContext = new ServerContext()
 
-        const doc1Uri = 'file://document1.tsp'
-        const document1 = vsls.TextDocument.create(doc1Uri, 'tsp', 1, '--#!2450\n')
+        const basicDocumentUri = 'file://basicDocument.tsp'
+        const basicDocument = vsls.TextDocument.create(basicDocumentUri, 'tsp', 1, '--#!2460\n')
 
-        documents.set(doc1Uri, document1)
-        manager.register(doc1Uri, serverContext.globalSettings)
+        documents.set(basicDocumentUri, basicDocument)
+        manager.register(basicDocumentUri, serverContext.globalSettings)
         // XXX: remove once #onDidChangeContent tests have been created
-        diagnostics.set(doc1Uri, [])
-        registeredUris.push(doc1Uri)
+        diagnostics.set(basicDocumentUri, [])
+        registeredUris.push(basicDocumentUri)
 
-        const doc2Uri = 'file://basicSignatures.tsp'
-        const basicSignatures = vsls.TextDocument.create(doc2Uri, 'tsp', 1, 'assert(,)\nfoo()')
+        const basicSignaturesUri = 'file://basicSignatures.tsp'
+        const basicSignatures = vsls.TextDocument.create(basicSignaturesUri, 'tsp', 1, 'assert(,)\nfoo()')
 
-        documents.set(doc2Uri, basicSignatures)
-        manager.register(doc2Uri, serverContext.globalSettings)
+        documents.set(basicSignaturesUri, basicSignatures)
+        manager.register(basicSignaturesUri, serverContext.globalSettings)
         // XXX: remove once #onDidChangeContent tests have been created
-        diagnostics.set(doc2Uri, [])
-        registeredUris.push(doc2Uri)
+        diagnostics.set(basicSignaturesUri, [])
+        registeredUris.push(basicSignaturesUri)
 
-        const doc3Uri = 'file://basicCompletions.tsp'
+        const basicCompletionsUri = 'file://basicCompletions.tsp'
         const basicCompletions = vsls.TextDocument.create(
-            doc3Uri,
+            basicCompletionsUri,
             'tsp',
             1,
             '--#!2450\nsmu.measure.limit[1].\nfoo.source'
         )
 
-        documents.set(doc3Uri, basicCompletions)
-        manager.register(doc3Uri, serverContext.globalSettings)
+        documents.set(basicCompletionsUri, basicCompletions)
+        manager.register(basicCompletionsUri, serverContext.globalSettings)
         // XXX: remove once #onDidChangeContent tests have been created
-        diagnostics.set(doc3Uri, [])
-        registeredUris.push(doc3Uri)
+        diagnostics.set(basicCompletionsUri, [])
+        registeredUris.push(basicCompletionsUri)
     })
 
     after('Unregister', () => {
@@ -160,6 +160,12 @@ describe('ServerContext', () => {
         })
     })
 
+    describe('#lastCompletionUri', () => {
+        it('is undefined on instantiation', () => {
+            expect(serverContext.lastCompletionUri).to.be.undefined
+        })
+    })
+
     describe('#onCompletion()', () => {
         const targetUri = 'file://basicCompletions.tsp'
         const validTestCases: Array<[vsls.Position, Array<string>]> = [
@@ -206,7 +212,7 @@ describe('ServerContext', () => {
         })
 
         invalidUriPositions.forEach((position: vsls.Position) => {
-            it('returns undefined given a invalid document position', () => {
+            it('returns all root completions given a invalid document position', () => {
                 const actual = serverContext.onCompletion({ position, textDocument: { uri: targetUri }}, manager)
 
                 expect(
@@ -214,6 +220,31 @@ describe('ServerContext', () => {
                     `failure at  Ln ${position.line + 1}, Col ${position.character + 1}  in  ${targetUri}`
                 ).to.contain.members(manager.get(targetUri).context.commandSet.completionDepthMap.get(0))
             })
+        })
+    })
+
+    describe('#onCompletionResolve()', () => {
+        it('returns the given item when #lastCompletionUri is undefined', () => {
+            const expected: CompletionItem = { label: 'foo' }
+            serverContext.lastCompletionUri = undefined
+
+            expect(serverContext.onCompletionResolve(expected, manager)).to.deep.equal(expected)
+        })
+
+        it('returns the given item when TspManager does not have the URI', () => {
+            const expected: CompletionItem = { label: 'foo' }
+            serverContext.lastCompletionUri = unregisteredUri
+
+            expect(serverContext.onCompletionResolve(expected, manager)).to.deep.equal(expected)
+        })
+
+        it('populates the CompletionItem.documentation property of a valid completion.', () => {
+            const given: CompletionItem = { label: 'smu.measure.autorangehigh' }
+            serverContext.lastCompletionUri = 'file://basicDocument.tsp'
+            const result = serverContext.onCompletionResolve(given, manager)
+
+            expect(result.documentation).to.not.be.undefined
+            expect(result.documentation).to.not.be.empty
         })
     })
 

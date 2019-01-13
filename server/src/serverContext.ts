@@ -24,7 +24,7 @@ import { TspManager } from './tspManager'
 export class ServerContext {
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
-    private lastCompletionUri?: string
+    lastCompletionUri?: string
 
     constructor() {
         this.globalSettings = TsplangSettings.defaults()
