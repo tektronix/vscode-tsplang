@@ -236,45 +236,16 @@ export class DocumentContext extends TspListener {
                 let resolvedNamespace: ResolvedNamespace
                 let depth: number
 
-                const lastToken = remainingTokens[index - 1]
+                // If the current Token is the EOF, then register and return
+                if (token.type === TspLexer.EOF) {
+                    this.registerCompletionTokens(namespaceTokens)
 
-                const shouldRegisterNamespace = (lastToken === undefined)
-                    ? false
-                    // If this token is an EOF
-                    : token.type === TspLexer.EOF
-                        // OR if the last Token was also a NAME or started on the last line.
-                        || (lastToken.type === TspLexer.NAME || lastToken.line !== token.line)
-
-                // If we have cached namespace Tokens.
-                if (shouldRegisterNamespace && namespaceTokens.length > 0) {
-                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
-                    depth = ResolvedNamespace.depth(resolvedNamespace)
-
-                    // Filter on any available completions at our current namespace depth.
-                    const completions = (this.commandSet.completionDepthMap.get(depth) || []).filter(
-                        (value: CompletionItem) => CompletionItem.namespaceMatch(resolvedNamespace, value)
-                    )
-
-                    // Register any matching completions.
-                    if (completions.length > 0) {
-                        const stopOffset = namespaceTokens[namespaceTokens.length - 1].stop + 1
-
-                        if (!this.exclusives.has(stopOffset)) {
-                            this.registerExclusiveContext(
-                                stopOffset,
-                                {
-                                    completions,
-                                    text: TokenUtil.getString(...namespaceTokens)
-                                }
-                            )
-                        }
-                    }
-
-                    // Clear the cached namespace.
-                    namespaceTokens = new Array<Token>()
+                    return
                 }
 
                 namespaceTokens.push(token)
+
+                this.registerCompletionTokens(namespaceTokens)
 
                 // Look ahead to see if the next Token is an open parenthesis.
                 const nextToken = remainingTokens[index + 1]
@@ -326,6 +297,8 @@ export class DocumentContext extends TspListener {
             }
             else if (token.text.localeCompare('.') === 0) {
                 namespaceTokens.push(token)
+
+                this.registerCompletionTokens(namespaceTokens)
             }
             // Consume everything inside the array indexer.
             else if (token.text.localeCompare('[') === 0) {
@@ -421,6 +394,33 @@ export class DocumentContext extends TspListener {
             activeParameter,
             activeSignature: 0,
             signatures: context.signatures
+        }
+    }
+
+    registerCompletionTokens(tokens: Array<Token>): void {
+        if (tokens.length === 0) {
+            return
+        }
+
+        const resolvedTokens = ResolvedNamespace.create(tokens)
+        const depth = ResolvedNamespace.depth(resolvedTokens)
+
+        // Filter on any available completions at our current namespace depth.
+        const completions = (this.commandSet.completionDepthMap.get(depth) || []).filter(
+            (value: CompletionItem) => CompletionItem.namespaceMatch(resolvedTokens, value)
+        )
+
+        // Register any matching completions.
+        if (completions.length > 0) {
+            const stopOffset = tokens[tokens.length - 1].stop + 1
+
+            // If someone else hasn't already registered at this offset.
+            if (!this.exclusives.has(stopOffset)) {
+                this.registerExclusiveContext(stopOffset, {
+                    completions,
+                    text: TokenUtil.getString(...tokens)
+                })
+            }
         }
     }
 
