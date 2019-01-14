@@ -20,8 +20,10 @@ import 'mocha'
 import * as vsls from 'vscode-languageserver'
 
 import { CompletionItem, SignatureInformation } from '../decorators'
+import { Model } from '../model'
 import { ServerContext } from '../serverContext'
 import { SuggestionSortKind, TsplangSettings } from '../settings'
+import { TspItem } from '../tspItem'
 import { TspManager } from '../tspManager'
 
 import './fixtures/tspManager.fixture'
@@ -38,6 +40,10 @@ class TextDocuments extends vsls.TextDocuments {
 
     all(): Array<vsls.TextDocument> {
         return [...this._docs.values()]
+    }
+
+    delete(uri: string): boolean {
+        return this._docs.delete(uri)
     }
 
     get(uri: string): vsls.TextDocument | undefined {
@@ -60,54 +66,67 @@ describe('ServerContext', () => {
     const messages = new Array<string>()
     const registeredUris = new Array<string>()
     const unregisteredUri = 'file://unknown.tsp'
+    const unmanagedDocumentUri = 'file://unmanaged.tsp'
+    const basicDocumentUri = 'file://basicDocument.tsp'
+    const basicSignaturesUri = 'file://basicSignatures.tsp'
+    const basicCompletionsUri = 'file://basicCompletions.tsp'
+    const nodeRegistrantUri = 'file://nodeRegistrant.tsp'
+    const badShebangUri = 'file://badShebang.tsp'
+
+    connection.console.log = (message: string): void => {
+        messages.push(message)
+    }
+    connection.sendDiagnostics = (params: vsls.PublishDiagnosticsParams): void => {
+        diagnostics.set(params.uri, params.diagnostics)
+    }
+
     let serverContext: ServerContext
 
     before('Instantiate', () => {
-        connection.console.log = (message: string): void => {
-            messages.push(message)
-        }
-        connection.sendDiagnostics = (params: vsls.PublishDiagnosticsParams): void => {
-            diagnostics.set(params.uri, params.diagnostics)
-        }
-
         serverContext = new ServerContext()
 
-        const unmanagedDocumentUri = 'file://unmanaged.tsp'
         const unmanagedDocument = vsls.TextDocument.create(unmanagedDocumentUri, 'tsp', 1, '')
-
         documents.set(unmanagedDocumentUri, unmanagedDocument)
 
-        const basicDocumentUri = 'file://basicDocument.tsp'
         const basicDocument = vsls.TextDocument.create(basicDocumentUri, 'tsp', 1, '--#!2460\n')
-
         documents.set(basicDocumentUri, basicDocument)
         manager.register(basicDocumentUri, serverContext.globalSettings)
-        // XXX: remove once #onDidChangeContent tests have been created
         diagnostics.set(basicDocumentUri, [])
         registeredUris.push(basicDocumentUri)
 
-        const basicSignaturesUri = 'file://basicSignatures.tsp'
         const basicSignatures = vsls.TextDocument.create(basicSignaturesUri, 'tsp', 1, 'assert(,)\nfoo()')
-
         documents.set(basicSignaturesUri, basicSignatures)
         manager.register(basicSignaturesUri, serverContext.globalSettings)
-        // XXX: remove once #onDidChangeContent tests have been created
         diagnostics.set(basicSignaturesUri, [])
         registeredUris.push(basicSignaturesUri)
 
-        const basicCompletionsUri = 'file://basicCompletions.tsp'
         const basicCompletions = vsls.TextDocument.create(
             basicCompletionsUri,
             'tsp',
             1,
             '--#!2450\nsmu.measure.limit[1].\nfoo.source'
         )
-
         documents.set(basicCompletionsUri, basicCompletions)
         manager.register(basicCompletionsUri, serverContext.globalSettings)
-        // XXX: remove once #onDidChangeContent tests have been created
         diagnostics.set(basicCompletionsUri, [])
         registeredUris.push(basicCompletionsUri)
+
+        const nodeRegistrant = vsls.TextDocument.create(
+            nodeRegistrantUri,
+            'tsp',
+            1,
+            '--#!2450;node[1]=2460;node[2]=2461\n'
+        )
+        documents.set(nodeRegistrantUri, nodeRegistrant)
+        manager.register(nodeRegistrantUri, serverContext.globalSettings)
+        diagnostics.set(nodeRegistrantUri, [])
+        registeredUris.push(nodeRegistrantUri)
+
+        const badShebang = vsls.TextDocument.create(badShebangUri, 'tsp', 1, '--#!24\n')
+        documents.set(badShebangUri, badShebang)
+        manager.register(badShebangUri, serverContext.globalSettings)
+        diagnostics.set(badShebangUri, [])
+        registeredUris.push(badShebangUri)
 
         connection.listen()
     })
@@ -142,16 +161,22 @@ describe('ServerContext', () => {
 
                         serverContext.onDidClose({ document: { uri } }, connection, manager)
 
-                        it(`unregisters "${uri}"`, () => {
+                        it(`unregisters ${uri}`, () => {
                             expect(manager.get(uri)).to.be.undefined
                         })
 
-                        it('clears all Diagnostics', () => {
+                        it(`clears all Diagnostics associated with ${uri}`, () => {
                             expect(diagnostics.get(uri)).to.be.empty
                         })
                     })
                 })
             })
+        })
+    })
+
+    describe('#disposable', () => {
+        it('is undefined on instantiation', () => {
+            expect(serverContext.disposable).to.be.undefined
         })
     })
 
@@ -173,8 +198,61 @@ describe('ServerContext', () => {
         })
     })
 
+    describe('#onSignatureHelp()', () => {
+        interface ExpectedSignatureHelp {
+            activeParameter: number
+            signatureLabels: Array<string>
+        }
+
+        const targetUri = basicSignaturesUri
+        const validTestCases: Array<[vsls.Position, ExpectedSignatureHelp]> = [
+            [{ character: 7, line: 0 }, { activeParameter: 0, signatureLabels: ['assert'] }],
+            [{ character: 8, line: 0 }, { activeParameter: 1, signatureLabels: ['assert'] }],
+        ]
+        const invalidUriPositions: Array<vsls.Position> = [
+            { character: 0, line: 0 },
+            { character: 6, line: 0 },
+            { character: 9, line: 0 },
+            { character: 4, line: 1 },
+        ]
+
+        it('returns undefined if the TspManager does not have the URI', () => {
+            expect(serverContext.onSignatureHelp(
+                {
+                    position: { character: 0, line: 0 },
+                    textDocument: { uri: unregisteredUri }
+                },
+                manager
+            )).to.be.undefined
+        })
+
+        validTestCases.forEach(([position, expected]: [vsls.Position, ExpectedSignatureHelp]) => {
+            it('returns the expected SignatureHelp given a valid document position', () => {
+                const actual = serverContext.onSignatureHelp({ position, textDocument: { uri: targetUri }}, manager)
+
+                expect(actual).to.not.be.undefined
+
+                expect(actual.activeParameter).to.equal(expected.activeParameter)
+
+                const labelArray = new Array<string>()
+                actual.signatures.forEach((value: SignatureInformation) => {
+                    labelArray.push(SignatureInformation.resolveNamespace(value))
+                })
+                expect(labelArray).to.contain.members(expected.signatureLabels)
+            })
+        })
+
+        invalidUriPositions.forEach((position: vsls.Position) => {
+            it('returns undefined given an invalid document position', () => {
+                const actual = serverContext.onSignatureHelp({ position, textDocument: { uri: targetUri }}, manager)
+
+                expect(actual).to.be.undefined
+            })
+        })
+    })
+
     describe('#onCompletion()', () => {
-        const targetUri = 'file://basicCompletions.tsp'
+        const targetUri = basicCompletionsUri
         const validTestCases: Array<[vsls.Position, Array<string>]> = [
             [{ character: 3, line: 1 }, ['smu']],
             [{ character: 11, line: 1 }, ['smu.measure']],
@@ -247,7 +325,7 @@ describe('ServerContext', () => {
 
         it('populates the CompletionItem.documentation property of a valid completion.', () => {
             const given: CompletionItem = { label: 'smu.measure.autorangehigh' }
-            serverContext.lastCompletionUri = 'file://basicDocument.tsp'
+            serverContext.lastCompletionUri = basicDocumentUri
             const result = serverContext.onCompletionResolve(given, manager)
 
             expect(result.documentation).to.not.be.undefined
@@ -366,7 +444,7 @@ describe('ServerContext', () => {
         }
         let actual: vsls.InitializeResult
 
-        before('call #onInitialize()', () => {
+        before('Call #onInitialize()', () => {
             actual = serverContext.onInitialize(
                 { capabilities: { workspace: { configuration: true } } },
                 connection,
@@ -388,55 +466,157 @@ describe('ServerContext', () => {
         })
     })
 
-    describe('#onSignatureHelp()', () => {
-        interface ExpectedSignatureHelp {
-            activeParameter: number
-            signatureLabels: Array<string>
-        }
+    describe('#onInitialized()', () => {
+        it('does not set #disposable if #hasWorkspaceSettings is false', () => {
+            expect(serverContext.disposable).to.be.undefined
 
-        const targetUri = 'file://basicSignatures.tsp'
-        const validTestCases: Array<[vsls.Position, ExpectedSignatureHelp]> = [
-            [{ character: 7, line: 0 }, { activeParameter: 0, signatureLabels: ['assert'] }],
-            [{ character: 8, line: 0 }, { activeParameter: 1, signatureLabels: ['assert'] }],
-        ]
-        const invalidUriPositions: Array<vsls.Position> = [
-            { character: 0, line: 0 },
-            { character: 6, line: 0 },
-            { character: 9, line: 0 },
-            { character: 4, line: 1 },
-        ]
+            serverContext.hasWorkspaceSettings = false
+            serverContext.onInitialized(connection)
 
-        it('returns undefined if the TspManager does not have the URI', () => {
-            expect(serverContext.onSignatureHelp(
-                {
-                    position: { character: 0, line: 0 },
-                    textDocument: { uri: unregisteredUri }
-                },
-                manager
-            )).to.be.undefined
+            expect(serverContext.disposable).to.be.undefined
         })
 
-        validTestCases.forEach(([position, expected]: [vsls.Position, ExpectedSignatureHelp]) => {
-            it('returns the expected SignatureHelp given a valid document position', () => {
-                const actual = serverContext.onSignatureHelp({ position, textDocument: { uri: targetUri }}, manager)
+        it('sets #disposable if #hasWorkspaceSettings is true', () => {
+            expect(serverContext.disposable).to.be.undefined
 
-                expect(actual).to.not.be.undefined
+            serverContext.hasWorkspaceSettings = true
+            serverContext.onInitialized(connection)
 
-                expect(actual.activeParameter).to.equal(expected.activeParameter)
+            expect(serverContext.disposable).to.not.be.undefined
+        })
+    })
 
-                const labelArray = new Array<string>()
-                actual.signatures.forEach((value: SignatureInformation) => {
-                    labelArray.push(SignatureInformation.resolveNamespace(value))
+    describe('#onDidChangeContent()', () => {
+        context('if the document is registered', () => {
+            context('if the edit contains errors', () => {
+                const targetUri = basicSignaturesUri
+                let previousMasterModel: Model
+                let previousDiagnosticCount: number
+
+                before('Apply Target Edits & Call #onDidChangeContent', () => {
+                    previousMasterModel = manager.get(targetUri).shebang.master
+                    previousDiagnosticCount = diagnostics.get(targetUri).length
+
+                    let currentDoc = documents.get(targetUri)
+                    currentDoc = vsls.TextDocument.create(
+                        currentDoc.uri,
+                        currentDoc.languageId,
+                        currentDoc.version,
+                        vsls.TextDocument.applyEdits(currentDoc, [
+                            {
+                                newText: '--#!2460\n',
+                                range: {
+                                    end: { character: 0, line: 0 },
+                                    start: { character: 0, line: 0 },
+                                }
+                            }
+                        ])
+                    )
+                    currentDoc = vsls.TextDocument.create(
+                        currentDoc.uri,
+                        currentDoc.languageId,
+                        currentDoc.version,
+                        vsls.TextDocument.applyEdits(currentDoc, [
+                            {
+                                newText: '\nabort = 1\n',
+                                range: {
+                                    end: { character: Number.MAX_VALUE, line: Number.MAX_VALUE },
+                                    start: { character: Number.MAX_VALUE, line: Number.MAX_VALUE },
+                                }
+                            }
+                        ])
+                    )
+                    documents.set(targetUri, currentDoc)
+
+                    serverContext.onDidChangeContent({ document: { uri: targetUri } }, connection, manager)
                 })
-                expect(labelArray).to.contain.members(expected.signatureLabels)
+
+                it('updates a previously registered document', () => {
+                    expect(manager.get(targetUri).shebang.master).to.not.equal(previousMasterModel)
+                })
+
+                it('returns Diagnostic messages', () => {
+                    expect(diagnostics.get(targetUri).length).to.not.equal(previousDiagnosticCount)
+                })
+            })
+
+            context('if the document already contained errors', () => {
+                const targetUri = badShebangUri
+                let previousTspItem: TspItem
+                let previousDiagnostics: Array<vsls.Diagnostic>
+
+                before('Call #onDidChangeContent', () => {
+                    previousTspItem = manager.get(targetUri)
+                    previousDiagnostics = diagnostics.get(targetUri)
+
+                    serverContext.onDidChangeContent({ document: { uri: targetUri } }, connection, manager)
+                })
+
+                it('retains its state if no text was changed', () => {
+                    expect(manager.get(targetUri)).to.deep.equal(previousTspItem)
+                })
+
+                it('returns the same Diagnostic messages', () => {
+                    expect(diagnostics.get(targetUri)).to.contain.members(previousDiagnostics)
+                })
             })
         })
 
-        invalidUriPositions.forEach((position: vsls.Position) => {
-            it('returns undefined given an invalid document position', () => {
-                const actual = serverContext.onSignatureHelp({ position, textDocument: { uri: targetUri }}, manager)
+        context('if the document is not registered', () => {
+            interface DocumentProperties {
+                content: string
+                errors: number
+                workspaceSettings: boolean
+            }
 
-                expect(actual).to.be.undefined
+            const testCases = new Map<string, DocumentProperties>([
+                [
+                    'file://newFileWithError.tsp',
+                    {
+                        content: '--#!2450;node[1]=24\nfs = {}\n',
+                        errors: 2,
+                        workspaceSettings: false
+                    }
+                ],
+                [
+                    'file://newFile.tsp',
+                    {
+                        content: '--#!2461\na, display.lightstate, c = 1, display.STATE_BLACKOUT, 3\n',
+                        errors: 0,
+                        workspaceSettings: true
+                    }
+                ]
+            ])
+
+            before('Create New Documents & Call #onDidChangeContent', () => {
+                testCases.forEach((properties: DocumentProperties, uri: string) => {
+                    const newDoc = vsls.TextDocument.create(uri, 'tsp', 1, properties.content)
+                    documents.set(uri, newDoc)
+                    serverContext.hasWorkspaceSettings = properties.workspaceSettings
+
+                    serverContext.onDidChangeContent({ document: { uri } }, connection, manager)
+                })
+            })
+
+            after('Close All Created Documents', () => {
+                testCases.forEach((_: DocumentProperties, uri: string) => {
+                    serverContext.onDidClose({ document: { uri } }, connection, manager)
+                    documents.delete(uri)
+                })
+            })
+
+            testCases.forEach((properties: DocumentProperties, uri: string) => {
+                it(`registered ${uri}`, () => {
+                    expect(manager.has(uri)).to.be.true
+                })
+
+                it(`registered ${uri} without modifying its content`, () => {
+                    expect(manager.get(uri).context.document.getText()).to.equal(properties.content)
+                })
+
+                it(`returned the expected number of diagnostics for ${uri}`, () => {
+                    expect(diagnostics.get(uri).length).to.equal(properties.errors)
+                })
             })
         })
     })

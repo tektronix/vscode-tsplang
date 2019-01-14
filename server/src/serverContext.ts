@@ -15,13 +15,14 @@
  */
 'use strict'
 
-import { DidChangeConfigurationNotification, DidChangeConfigurationParams, IConnection, InitializeParams, InitializeResult, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { DidChangeConfigurationNotification, DidChangeConfigurationParams, Disposable, IConnection, InitializeParams, InitializeResult, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
 import { CompletionItem } from './decorators'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { TspManager } from './tspManager'
 
 export class ServerContext {
+    disposable?: Thenable<Disposable>
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
     lastCompletionUri?: string
@@ -97,9 +98,7 @@ export class ServerContext {
         if (manager.has(change.document.uri)) {
             const diagnostics = manager.update(change.document.uri)
 
-            if (diagnostics !== undefined) {
-                connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
-            }
+            connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
         }
         // if document is unregistered, then register
         else {
@@ -120,7 +119,7 @@ export class ServerContext {
                 )
             }
 
-            const diagnostics = manager.register(change.document.uri, settings) || []
+            const diagnostics = manager.register(change.document.uri, settings)
 
             connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
         }
@@ -159,7 +158,9 @@ export class ServerContext {
 
     onInitialized(connection: IConnection): void {
         if (this.hasWorkspaceSettings) {
-            connection.client.register(DidChangeConfigurationNotification.type, { section: 'tsplang' })
+            this.disposable = connection.client.register(DidChangeConfigurationNotification.type, {
+                section: 'tsplang'
+            })
         }
     }
 

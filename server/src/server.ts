@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, DidChangeConfigurationParams, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, DidChangeConfigurationParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
 
 import { ServerContext } from './serverContext'
 import { TspManager } from './tspManager'
@@ -72,6 +72,15 @@ connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
     return context.onSignatureHelp(params, manager)
 })
+
+// Shared dispose method.
+const dispose = (): void => {
+    if (context.disposable) {
+        context.disposable.then((value: Disposable) => value.dispose())
+    }
+}
+connection.onShutdown(dispose)
+connection.onExit(dispose)
 
 // Make the text document manager listen on the connection for open, change and close text
 // document events
