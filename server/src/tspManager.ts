@@ -42,16 +42,16 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    register(uri: string, documentSettings: TsplangSettings): Array<Diagnostic> | undefined {
+    register(uri: string, documentSettings: TsplangSettings): Array<Diagnostic> {
         // check if the doc has already been registered
         if (this.dict.has(uri)) {
-            throw new Error('Document already registered.')
+            throw new Error(`${uri} is already registered`)
         }
 
         const document = this.documents.get(uri)
 
         if (document === undefined) {
-            throw new Error('Unable to fetch document from document manager.')
+            throw new Error(`unable to fetch ${uri} from the document manager`)
         }
 
         const firstLine = document.getText({
@@ -96,13 +96,13 @@ export class TspManager {
     update(uri: string): Array<Diagnostic> {
         // check if the doc has not been registered
         if (!this.dict.has(uri)) {
-            throw new Error('Document is not registered.')
+            throw new Error(`${uri} is not registered`)
         }
 
         const document = this.documents.get(uri)
 
         if (document === undefined) {
-            throw new Error('Unable to fetch document from document manager.')
+            throw new Error(`unable to fetch ${uri} from the document manager`)
         }
 
         // We already checked that the key exists in the Map.
