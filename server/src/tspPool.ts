@@ -95,11 +95,6 @@ export class TspPool {
         // All models need the Lua entry, except the Lua model.
         if (model !== Model.LUA) {
             luaEntry = this.register(Model.LUA)
-
-            // If the current model is undefined, then we can return a Lua entry.
-            if (model === undefined) {
-                return luaEntry
-            }
         }
 
         switch (model) {
