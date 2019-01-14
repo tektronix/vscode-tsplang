@@ -75,7 +75,7 @@ export class TspPool {
         const entry = this.pool.get(model)
 
         if (entry === undefined) {
-            throw new Error(`Attempted to access the non-existant ${model} entry.`)
+            throw new Error(`attempted to access the non-existant ${model} entry`)
         }
 
         entry.references++
@@ -131,7 +131,7 @@ export class TspPool {
                 }
 
             default:
-                throw new Error(`Model ${model} not supported`)
+                throw new Error(`model ${model} is not supported`)
         }
     }
 }
