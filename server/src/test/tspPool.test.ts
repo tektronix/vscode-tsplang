@@ -13,14 +13,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:no-implicit-dependencies no-unused-expression
+// tslint:disable:no-implicit-dependencies no-import-side-effect no-unused-expression
 import { expect } from 'chai'
-// tslint:disable-next-line:no-import-side-effect
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
+import { Model } from '../model'
 import { TspPool } from '../tspPool'
 
+import './fixtures/model.fixture'
+import './fixtures/tspPool.fixture'
+
 describe('TspPool', () => {
-    it.skip('needs test coverage')
+    const pool = new TspPool()
+
+    describe('#get()', () => {
+        it('throws an error if TspPool does not contain the Model', () => {
+            const model = Model.KI2450
+
+            expect(() => { pool._get(model) })
+                .to.throw(`attempted to access the non-existant ${model} entry`)
+        })
+    })
+
+    describe('#load()', () => {
+        it('throws an error if passed an unsupported Model', () => {
+            const model = Model.UNSUPPORTED
+
+            expect(() => { pool._load(model as Model) })
+                .to.throw(`model ${model} is not supported`)
+        })
+    })
 })
