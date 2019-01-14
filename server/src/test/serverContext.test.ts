@@ -21,7 +21,7 @@ import * as vsls from 'vscode-languageserver'
 
 import { CompletionItem, SignatureInformation } from '../decorators'
 import { ServerContext } from '../serverContext'
-import { TsplangSettings } from '../settings'
+import { SuggestionSortKind, TsplangSettings } from '../settings'
 import { TspManager } from '../tspManager'
 
 import './fixtures/tspManager.fixture'
@@ -72,6 +72,11 @@ describe('ServerContext', () => {
 
         serverContext = new ServerContext()
 
+        const unmanagedDocumentUri = 'file://unmanaged.tsp'
+        const unmanagedDocument = vsls.TextDocument.create(unmanagedDocumentUri, 'tsp', 1, '')
+
+        documents.set(unmanagedDocumentUri, unmanagedDocument)
+
         const basicDocumentUri = 'file://basicDocument.tsp'
         const basicDocument = vsls.TextDocument.create(basicDocumentUri, 'tsp', 1, '--#!2460\n')
 
@@ -103,6 +108,8 @@ describe('ServerContext', () => {
         // XXX: remove once #onDidChangeContent tests have been created
         diagnostics.set(basicCompletionsUri, [])
         registeredUris.push(basicCompletionsUri)
+
+        connection.listen()
     })
 
     after('Unregister', () => {
@@ -245,6 +252,102 @@ describe('ServerContext', () => {
 
             expect(result.documentation).to.not.be.undefined
             expect(result.documentation).to.not.be.empty
+        })
+    })
+
+    describe('#onDidChangeConfiguration()', () => {
+        context('when #hasWorkspaceSettings is false', () => {
+            it('sets #globalSettings to default when the tsplang property is undefined', () => {
+                serverContext.globalSettings = { enumerationSuggestions: SuggestionSortKind.BOTTOM }
+                serverContext.hasWorkspaceSettings = false
+
+                serverContext.onDidChangeConfiguration(
+                    { settings: { tsplang: undefined } },
+                    connection,
+                    documents,
+                    manager
+                )
+
+                expect(serverContext.globalSettings).to.deep.equal(TsplangSettings.defaults())
+            })
+
+            it('sets #globalSettings to the given settings', () => {
+                const expected: TsplangSettings = { enumerationSuggestions: SuggestionSortKind.TOP }
+                serverContext.globalSettings = { enumerationSuggestions: SuggestionSortKind.INLINE }
+                serverContext.hasWorkspaceSettings = false
+
+                serverContext.onDidChangeConfiguration(
+                    { settings: { tsplang: expected } },
+                    connection,
+                    documents,
+                    manager
+                )
+
+                expect(serverContext.globalSettings).to.deep.equal(expected)
+            })
+        })
+
+        // XXX: These tests don't actually get the current workspace configuration.
+        //      Because we're not in a proper workspace, calling `connection.workspace.getConfiguration`
+        //      returns a rejected promise. However, we don't propagate the error and just continue on
+        //      our merry way, using the settings values set before the `getConfiguration` call.
+        context('when #hasWorkspaceSettings is true', () => {
+            before('Change all settings', () => {
+                documents.all().forEach((document: vsls.TextDocument) => {
+                    const tspItem = manager.get(document.uri)
+
+                    if (tspItem !== undefined) {
+                        tspItem.context.settings = {
+                            enumerationSuggestions: SuggestionSortKind.TOP
+                        }
+                    }
+                })
+            })
+
+            it('sets all registered document settings to default when the tsplang property is undefined', () => {
+                serverContext.hasWorkspaceSettings = true
+
+                serverContext.onDidChangeConfiguration(
+                    { settings: { tsplang: undefined } },
+                    connection,
+                    documents,
+                    manager
+                )
+
+                documents.all().forEach((document: vsls.TextDocument) => {
+                    const tspItem = manager.get(document.uri)
+
+                    if (tspItem !== undefined) {
+                        expect(
+                            tspItem.context.settings,
+                            `failed to change the settings for ${document.uri}`
+                        ).to.deep.equal(TsplangSettings.defaults())
+                    }
+                })
+            })
+
+            it('sets all registered document settings to the given settings', () => {
+                const expected: TsplangSettings = { enumerationSuggestions: SuggestionSortKind.BOTTOM }
+                serverContext.hasWorkspaceSettings = true
+
+                serverContext.onDidChangeConfiguration(
+                    { settings: { tsplang: expected } },
+                    connection,
+                    documents,
+                    manager
+                )
+
+                documents.all().forEach((document: vsls.TextDocument) => {
+                    const tspItem = manager.get(document.uri)
+
+                    if (tspItem !== undefined) {
+                        expect(
+                            tspItem.context.settings,
+                            `failed to change the settings for ${document.uri}`
+                        ).to.deep.equal(expected)
+                    }
+                })
+            })
         })
     })
 

@@ -65,11 +65,20 @@ export class ServerContext {
     ): void {
         if (this.hasWorkspaceSettings) {
             // Update all open document contexts.
-            documents.all().forEach(async (document: TextDocument) => {
-                const settings = await connection.workspace.getConfiguration({
+            documents.all().forEach((document: TextDocument) => {
+                let settings = params.settings.tsplang || TsplangSettings.defaults()
+
+                connection.workspace.getConfiguration({
                     scopeUri: document.uri,
                     section: 'tsplang'
                 })
+                .then(
+                    (value: TsplangSettings) => {
+                        settings = value
+                    },
+                    // On rejection, just use the values we set above.
+                    (reason: Error) => { return }
+                )
 
                 const tspItem = manager.get(document.uri)
 
