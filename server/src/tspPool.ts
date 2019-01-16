@@ -75,7 +75,7 @@ export class TspPool {
         const entry = this.pool.get(model)
 
         if (entry === undefined) {
-            throw new Error(`Attempted to access the non-existant ${model} entry.`)
+            throw new Error(`attempted to access the non-existant ${model} entry`)
         }
 
         entry.references++
@@ -95,11 +95,6 @@ export class TspPool {
         // All models need the Lua entry, except the Lua model.
         if (model !== Model.LUA) {
             luaEntry = this.register(Model.LUA)
-
-            // If the current model is undefined, then we can return a Lua entry.
-            if (model === undefined) {
-                return luaEntry
-            }
         }
 
         switch (model) {
@@ -136,7 +131,7 @@ export class TspPool {
                 }
 
             default:
-                throw new Error(`Model ${model} not supported`)
+                throw new Error(`model ${model} is not supported`)
         }
     }
 }

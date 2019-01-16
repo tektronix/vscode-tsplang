@@ -13,5 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import { ClientCapabilities, InitializeParams, TextDocumentChangeEvent } from 'vscode-languageserver'
 
-export { makeStringArray, makeTestToken } from './token'
+declare module 'vscode-languageserver' {
+    export interface ClientCapabilities { workspace?: { configuration?: boolean } }
+    export interface InitializeParams { capabilities: { workspace?: { configuration?: boolean } } }
+    export interface TextDocumentChangeEvent { document: { uri: string } }
+}

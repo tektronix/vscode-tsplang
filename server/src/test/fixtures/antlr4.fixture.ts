@@ -13,36 +13,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import * as antlr4 from 'antlr4'
+// tslint:disable:no-any
 
-class Token extends antlr4.Token {
-    private _text: string
+import { Token } from 'antlr4'
 
-    constructor() {
-        super()
-    }
+declare module 'antlr4' {
+    class Token {
+        static readonly EOF: number
+        static readonly EPSILON: number
+        static readonly HIDDEN_CHANNEL: number
+        static readonly INVALID_TYPE: number
+        static readonly MIN_USER_TOKEN_TYPE: number
 
-    get text(): string {
-        return this._text
-    }
-    set text(value: string) {
-        this._text = value
+        channel: any
+        column: number
+        line: number
+        source: any
+        start: number
+        stop: number
+        text: string
+        tokenIndex: number
+        type: any
+
+        getInputStream(): any
+        getTokenSource(): any
+        static makeStringArray(...tokens: Array<Token>): Array<string>
     }
 }
-
-export function makeStringArray(...tokens: Array<antlr4.Token>): Array<string> {
+Token.makeStringArray = function(...tokens: Array<Token>): Array<string> {
     const result = new Array<string>()
 
     tokens.forEach((value: Token) => {
         result.push(value.text)
     })
-
-    return result
-}
-
-export function makeTestToken(text: string): Token {
-    const result = new Token()
-    result.text = text
 
     return result
 }

@@ -21,7 +21,8 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
 import { ResolvedNamespace } from '../../decorators'
-import { makeStringArray, makeTestToken } from '../testTypes'
+// tslint:disable-next-line:no-import-side-effect
+import '../fixtures/antlr4.fixture'
 
 describe('Decorators', () => {
     describe('ResolvedNamespace', () => {
@@ -57,16 +58,26 @@ describe('Decorators', () => {
             })
 
             it('returns a resolved namespace given a Token array', () => {
-                const foo = makeTestToken('foo')
-                const bar = makeTestToken('bar')
-                const baz = makeTestToken('baz')
-                const one = makeTestToken('1')
-                const fourTwo = makeTestToken('42')
-                const nineNineNine = makeTestToken('999')
-                const dot = makeTestToken('.')
-                const openParen = makeTestToken('(')
-                const openBracket = makeTestToken('[')
-                const closeBracket = makeTestToken(']')
+                const foo = new Token()
+                foo.text = 'foo'
+                const bar = new Token()
+                bar.text = 'bar'
+                const baz = new Token()
+                baz.text = 'baz'
+                const one = new Token()
+                one.text = '1'
+                const fourTwo = new Token()
+                fourTwo.text = '42'
+                const nineNineNine = new Token()
+                nineNineNine.text = '999'
+                const dot = new Token()
+                dot.text = '.'
+                const openParen = new Token()
+                openParen.text = '('
+                const openBracket = new Token()
+                openBracket.text = '['
+                const closeBracket = new Token()
+                closeBracket.text = ']'
 
                 const scenarios: Map<string, Array<Array<Token>>> = new Map([
                     ['foo', [
@@ -106,7 +117,7 @@ describe('Decorators', () => {
                     testCases.forEach((test: Array<Token>) => {
                         expect(
                             ResolvedNamespace.create(test),
-                            `"${JSON.stringify(makeStringArray(...test))}" did not resolve to "${expected}"`
+                            `"${JSON.stringify(Token.makeStringArray(...test))}" did not resolve to "${expected}"`
                         ).to.equal(expected)
                     })
                 })

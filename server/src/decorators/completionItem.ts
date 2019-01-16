@@ -20,6 +20,8 @@ import { Token } from 'antlr4'
 import escapeStringRegexp = require('escape-string-regexp')
 import * as vscode_ls from 'vscode-languageserver'
 
+import { SuggestionSortKind } from '../settings'
+
 import { BaseItem } from './baseItem'
 import { ResolvedNamespace } from './resolvedNamespace'
 
@@ -35,6 +37,33 @@ export interface CompletionItem extends vscode_ls.CompletionItem, BaseItem {
     reserved?: boolean
 }
 export namespace CompletionItem {
+    /**
+     * Creates CompletionItem.sortText for each item according to the given sort map.
+     * @param sorts A Map object keyed on a CompletionItemKind whose key-value is the desired SuggestionSortKind.
+     * @param items The set of items needing sort text.
+     * @returns The given set of items, each with a newly generated sortText property.
+     */
+    export function addSortText(
+        sorts: Map<vscode_ls.CompletionItemKind, SuggestionSortKind>,
+        ...items: Array<CompletionItem>
+    ): Array<CompletionItem> {
+        return items.map((item: CompletionItem) => {
+            if (item.kind === undefined) {
+                // If BaseItem.kind is undefined, then default to INLINE.
+                item.sortText = SuggestionSortKind.addSortCharacter(item.label, SuggestionSortKind.INLINE)
+            }
+            else {
+                item.sortText = SuggestionSortKind.addSortCharacter(
+                    item.label,
+                    // If this CompletionItemKind is not covered by the edit map, then default to INLINE.
+                    sorts.get(item.kind) || SuggestionSortKind.INLINE
+                )
+            }
+
+            return item
+        })
+    }
+
     /**
      * Creates InstrumentCompletionItems of kind Module based on the given string.
      * @param label The label whose namespaces will become root completions items.

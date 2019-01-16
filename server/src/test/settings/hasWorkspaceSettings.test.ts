@@ -18,30 +18,18 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { Model } from '../model'
-import { TspPool } from '../tspPool'
+import { hasWorkspaceSettings } from '../../settings'
+import '../fixtures/vscode-languageserver.fixture'
 
-import './fixtures/model.fixture'
-import './fixtures/tspPool.fixture'
-
-describe('TspPool', () => {
-    const pool = new TspPool()
-
-    describe('#get()', () => {
-        it('throws an error if TspPool does not contain the Model', () => {
-            const model = Model.KI2450
-
-            expect(() => { pool._get(model) })
-                .to.throw(`attempted to access the non-existant ${model} entry`)
+describe('Settings', () => {
+    describe('hasWorkspaceSettings()', () => {
+        it('returns false if ClientCapabilities.workspace is undefined', () => {
+            expect(hasWorkspaceSettings({})).to.be.false
         })
-    })
 
-    describe('#load()', () => {
-        it('throws an error if passed an unsupported Model', () => {
-            const model = Model.UNSUPPORTED
-
-            expect(() => { pool._load(model as Model) })
-                .to.throw(`model ${model} is not supported`)
+        it('returns the value of ClientCapabilities.workspace.configuration', () => {
+            expect(hasWorkspaceSettings({ workspace: { configuration: true } })).to.be.true
+            expect(hasWorkspaceSettings({ workspace: { configuration: false } })).to.be.false
         })
     })
 })

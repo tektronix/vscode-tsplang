@@ -15,13 +15,15 @@
  */
 'use strict'
 
-export namespace EnumerationSuggestionValue {
+export enum SortCharacter {
+    BOTTOM = '\u007E',
+    TOP = '\u0020'
+}
+
+export namespace SuggestionSortKind {
     export const BOTTOM = 'bottom'
     export const INLINE = 'inline'
     export const TOP = 'top'
-
-    const bottomSortCharacter = '\u007E'
-    const topSortCharacter = '\u0020'
 
     /**
      * Adds a sorting character to the beginning of a string.
@@ -29,17 +31,17 @@ export namespace EnumerationSuggestionValue {
      * @param type The type of sorting character to prepend.
      * @returns The resulting string.
      */
-    export function addSortCharacter(target: string, type: EnumerationSuggestionValue): string {
+    export function addSortCharacter(target: string, type: SuggestionSortKind): string {
         switch (type) {
-            case EnumerationSuggestionValue.BOTTOM:
-                return bottomSortCharacter + target.toLocaleLowerCase()
+            case SuggestionSortKind.BOTTOM:
+                return SortCharacter.BOTTOM + target.toLocaleLowerCase()
 
-            case EnumerationSuggestionValue.TOP:
-                return topSortCharacter + target.toLocaleLowerCase()
+            case SuggestionSortKind.TOP:
+                return SortCharacter.TOP + target.toLocaleLowerCase()
 
             default:
                 return target.toLocaleLowerCase()
         }
     }
 }
-export type EnumerationSuggestionValue = 'bottom' | 'inline' | 'top'
+export type SuggestionSortKind = 'bottom' | 'inline' | 'top'

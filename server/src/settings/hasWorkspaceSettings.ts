@@ -13,6 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-exports.TspLexer = require('./TspLexer').TspLexer;
-exports.TspListener = require('./TspListener').TspListener;
-exports.TspParser = require('./TspParser').TspParser;
+'use strict'
+
+import { ClientCapabilities } from 'vscode-languageserver'
+
+export function hasWorkspaceSettings(clientCapabilities: ClientCapabilities): boolean {
+    if (clientCapabilities.workspace === undefined) {
+        return false
+    }
+
+    return clientCapabilities.workspace.configuration
+}

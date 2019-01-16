@@ -15,5 +15,6 @@
  */
 'use strict'
 
-export { EnumerationSuggestionValue } from './enumerationSuggestionValue'
+export { hasWorkspaceSettings } from './hasWorkspaceSettings'
+export { SuggestionSortKind } from './suggestionSortKind'
 export { TsplangSettings } from './tsplangSettings'

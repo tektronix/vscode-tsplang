@@ -13,6 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-exports.TspLexer = require('./TspLexer').TspLexer;
-exports.TspListener = require('./TspListener').TspListener;
-exports.TspParser = require('./TspParser').TspParser;
+import { Model } from '../../model'
+
+declare module '../../model' {
+    export namespace Model {
+        export const UNSUPPORTED = 'unsupported'
+    }
+}
+export type Model = Model | 'unsupported'
