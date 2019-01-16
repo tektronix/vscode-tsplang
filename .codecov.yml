@@ -20,5 +20,13 @@ coverage:
         threshold: 5%
         branches:
           - dev
-    patch: yes
+    patch:
+      default:
+        target: 90%
+        branches:
+          - master
+      dev:
+        target: 85%
+        branches:
+          - dev
     changes: no
