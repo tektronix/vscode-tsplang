@@ -4,7 +4,7 @@ comment:
   require_changes: no
 
 coverage:
-  range: 80..100
+  range: 70..100
   round: down
   precision: 2
 
@@ -13,5 +13,12 @@ coverage:
       default:
         target: 90%
         threshold: 2%
+        branches:
+          - master
+      dev:
+        target: 85%
+        threshold: 5%
+        branches:
+          - dev
     patch: yes
     changes: no
