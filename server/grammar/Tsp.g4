@@ -104,16 +104,15 @@ value
 expression
     : value
     | functionDefinition
-    | value operatorOr expression
-    | value operatorAnd expression
-    | value operatorComparison expression
-    | value operatorBitwiseOr expression
-    | value operatorBitwiseXor expression
-    | value operatorBitwiseAnd expression
-    | value operatorBitwiseShift expression
+    | value (operatorOr
+        | operatorAnd
+        | operatorComparison
+        | operatorBitwiseOr
+        | operatorBitwiseXor
+        | operatorBitwiseAnd
+        | operatorBitwiseShift) expression
     | <assoc=right> value operatorStrcat expression
-    | value operatorAddSub expression
-    | value operatorMulDiv expression
+    | value (operatorAddSub | operatorMulDiv) expression
     | operatorUnary expression
     | <assoc=right> value operatorPower expression
     ;

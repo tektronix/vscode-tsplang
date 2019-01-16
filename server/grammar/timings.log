@@ -1,0 +1,12 @@
+regex
+\)\s+[^0\ss]+s
+
+
+Initial
+--> Fragmented the heap. GC unable to allocate sufficient space.
+
+
+"Combined expression alternatives"
+(Ln   77, Col   1)   21s  245.95306ms    [returntonumber(string.format("%."..(ndigitsor0).."g",number))]
+(Ln  860, Col   3)    7s 150.662686ms    [if((tstamp_tbl[i]-tstamp_tbl[1])-target_time)<(target_time-(tstamp_tbl[i-1]-tstamp_tbl[1]))thenBATT_MODEL.voc[soc_index]=voc_tbl[i]BATT_MODEL.vload[soc_index]=vload_tbl[i]BATT_MODEL.esr[soc_index]=esr_tbl[i]BATT_MODEL.tstamp[soc_index]=tstamp_tbl[i]-tstamp_tbl[1]start_index=ielseBATT_MODEL.voc[soc_index]=voc_tbl[i-1]BATT_MODEL.vload[soc_index]=vload_tbl[i-1]BATT_MODEL.esr[soc_index]=esr_tbl[i-1]BATT_MODEL.tstamp[soc_index]=tstamp_tbl[i-1]-tstamp_tbl[1]start_index=i-1end]
+--> total time: 32s 23.128366ms
