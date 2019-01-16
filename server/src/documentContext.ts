@@ -181,7 +181,7 @@ export class DocumentContext extends TspListener {
     }
 
     exitChunk(): void {
-        console.info('total time: %ds %dms', this._stop[0], this._stop[1] / 1000000)
+        console.info('--> total time: %ds %dms', this._stop[0], this._stop[1] / 1000000)
     }
 
     //     let startIndex: number

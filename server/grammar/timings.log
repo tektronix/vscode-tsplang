@@ -8,7 +8,7 @@ Initial
 
 "Combined expression alternatives"
 (Ln   77, Col   1)   21s  245.95306ms
-		returntonumber(string.format("%."..(ndigits or 0).."g",number))
+		return tonumber(string.format("%."..(ndigits or 0).."g",number))
 (Ln  860, Col   3)    7s 150.662686ms
 		if ((tstamp_tbl[i] - tstamp_tbl[1]) - target_time) < (target_time - (tstamp_tbl[i-1] - tstamp_tbl[1])) then
 			BATT_MODEL.voc[soc_index] = voc_tbl[i]
@@ -28,4 +28,7 @@ Initial
 
 "Removed the objectCall rule"
 (Ln   77, Col   1)   20s    15.5332ms
+(Ln   77, Col   1)   19s 960.572478ms
 (Ln  860, Col   3)    7s  72.666341ms
+(Ln  860, Col   3)    7s 109.397946ms
+--> total time: 30s 380.182715ms
