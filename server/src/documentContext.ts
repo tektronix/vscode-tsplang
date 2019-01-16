@@ -40,6 +40,9 @@ declare class CorrectRecogException extends RecognitionException {
 }
 
 export class DocumentContext extends TspListener {
+    _done: boolean
+    _enterStack: Array<[string, [number, number]]>
+    _stop: [number, number]
     readonly commandSet: CommandSet
     readonly document: TextDocument
     errors: Array<Diagnostic>
@@ -75,6 +78,7 @@ export class DocumentContext extends TspListener {
 
         this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
+        this._done = false
         this.update()
     }
 
@@ -87,238 +91,259 @@ export class DocumentContext extends TspListener {
         this._sortMap = TsplangSettings.sortMap(this._settings)
     }
 
-    exitFunctionCall(context: TspParser.FunctionCallContext): void {
-        // There's no exception handling in this function.
-        if (context.exception !== null) {
-            return
-        }
+    // exitFunctionCall(context: TspParser.FunctionCallContext): void {
+    //     // There's no exception handling in this function.
+    //     if (context.exception !== null) {
+    //         return
+    //     }
 
-        // Context decompositions.
-        const objectCall = context.objectCall()
-        const args = objectCall.args()
+    //     // Context decompositions.
+    //     const objectCall = context.objectCall()
+    //     const args = objectCall.args()
 
-        // Uninteresting context states
-        if (objectCall.NAME() !== null) {
-            //  functionCall  --{1}-->  objectCall  --{1}-->  ':' NAME
-            return
-        }
+    //     // Uninteresting context states
+    //     if (objectCall.NAME() !== null) {
+    //         //  functionCall  --{1}-->  objectCall  --{1}-->  ':' NAME
+    //         return
+    //     }
 
-        if (args.tableConstructor() !== null) {
-            //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  tableConstructor
-            return
-        }
+    //     if (args.tableConstructor() !== null) {
+    //         //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  tableConstructor
+    //         return
+    //     }
 
-        if (args.string() !== null) {
-            //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  string
-            return
-        }
+    //     if (args.string() !== null) {
+    //         //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  string
+    //         return
+    //     }
 
-        // Context TerminalNode filters.
-        const openParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
-            return value instanceof TerminalNode && value.symbol.text.localeCompare('(') === 0
-        })
-        const closeParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
-            return value instanceof TerminalNode && value.symbol.text.localeCompare(')') === 0
-        })
+    //     // Context TerminalNode filters.
+    //     const openParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
+    //         return value instanceof TerminalNode && value.symbol.text.localeCompare('(') === 0
+    //     })
+    //     const closeParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
+    //         return value instanceof TerminalNode && value.symbol.text.localeCompare(')') === 0
+    //     })
 
-        // We need both TerminalNodes in order to proceed.
-        if (!(openParenthesis instanceof TerminalNode)) {
-            return
-        }
+    //     // We need both TerminalNodes in order to proceed.
+    //     if (!(openParenthesis instanceof TerminalNode)) {
+    //         return
+    //     }
 
-        if (!(closeParenthesis instanceof TerminalNode)) {
-            return
-        }
+    //     if (!(closeParenthesis instanceof TerminalNode)) {
+    //         return
+    //     }
 
-        // Filter all matching signatures from the CommandSet
-        const signatureLabel = SignatureInformation.resolveNamespace({
-            label: context.getText().replace(this.tableIndexRegexp, '')
-        })
-        const matchingSignatures = this.commandSet.signatures.filter((signature: SignatureInformation) => {
-            return SignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
-        })
+    //     // Filter all matching signatures from the CommandSet
+    //     const signatureLabel = SignatureInformation.resolveNamespace({
+    //         label: context.getText().replace(this.tableIndexRegexp, '')
+    //     })
+    //     const matchingSignatures = this.commandSet.signatures.filter((signature: SignatureInformation) => {
+    //         return SignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
+    //     })
 
-        // If we have matching signatures, then create an associated SignatureContext.
-        if (matchingSignatures.length > 0) {
-            const tokens = this.tokenStream.tokens.slice(
-                openParenthesis.symbol.tokenIndex + 1,
-                closeParenthesis.symbol.tokenIndex
-            )
+    //     // If we have matching signatures, then create an associated SignatureContext.
+    //     if (matchingSignatures.length > 0) {
+    //         const tokens = this.tokenStream.tokens.slice(
+    //             openParenthesis.symbol.tokenIndex + 1,
+    //             closeParenthesis.symbol.tokenIndex
+    //         )
 
-            const signatureContext = SignatureContext.create(
-                openParenthesis.symbol,
-                tokens,
-                closeParenthesis.symbol,
-                matchingSignatures,
-                this.document.positionAt.bind(this.document)
-            )
+    //         const signatureContext = SignatureContext.create(
+    //             openParenthesis.symbol,
+    //             tokens,
+    //             closeParenthesis.symbol,
+    //             matchingSignatures,
+    //             this.document.positionAt.bind(this.document)
+    //         )
 
-            // Register this SignatureContext
-            this.registerSignatureContext(openParenthesis.symbol.stop + 1, signatureContext)
-        }
+    //         // Register this SignatureContext
+    //         this.registerSignatureContext(openParenthesis.symbol.stop + 1, signatureContext)
+    //     }
+    // }
+
+    // tslint:disable
+    pad(n, width) {
+        var z = ' ';
+        n = n + '';
+        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+    }
+
+    enterStatement(context: TspParser.StatementContext): void {
+        this._enterStack.push([`(Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)}) `, process.hrtime()])
     }
 
     exitStatement(context: TspParser.StatementContext): void {
-        let startIndex: number
+        const last = this._enterStack.pop()
+        const end = process.hrtime(last[1])
 
-        // Use the parse tree if no exceptions occurred within the StatementContext.
-        if (context.exception === null) {
-            // Reset our exception status if necessary.
-            if (this.enteredStatementException) {
-                this.enteredStatementException = false
-            }
-
-            // Context decompositions.
-            const variableList = context.variableList()
-            const expressionList = context.expressionList()
-
-            // Context TerminalNode filters.
-            const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
-                return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
-            })
-
-            let assignmentResults: AssignmentResults
-            //  statement  --{1}-->  variableList
-            //             --{1}-->  '='
-            //             --{1}-->  expressionList
-            if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
-                assignmentResults = getAssignmentCompletions(
-                    variableList,
-                    assignmentTerminal,
-                    expressionList,
-                    this.commandSet,
-                    this.document
-                )
-            }
-
-            if (assignmentResults !== undefined) {
-                if (assignmentResults.errors.length > 0) {
-                    this.errors.push(...assignmentResults.errors)
-                }
-
-                if (assignmentResults.assignments !== undefined) {
-                    this.registerExclusiveEntries([...assignmentResults.assignments.entries()])
-
-                    return
-                }
-            }
-
-            startIndex = context.start.tokenIndex
-        }
-        else {
-            // Exceptions tend to cluster, so only parse them once.
-            // Reset on the next StatementContext without an exception.
-            if (this.enteredStatementException) {
-                return
-            }
-
-            const exception: CorrectRecogException = context.exception
-
-            // Get the index of a starting Token.
-            startIndex = (exception.startToken === undefined)
-                ? context.start.tokenIndex
-                : exception.startToken.tokenIndex
-
-            this.enteredStatementException = true
-        }
-
-        // Get all Tokens starting at the exception index.
-        const remainingTokens = this.tokenStream.tokens.slice(startIndex)
-
-        // Cache Tokens if they form a valid namespace.
-        // (NAME types, full-stop accessors, and array indexers only)
-        let namespaceTokens = new Array<Token>()
-
-        for (let index = 0; index < remainingTokens.length; index++) {
-            const token = remainingTokens[index]
-
-            if (token.type === TspLexer.NAME || token.type === TspLexer.EOF) {
-                let resolvedNamespace: ResolvedNamespace
-                let depth: number
-
-                // If the current Token is the EOF, then register and return
-                if (token.type === TspLexer.EOF) {
-                    this.registerCompletionTokens(namespaceTokens)
-
-                    return
-                }
-
-                namespaceTokens.push(token)
-
-                this.registerCompletionTokens(namespaceTokens)
-
-                // Look ahead to see if the next Token is an open parenthesis.
-                const nextToken = remainingTokens[index + 1]
-
-                if (nextToken !== undefined && nextToken.text.localeCompare('(') === 0) {
-                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
-                    depth = ResolvedNamespace.depth(resolvedNamespace)
-
-                    // Filter on any available signatures at our current namespace depth.
-                    const signatures = (this.commandSet.signatureDepthMap.get(depth) || []).filter(
-                        (value: SignatureInformation) => {
-                            return ResolvedNamespace.equal(
-                                SignatureInformation.resolveNamespace(value),
-                                resolvedNamespace
-                            )
-                        }
-                    )
-
-                    if (signatures.length > 0) {
-                        const nextIndex = index + 1
-
-                        // Try to reach the pairing close parenthesis.
-                        const closingIndex = SignatureContext.consumePair(nextIndex, remainingTokens)
-
-                        // If we found a close parenthesis.
-                        if (closingIndex !== nextIndex) {
-                            const closeParenthesis = remainingTokens[closingIndex]
-
-                            // Get all Tokens between the parentheses.
-                            const midTokens = remainingTokens.slice(nextIndex + 1, closingIndex)
-
-                            // Advance to the Token after the close parenthesis.
-                            index = closingIndex + 1
-
-                            // Register this signature context.
-                            this.registerSignatureContext(
-                                nextToken.stop + 1,
-                                SignatureContext.create(
-                                    nextToken,
-                                    midTokens,
-                                    closeParenthesis,
-                                    signatures,
-                                    this.document.positionAt.bind(this.document)
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-            else if (token.text.localeCompare('.') === 0) {
-                namespaceTokens.push(token)
-
-                this.registerCompletionTokens(namespaceTokens)
-            }
-            // Consume everything inside the array indexer.
-            else if (token.text.localeCompare('[') === 0) {
-                const startingIndex = index
-
-                index = SignatureContext.consumePair(index, remainingTokens)
-
-                // If we successfully consumed the array indexer.
-                if (index !== startingIndex) {
-                    // Add the array indexer to the namespace tokens.
-                    namespaceTokens.push(...remainingTokens.slice(startingIndex, index + 1))
-                }
-            }
-            // If this Token is an invalid namespace component.
-            else {
-                // Clear the cache.
-                namespaceTokens = new Array<Token>()
-            }
-        }
+        console.info(`${last[0]} ${this.pad(end[0].toString(), 3)}s ${this.pad((end[1] / 1000000).toString(), 10)}ms    [${context.getText()}]`)
     }
+
+    exitChunk(): void {
+        console.info('total time: %ds %dms', this._stop[0], this._stop[1] / 1000000)
+    }
+
+    //     let startIndex: number
+
+    //     // Use the parse tree if no exceptions occurred within the StatementContext.
+    //     if (context.exception === null) {
+    //         // Reset our exception status if necessary.
+    //         if (this.enteredStatementException) {
+    //             this.enteredStatementException = false
+    //         }
+
+    //         // Context decompositions.
+    //         const variableList = context.variableList()
+    //         const expressionList = context.expressionList()
+
+    //         // Context TerminalNode filters.
+    //         const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
+    //             return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
+    //         })
+
+    //         let assignmentResults: AssignmentResults
+    //         //  statement  --{1}-->  variableList
+    //         //             --{1}-->  '='
+    //         //             --{1}-->  expressionList
+    //         if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
+    //             assignmentResults = getAssignmentCompletions(
+    //                 variableList,
+    //                 assignmentTerminal,
+    //                 expressionList,
+    //                 this.commandSet,
+    //                 this.document
+    //             )
+    //         }
+
+    //         if (assignmentResults !== undefined) {
+    //             if (assignmentResults.errors.length > 0) {
+    //                 this.errors.push(...assignmentResults.errors)
+    //             }
+
+    //             if (assignmentResults.assignments !== undefined) {
+    //                 this.registerExclusiveEntries([...assignmentResults.assignments.entries()])
+
+    //                 return
+    //             }
+    //         }
+
+    //         startIndex = context.start.tokenIndex
+    //     }
+    //     else {
+    //         // Exceptions tend to cluster, so only parse them once.
+    //         // Reset on the next StatementContext without an exception.
+    //         if (this.enteredStatementException) {
+    //             return
+    //         }
+
+    //         const exception: CorrectRecogException = context.exception
+
+    //         // Get the index of a starting Token.
+    //         startIndex = (exception.startToken === undefined)
+    //             ? context.start.tokenIndex
+    //             : exception.startToken.tokenIndex
+
+    //         this.enteredStatementException = true
+    //     }
+
+    //     // Get all Tokens starting at the exception index.
+    //     const remainingTokens = this.tokenStream.tokens.slice(startIndex)
+
+    //     // Cache Tokens if they form a valid namespace.
+    //     // (NAME types, full-stop accessors, and array indexers only)
+    //     let namespaceTokens = new Array<Token>()
+
+    //     for (let index = 0; index < remainingTokens.length; index++) {
+    //         const token = remainingTokens[index]
+
+    //         if (token.type === TspLexer.NAME || token.type === TspLexer.EOF) {
+    //             let resolvedNamespace: ResolvedNamespace
+    //             let depth: number
+
+    //             // If the current Token is the EOF, then register and return
+    //             if (token.type === TspLexer.EOF) {
+    //                 this.registerCompletionTokens(namespaceTokens)
+
+    //                 return
+    //             }
+
+    //             namespaceTokens.push(token)
+
+    //             this.registerCompletionTokens(namespaceTokens)
+
+    //             // Look ahead to see if the next Token is an open parenthesis.
+    //             const nextToken = remainingTokens[index + 1]
+
+    //             if (nextToken !== undefined && nextToken.text.localeCompare('(') === 0) {
+    //                 resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
+    //                 depth = ResolvedNamespace.depth(resolvedNamespace)
+
+    //                 // Filter on any available signatures at our current namespace depth.
+    //                 const signatures = (this.commandSet.signatureDepthMap.get(depth) || []).filter(
+    //                     (value: SignatureInformation) => {
+    //                         return ResolvedNamespace.equal(
+    //                             SignatureInformation.resolveNamespace(value),
+    //                             resolvedNamespace
+    //                         )
+    //                     }
+    //                 )
+
+    //                 if (signatures.length > 0) {
+    //                     const nextIndex = index + 1
+
+    //                     // Try to reach the pairing close parenthesis.
+    //                     const closingIndex = SignatureContext.consumePair(nextIndex, remainingTokens)
+
+    //                     // If we found a close parenthesis.
+    //                     if (closingIndex !== nextIndex) {
+    //                         const closeParenthesis = remainingTokens[closingIndex]
+
+    //                         // Get all Tokens between the parentheses.
+    //                         const midTokens = remainingTokens.slice(nextIndex + 1, closingIndex)
+
+    //                         // Advance to the Token after the close parenthesis.
+    //                         index = closingIndex + 1
+
+    //                         // Register this signature context.
+    //                         this.registerSignatureContext(
+    //                             nextToken.stop + 1,
+    //                             SignatureContext.create(
+    //                                 nextToken,
+    //                                 midTokens,
+    //                                 closeParenthesis,
+    //                                 signatures,
+    //                                 this.document.positionAt.bind(this.document)
+    //                             )
+    //                         )
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //         else if (token.text.localeCompare('.') === 0) {
+    //             namespaceTokens.push(token)
+
+    //             this.registerCompletionTokens(namespaceTokens)
+    //         }
+    //         // Consume everything inside the array indexer.
+    //         else if (token.text.localeCompare('[') === 0) {
+    //             const startingIndex = index
+
+    //             index = SignatureContext.consumePair(index, remainingTokens)
+
+    //             // If we successfully consumed the array indexer.
+    //             if (index !== startingIndex) {
+    //                 // Add the array indexer to the namespace tokens.
+    //                 namespaceTokens.push(...remainingTokens.slice(startingIndex, index + 1))
+    //             }
+    //         }
+    //         // If this Token is an invalid namespace component.
+    //         else {
+    //             // Clear the cache.
+    //             namespaceTokens = new Array<Token>()
+    //         }
+    //     }
+    // }
 
     getCompletionItems(cursor: Position): Array<CompletionItem> | undefined {
         let offset = this.document.offsetAt(cursor)
@@ -489,20 +514,29 @@ export class DocumentContext extends TspListener {
     }
 
     update(): void {
-        this.enteredStatementException = false
-        this.errors = new Array()
-        this.exclusives = new Map()
-        this.fuzzyOffsets = new FuzzyOffsetMap()
-        this.fuzzySignatureOffsets = new FuzzyOffsetMap()
-        this.signatures = new Map()
+        if (!this._done) {
+            this.enteredStatementException = false
+            this.errors = new Array()
+            this.exclusives = new Map()
+            this.fuzzyOffsets = new FuzzyOffsetMap()
+            this.fuzzySignatureOffsets = new FuzzyOffsetMap()
+            this.signatures = new Map()
 
-        this.inputStream = new InputStream(this.document.getText())
-        this.lexer = new TspLexer(this.inputStream)
-        this.tokenStream = new CommonTokenStream(this.lexer)
-        this.parser = new TspParser(this.tokenStream)
-        this.parser.buildParseTrees = true
+            this.inputStream = new InputStream(this.document.getText())
+            this.lexer = new TspLexer(this.inputStream)
+            this.tokenStream = new CommonTokenStream(this.lexer)
+            this.parser = new TspParser(this.tokenStream)
+            this.parser.buildParseTrees = true
 
-        this.parseTree = this.parser.chunk()
+            this._enterStack = new Array()
+            this.parser.addParseListener(this)
+
+            this._stop = [-1, -1]
+            const start = process.hrtime()
+            this.parseTree = this.parser.chunk()
+            this._stop = process.hrtime(start)
+            this._done = true
+        }
     }
 
     walk(): Array<Diagnostic> {
