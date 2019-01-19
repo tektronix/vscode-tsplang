@@ -15,12 +15,12 @@
  */
 'use strict'
 
-import { TextDocument } from 'vscode-languageserver'
+import { TextDocumentItem } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
+import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
-import { TspPool } from './tspPool'
 
 export interface TspItem {
     context: DocumentContext
@@ -28,16 +28,14 @@ export interface TspItem {
 }
 export namespace TspItem {
     export function create(
-        registrant: TextDocument,
+        item: TextDocumentItem,
         shebang: Shebang,
-        settings: TsplangSettings,
-        pool: TspPool
+        commandSet: CommandSet,
+        settings: TsplangSettings
     ): TspItem {
-        const entry = pool.register(shebang.master)
-
         return {
             shebang,
-            context: new DocumentContext(entry.commandSet, registrant, settings)
+            context: new DocumentContext(item, commandSet, settings)
         }
     }
 }

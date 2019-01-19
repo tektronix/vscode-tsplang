@@ -15,12 +15,13 @@
  */
 'use strict'
 
-import { DidChangeConfigurationNotification, DidChangeConfigurationParams, Disposable, IConnection, InitializeParams, InitializeResult, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, SignatureHelp, TextDocument, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments, TextDocumentSyncKind } from 'vscode-languageserver'
 
 import { CompletionItem } from './decorators'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { TspManager } from './tspManager'
 
+// tslint:disable:member-ordering
 export class ServerContext {
     disposable?: Thenable<Disposable>
     globalSettings: TsplangSettings
@@ -30,6 +31,82 @@ export class ServerContext {
     constructor() {
         this.globalSettings = TsplangSettings.defaults()
         this.hasWorkspaceSettings = false
+    }
+
+    onInitialize(params: InitializeParams, connection: IConnection): InitializeResult {
+        connection.console.log('tsplang connection initialized')
+
+        this.hasWorkspaceSettings = hasWorkspaceSettings(params.capabilities)
+
+        return {
+            capabilities: {
+                completionProvider: {
+                    resolveProvider: true,
+                    triggerCharacters: ['.']
+                },
+                // display information about the function/method that is being called
+                signatureHelpProvider: {
+                    triggerCharacters: [',', '(']
+                },
+                // Tell the client that the server works in FULL text document sync mode
+                textDocumentSync: TextDocumentSyncKind.Incremental
+            }
+        }
+    }
+
+    onInitialized(connection: IConnection): void {
+        if (this.hasWorkspaceSettings) {
+            this.disposable = connection.client.register(DidChangeConfigurationNotification.type, {
+                section: 'tsplang'
+            })
+        }
+    }
+
+    onDidOpenTextDocument(params: DidOpenTextDocumentParams, connection: IConnection, manager: TspManager): void {
+        // Register this document with global settings.
+        let settings = this.globalSettings
+
+        // Override global settings with any workspace settings.
+        if (this.hasWorkspaceSettings) {
+            connection.workspace.getConfiguration({
+                scopeUri: params.textDocument.uri,
+                section: 'tsplang'
+            })
+            .then(
+                (value: TsplangSettings) => {
+                    settings = value
+                },
+                () => { return }
+            )
+        }
+
+        const diagnostics = manager.register(params.textDocument, settings)
+
+        connection.sendDiagnostics({ diagnostics, uri: params.textDocument.uri })
+    }
+
+    onDidChangeTextDocument = (
+        params: DidChangeTextDocumentParams,
+        connection: IConnection,
+        manager: TspManager
+    ): void => {
+        const diagnostics = manager.update(params.textDocument, params.contentChanges)
+
+        if (diagnostics !== undefined) {
+            connection.sendDiagnostics({ diagnostics, uri: params.textDocument.uri })
+        }
+    }
+
+    onDidCloseTextDocument = (
+        params: DidCloseTextDocumentParams,
+        connection: IConnection,
+        manager: TspManager
+    ): void => {
+        if (manager.has(params.textDocument.uri)) {
+            manager.unregister(params.textDocument.uri)
+
+            connection.sendDiagnostics({ diagnostics: [], uri: params.textDocument.uri })
+        }
     }
 
     onCompletion(params: TextDocumentPositionParams, manager: TspManager): Array<CompletionItem> | undefined {
@@ -61,16 +138,15 @@ export class ServerContext {
     onDidChangeConfiguration(
         params: DidChangeConfigurationParams,
         connection: IConnection,
-        documents: TextDocuments,
         manager: TspManager
     ): void {
         if (this.hasWorkspaceSettings) {
             // Update all open document contexts.
-            documents.all().forEach((document: TextDocument) => {
+            manager.all().forEach((uri: string) => {
                 let settings = params.settings.tsplang || TsplangSettings.defaults()
 
                 connection.workspace.getConfiguration({
-                    scopeUri: document.uri,
+                    scopeUri: uri,
                     section: 'tsplang'
                 })
                 .then(
@@ -78,10 +154,10 @@ export class ServerContext {
                         settings = value
                     },
                     // On rejection, just use the values we set above.
-                    (reason: Error) => { return }
+                    () => { return }
                 )
 
-                const tspItem = manager.get(document.uri)
+                const tspItem = manager.get(uri)
 
                 if (tspItem !== undefined) {
                     tspItem.context.settings = settings
@@ -90,77 +166,6 @@ export class ServerContext {
         }
         else {
             this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
-        }
-    }
-
-    onDidChangeContent(change: TextDocumentChangeEvent, connection: IConnection, manager: TspManager): void {
-        // if document is registered, then update
-        if (manager.has(change.document.uri)) {
-            const diagnostics = manager.update(change.document.uri)
-
-            connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
-        }
-        // if document is unregistered, then register
-        else {
-            // Register this document with global settings.
-            let settings = this.globalSettings
-
-            // Override global settings with any workspace settings.
-            if (this.hasWorkspaceSettings) {
-                connection.workspace.getConfiguration({
-                    scopeUri: change.document.uri,
-                    section: 'tsplang'
-                })
-                .then(
-                    (value: TsplangSettings) => {
-                        settings = value
-                    },
-                    (reason: Error) => { return }
-                )
-            }
-
-            const diagnostics = manager.register(change.document.uri, settings)
-
-            connection.sendDiagnostics({ diagnostics, uri: change.document.uri })
-        }
-    }
-
-    onDidClose = (params: TextDocumentChangeEvent, connection: IConnection, manager: TspManager): void => {
-        connection.console.log(`${params.document.uri} closed.`)
-
-        if (manager.has(params.document.uri)) {
-            manager.unregister(params.document.uri)
-
-            connection.sendDiagnostics({ diagnostics: [], uri: params.document.uri })
-        }
-    }
-
-    onInitialize(params: InitializeParams, connection: IConnection, documents: TextDocuments): InitializeResult {
-        connection.console.log('tsplang connection initialized')
-
-        this.hasWorkspaceSettings = hasWorkspaceSettings(params.capabilities)
-
-        return {
-            capabilities: {
-                completionProvider: {
-                    resolveProvider: true,
-                    triggerCharacters: ['.']
-                },
-                // display information about the function/method that is being called
-                signatureHelpProvider: {
-                    triggerCharacters: [',', '(']
-                },
-                // Tell the client that the server works in FULL text document sync mode
-                textDocumentSync: documents.syncKind
-            }
-        }
-    }
-
-    onInitialized(connection: IConnection): void {
-        if (this.hasWorkspaceSettings) {
-            this.disposable = connection.client.register(DidChangeConfigurationNotification.type, {
-                section: 'tsplang'
-            })
         }
     }
 
@@ -174,3 +179,4 @@ export class ServerContext {
         return tspItem.context.getSignatureHelp(params.position)
     }
 }
+// tslint:enable:member-ordering

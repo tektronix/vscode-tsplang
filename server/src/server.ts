@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, DidChangeConfigurationParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import { CompletionItem, createConnection, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentPositionParams } from 'vscode-languageserver'
 
 import { ServerContext } from './serverContext'
 import { TspManager } from './tspManager'
@@ -26,33 +26,37 @@ const connection: IConnection = createConnection(
     new IPCMessageWriter(process)
 )
 
-// Create a simple text document manager. The text document manager supports full document sync
-// only
-const documents: TextDocuments = new TextDocuments()
-
 // Create a TSP Manager to provide command set completions.
-const manager: TspManager = new TspManager(documents)
+const manager: TspManager = new TspManager()
 
 const context = new ServerContext()
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
 connection.onInitialize((params: InitializeParams): InitializeResult => {
-    return context.onInitialize(params, connection, documents)
+    return context.onInitialize(params, connection)
 })
 
 connection.onInitialized(() => {
     context.onInitialized(connection)
 })
 
-// The content of a text document has changed. This event is emitted when the text document first
-// opened or when its content has changed.
-documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
-    context.onDidChangeContent(change, connection, manager)
+connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
+    connection.console.log(`opened ${params.textDocument.uri}`)
+
+    context.onDidOpenTextDocument(params, connection, manager)
 })
 
-documents.onDidClose((params: TextDocumentChangeEvent) => {
-    context.onDidClose(params, connection, manager)
+connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
+    connection.console.log(`changed ${params.textDocument.uri}`)
+
+    context.onDidChangeTextDocument(params, connection, manager)
+})
+
+connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
+    connection.console.log(`closed ${params.textDocument.uri}`)
+
+    context.onDidCloseTextDocument(params, connection, manager)
 })
 
 // This handler provides the initial list of completion items.
@@ -66,7 +70,7 @@ connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
 })
 
 connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
-    context.onDidChangeConfiguration(params, connection, documents, manager)
+    context.onDidChangeConfiguration(params, connection, manager)
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
@@ -82,8 +86,5 @@ const dispose = (): void => {
 connection.onShutdown(dispose)
 connection.onExit(dispose)
 
-// Make the text document manager listen on the connection for open, change and close text
-// document events
-documents.listen(connection)
 // Listen on the connection
 connection.listen()

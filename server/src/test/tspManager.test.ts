@@ -51,58 +51,58 @@ class TextDocuments extends vsls.TextDocuments {
     }
 }
 
-describe('TspManager', () => {
-    const settings = TsplangSettings.defaults()
-    const documents = new TextDocuments()
-    const manager = new TspManager(documents)
-    const registeredUnmanagedUri = 'file://registered-unmanaged.tsp'
-    const registeredUnmanaged = vsls.TextDocument.create(registeredUnmanagedUri, 'tsp', 1, '')
-    const unregisteredUri = 'file://unregistered.tsp'
+// describe('TspManager', () => {
+//     const settings = TsplangSettings.defaults()
+//     const documents = new TextDocuments()
+//     const manager = new TspManager(documents)
+//     const registeredUnmanagedUri = 'file://registered-unmanaged.tsp'
+//     const registeredUnmanaged = vsls.TextDocument.create(registeredUnmanagedUri, 'tsp', 1, '')
+//     const unregisteredUri = 'file://unregistered.tsp'
 
-    describe('#register()', () => {
-        before('Register with TspManager Only', () => {
-            documents.set(registeredUnmanagedUri, registeredUnmanaged)
-            manager.register(registeredUnmanagedUri, settings)
-            documents.delete(registeredUnmanagedUri)
-        })
+//     describe('#register()', () => {
+//         before('Register with TspManager Only', () => {
+//             documents.set(registeredUnmanagedUri, registeredUnmanaged)
+//             manager.register(registeredUnmanagedUri, settings)
+//             documents.delete(registeredUnmanagedUri)
+//         })
 
-        it('throws an error when the document has already been registered', () => {
-            expect(() => { manager.register(registeredUnmanagedUri, settings) })
-                .to.throw(`${registeredUnmanagedUri} is already registered`)
-        })
+//         it('throws an error when the document has already been registered', () => {
+//             expect(() => { manager.register(registeredUnmanagedUri, settings) })
+//                 .to.throw(`${registeredUnmanagedUri} is already registered`)
+//         })
 
-        it('throws an error when the document manager does not have the URI', () => {
-            if (manager.has(registeredUnmanagedUri)) {
-                manager.unregister(registeredUnmanagedUri)
-            }
+//         it('throws an error when the document manager does not have the URI', () => {
+//             if (manager.has(registeredUnmanagedUri)) {
+//                 manager.unregister(registeredUnmanagedUri)
+//             }
 
-            expect(() => { manager.register(registeredUnmanagedUri, settings) })
-                .to.throw(`unable to fetch ${registeredUnmanagedUri} from the document manager`)
-        })
-    })
+//             expect(() => { manager.register(registeredUnmanagedUri, settings) })
+//                 .to.throw(`unable to fetch ${registeredUnmanagedUri} from the document manager`)
+//         })
+//     })
 
-    describe('#unregister()', () => {
-        it('returns false if the TspManager does not contain the URI', () => {
-            expect(manager.unregister(unregisteredUri)).to.be.false
-        })
-    })
+//     describe('#unregister()', () => {
+//         it('returns false if the TspManager does not contain the URI', () => {
+//             expect(manager.unregister(unregisteredUri)).to.be.false
+//         })
+//     })
 
-    describe('#update()', () => {
+//     describe('#update()', () => {
 
-        before('Register with TspManager Only', () => {
-            documents.set(registeredUnmanagedUri, registeredUnmanaged)
-            manager.register(registeredUnmanagedUri, settings)
-            documents.delete(registeredUnmanagedUri)
-        })
+//         before('Register with TspManager Only', () => {
+//             documents.set(registeredUnmanagedUri, registeredUnmanaged)
+//             manager.register(registeredUnmanagedUri, settings)
+//             documents.delete(registeredUnmanagedUri)
+//         })
 
-        it('throws an error when TspManager does not contain the URI', () => {
-            expect(() => { manager.update(unregisteredUri) })
-                .to.throw(`${unregisteredUri} is not registered`)
-        })
+//         it('throws an error when TspManager does not contain the URI', () => {
+//             expect(() => { manager.update(unregisteredUri) })
+//                 .to.throw(`${unregisteredUri} is not registered`)
+//         })
 
-        it('throws an error when the document manager does not have the URI', () => {
-            expect(() => { manager.update(registeredUnmanagedUri) })
-                .to.throw(`unable to fetch ${registeredUnmanagedUri} from the document manager`)
-        })
-    })
-})
+//         it('throws an error when the document manager does not have the URI', () => {
+//             expect(() => { manager.update(registeredUnmanagedUri) })
+//                 .to.throw(`unable to fetch ${registeredUnmanagedUri} from the document manager`)
+//         })
+//     })
+// })

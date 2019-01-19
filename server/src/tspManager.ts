@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { Diagnostic, TextDocuments } from 'vscode-languageserver'
+import { Diagnostic, TextDocument, TextDocumentContentChangeEvent, TextDocumentItem, VersionedTextDocumentIdentifier } from 'vscode-languageserver'
 
 import { Model } from './model'
 import { TsplangSettings } from './settings'
@@ -24,14 +24,22 @@ import { TspItem } from './tspItem'
 import { TspPool } from './tspPool'
 
 export class TspManager {
+    /**
+     * A Map keyed to a document uri and whose associated key-value is a TspDocument.
+     */
     private dict: Map<string, TspItem>
-    private readonly documents: TextDocuments
+    private readonly firstlineRegExp: RegExp
     private pool: TspPool
 
-    constructor(documents: TextDocuments) {
-        this.documents = documents
+    constructor() {
         this.dict = new Map()
         this.pool = new TspPool()
+
+        this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
+    }
+
+    all(): Array<string> {
+        return [...this.dict.keys()]
     }
 
     get(uri: string): TspItem | undefined {
@@ -42,33 +50,27 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    register(uri: string, documentSettings: TsplangSettings): Array<Diagnostic> {
+    register(item: TextDocumentItem, documentSettings: TsplangSettings): Array<Diagnostic> {
         // check if the doc has already been registered
-        if (this.dict.has(uri)) {
-            throw new Error(`${uri} is already registered`)
+        if (this.dict.has(item.uri)) {
+            throw new Error(`${item.uri} is already registered`)
         }
 
-        const document = this.documents.get(uri)
-
-        if (document === undefined) {
-            throw new Error(`unable to fetch ${uri} from the document manager`)
-        }
-
-        const firstLine = document.getText({
-            end: { character: 0, line: 0 },
-            start: { character: 0, line: 1 }
-        }).trim()
+        const firstLine = this.firstlineRegExp.exec(item.text)[0]
 
         // Try to parse the shebang.
         const [shebang, errors]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
 
+        // Register the shebang in the TspPool.
+        const poolEntry = this.pool.register(shebang.master)
+
         // Try to make a new TspItem instance.
-        const tspItem = TspItem.create(document, shebang, documentSettings, this.pool)
+        const tspItem = TspItem.create(item, shebang, poolEntry.commandSet, documentSettings)
 
-        tspItem.context.update()
-        errors.push(...tspItem.context.walk())
+        // tspItem.context.update()
+        // errors.push(...tspItem.context.walk())
 
-        this.dict.set(document.uri, tspItem)
+        this.dict.set(item.uri, tspItem)
 
         return errors
     }
@@ -93,39 +95,48 @@ export class TspManager {
         return this.dict.delete(uri)
     }
 
-    update(uri: string): Array<Diagnostic> {
-        // check if the doc has not been registered
-        if (!this.dict.has(uri)) {
-            throw new Error(`${uri} is not registered`)
+    update(
+        document: VersionedTextDocumentIdentifier,
+        changes: Array<TextDocumentContentChangeEvent>
+    ): Array<Diagnostic> | undefined {
+        const tspItem = this.dict.get(document.uri)
+
+        // If the doc has not been registered
+        if (tspItem === undefined) {
+            throw new Error(`${document.uri} is not registered`)
         }
 
-        const document = this.documents.get(uri)
+        let shebangEdit = false
+        let newContent = tspItem.context.document.getText()
+        for (const change of changes) {
+            shebangEdit = change.range.start.line === 0
 
-        if (document === undefined) {
-            throw new Error(`unable to fetch ${uri} from the document manager`)
+            newContent = TextDocument.applyEdits(tspItem.context.document, [{
+                newText: change.text,
+                range: change.range
+            }])
         }
 
-        // We already checked that the key exists in the Map.
-        const item = this.dict.get(uri) as TspItem
-
-        const firstLine = document.getText({
-            end: { character: 0, line: 0 },
-            start: { character: 0, line: 1 }
-        }).trim()
-
-        // If the shebang has changed.
-        if (firstLine.localeCompare(item.shebang.text) !== 0) {
+        if (shebangEdit) {
             // Unregister everything.
-            this.unregister(uri)
+            this.unregister(document.uri)
 
             // Re-register everything.
             // The context was updated by register, so we're done.
-            return this.register(uri, item.context.settings)
+            return this.register(
+                {
+                    languageId: tspItem.context.document.languageId,
+                    text: newContent,
+                    uri: document.uri,
+                    version: document.version
+                },
+                tspItem.context.settings
+            )
         }
 
-        // Update this item's context.
-        item.context.update()
+        // // Update this item's context.
+        // tspItem.context.update()
 
-        return item.context.walk()
+        // return tspItem.context.walk()
     }
 }

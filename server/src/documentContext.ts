@@ -21,7 +21,7 @@ import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
 import { RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
-import { CompletionItemKind, Diagnostic, Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
+import { CompletionItemKind, Diagnostic, Position, SignatureHelp, TextDocument, TextDocumentItem } from 'vscode-languageserver'
 
 import { TspLexer, TspListener, TspParser } from './antlr4-tsplang'
 import { CompletionItem, ResolvedNamespace, SignatureInformation } from './decorators'
@@ -30,6 +30,7 @@ import { TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
+import { Outline } from './outline'
 import { SuggestionSortKind, TsplangSettings } from './settings'
 
 // tslint:disable-next-line:no-empty
@@ -44,8 +45,10 @@ export class DocumentContext extends TspListener {
     _enterStack: Array<[string, [number, number]]>
     _stop: [number, number]
     readonly commandSet: CommandSet
-    readonly document: TextDocument
+    document: TextDocument
     errors: Array<Diagnostic>
+    readonly outline: Outline
+
     private _settings: TsplangSettings
     private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
     private enteredStatementException: boolean
@@ -69,17 +72,18 @@ export class DocumentContext extends TspListener {
     private readonly tableIndexRegexp: RegExp
     private tokenStream: CommonTokenStream
 
-    constructor(commandSet: CommandSet, document: TextDocument, settings: TsplangSettings) {
+    constructor(item: TextDocumentItem, commandSet: CommandSet, settings: TsplangSettings) {
         super()
 
+        this.document = TextDocument.create(item.uri, item.languageId, item.version, item.text)
         this.commandSet = commandSet
-        this.document = document
+        this.outline = new Outline(item.text)
         this.settings = settings
 
         this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
         this._done = false
-        this.update()
+        // this.update()
     }
 
     get settings(): TsplangSettings {
