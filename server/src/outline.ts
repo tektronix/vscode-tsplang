@@ -18,7 +18,7 @@
 import { CommonTokenStream, InputStream } from 'antlr4'
 import { Position } from 'vscode-languageserver'
 
-import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tspfast'
+import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tsplang'
 import { Range } from './decorators'
 
 export class Outline extends TspFastListener {

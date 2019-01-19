@@ -12,7 +12,6 @@
     "exclude": [
         "node_modules",
         ".vscode-test",
-        "src/antlr4-tspfast",
         "src/antlr4-tsplang"
     ]
 }

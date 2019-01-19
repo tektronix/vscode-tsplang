@@ -1,9 +1,0 @@
-{
-    "compilerOptions": {
-        "allowJs": true,
-        "rootDir": ".",
-        "outDir": "../../out/antlr4-tspfast",
-        "sourceMap": true
-    },
-    "exclude": []
-}
