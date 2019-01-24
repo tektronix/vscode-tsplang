@@ -43,8 +43,10 @@ export class ProcessManager {
         this.connection = connection
 
         ipc.config.id = 'TsplangServer'
-        ipc.server.on('init', this.init)
-        ipc.server.on('started', this.started)
+        ipc.serve(() => {
+            ipc.server.on('init', this.init)
+            ipc.server.on('started', this.started)
+        })
         ipc.server.start()
     }
 
