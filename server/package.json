@@ -15,8 +15,10 @@
     "dependencies": {
         "@types/antlr4": "^4.7.0",
         "@types/escape-string-regexp": "^1.0.0",
+        "@types/node-ipc": "^9.1.1",
         "antlr4": "^4.7.1",
         "escape-string-regexp": "^1.0.5",
+        "node-ipc": "^9.1.1",
         "vscode-languageserver": "^5.2.1"
     },
     "scripts": {}

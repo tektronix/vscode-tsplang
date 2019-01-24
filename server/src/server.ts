@@ -17,6 +17,7 @@
 
 import { CompletionItem, createConnection, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentPositionParams } from 'vscode-languageserver'
 
+import { ProcessManager } from './processManager'
 import { ServerContext } from './serverContext'
 import { TspManager } from './tspManager'
 
@@ -26,8 +27,10 @@ const connection: IConnection = createConnection(
     new IPCMessageWriter(process)
 )
 
-// Create a TSP Manager to provide command set completions.
-const manager: TspManager = new TspManager()
+// // Create a TSP Manager to provide command set completions.
+// const manager: TspManager = new TspManager()
+
+const manager = new ProcessManager(connection)
 
 const context = new ServerContext()
 
@@ -50,7 +53,7 @@ connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
 connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
     connection.console.log(`changed ${params.textDocument.uri}`)
 
-    context.onDidChangeTextDocument(params, connection, manager)
+    // context.onDidChangeTextDocument(params, connection, manager)
 })
 
 connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
@@ -61,20 +64,26 @@ connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
 
 // This handler provides the initial list of completion items.
 connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
-    return context.onCompletion(params, manager)
+    // return context.onCompletion(params, manager)
+
+    return
 })
 
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    return context.onCompletionResolve(item, manager)
+    // return context.onCompletionResolve(item, manager)
+
+    return item
 })
 
 connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
-    context.onDidChangeConfiguration(params, connection, manager)
+    // context.onDidChangeConfiguration(params, connection, manager)
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
-    return context.onSignatureHelp(params, manager)
+    // return context.onSignatureHelp(params, manager)
+
+    return
 })
 
 // Shared dispose method.

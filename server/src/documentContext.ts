@@ -77,7 +77,7 @@ export class DocumentContext extends TspListener {
 
         this.document = TextDocument.create(item.uri, item.languageId, item.version, item.text)
         this.commandSet = commandSet
-        this.outline = new Outline(item.text)
+        this.outline = new Outline(item)
         this.settings = settings
 
         this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
