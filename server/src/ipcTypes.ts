@@ -16,22 +16,29 @@
 
 import { Diagnostic, TextDocumentItem } from 'vscode-languageserver'
 
-import { CommandSet } from './instrument'
+import { Model } from './model'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
+import { PoolEntry } from './tspPool'
 
-export interface BasicMessage {
+export interface BasicChildMessage {
     uri: string
 }
 
-export interface StartMessage {
-    bang: Shebang
-    config: TsplangSettings,
-    item: TextDocumentItem,
-    set: CommandSet,
+export interface BasicChildErrorMessage extends BasicChildMessage {
+    errors: Array<Diagnostic>
 }
 
-export interface StartedMessage {
-    errors: Array<Diagnostic>,
-    uri: string
+export interface RegisterChildMessage extends BasicChildErrorMessage {
+    shebang: Shebang
 }
+
+export interface SettingsMessage {
+    config: TsplangSettings
+}
+
+export interface ContextMessage extends SettingsMessage {
+    item: TextDocumentItem
+}
+
+export declare type RegistrationMessage = ContextMessage & { register(model: Model): PoolEntry }

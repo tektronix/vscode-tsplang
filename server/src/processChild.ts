@@ -16,13 +16,15 @@
 'use strict'
 
 import * as ipc from 'node-ipc'
+import { Diagnostic, DidChangeTextDocumentParams } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
-import { StartedMessage, StartMessage } from './ipcTypes'
+import { RegistrationMessage, SettingsMessage } from './ipcTypes'
 import { Shebang } from './shebang'
 
 ipc.config.id = 'vscode-tsplang-document'
 
+const firstlineRegExp = new RegExp(/^[^\n\r]*/)
 // tslint:disable-next-line:no-magic-numbers
 const uri = process.argv[2]
 let context: DocumentContext
@@ -30,11 +32,39 @@ let shebang: Shebang
 
 ipc.connectTo('TsplangServer')
 
-ipc.of.TsplangServer.once('start', (message: StartMessage) => {
-    shebang = message.bang
-    context = new DocumentContext(message.item, message.set, message.config)
+ipc.of.TsplangServer.on('shebang', (firstLine: string) => {
+    // Try to parse the first line.
+    const tokenizeResult: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
 
-    ipc.of.TsplangServer.emit('started', { errors: context.outline.errors, uri: context.document.uri })
+    // Save our shebang.
+    shebang = tokenizeResult[0]
+
+    // Request a command set.
+    ipc.of.TsplangServer.emit('register', { shebang, uri, errors: tokenizeResult[1] })
 })
 
-ipc.of.TsplangServer.emit('init', { uri })
+ipc.of.TsplangServer.on('registration', (message: RegistrationMessage) => {
+    const poolEntry = message.register(shebang.master)
+
+    context = new DocumentContext(message.item, poolEntry.commandSet, message.config)
+
+    ipc.of.TsplangServer.emit('registered', { errors: context.outline.errors, uri: context.document.uri })
+})
+
+ipc.of.TsplangServer.on('change', (message: DidChangeTextDocumentParams) => {
+    // TODO: update the DocumentContext
+})
+
+ipc.of.TsplangServer.on('settings', (message: SettingsMessage) => {
+    context.settings = message.config
+})
+
+/**
+ *  client              server
+ *      |{created}------>|
+ *      |                |
+ *      |<--------{start}|
+ *      |                |
+ *      |{started}------>|
+ */
+ipc.of.TsplangServer.emit('created', { uri })

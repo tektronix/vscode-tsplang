@@ -19,7 +19,6 @@ import { CompletionItem, createConnection, DidChangeConfigurationParams, DidChan
 
 import { ProcessManager } from './processManager'
 import { ServerContext } from './serverContext'
-import { TspManager } from './tspManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -32,34 +31,32 @@ const connection: IConnection = createConnection(
 
 const manager = new ProcessManager(connection)
 
-const context = new ServerContext()
-
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
 connection.onInitialize((params: InitializeParams): InitializeResult => {
-    return context.onInitialize(params, connection)
+    return manager.initialize(params)
 })
 
 connection.onInitialized(() => {
-    context.onInitialized(connection)
+    manager.initialized()
 })
 
 connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
-    connection.console.log(`opened ${params.textDocument.uri}`)
+    manager.documentOpen(params)
 
-    context.onDidOpenTextDocument(params, connection, manager)
+    connection.console.log(`opened ${params.textDocument.uri}`)
 })
 
 connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
-    connection.console.log(`changed ${params.textDocument.uri}`)
+    manager.documentChange(params)
 
-    // context.onDidChangeTextDocument(params, connection, manager)
+    connection.console.log(`changed ${params.textDocument.uri}`)
 })
 
 connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
-    connection.console.log(`closed ${params.textDocument.uri}`)
+    manager.documentClose(params)
 
-    context.onDidCloseTextDocument(params, connection, manager)
+    connection.console.log(`closed ${params.textDocument.uri}`)
 })
 
 // This handler provides the initial list of completion items.
@@ -86,14 +83,8 @@ connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp |
     return
 })
 
-// Shared dispose method.
-const dispose = (): void => {
-    if (context.disposable) {
-        context.disposable.then((value: Disposable) => value.dispose())
-    }
-}
-connection.onShutdown(dispose)
-connection.onExit(dispose)
+connection.onShutdown(manager.dispose)
+connection.onExit(manager.dispose)
 
 // Listen on the connection
 connection.listen()

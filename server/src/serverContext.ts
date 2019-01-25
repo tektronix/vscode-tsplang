@@ -63,59 +63,6 @@ export class ServerContext {
         }
     }
 
-    onDidOpenTextDocument(params: DidOpenTextDocumentParams, connection: IConnection, manager: ProcessManager): void {
-        // Register this document with global settings.
-        let settings = this.globalSettings
-
-        // Override global settings with any workspace settings.
-        if (this.hasWorkspaceSettings) {
-            connection.workspace.getConfiguration({
-                scopeUri: params.textDocument.uri,
-                section: 'tsplang'
-            })
-            .then(
-                (value: TsplangSettings) => {
-                    settings = value
-                },
-                () => { return }
-            )
-        }
-
-        // const diagnostics = manager.register(params.textDocument, settings)
-
-        // connection.sendDiagnostics({ diagnostics, uri: params.textDocument.uri })
-
-        manager.open(params.textDocument, settings)
-    }
-
-    onDidChangeTextDocument = (
-        params: DidChangeTextDocumentParams,
-        connection: IConnection,
-        manager: TspManager
-    ): void => {
-        // const diagnostics = manager.update(params.textDocument, params.contentChanges)
-
-        // if (diagnostics !== undefined) {
-        //     connection.sendDiagnostics({ diagnostics, uri: params.textDocument.uri })
-        // }
-    }
-
-    onDidCloseTextDocument = (
-        params: DidCloseTextDocumentParams,
-        connection: IConnection,
-        manager: ProcessManager
-    ): void => {
-        // if (manager.has(params.textDocument.uri)) {
-        //     manager.unregister(params.textDocument.uri)
-
-        //     connection.sendDiagnostics({ diagnostics: [], uri: params.textDocument.uri })
-        // }
-
-        manager.close(params.textDocument.uri)
-
-        connection.sendDiagnostics({ diagnostics: [], uri: params.textDocument.uri })
-    }
-
     onCompletion(params: TextDocumentPositionParams, manager: TspManager): Array<CompletionItem> | undefined {
         this.lastCompletionUri = params.textDocument.uri
 
@@ -142,40 +89,6 @@ export class ServerContext {
         // }
 
         // return tspItem.context.resolveCompletion(item)
-    }
-
-    onDidChangeConfiguration(
-        params: DidChangeConfigurationParams,
-        connection: IConnection,
-        manager: TspManager
-    ): void {
-        if (this.hasWorkspaceSettings) {
-            // // Update all open document contexts.
-            // manager.all().forEach((uri: string) => {
-            //     let settings = params.settings.tsplang || TsplangSettings.defaults()
-
-            //     connection.workspace.getConfiguration({
-            //         scopeUri: uri,
-            //         section: 'tsplang'
-            //     })
-            //     .then(
-            //         (value: TsplangSettings) => {
-            //             settings = value
-            //         },
-            //         // On rejection, just use the values we set above.
-            //         () => { return }
-            //     )
-
-            //     const tspItem = manager.get(uri)
-
-            //     if (tspItem !== undefined) {
-            //         tspItem.context.settings = settings
-            //     }
-            // })
-        }
-        else {
-            this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
-        }
     }
 
     onSignatureHelp = (params: TextDocumentPositionParams, manager: TspManager): SignatureHelp | undefined => {
