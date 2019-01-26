@@ -140,7 +140,7 @@ export class Outline extends TspFastListener {
         this.parser.chunk()
     }
 
-    get errors(): Array<Diagnostic> {
+    get diagnostics(): Array<Diagnostic> {
         return this.errorOutline.diagnostics
     }
 

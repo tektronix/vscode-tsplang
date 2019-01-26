@@ -15,56 +15,44 @@
  */
 'use strict'
 
-import * as ipc from 'node-ipc'
-import { Diagnostic, DidChangeTextDocumentParams } from 'vscode-languageserver'
+import * as rpc from 'vscode-jsonrpc'
 
 import { DocumentContext } from './documentContext'
-import { RegistrationMessage, SettingsMessage } from './ipcTypes'
+import { ContextReply, ContextRequest, ErrorNotification } from './rpcTypes'
 import { Shebang } from './shebang'
 
-ipc.config.id = 'vscode-tsplang-document'
+const connection = rpc.createMessageConnection(
+    new rpc.IPCMessageReader(process),
+    new rpc.IPCMessageWriter(process)
+)
+console.log(`pid ${process.pid}: established connection`)
 
-const firstlineRegExp = new RegExp(/^[^\n\r]*/)
+class ProcessChild {
+    context: DocumentContext
+    readonly firstlineRegExp: RegExp
+    shebang: Shebang
+    uri: string
+
+    constructor(uri: string) {
+        this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
+        this.uri = uri
+    }
+}
+
 // tslint:disable-next-line:no-magic-numbers
-const uri = process.argv[2]
-let context: DocumentContext
-let shebang: Shebang
+const proc = new ProcessChild(process.argv[2])
 
-ipc.connectTo('TsplangServer')
+connection.listen()
+console.log(`pid ${process.pid}: listening on the connection`)
 
-ipc.of.TsplangServer.on('shebang', (firstLine: string) => {
-    // Try to parse the first line.
-    const tokenizeResult: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
+/* Process Child Initialization */
 
-    // Save our shebang.
-    shebang = tokenizeResult[0]
+connection.sendRequest(ContextRequest, proc.uri).then((context: ContextReply) => {
+    proc.shebang = context.shebang
+    proc.context = new DocumentContext(context.item, context.commands, context.settings)
 
-    // Request a command set.
-    ipc.of.TsplangServer.emit('register', { shebang, uri, errors: tokenizeResult[1] })
+    const diagnostics = context.shebangDiagnostics
+    diagnostics.concat(proc.context.outline.diagnostics)
+
+    connection.sendNotification(ErrorNotification, { diagnostics, uri: proc.uri })
 })
-
-ipc.of.TsplangServer.on('registration', (message: RegistrationMessage) => {
-    const poolEntry = message.register(shebang.master)
-
-    context = new DocumentContext(message.item, poolEntry.commandSet, message.config)
-
-    ipc.of.TsplangServer.emit('registered', { errors: context.outline.errors, uri: context.document.uri })
-})
-
-ipc.of.TsplangServer.on('change', (message: DidChangeTextDocumentParams) => {
-    // TODO: update the DocumentContext
-})
-
-ipc.of.TsplangServer.on('settings', (message: SettingsMessage) => {
-    context.settings = message.config
-})
-
-/**
- *  client              server
- *      |{created}------>|
- *      |                |
- *      |<--------{start}|
- *      |                |
- *      |{started}------>|
- */
-ipc.of.TsplangServer.emit('created', { uri })

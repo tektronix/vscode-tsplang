@@ -16,32 +16,30 @@
 'use strict'
 
 import { ChildProcess, fork } from 'child_process'
-import * as ipc from 'node-ipc'
 import * as path from 'path'
-import { DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, TextDocumentSyncKind } from 'vscode-languageserver'
+import * as rpc from 'vscode-jsonrpc'
+import { Diagnostic, DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, PublishDiagnosticsParams, TextDocumentSyncKind } from 'vscode-languageserver'
 
-import { BasicChildErrorMessage, BasicChildMessage, ContextMessage, RegisterChildMessage } from './ipcTypes'
+import { ContextReply, ContextRequest, ErrorNotification } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 import { TspPool } from './tspPool'
 
 interface Child {
-    firstLine: string
-    init: ContextMessage
+    connection: rpc.MessageConnection
+    init: ContextReply
     proc: ChildProcess
-    shebang?: Shebang
-    uri: string
 }
 
 export class ProcessManager {
     readonly children: Map<string, Child>
+    connection: IConnection
     disposable?: Thenable<Disposable>
     readonly firstlineRegExp: RegExp
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
     lastCompletionUri?: string
     readonly pool: TspPool
-    private readonly connection: IConnection
 
     constructor(connection: IConnection) {
         this.children = new Map()
@@ -49,6 +47,7 @@ export class ProcessManager {
         this.globalSettings = TsplangSettings.defaults()
         this.hasWorkspaceSettings = false
         this.pool = new TspPool()
+
         this.connection = connection
     }
 
@@ -65,7 +64,7 @@ export class ProcessManager {
     }
 
     documentChange = (params: DidChangeTextDocumentParams): void => {
-        ipc.server.emit('change', params)
+        // TODO
     }
 
     documentClose(params: DidCloseTextDocumentParams): void {
@@ -90,31 +89,52 @@ export class ProcessManager {
             )
         }
 
-        const child = fork(path.resolve('processChild.js'), [params.textDocument.uri], {
+        const firstLine = this.firstlineRegExp.exec(params.textDocument.text)[0]
+        const [shebang, shebangDiagnostics]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
+        // Generate a CommandSet for this document.
+        const poolEntry = this.pool.register(shebang.master)
+
+        const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
+            // tslint:disable-next-line:no-magic-numbers
+            execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
             stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
         })
 
-        this.children.set(params.textDocument.uri, {
-            firstLine: this.firstlineRegExp.exec(params.textDocument.text)[0],
+        const connection = rpc.createMessageConnection(
+            new rpc.IPCMessageReader(proc),
+            new rpc.IPCMessageWriter(proc)
+        )
+
+        const child: Child = {
+            connection,
+            proc,
             init: {
-                config: settings,
-                item: params.textDocument
-            },
-            proc: child,
-            uri: params.textDocument.uri
+                settings,
+                shebang,
+                shebangDiagnostics,
+                commands: poolEntry.commandSet,
+                item: params.textDocument,
+            }
+        }
+
+        this.children.set(params.textDocument.uri, child)
+
+        child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
+            console.log(`ErrorNotification from ${value.uri}`)
+
+            this.connection.sendDiagnostics(value)
         })
+        child.connection.onRequest(ContextRequest, (uri: string): ContextReply => {
+            console.log(`ContextRequest from ${uri}`)
+
+            return this.children.get(uri).init
+        })
+
+        child.connection.listen()
     }
 
     initialize(params: InitializeParams): InitializeResult {
-        this.connection.console.log('tsplang connection initialized')
-
-        ipc.config.id = 'TsplangServer'
-        ipc.serve(() => {
-            ipc.server.on('created', this.created)
-            ipc.server.on('register', this.register)
-            ipc.server.on('registered', this.registered)
-        })
-        ipc.server.start()
+        console.log('tsplang connection initialized')
 
         this.hasWorkspaceSettings = hasWorkspaceSettings(params.capabilities)
 
@@ -142,32 +162,33 @@ export class ProcessManager {
         }
     }
 
-    settingsChange(params: DidChangeConfigurationParams): void {
-        if (this.hasWorkspaceSettings) {
-            // Update all open document contexts.
-            this.children.forEach((child: Child) => {
-                let settings = params.settings.tsplang || TsplangSettings.defaults()
+    settingsChange = (params: DidChangeConfigurationParams): void => {
+        // TODO
+        // if (this.hasWorkspaceSettings) {
+        //     // Update all open document contexts.
+        //     this.children.forEach((child: Child, uri: string) => {
+        //         let settings = params.settings.tsplang || TsplangSettings.defaults()
 
-                this.connection.workspace.getConfiguration({
-                    scopeUri: child.uri,
-                    section: 'tsplang'
-                })
-                .then(
-                    (value: TsplangSettings) => {
-                        settings = value
-                    },
-                    // On rejection, just use the values we set above.
-                    () => { return }
-                )
+        //         this.connection.workspace.getConfiguration({
+        //             scopeUri: uri,
+        //             section: 'tsplang'
+        //         })
+        //         .then(
+        //             (value: TsplangSettings) => {
+        //                 settings = value
+        //             },
+        //             // On rejection, just use the values we set above.
+        //             () => { return }
+        //         )
 
-                ipc.server.emit('settings', { config: settings })
-            })
-        }
-        else {
-            this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
+        //         ipc.server.emit('settings', { config: settings })
+        //     })
+        // }
+        // else {
+        //     this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
 
-            ipc.server.emit('settings', { config: this.globalSettings })
-        }
+        //     ipc.server.emit('settings', { config: this.globalSettings })
+        // }
     }
 
     /* Internal Methods */
@@ -175,47 +196,18 @@ export class ProcessManager {
     private _release(uri: string): void {
         const child = this.children.get(uri)
 
+        child.connection.dispose()
+        console.log(`closed connection for ${uri}`)
+
         child.proc.kill('SIGKILL')
+        console.log(`killed process for ${uri}`)
 
-        if (child.shebang) {
-            // Unregister the child's command set.
-            this.pool.unregister(child.shebang.master)
-        }
+        this.pool.unregister(child.init.shebang.master)
+        console.log(`unregistered ${child.init.shebang.master} from ${uri}`)
 
-        // Dereference the child.
         this.children.delete(uri)
 
         // Clear diagnostic information.
         this.connection.sendDiagnostics({ uri, diagnostics: [] })
-    }
-
-    /* Process Message Handlers */
-
-    private created(message: BasicChildMessage): void {
-        ipc.server.emit('shebang', this.children.get(message.uri).firstLine)
-    }
-
-    private register(message: RegisterChildMessage): void {
-        // Update diagnostics.
-        this.connection.sendDiagnostics({ diagnostics: message.errors, uri: message.uri })
-
-        // Get the stored Child item
-        const child = this.children.get(message.uri)
-
-        // Update child.
-        child.shebang = message.shebang
-
-        // Send a registration message.
-        // This is much easier than sending the whole command set in a message.
-        const callback = this.pool.register
-        callback.bind(this.pool)
-        ipc.server.emit('registration', { callback, config: child.init.config, item: child.init.item })
-
-        // Store the updated child.
-        this.children.set(message.uri, child)
-    }
-
-    private registered(message: BasicChildErrorMessage): void {
-        this.connection.sendDiagnostics({ diagnostics: message.errors, uri: message.uri })
     }
 }

@@ -13,32 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+// tslint:disable:variable-name
 
-import { Diagnostic, TextDocumentItem } from 'vscode-languageserver'
+import { NotificationType, RequestType } from 'vscode-jsonrpc'
+import { Diagnostic, PublishDiagnosticsParams, TextDocumentItem } from 'vscode-languageserver'
 
-import { Model } from './model'
+import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
-import { PoolEntry } from './tspPool'
 
-export interface BasicChildMessage {
-    uri: string
-}
+export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, void>('ErrorNotification')
 
-export interface BasicChildErrorMessage extends BasicChildMessage {
-    errors: Array<Diagnostic>
-}
-
-export interface RegisterChildMessage extends BasicChildErrorMessage {
-    shebang: Shebang
-}
-
-export interface SettingsMessage {
-    config: TsplangSettings
-}
-
-export interface ContextMessage extends SettingsMessage {
+export interface ContextReply {
+    commands: CommandSet
     item: TextDocumentItem
+    settings: TsplangSettings
+    shebang: Shebang
+    shebangDiagnostics: Array<Diagnostic>
 }
-
-export declare type RegistrationMessage = ContextMessage & { register(model: Model): PoolEntry }
+export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')

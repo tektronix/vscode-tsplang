@@ -18,7 +18,6 @@
 import { CompletionItem, createConnection, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentPositionParams } from 'vscode-languageserver'
 
 import { ProcessManager } from './processManager'
-import { ServerContext } from './serverContext'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -43,20 +42,14 @@ connection.onInitialized(() => {
 
 connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
     manager.documentOpen(params)
-
-    connection.console.log(`opened ${params.textDocument.uri}`)
 })
 
 connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
     manager.documentChange(params)
-
-    connection.console.log(`changed ${params.textDocument.uri}`)
 })
 
 connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
     manager.documentClose(params)
-
-    connection.console.log(`closed ${params.textDocument.uri}`)
 })
 
 // This handler provides the initial list of completion items.
