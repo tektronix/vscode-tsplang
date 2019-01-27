@@ -120,16 +120,13 @@ export class ProcessManager {
         this.children.set(params.textDocument.uri, child)
 
         child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
-            console.log(`ErrorNotification from ${value.uri}`)
-
             this.connection.sendDiagnostics(value)
         })
         child.connection.onRequest(ContextRequest, (uri: string): ContextReply => {
-            console.log(`ContextRequest from ${uri}`)
-
             return this.children.get(uri).init
         })
 
+        connection.trace(rpc.Trace.Messages, console)
         child.connection.listen()
     }
 
