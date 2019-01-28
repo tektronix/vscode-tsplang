@@ -16,13 +16,15 @@
 // tslint:disable:variable-name
 
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
-import { Diagnostic, PublishDiagnosticsParams, TextDocumentItem } from 'vscode-languageserver'
+import { Diagnostic, PublishDiagnosticsParams, TextDocumentContentChangeEvent, TextDocumentItem } from 'vscode-languageserver'
 
 import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
 export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, void>('ErrorNotification')
+
+export const SettingsNotification = new NotificationType<TsplangSettings, void>('SettingsNotification')
 
 export interface ContextReply {
     commands: CommandSet

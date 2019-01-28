@@ -20,7 +20,7 @@ import * as path from 'path'
 import * as rpc from 'vscode-jsonrpc'
 import { Diagnostic, DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, PublishDiagnosticsParams, TextDocumentSyncKind } from 'vscode-languageserver'
 
-import { ContextReply, ContextRequest, ErrorNotification } from './rpcTypes'
+import { ChangeNotification, ContextReply, ContextRequest, ErrorNotification, SettingsNotification } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 import { TspPool } from './tspPool'
@@ -96,7 +96,7 @@ export class ProcessManager {
 
         const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
             // tslint:disable-next-line:no-magic-numbers
-            execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
+            execArgv: ['--debug', '--nolazy', `--inspect=${this.children.size + 6010}`],
             stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
         })
 
@@ -160,32 +160,33 @@ export class ProcessManager {
     }
 
     settingsChange = (params: DidChangeConfigurationParams): void => {
-        // TODO
-        // if (this.hasWorkspaceSettings) {
-        //     // Update all open document contexts.
-        //     this.children.forEach((child: Child, uri: string) => {
-        //         let settings = params.settings.tsplang || TsplangSettings.defaults()
+        if (this.hasWorkspaceSettings) {
+            // Update all open document contexts.
+            this.children.forEach((child: Child, uri: string) => {
+                let settings = params.settings.tsplang || TsplangSettings.defaults()
 
-        //         this.connection.workspace.getConfiguration({
-        //             scopeUri: uri,
-        //             section: 'tsplang'
-        //         })
-        //         .then(
-        //             (value: TsplangSettings) => {
-        //                 settings = value
-        //             },
-        //             // On rejection, just use the values we set above.
-        //             () => { return }
-        //         )
+                this.connection.workspace.getConfiguration({
+                    scopeUri: uri,
+                    section: 'tsplang'
+                })
+                .then(
+                    (value: TsplangSettings) => {
+                        settings = value
+                    },
+                    // On rejection, just use the values we set above.
+                    () => { return }
+                )
 
-        //         ipc.server.emit('settings', { config: settings })
-        //     })
-        // }
-        // else {
-        //     this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
+                child.connection.sendNotification(SettingsNotification, settings)
+            })
+        }
+        else {
+            this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
 
-        //     ipc.server.emit('settings', { config: this.globalSettings })
-        // }
+            this.children.forEach((child: Child) => {
+                child.connection.sendNotification(SettingsNotification, this.globalSettings)
+            })
+        }
     }
 
     /* Internal Methods */

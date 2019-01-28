@@ -16,9 +16,11 @@
 'use strict'
 
 import * as rpc from 'vscode-jsonrpc'
+import { TextDocumentContentChangeEvent } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
-import { ContextReply, ContextRequest, ErrorNotification } from './rpcTypes'
+import { ChangeNotification, ContextReply, ContextRequest, ErrorNotification, SettingsNotification } from './rpcTypes'
+import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
 const connection = rpc.createMessageConnection(
@@ -41,6 +43,10 @@ class ProcessChild {
 
 // tslint:disable-next-line:no-magic-numbers
 const proc = new ProcessChild(process.argv[2])
+
+connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
+    proc.context.settings = settings
+})
 
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
