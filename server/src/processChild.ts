@@ -44,6 +44,10 @@ class ProcessChild {
 // tslint:disable-next-line:no-magic-numbers
 const proc = new ProcessChild(process.argv[2])
 
+connection.onNotification(ChangeNotification, (changes: Array<TextDocumentContentChangeEvent>) => {
+    console.log(`pid ${process.pid}: received change event`)
+})
+
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
     proc.context.settings = settings
 })

@@ -22,6 +22,9 @@ import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
+// tslint:disable-next-line:max-line-length
+export const ChangeNotification = new NotificationType<Array<TextDocumentContentChangeEvent>, void>('ChangeNotification')
+
 export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, void>('ErrorNotification')
 
 export const SettingsNotification = new NotificationType<TsplangSettings, void>('SettingsNotification')

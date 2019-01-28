@@ -64,7 +64,10 @@ export class ProcessManager {
     }
 
     documentChange = (params: DidChangeTextDocumentParams): void => {
-        // TODO
+        this.children.get(params.textDocument.uri).connection.sendNotification(
+            ChangeNotification,
+            params.contentChanges
+        )
     }
 
     documentClose(params: DidCloseTextDocumentParams): void {
