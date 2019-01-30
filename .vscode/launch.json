@@ -51,6 +51,30 @@
             "outFiles": [
                 "${workspaceRoot}/server/out/**/*.js"
             ]
+        },
+        {
+            "name": "Attach to Document 1",
+            "type": "node",
+            "request": "attach",
+            "protocol": "inspector",
+            "port": 6010,
+            "sourceMaps": true,
+            "restart": true,
+            "outFiles": [
+                "${workspaceRoot}/server/out/**/*.js"
+            ]
+        },
+        {
+            "name": "Attach to Document 2",
+            "type": "node",
+            "request": "attach",
+            "protocol": "inspector",
+            "port": 6011,
+            "sourceMaps": true,
+            "restart": true,
+            "outFiles": [
+                "${workspaceRoot}/server/out/**/*.js"
+            ]
         }
     ]
 }
