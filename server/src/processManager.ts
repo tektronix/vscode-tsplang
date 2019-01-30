@@ -99,7 +99,7 @@ export class ProcessManager {
 
         const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
             // tslint:disable-next-line:no-magic-numbers
-            execArgv: ['--debug', '--nolazy', `--inspect=${this.children.size + 6010}`],
+            execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
             stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
         })
 
