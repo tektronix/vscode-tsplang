@@ -31,40 +31,6 @@ export interface SignatureData {
      */
     qualifier?: number
 }
-export namespace SignatureData {
-    interface Serializable {
-        parameterTypes: Map<string, Array<CompletionItem>>
-        qualifier?: string
-    }
-
-    export function deserialize(value: string): SignatureData {
-        const serial: Serializable = JSON.parse(value)
-
-        const result: SignatureData = {
-            parameterTypes: new Map(),
-            qualifier: (serial.qualifier === undefined) ? undefined : Number.parseInt(serial.qualifier)
-        }
-
-        serial.parameterTypes.forEach((v: Array<CompletionItem>, k: string) => {
-            result.parameterTypes.set(Number.parseInt(k), v)
-        })
-
-        return result
-    }
-
-    export function serialize(value: SignatureData): string {
-        const serial: Serializable = {
-            parameterTypes: new Map(),
-            qualifier: (value.qualifier === undefined) ? undefined : value.qualifier.toString()
-        }
-
-        value.parameterTypes.forEach((v: Array<CompletionItem>, k: number) => {
-            serial.parameterTypes.set(k.toString(), v)
-        })
-
-        return JSON.stringify(serial)
-    }
-}
 
 export interface SignatureInformation extends vscode_ls.SignatureInformation, BaseItem {
     /**
@@ -75,34 +41,8 @@ export interface SignatureInformation extends vscode_ls.SignatureInformation, Ba
     getFormattedParameters?(spec: InstrumentSpec): Array<ParameterInformation>
 }
 export namespace SignatureInformation {
-    interface Serializable extends vscode_ls.SignatureInformation {
-        data?: string
-    }
-    namespace Serializable {
-        export function unextend(value: Serializable): vscode_ls.SignatureInformation {
-            const result = value
-            result.data = undefined
-
-            return result
-        }
-    }
-
     export function depth(signature: SignatureInformation): number {
         return ResolvedNamespace.depth(resolveNamespace(signature))
-    }
-
-    export function deserialize(value: string): SignatureInformation {
-        const serial: Serializable = JSON.parse(value)
-
-        const result: SignatureInformation = Serializable.unextend(serial)
-
-        if (serial.data === undefined) {
-            return result
-        }
-
-        result.data = SignatureData.deserialize(serial.data)
-
-        return result
     }
 
     /**
@@ -120,16 +60,5 @@ export namespace SignatureInformation {
         }
 
         return ResolvedNamespace.create(signature.label.slice(0, openParamIndex))
-    }
-
-    export function serialize(value: SignatureInformation): string {
-        if (value.data === undefined) {
-            return JSON.stringify(value)
-        }
-
-        const serial: Serializable = (value as vscode_ls.SignatureInformation)
-        serial.data = SignatureData.serialize(value.data)
-
-        return JSON.stringify(serial)
     }
 }
