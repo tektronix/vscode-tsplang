@@ -19,6 +19,7 @@ import * as rpc from 'vscode-jsonrpc'
 import { TextDocumentContentChangeEvent } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
+import { Instrument, load } from './instrument'
 import { ChangeNotification, ContextReply, ContextRequest, ErrorNotification, SettingsNotification } from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
@@ -32,6 +33,7 @@ console.log(`pid ${process.pid}: established connection`)
 class ProcessChild {
     context: DocumentContext
     readonly firstlineRegExp: RegExp
+    instrument: Instrument
     shebang: Shebang
     uri: string
 
@@ -58,8 +60,11 @@ console.log(`pid ${process.pid}: listening on the connection`)
 /* Process Child Initialization */
 
 connection.sendRequest(ContextRequest, proc.uri).then((context: ContextReply) => {
-    proc.shebang = context.shebang
-    proc.context = new DocumentContext(context.item, context.commands, context.settings)
+    proc.shebang = Shebang.deserialize(context.shebang)
+    // Generate the instrument information for this document.
+    proc.instrument = load(context.shebang.master)
+    // Create the context for this document.
+    proc.context = new DocumentContext(context.item, proc.instrument.set, context.settings)
 
     const diagnostics = context.shebangDiagnostics
     diagnostics.concat(proc.context.outline.diagnostics)

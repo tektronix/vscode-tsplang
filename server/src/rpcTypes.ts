@@ -30,10 +30,9 @@ export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, 
 export const SettingsNotification = new NotificationType<TsplangSettings, void>('SettingsNotification')
 
 export interface ContextReply {
-    commands: CommandSet
     item: TextDocumentItem
     settings: TsplangSettings
-    shebang: Shebang
+    shebang: Shebang.JSONable
     shebangDiagnostics: Array<Diagnostic>
 }
 export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')

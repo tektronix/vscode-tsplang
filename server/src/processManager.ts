@@ -23,7 +23,6 @@ import { Diagnostic, DidChangeConfigurationNotification, DidChangeConfigurationP
 import { ChangeNotification, ContextReply, ContextRequest, ErrorNotification, SettingsNotification } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
-import { TspPool } from './tspPool'
 
 interface Child {
     connection: rpc.MessageConnection
@@ -39,14 +38,12 @@ export class ProcessManager {
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
     lastCompletionUri?: string
-    readonly pool: TspPool
 
     constructor(connection: IConnection) {
         this.children = new Map()
         this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
         this.globalSettings = TsplangSettings.defaults()
         this.hasWorkspaceSettings = false
-        this.pool = new TspPool()
 
         this.connection = connection
     }
@@ -94,8 +91,6 @@ export class ProcessManager {
 
         const firstLine = this.firstlineRegExp.exec(params.textDocument.text)[0]
         const [shebang, shebangDiagnostics]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
-        // Generate a CommandSet for this document.
-        const poolEntry = this.pool.register(shebang.master)
 
         const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
             // tslint:disable-next-line:no-magic-numbers
@@ -113,10 +108,9 @@ export class ProcessManager {
             proc,
             init: {
                 settings,
-                shebang,
                 shebangDiagnostics,
-                commands: poolEntry.commandSet,
                 item: params.textDocument,
+                shebang: Shebang.serialize(shebang),
             }
         }
 
@@ -202,9 +196,6 @@ export class ProcessManager {
 
         child.proc.kill('SIGKILL')
         console.log(`killed process for ${uri}`)
-
-        this.pool.unregister(child.init.shebang.master)
-        console.log(`unregistered ${child.init.shebang.master} from ${uri}`)
 
         this.children.delete(uri)
 
