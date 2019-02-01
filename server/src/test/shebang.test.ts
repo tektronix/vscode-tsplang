@@ -18,7 +18,7 @@ import { expect } from 'chai'
 // tslint:disable-next-line:no-import-side-effect
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
-import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver'
+import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver'
 
 import { Model } from '../model'
 import { Shebang } from '../shebang'
@@ -65,12 +65,12 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is equal to Model.LUA', () => {
-                    expect(shebang.master).to.equal(Model.LUA)
+                it('returns a shebang whose model property is equal to Model.LUA', () => {
+                    expect(shebang.model).to.equal(Model.LUA)
                 })
 
                 it('returns a shebang whose text property is an empty string', () => {
-                    expect(shebang.text).to.equal(line)
+                    expect(shebang.range).to.equal(Range.create(0, 0, 0, 0))
                 })
 
                 it('returns no errors', () => {
@@ -87,12 +87,12 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is equal to Model.LUA', () => {
-                    expect(shebang.master).to.equal(Model.LUA)
+                it('returns a shebang whose model property is equal to Model.LUA', () => {
+                    expect(shebang.model).to.equal(Model.LUA)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    expect(shebang.range).to.equal(Range.create(0, 0, 0, 0))
                 })
 
                 it('returns no errors', () => {
@@ -109,12 +109,12 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is equal to Model.LUA', () => {
-                    expect(shebang.master).to.equal(Model.LUA)
+                it('returns a shebang whose model property is equal to Model.LUA', () => {
+                    expect(shebang.model).to.equal(Model.LUA)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    expect(shebang.range).to.equal(Range.create(0, 0, 0, 0))
                 })
 
                 it('returns no errors', () => {
@@ -133,12 +133,12 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is equal to Model.LUA', () => {
-                    expect(shebang.master).to.equal(Model.LUA)
+                it('returns a shebang whose model property is equal to Model.LUA', () => {
+                    expect(shebang.model).to.equal(Model.LUA)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    expect(shebang.range).to.equal(Range.create(0, 0, 0, 0))
                 })
 
                 it('returns no errors', () => {
@@ -156,12 +156,14 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns no errors', () => {
@@ -197,12 +199,14 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is equal to Model.LUA', () => {
-                    expect(shebang.master).to.equal(Model.LUA)
+                it('returns a shebang whose model property is equal to Model.LUA', () => {
+                    expect(shebang.model).to.equal(Model.LUA)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns expected errors', () => {
@@ -227,15 +231,18 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns a shebang with an accurate nodes property', () => {
+                    expect.fail('TODO')
                     expect(shebang.nodes).to.deep.equal(new Map<number, Model>([
                         [ nodeNumber, nodeModel ]
                     ]))
@@ -276,15 +283,18 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns a shebang with an accurate nodes property', () => {
+                    expect.fail('TODO')
                     expect(shebang.nodes).to.deep.equal(nodeMap)
                 })
 
@@ -331,15 +341,18 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns a shebang with an accurate nodes property', () => {
+                    expect.fail('TODO')
                     expect(shebang.nodes).to.deep.equal(nodeMap)
                 })
 
@@ -403,15 +416,18 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns a shebang with an accurate nodes property', () => {
+                    expect.fail('TODO')
                     expect(shebang.nodes).to.deep.equal(nodeMap)
                 })
 
@@ -477,15 +493,18 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns a shebang with an accurate nodes property', () => {
+                    expect.fail('TODO')
                     expect(shebang.nodes).to.deep.equal(nodeMap)
                 })
 
@@ -549,15 +568,18 @@ describe('Shebang', () => {
                     [shebang, errors] = Shebang.tokenize(line)
                 })
 
-                it('returns a shebang whose master property is the given master model', () => {
-                    expect(shebang.master).to.equal(master)
+                it('returns a shebang whose model property is the given master model', () => {
+                    expect(shebang.model).to.equal(master)
                 })
 
                 it('returns a shebang whose text property is the given line', () => {
-                    expect(shebang.text).to.equal(line)
+                    const start = Shebang.PREFIX.length
+                    const end = start + master.length
+                    expect(shebang.range).to.equal(Range.create(0, start, 0, end))
                 })
 
                 it('returns a shebang with an accurate nodes property', () => {
+                    expect.fail('TODO')
                     expect(shebang.nodes).to.deep.equal(nodeMap)
                 })
 

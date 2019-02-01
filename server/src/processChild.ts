@@ -16,7 +16,7 @@
 'use strict'
 
 import * as rpc from 'vscode-jsonrpc'
-import { TextDocumentContentChangeEvent } from 'vscode-languageserver'
+import { Diagnostic, TextDocumentContentChangeEvent } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
@@ -59,15 +59,23 @@ console.log(`pid ${process.pid}: listening on the connection`)
 
 /* Process Child Initialization */
 
-connection.sendRequest(ContextRequest, proc.uri).then((context: ContextReply) => {
+const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, proc.uri)
+// tslint:disable-next-line:no-magic-numbers
+setTimeout(() => contextRequest.then(onContextReply), 20000)
+
+function onContextReply(context: ContextReply): void {
     proc.shebang = Shebang.deserialize(context.shebang)
-    // Generate the instrument information for this document.
-    proc.instrument = load(context.shebang.master)
+
+    let diagnostics: Array<Diagnostic>
+    // Try to generate instrument information for this document.
+    [proc.instrument, diagnostics] = load(proc.shebang)
+
     // Create the context for this document.
     proc.context = new DocumentContext(context.item, proc.instrument.set, context.settings)
 
-    const diagnostics = context.shebangDiagnostics
+    // Collect all diagnostics.
+    diagnostics.concat(context.shebangDiagnostics)
     diagnostics.concat(proc.context.outline.diagnostics)
 
     connection.sendNotification(ErrorNotification, { diagnostics, uri: proc.uri })
-})
+}

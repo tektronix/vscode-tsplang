@@ -50,93 +50,93 @@ export class TspManager {
         return this.dict.has(uri)
     }
 
-    register(item: TextDocumentItem, documentSettings: TsplangSettings): Array<Diagnostic> {
-        // check if the doc has already been registered
-        if (this.dict.has(item.uri)) {
-            throw new Error(`${item.uri} is already registered`)
-        }
+    // register(item: TextDocumentItem, documentSettings: TsplangSettings): Array<Diagnostic> {
+    //     // check if the doc has already been registered
+    //     if (this.dict.has(item.uri)) {
+    //         throw new Error(`${item.uri} is already registered`)
+    //     }
 
-        const firstLine = this.firstlineRegExp.exec(item.text)[0]
+    //     const firstLine = this.firstlineRegExp.exec(item.text)[0]
 
-        // Try to parse the shebang.
-        const [shebang, errors]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
+    //     // Try to parse the shebang.
+    //     const [shebang, errors]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
 
-        // Register the shebang in the TspPool.
-        const poolEntry = this.pool.register(shebang.master)
+    //     // Register the shebang in the TspPool.
+    //     const poolEntry = this.pool.register(shebang.master)
 
-        // Try to make a new TspItem instance.
-        const tspItem = TspItem.create(item, shebang, poolEntry.commandSet, documentSettings)
+    //     // Try to make a new TspItem instance.
+    //     const tspItem = TspItem.create(item, shebang, poolEntry.commandSet, documentSettings)
 
-        // tspItem.context.update()
-        // errors.push(...tspItem.context.walk())
+    //     // tspItem.context.update()
+    //     // errors.push(...tspItem.context.walk())
 
-        this.dict.set(item.uri, tspItem)
+    //     this.dict.set(item.uri, tspItem)
 
-        return errors
-    }
+    //     return errors
+    // }
 
-    unregister(uri: string): boolean {
-        const tspCompletion = this.get(uri)
+    // unregister(uri: string): boolean {
+    //     const tspCompletion = this.get(uri)
 
-        if (tspCompletion === undefined) {
-            return false
-        }
+    //     if (tspCompletion === undefined) {
+    //         return false
+    //     }
 
-        // Unregister the master model.
-        this.pool.unregister(tspCompletion.shebang.master)
+    //     // Unregister the master model.
+    //     this.pool.unregister(tspCompletion.shebang.master)
 
-        // Unregister any node models.
-        if (tspCompletion.shebang.nodes !== undefined) {
-            tspCompletion.shebang.nodes.forEach((model: Model) => {
-                this.pool.unregister(model)
-            })
-        }
+    //     // Unregister any node models.
+    //     if (tspCompletion.shebang.nodes !== undefined) {
+    //         tspCompletion.shebang.nodes.forEach((model: Model) => {
+    //             this.pool.unregister(model)
+    //         })
+    //     }
 
-        return this.dict.delete(uri)
-    }
+    //     return this.dict.delete(uri)
+    // }
 
-    update(
-        document: VersionedTextDocumentIdentifier,
-        changes: Array<TextDocumentContentChangeEvent>
-    ): Array<Diagnostic> | undefined {
-        const tspItem = this.dict.get(document.uri)
+    // update(
+    //     document: VersionedTextDocumentIdentifier,
+    //     changes: Array<TextDocumentContentChangeEvent>
+    // ): Array<Diagnostic> | undefined {
+    //     const tspItem = this.dict.get(document.uri)
 
-        // If the doc has not been registered
-        if (tspItem === undefined) {
-            throw new Error(`${document.uri} is not registered`)
-        }
+    //     // If the doc has not been registered
+    //     if (tspItem === undefined) {
+    //         throw new Error(`${document.uri} is not registered`)
+    //     }
 
-        let shebangEdit = false
-        let newContent = tspItem.context.document.getText()
-        for (const change of changes) {
-            shebangEdit = change.range.start.line === 0
+    //     let shebangEdit = false
+    //     let newContent = tspItem.context.document.getText()
+    //     for (const change of changes) {
+    //         shebangEdit = change.range.start.line === 0
 
-            newContent = TextDocument.applyEdits(tspItem.context.document, [{
-                newText: change.text,
-                range: change.range
-            }])
-        }
+    //         newContent = TextDocument.applyEdits(tspItem.context.document, [{
+    //             newText: change.text,
+    //             range: change.range
+    //         }])
+    //     }
 
-        if (shebangEdit) {
-            // Unregister everything.
-            this.unregister(document.uri)
+    //     if (shebangEdit) {
+    //         // Unregister everything.
+    //         this.unregister(document.uri)
 
-            // Re-register everything.
-            // The context was updated by register, so we're done.
-            return this.register(
-                {
-                    languageId: tspItem.context.document.languageId,
-                    text: newContent,
-                    uri: document.uri,
-                    version: document.version
-                },
-                tspItem.context.settings
-            )
-        }
+    //         // Re-register everything.
+    //         // The context was updated by register, so we're done.
+    //         return this.register(
+    //             {
+    //                 languageId: tspItem.context.document.languageId,
+    //                 text: newContent,
+    //                 uri: document.uri,
+    //                 version: document.version
+    //             },
+    //             tspItem.context.settings
+    //         )
+    //     }
 
-        // // Update this item's context.
-        // tspItem.context.update()
+    //     // // Update this item's context.
+    //     // tspItem.context.update()
 
-        // return tspItem.context.walk()
-    }
+    //     // return tspItem.context.walk()
+    // }
 }

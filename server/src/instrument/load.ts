@@ -15,7 +15,10 @@
  */
 'use strict'
 
+import { Diagnostic, DiagnosticSeverity } from 'vscode-languageserver'
+
 import { Model } from '../model'
+import { Shebang } from '../shebang'
 
 import { ApiSpec } from './apiSpec'
 import { CommandSet } from './commandSet'
@@ -28,21 +31,22 @@ export interface Instrument {
     spec: InstrumentSpec
 }
 
-export function load(model: Model): Instrument {
+export function load(shebang: Shebang): [Instrument, Array<Diagnostic>] {
+    let diagnostics: Array<Diagnostic>
     let luaEntry: Instrument | undefined
 
     // All models need the Lua entry, except the Lua model.
-    if (model !== Model.LUA) {
-        luaEntry = load(Model.LUA)
+    if (shebang.model !== Model.LUA) {
+        [luaEntry, diagnostics] = load({ model: Model.LUA, range: shebang.range })
     }
 
-    switch (model) {
+    switch (shebang.model) {
         case Model.KI2450:
         case Model.KI2460:
         case Model.KI2461:
         case Model.KI2461SYS:
         case Model.LUA:
-            const instrModule: InstrumentModule = require(`./instrument/${model}`)
+            const instrModule: InstrumentModule = require(`./${shebang.model}`)
 
             const api: Array<ApiSpec> = instrModule.getApiSpec()
             const spec: InstrumentSpec = instrModule.getInstrumentSpec()
@@ -61,9 +65,15 @@ export function load(model: Model): Instrument {
                 })
             }
 
-            return { set, spec }
+            return [{ set, spec }, diagnostics || []]
 
         default:
-            throw new Error(`model ${model} is not supported`)
+            return [luaEntry, [{
+                code: 'unsupported-model',
+                message: `Model ${shebang.model} is not supported.`,
+                range: shebang.range,
+                severity: DiagnosticSeverity.Error,
+                source: 'tsplang'
+            }]]
     }
 }
