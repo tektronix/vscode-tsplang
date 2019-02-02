@@ -32,7 +32,5 @@ export const SettingsNotification = new NotificationType<TsplangSettings, void>(
 export interface ContextReply {
     item: TextDocumentItem
     settings: TsplangSettings
-    shebang: Shebang.JSONable
-    shebangDiagnostics: Array<Diagnostic>
 }
 export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')

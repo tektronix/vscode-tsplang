@@ -42,27 +42,6 @@ export namespace Shebang {
         '^\\s*node\\s*\\[\\s*([-+]?[0-9]{1,2})\\s*\\]\\s*'.concat(nodeAssignmentOp, '\\s*(.+)')
     )
 
-    export interface JSONable extends Assignment {
-        nodes?: Array<[string, Assignment]>
-    }
-
-    export function deserialize(jsonable: JSONable): Shebang {
-        const result: Shebang = {
-            model: jsonable.model,
-            range: jsonable.range
-        }
-
-        if (jsonable.nodes) {
-            result.nodes = new Map()
-
-            jsonable.nodes.forEach(([key, value]: [string, Assignment]) => {
-                result.nodes.set(Number.parseInt(key), value)
-            })
-        }
-
-        return result
-    }
-
     function itemRange(item: string, index: number, offset: number): Range {
         const start = PREFIX.length + (SEPARATOR.length * index) + offset
 
@@ -76,23 +55,6 @@ export namespace Shebang {
                 line: 0
             }
         }
-    }
-
-    export function serialize(shebang: Shebang): JSONable {
-        const result: JSONable = {
-            model: shebang.model,
-            range: shebang.range
-        }
-
-        if (shebang.nodes) {
-            result.nodes = new Array()
-
-            shebang.nodes.forEach((value: Assignment, key: number) => {
-                result.nodes.push([key.toString(), value])
-            })
-        }
-
-        return result
     }
 
     export function tokenize(line: string): [Shebang, Array<Diagnostic>] {

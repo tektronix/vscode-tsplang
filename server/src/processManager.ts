@@ -89,9 +89,6 @@ export class ProcessManager {
             )
         }
 
-        const firstLine = this.firstlineRegExp.exec(params.textDocument.text)[0]
-        const [shebang, shebangDiagnostics]: [Shebang, Array<Diagnostic>] = Shebang.tokenize(firstLine)
-
         const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
             // tslint:disable-next-line:no-magic-numbers
             execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
@@ -108,9 +105,7 @@ export class ProcessManager {
             proc,
             init: {
                 settings,
-                shebangDiagnostics,
-                item: params.textDocument,
-                shebang: Shebang.serialize(shebang),
+                item: params.textDocument
             }
         }
 

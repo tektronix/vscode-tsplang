@@ -64,18 +64,20 @@ const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextReq
 setTimeout(() => contextRequest.then(onContextReply), 20000)
 
 function onContextReply(context: ContextReply): void {
-    proc.shebang = Shebang.deserialize(context.shebang)
+    const firstLine = proc.firstlineRegExp.exec(context.item.text)[0]
 
     let diagnostics: Array<Diagnostic>
+    [proc.shebang, diagnostics] = Shebang.tokenize(firstLine)
+
+    let loadDiagnostics: Array<Diagnostic>
     // Try to generate instrument information for this document.
-    [proc.instrument, diagnostics] = load(proc.shebang)
+    [proc.instrument, loadDiagnostics] = load(proc.shebang)
 
     // Create the context for this document.
     proc.context = new DocumentContext(context.item, proc.instrument.set, context.settings)
 
     // Collect all diagnostics.
-    diagnostics.concat(context.shebangDiagnostics)
-    diagnostics.concat(proc.context.outline.diagnostics)
+    diagnostics.push(...loadDiagnostics, ...proc.context.outline.diagnostics)
 
     connection.sendNotification(ErrorNotification, { diagnostics, uri: proc.uri })
 }
