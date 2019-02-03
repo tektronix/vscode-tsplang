@@ -30,6 +30,9 @@
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}"
             ],
+            "env": {
+                "TSPLANG_DEBUG": "1"
+            },
             "stopOnEntry": false,
             "sourceMaps": true,
             "outFiles": [

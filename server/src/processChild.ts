@@ -59,9 +59,15 @@ console.log(`pid ${process.pid}: listening on the connection`)
 
 /* Process Child Initialization */
 
-const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, proc.uri)
-// tslint:disable-next-line:no-magic-numbers
-setTimeout(() => contextRequest.then(onContextReply), 20000)
+if (process.env.TSPLANG_DEBUG) {
+    // Give dev time to attach to this document before continuing.
+    const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, uri)
+    // tslint:disable-next-line:no-magic-numbers
+    setTimeout(() => contextRequest.then(onContextReply), 20000)
+}
+else {
+    connection.sendRequest(ContextRequest, uri).then(onContextReply)
+}
 
 function onContextReply(context: ContextReply): void {
     const firstLine = proc.firstlineRegExp.exec(context.item.text)[0]
