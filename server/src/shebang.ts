@@ -84,7 +84,7 @@ export namespace Shebang {
             }
 
             // Check for the required master model.
-            if (result.model === undefined) {
+            if (!nodeRegExp.test(niceItem) && result.model === undefined) {
                 const supportedModel = Model.fromString(niceItem)
 
                 if (supportedModel === undefined) {
