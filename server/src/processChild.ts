@@ -16,7 +16,7 @@
 'use strict'
 
 import * as rpc from 'vscode-jsonrpc'
-import { Diagnostic, TextDocumentContentChangeEvent } from 'vscode-languageserver'
+import { Diagnostic, TextDocument, TextDocumentContentChangeEvent, TextDocumentItem } from 'vscode-languageserver'
 
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
@@ -35,19 +35,46 @@ class ProcessChild {
     readonly firstlineRegExp: RegExp
     instrument: Instrument
     shebang: Shebang
-    uri: string
 
-    constructor(uri: string) {
+    constructor() {
         this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
-        this.uri = uri
     }
 }
 
 // tslint:disable-next-line:no-magic-numbers
-const proc = new ProcessChild(process.argv[2])
+const uri: string = process.argv[2]
+const proc = new ProcessChild()
 
 connection.onNotification(ChangeNotification, (changes: Array<TextDocumentContentChangeEvent>) => {
-    console.log(`pid ${process.pid}: received change event`)
+    let shebangEdited = false
+    const item: TextDocumentItem = {
+        uri,
+        languageId: proc.context.document.languageId,
+        text: proc.context.document.getText(),
+        version: proc.context.document.version
+    }
+    for (const change of changes) {
+        shebangEdited = change.range.start.line === 0
+
+        item.text = TextDocument.applyEdits(
+            TextDocument.create(item.uri, item.languageId, item.version, item.text),
+            [{
+                newText: change.text,
+                range: change.range
+            }]
+        )
+    }
+
+    if (shebangEdited) {
+        onContextReply({
+            item,
+            settings: proc.context.settings
+        })
+
+        return
+    }
+
+    // TODO: update the document context
 })
 
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
@@ -85,5 +112,5 @@ function onContextReply(context: ContextReply): void {
     // Collect all diagnostics.
     diagnostics.push(...loadDiagnostics, ...proc.context.outline.diagnostics)
 
-    connection.sendNotification(ErrorNotification, { diagnostics, uri: proc.uri })
+    connection.sendNotification(ErrorNotification, { diagnostics, uri })
 }
