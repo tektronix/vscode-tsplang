@@ -90,7 +90,7 @@ export namespace Shebang {
                 if (supportedModel === undefined) {
                     errors.push(Diagnostic.create(
                         itemRange(item, index, encounteredCharacters),
-                        `Model "${item.trim()}" is an invalid or unsupported model.`,
+                        `Model "${item.trim()}" is invalid or unsupported.`,
                         DiagnosticSeverity.Error,
                         'shebang-model',
                         'tsplang'
