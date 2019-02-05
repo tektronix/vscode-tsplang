@@ -18,9 +18,10 @@
 import { ChildProcess, fork } from 'child_process'
 import * as path from 'path'
 import * as rpc from 'vscode-jsonrpc'
-import { Diagnostic, DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, PublishDiagnosticsParams, TextDocumentSyncKind } from 'vscode-languageserver'
+import { CompletionList, Diagnostic, DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, PublishDiagnosticsParams, SignatureHelp, TextDocumentPositionParams, TextDocumentSyncKind } from 'vscode-languageserver'
 
-import { ChangeNotification, ContextReply, ContextRequest, ErrorNotification, SettingsNotification } from './rpcTypes'
+import { CompletionItem } from './decorators'
+import { ChangeNotification, CompletionRequest, CompletionResolveRequest, ContextReply, ContextRequest, ErrorNotification, SettingsNotification, SignatureRequest } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
@@ -49,6 +50,20 @@ export class ProcessManager {
     }
 
     /* Server Message Handlers */
+
+    async completion(params: TextDocumentPositionParams): Promise<CompletionList | undefined> {
+        this.lastCompletionUri = params.textDocument.uri
+
+        const child = this.children.get(params.textDocument.uri)
+
+        return child.connection.sendRequest(CompletionRequest, params)
+    }
+
+    async completionResolve(item: CompletionItem): Promise<CompletionItem> {
+        const child = this.children.get(this.lastCompletionUri)
+
+        return child.connection.sendRequest(CompletionResolveRequest, item)
+    }
 
     dispose(): void {
         if (this.disposable) {
@@ -92,7 +107,7 @@ export class ProcessManager {
         const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
             // tslint:disable-next-line:no-magic-numbers
             execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
-            stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
+            stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
         })
 
         const connection = rpc.createMessageConnection(
@@ -179,6 +194,12 @@ export class ProcessManager {
                 child.connection.sendNotification(SettingsNotification, this.globalSettings)
             })
         }
+    }
+
+    async signature(params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> {
+        const child = this.children.get(params.textDocument.uri)
+
+        return child.connection.sendRequest(SignatureRequest, params)
     }
 
     /* Internal Methods */

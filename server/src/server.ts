@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentPositionParams } from 'vscode-languageserver'
+import { CompletionItem, CompletionList, createConnection, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentPositionParams } from 'vscode-languageserver'
 
 import { ProcessManager } from './processManager'
 
@@ -53,27 +53,21 @@ connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
 })
 
 // This handler provides the initial list of completion items.
-connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
-    // return context.onCompletion(params, manager)
-
-    return
+connection.onCompletion((params: TextDocumentPositionParams): Promise<CompletionList | undefined> => {
+    return manager.completion(params)
 })
 
 // This handler resolves additional information for the item selected in the completion list.
-connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    // return context.onCompletionResolve(item, manager)
-
-    return item
+connection.onCompletionResolve((item: CompletionItem): Promise<CompletionItem> => {
+    return manager.completionResolve(item)
 })
 
 connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
-    // context.onDidChangeConfiguration(params, connection, manager)
+    manager.settingsChange(params)
 })
 
-connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
-    // return context.onSignatureHelp(params, manager)
-
-    return
+connection.onSignatureHelp((params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
+    return manager.signature(params)
 })
 
 connection.onShutdown(manager.dispose)

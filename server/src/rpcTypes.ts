@@ -13,24 +13,30 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-// tslint:disable:variable-name
+// tslint:disable:variable-name max-line-length
 
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
-import { Diagnostic, PublishDiagnosticsParams, TextDocumentContentChangeEvent, TextDocumentItem } from 'vscode-languageserver'
+import { CompletionList, Diagnostic, PublishDiagnosticsParams, SignatureHelp, TextDocumentContentChangeEvent, TextDocumentItem, TextDocumentPositionParams } from 'vscode-languageserver'
 
+import { CompletionItem } from './decorators'
 import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
-// tslint:disable-next-line:max-line-length
 export const ChangeNotification = new NotificationType<Array<TextDocumentContentChangeEvent>, void>('ChangeNotification')
 
 export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, void>('ErrorNotification')
 
 export const SettingsNotification = new NotificationType<TsplangSettings, void>('SettingsNotification')
 
+export const CompletionRequest = new RequestType<TextDocumentPositionParams, CompletionList | undefined, void, void>('CompletionRequest')
+
+export const CompletionResolveRequest = new RequestType<CompletionItem, CompletionItem, void, void>('CompletionResolveRequest')
+
 export interface ContextReply {
     item: TextDocumentItem
     settings: TsplangSettings
 }
 export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')
+
+export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')

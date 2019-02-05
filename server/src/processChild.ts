@@ -16,11 +16,12 @@
 'use strict'
 
 import * as rpc from 'vscode-jsonrpc'
-import { Diagnostic, TextDocument, TextDocumentContentChangeEvent, TextDocumentItem } from 'vscode-languageserver'
+import { CompletionList, Diagnostic, SignatureHelp, TextDocument, TextDocumentContentChangeEvent, TextDocumentItem, TextDocumentPositionParams } from 'vscode-languageserver'
 
+import { CompletionItem } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
-import { ChangeNotification, ContextReply, ContextRequest, ErrorNotification, SettingsNotification } from './rpcTypes'
+import { ChangeNotification, CompletionRequest, CompletionResolveRequest, ContextReply, ContextRequest, ErrorNotification, SettingsNotification, SignatureRequest } from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
@@ -81,6 +82,30 @@ connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
     proc.context.settings = settings
 })
 
+connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {
+    if (proc.context) {
+        return proc.context.getCompletionItems(params.position)
+    }
+
+    return
+})
+
+connection.onRequest(CompletionResolveRequest, (item: CompletionItem): CompletionItem => {
+    if (proc.context) {
+        return proc.context.resolveCompletion(item)
+    }
+
+    return item
+})
+
+connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): SignatureHelp | undefined => {
+    if (proc.context) {
+        return proc.context.getSignatureHelp(params.position)
+    }
+
+    return
+})
+
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
 
@@ -90,7 +115,7 @@ if (process.env.TSPLANG_DEBUG) {
     // Give dev time to attach to this document before continuing.
     const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, uri)
     // tslint:disable-next-line:no-magic-numbers
-    setTimeout(() => contextRequest.then(onContextReply), 20000)
+    setTimeout(() => contextRequest.then(onContextReply), 10000)
 }
 else {
     connection.sendRequest(ContextRequest, uri).then(onContextReply)
@@ -110,7 +135,7 @@ function onContextReply(context: ContextReply): void {
     proc.context = new DocumentContext(context.item, proc.instrument.set, context.settings)
 
     // Collect all diagnostics.
-    diagnostics.push(...loadDiagnostics, ...proc.context.outline.diagnostics)
+    diagnostics.push(...loadDiagnostics) // , ...proc.context.outline.diagnostics)
 
     connection.sendNotification(ErrorNotification, { diagnostics, uri })
 }
