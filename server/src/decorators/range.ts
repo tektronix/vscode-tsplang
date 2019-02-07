@@ -40,16 +40,22 @@ export namespace Range {
         }
     }
 
+    export const is = vsls.Range.is
+
     /**
-     * Determine if Position lies within Range.
-     * @param position The Position to check.
+     * Determine if the Position/Range lies within Range.
+     * @param value The Position/Range to check.
      * @param range The Range to check.
-     * @returns True if Position lies within Range and false otherwise.
+     * @returns True if Position/Range lies within Range and false otherwise.
      */
-    export function within(position: vsls.Position, range: Range): boolean {
+    export function within(value: vsls.Position | Range, range: Range): boolean {
+        if (Range.is(value)) {
+            return within(value.start, range) || within(value.end, range)
+        }
+
         // Within lower bound.
-        return ((position.character >= range.start.character && position.line >= range.start.line)
+        return ((value.character >= range.start.character && value.line >= range.start.line)
             // And within upper bound.
-            && (position.character <= range.end.character && position.line <= range.end.line))
+            && (value.character <= range.end.character && value.line <= range.end.line))
     }
 }
