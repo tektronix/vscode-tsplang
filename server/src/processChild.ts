@@ -75,7 +75,7 @@ connection.onNotification(ChangeNotification, (changes: Array<TextDocumentConten
         return
     }
 
-    // TODO: update the document context
+    proc.context.update(changes)
 })
 
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
@@ -115,7 +115,7 @@ if (process.env.TSPLANG_DEBUG) {
     // Give dev time to attach to this document before continuing.
     const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, uri)
     // tslint:disable-next-line:no-magic-numbers
-    setTimeout(() => contextRequest.then(onContextReply), 10000)
+    setTimeout(() => contextRequest.then(onContextReply), 0)
 }
 else {
     connection.sendRequest(ContextRequest, uri).then(onContextReply)

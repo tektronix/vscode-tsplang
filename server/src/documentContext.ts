@@ -21,7 +21,16 @@ import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
 import { RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
-import { CompletionItemKind, CompletionList, Diagnostic, Position, SignatureHelp, TextDocument, TextDocumentItem } from 'vscode-languageserver'
+import {
+    CompletionItemKind,
+    CompletionList,
+    Diagnostic,
+    Position,
+    SignatureHelp,
+    TextDocument,
+    TextDocumentContentChangeEvent,
+    TextDocumentItem
+} from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastListener, TspFastParser, TspLexer, TspListener, TspParser } from './antlr4-tsplang'
 import { CompletionItem, Range, ResolvedNamespace, SignatureInformation } from './decorators'
@@ -50,8 +59,9 @@ export class DocumentContext extends TspFastListener {
     document: TextDocument
     errors: Array<Diagnostic>
     // readonly outline: Outline
-    ranges: Array<Range>
-    statements: WeakMap<Range, TspFastParser.StatementContext>
+    // ranges: Array<Range>
+    // statements: WeakMap<Range, TspFastParser.StatementContext>
+    exceptionTokenIndex?: number
 
     private _settings: TsplangSettings
     private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
@@ -86,8 +96,8 @@ export class DocumentContext extends TspFastListener {
 
         this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
 
-        this.ranges = new Array()
-        this.statements = new WeakMap()
+        // this.ranges = new Array()
+        // this.statements = new WeakMap()
 
         this.enteredStatementException = false
         this.errors = new Array()
@@ -196,158 +206,99 @@ export class DocumentContext extends TspFastListener {
     }
 
     enterChunk(): void {
-        this._start = process.hrtime()
+        if (process.env.TSPLANG_DEBUG) {
+            this._start = process.hrtime()
+        }
     }
 
     exitChunk(): void {
-        this._stop = process.hrtime(this._start)
-        console.info('%d: --> total time: %ds %dms', process.pid, this._stop[0], this._stop[1] / 1000000)
+        if (process.env.TSPLANG_DEBUG) {
+            this._stop = process.hrtime(this._start)
+            console.info('%d: --> total time: %ds %dms', process.pid, this._stop[0], this._stop[1] / 1000000)
+        }
+
+        if (this.exceptionTokenIndex) {
+            this.parseTokens(this.exceptionTokenIndex, this.tokenStream.tokens.length - 1)
+            this.exceptionTokenIndex = undefined
+        }
     }
 
     enterStatement(context: TspFastParser.StatementContext): void {
-        this._enterStack.push([`${process.pid}: (Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)}) `, process.hrtime()])
+        if (!process.env.TSPLANG_DEBUG) {
+            this._enterStack.push([`${process.pid}: (Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)}) `, process.hrtime()])
+        }
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-        const last = this._enterStack.pop()
-        const end = process.hrtime(last[1])
+        if (!process.env.TSPLANG_DEBUG) {
+            const last = this._enterStack.pop()
+            const end = process.hrtime(last[1])
 
-        console.info(`${last[0]} ${this.pad(end[0].toString(), 3)}s ${this.pad((end[1] / 1000000).toString(), 10)}ms    [${context.getText()}]`)
-
-        const range: Range = {
-            end: {
-                character: context.stop.column,
-                line: context.stop.line - 1
-            },
-            start: {
-                character: context.start.column,
-                line: context.start.line - 1
-            }
+            console.info(`${last[0]} ${this.pad(end[0].toString(), 3)}s ${this.pad((end[1] / 1000000).toString(), 10)}ms    [${context.getText()}]`)
         }
-        this.ranges.push(range)
-        this.statements.set(range, context)
 
-        let startIndex: number
+        // const range: Range = {
+        //     end: {
+        //         character: context.stop.column,
+        //         line: context.stop.line - 1
+        //     },
+        //     start: {
+        //         character: context.start.column,
+        //         line: context.start.line - 1
+        //     }
+        // }
+        // this.ranges.push(range)
+        // this.statements.set(range, context)
+
+        // let startIndex: number
+        // if (context.exception) {
+        //     if (this.enteredStatementException) {
+        //         return
+        //     }
+
+        //     startIndex = ((context.exception as CorrectRecogException).startToken)
+        //         ? (context.exception as CorrectRecogException).startToken.tokenIndex
+        //         : undefined
+
+        //     this.enteredStatementException = true
+        // }
+        // else {
+        //     if (this.enteredStatementException) {
+        //         this.enteredStatementException = false
+        //     }
+
+        //     startIndex = (context.start)
+        //         ? context.start.tokenIndex
+        //         : undefined
+        // }
+
+        // if (startIndex === undefined) {
+        //     return
+        // }
+
         if (context.exception) {
-            if (this.enteredStatementException) {
-                return
-            }
-
-            startIndex = ((context.exception as CorrectRecogException).startToken)
+            const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
                 ? (context.exception as CorrectRecogException).startToken.tokenIndex
                 : undefined
 
-            this.enteredStatementException = true
-        }
-        else {
-            if (this.enteredStatementException) {
-                this.enteredStatementException = false
+            if (exceptionStartIndex < (this.exceptionTokenIndex || Number.MAX_VALUE)) {
+                this.exceptionTokenIndex = exceptionStartIndex
             }
 
-            startIndex = (context.start)
-                ? context.start.tokenIndex
-                : undefined
-        }
-
-        if (startIndex === undefined) {
             return
         }
 
-        const tokens = this.tokenStream.tokens.slice(startIndex)
-
-        // Cache Tokens if they form a valid namespace.
-        // (NAME types, full-stop accessors, and array indexers only)
-        let namespaceTokens = new Array<Token>()
-
-        for (let index = 0; index < tokens.length; index++) {
-            const token = tokens[index]
-
-            if (token.type === TspLexer.NAME || token.type === TspLexer.EOF) {
-                let resolvedNamespace: ResolvedNamespace
-                let depth: number
-
-                // If the current Token is the EOF, then register and return
-                if (token.type === TspLexer.EOF) {
-                    this.registerCompletionTokens(namespaceTokens)
-
-                    return
-                }
-
-                namespaceTokens.push(token)
-
-                this.registerCompletionTokens(namespaceTokens)
-
-                // Look ahead to see if the next Token is an open parenthesis.
-                const nextToken = tokens[index + 1]
-
-                if (nextToken !== undefined && nextToken.text.localeCompare('(') === 0) {
-                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
-                    depth = ResolvedNamespace.depth(resolvedNamespace)
-
-                    // Filter on any available signatures at our current namespace depth.
-                    const signatures = (this.commandSet.signatureDepthMap.get(depth) || []).filter(
-                        (value: SignatureInformation) => {
-                            return ResolvedNamespace.equal(
-                                SignatureInformation.resolveNamespace(value),
-                                resolvedNamespace
-                            )
-                        }
-                    )
-
-                    if (signatures.length > 0) {
-                        const nextIndex = index + 1
-
-                        // Try to reach the pairing close parenthesis.
-                        const closingIndex = SignatureContext.consumePair(nextIndex, tokens)
-
-                        // If we found a close parenthesis.
-                        if (closingIndex !== nextIndex) {
-                            const closeParenthesis = tokens[closingIndex]
-
-                            // Get all Tokens between the parentheses.
-                            const midTokens = tokens.slice(nextIndex + 1, closingIndex)
-
-                            // Advance to the Token after the close parenthesis.
-                            index = closingIndex + 1
-
-                            // Register this signature context.
-                            this.registerSignatureContext(
-                                nextToken.stop + 1,
-                                SignatureContext.create(
-                                    nextToken,
-                                    midTokens,
-                                    closeParenthesis,
-                                    signatures,
-                                    this.document.positionAt.bind(this.document)
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-            else if (token.text.localeCompare('.') === 0) {
-                namespaceTokens.push(token)
-
-                this.registerCompletionTokens(namespaceTokens)
-            }
-            // Consume everything inside the array indexer.
-            else if (token.text.localeCompare('[') === 0) {
-                const startingIndex = index
-
-                index = SignatureContext.consumePair(index, tokens)
-
-                // If we successfully consumed the array indexer.
-                if (index !== startingIndex) {
-                    // Add the array indexer to the namespace tokens.
-                    namespaceTokens.push(...tokens.slice(startingIndex, index + 1))
-                }
-            }
-            // If this Token is an invalid namespace component.
-            else {
-                // Clear the cache.
-                namespaceTokens = new Array<Token>()
-            }
+        // Only parse top-level statements
+        if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
+            return
         }
+
+        const startIndex = this.exceptionTokenIndex || context.start.tokenIndex
+        const stopIndex = context.stop.tokenIndex
+
+        this.parseTokens(startIndex, stopIndex + 1)
+
+        this.exceptionTokenIndex = undefined
     }
 
     getCompletionItems(cursor: Position): CompletionList | undefined {
@@ -524,6 +475,146 @@ export class DocumentContext extends TspFastListener {
         return item
     }
 
-    update(): void {
+    update(changes: Array<TextDocumentContentChangeEvent>): void {
+        for (const change of changes) {
+            const text = TextDocument.applyEdits(
+                this.document,
+                [{
+                    newText: change.text,
+                    range: change.range
+                }]
+            )
+
+            this.document = TextDocument.create(
+                this.document.uri,
+                this.document.languageId,
+                this.document.version,
+                text
+            )
+        }
+
+        this.enteredStatementException = false
+        this.exceptionTokenIndex = undefined
+        this.errors = new Array()
+        this.exclusives = new Map()
+        this.fuzzyOffsets = new FuzzyOffsetMap()
+        this.fuzzySignatureOffsets = new FuzzyOffsetMap()
+        this.signatures = new Map()
+
+        this.inputStream = new InputStream(this.document.getText())
+
+        this.lexer.inputStream = this.inputStream
+        this.lexer.reset()
+
+        this.tokenStream.setTokenSource(this.lexer)
+        this.tokenStream.reset()
+
+        this.parser.setTokenStream(this.tokenStream)
+        this.parser.reset()
+        if (!this.parser.buildParseTrees) {
+            this.parser.buildParseTrees = true
+        }
+
+        this._enterStack = new Array()
+        this._stop = [-1, -1]
+        this.parseTree = this.parser.chunk()
+    }
+
+    private parseTokens(fromIndex: number, untilIndex: number): void {
+        const tokens = this.tokenStream.tokens.slice(fromIndex, untilIndex)
+
+        // Cache Tokens if they form a valid namespace.
+        // (NAME types, full-stop accessors, and array indexers only)
+        let namespaceTokens = new Array<Token>()
+
+        for (let index = 0; index < tokens.length; index++) {
+            const token = tokens[index]
+
+            if (token.type === TspLexer.NAME || token.type === TspLexer.EOF) {
+                let resolvedNamespace: ResolvedNamespace
+                let depth: number
+
+                // If the current Token is the EOF, then register and return
+                if (token.type === TspLexer.EOF) {
+                    this.registerCompletionTokens(namespaceTokens)
+
+                    return
+                }
+
+                namespaceTokens.push(token)
+
+                this.registerCompletionTokens(namespaceTokens)
+
+                // Look ahead to see if the next Token is an open parenthesis.
+                const nextToken = tokens[index + 1]
+
+                if (nextToken !== undefined && nextToken.text.localeCompare('(') === 0) {
+                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
+                    depth = ResolvedNamespace.depth(resolvedNamespace)
+
+                    // Filter on any available signatures at our current namespace depth.
+                    const signatures = (this.commandSet.signatureDepthMap.get(depth) || []).filter(
+                        (value: SignatureInformation) => {
+                            return ResolvedNamespace.equal(
+                                SignatureInformation.resolveNamespace(value),
+                                resolvedNamespace
+                            )
+                        }
+                    )
+
+                    if (signatures.length > 0) {
+                        const nextIndex = index + 1
+
+                        // Try to reach the pairing close parenthesis.
+                        const closingIndex = SignatureContext.consumePair(nextIndex, tokens)
+
+                        // If we found a close parenthesis.
+                        if (closingIndex !== nextIndex) {
+                            const closeParenthesis = tokens[closingIndex]
+
+                            // Get all Tokens between the parentheses.
+                            const midTokens = tokens.slice(nextIndex + 1, closingIndex)
+
+                            // Advance to the Token after the close parenthesis.
+                            index = closingIndex + 1
+
+                            // Register this signature context.
+                            this.registerSignatureContext(
+                                nextToken.stop + 1,
+                                SignatureContext.create(
+                                    nextToken,
+                                    midTokens,
+                                    closeParenthesis,
+                                    signatures,
+                                    this.document.positionAt.bind(this.document)
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+            else if (token.text.localeCompare('.') === 0) {
+                namespaceTokens.push(token)
+
+                this.registerCompletionTokens(namespaceTokens)
+            }
+            // Consume everything inside the array indexer.
+            else if (token.text.localeCompare('[') === 0) {
+                const startingIndex = index
+
+                index = SignatureContext.consumePair(index, tokens)
+
+                // If we successfully consumed the array indexer.
+                if (index !== startingIndex) {
+                    // Add the array indexer to the namespace tokens.
+                    namespaceTokens.push(...tokens.slice(startingIndex, index + 1))
+                }
+            }
+            // If this Token is an invalid namespace component.
+            else {
+                // Clear the cache.
+                namespaceTokens = new Array<Token>()
+            }
+        }
     }
 }

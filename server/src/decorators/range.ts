@@ -15,7 +15,10 @@
  */
 'use strict'
 
+import { Token } from 'antlr4'
 import * as vsls from 'vscode-languageserver'
+
+import { TokenUtil } from '../language-comprehension'
 
 // tslint:disable-next-line:no-empty-interface
 export interface Range extends vsls.Range {
@@ -48,9 +51,12 @@ export namespace Range {
      * @param range The Range to check.
      * @returns True if Position/Range lies within Range and false otherwise.
      */
-    export function within(value: vsls.Position | Range, range: Range): boolean {
+    export function within(value: vsls.Position | Range | Token, range: Range): boolean {
         if (Range.is(value)) {
             return within(value.start, range) || within(value.end, range)
+        }
+        else if (value instanceof Token) {
+            return within(TokenUtil.getRange(value, value), range)
         }
 
         // Within lower bound.
