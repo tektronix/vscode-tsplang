@@ -31,7 +31,7 @@
                 "--extensionDevelopmentPath=${workspaceRoot}"
             ],
             "env": {
-                "TSPLANG_DEBUG": "1"
+                "TSPLANG_DEBUG": "${input:debug}"
             },
             "stopOnEntry": false,
             "sourceMaps": true,
@@ -78,6 +78,15 @@
             "outFiles": [
                 "${workspaceRoot}/server/out/**/*.js"
             ]
+        }
+    ],
+    "inputs": [
+        {
+            "type": "pickString",
+            "id": "debug",
+            "description": "TSPLANG_DEBUG = ",
+            "default": "1",
+            "options": ["1", "0"]
         }
     ]
 }

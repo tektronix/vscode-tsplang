@@ -206,16 +206,12 @@ export class DocumentContext extends TspFastListener {
     }
 
     enterChunk(): void {
-        if (process.env.TSPLANG_DEBUG) {
-            this._start = process.hrtime()
-        }
+        this._start = process.hrtime()
     }
 
     exitChunk(): void {
-        if (process.env.TSPLANG_DEBUG) {
-            this._stop = process.hrtime(this._start)
-            console.info('%d: --> total time: %ds %dms', process.pid, this._stop[0], this._stop[1] / 1000000)
-        }
+        this._stop = process.hrtime(this._start)
+        console.info('%d: --> total time: %ds %dms', process.pid, this._stop[0], this._stop[1] / 1000000)
 
         if (this.exceptionTokenIndex) {
             this.parseTokens(this.exceptionTokenIndex, this.tokenStream.tokens.length - 1)
@@ -224,13 +220,13 @@ export class DocumentContext extends TspFastListener {
     }
 
     enterStatement(context: TspFastParser.StatementContext): void {
-        if (!process.env.TSPLANG_DEBUG) {
+        if (process.env.TSPLANG_DEBUG.localeCompare('1')) {
             this._enterStack.push([`${process.pid}: (Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)}) `, process.hrtime()])
         }
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-        if (!process.env.TSPLANG_DEBUG) {
+        if (process.env.TSPLANG_DEBUG.localeCompare('1')) {
             const last = this._enterStack.pop()
             const end = process.hrtime(last[1])
 
