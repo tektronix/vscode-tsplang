@@ -201,7 +201,7 @@ export class DocumentContext extends TspFastListener {
 
     pad(n, width) {
         var z = ' ';
-        n = n + '';
+        n = n.toString() + '';
         return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
     }
 
@@ -221,17 +221,19 @@ export class DocumentContext extends TspFastListener {
 
     enterStatement(context: TspFastParser.StatementContext): void {
         if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
-            this._enterStack.push([`${process.pid}: (Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)}) `, process.hrtime()])
+            // Only time top-level statements
+            if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
+                return
+            }
+
+            this._enterStack.push([
+                `${process.pid}: (Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)})`,
+                process.hrtime()
+            ])
         }
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-            const last = this._enterStack.pop()
-            const end = process.hrtime(last[1])
-
-            console.info(`${last[0]} ${this.pad(end[0].toString(), 3)}s ${this.pad((end[1] / 1000000).toString(), 10)}ms    [${context.getText()}]`)
-        }
-
         // const range: Range = {
         //     end: {
         //         character: context.stop.column,
@@ -271,7 +273,19 @@ export class DocumentContext extends TspFastListener {
         //     return
         // }
 
+        // Only parse top-level statements
+        if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
+            return
+        }
+
         if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
+            const last = this._enterStack.pop()
+            const end = process.hrtime(last[1])
+            console.info(`${last[0]} ${this.pad(end[0], 3)}s ${this.pad(end[1] / 1000000, 10)}ms`)
+            const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
+            console.info(tree)
+        }
+
         if (context.exception) {
             const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
                 ? (context.exception as CorrectRecogException).startToken.tokenIndex
@@ -281,11 +295,6 @@ export class DocumentContext extends TspFastListener {
                 this.exceptionTokenIndex = exceptionStartIndex
             }
 
-            return
-        }
-
-        // Only parse top-level statements
-        if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
             return
         }
 
@@ -612,5 +621,62 @@ export class DocumentContext extends TspFastListener {
                 namespaceTokens = new Array<Token>()
             }
         }
+    }
+}
+
+namespace TextTree {
+    const ruleStartRegExp = new RegExp(/\([a-zA-Z]+/)
+    const ruleEndRegExp = new RegExp(/.*\)$/)
+
+    export function prettify(tree: string, indent: number, from?: string): string {
+        return _(tree.split(' '), indent, from || '')
+    }
+
+    function _(items: Array<string>, indent: number, from: string, level: number = 1): string {
+        const workingSet = new Array<string>(...items)
+        let result = from
+        let workingLevel = level
+        let totalCloseParenIgnores = 0
+
+        while (workingSet.length > 0) {
+            let item = workingSet.shift()
+
+            // If this item is the start of a rule.
+            if (ruleStartRegExp.test(item)) {
+                result = result + ' '.repeat(indent * workingLevel) + item + '\n'
+
+                workingLevel ++
+            }
+            else {
+                if (item.localeCompare('(') === 0) {
+                    totalCloseParenIgnores++
+                }
+
+                result = result + ' '.repeat(indent * workingLevel) + item + '\n'
+            }
+
+            // Reduce the current level if this item ends a rule.
+            if (ruleEndRegExp.test(item)) {
+                // Trim irrelevant close parentheses from the item if it starts with a close parenthesis.
+                if (item[0].localeCompare(')') === 0) {
+                    item = item.slice(totalCloseParenIgnores)
+
+                    totalCloseParenIgnores = 0
+                }
+
+                // Decrement level by total trailing close parentheses.
+                const reversedCharacters = item.split('').reverse()
+                for (const char of reversedCharacters) {
+                    if (char.localeCompare(')') === 0) {
+                        workingLevel--
+                    }
+                    else {
+                        break
+                    }
+                }
+            }
+        }
+
+        return result
     }
 }
