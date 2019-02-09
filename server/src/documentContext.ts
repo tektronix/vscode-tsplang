@@ -220,13 +220,12 @@ export class DocumentContext extends TspFastListener {
     }
 
     enterStatement(context: TspFastParser.StatementContext): void {
-        if (process.env.TSPLANG_DEBUG.localeCompare('1')) {
+        if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
             this._enterStack.push([`${process.pid}: (Ln ${this.pad(context.start.line, 4)}, Col ${this.pad(context.start.column, 3)}) `, process.hrtime()])
         }
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-        if (process.env.TSPLANG_DEBUG.localeCompare('1')) {
             const last = this._enterStack.pop()
             const end = process.hrtime(last[1])
 
@@ -272,6 +271,7 @@ export class DocumentContext extends TspFastListener {
         //     return
         // }
 
+        if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
         if (context.exception) {
             const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
                 ? (context.exception as CorrectRecogException).startToken.tokenIndex
