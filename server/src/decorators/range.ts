@@ -20,10 +20,46 @@ import * as vsls from 'vscode-languageserver'
 
 import { TokenUtil } from '../language-comprehension'
 
-// tslint:disable-next-line:no-empty-interface
-export interface Range extends vsls.Range {
-}
+export declare type Range = vsls.Range
 export namespace Range {
+    /**
+     * Compares Range `a` to Range `b`.
+     *
+     * If `a` falls within `b`, then it is considered equal.
+     *
+     * @param a The left-hand side of the comparison.
+     * @param b The right-hand side of the comparison.
+     * @returns -1 if `a < b`, 0 if `a == b`, and +1 if `a > b`.
+     * @throws If `a` overlaps `b`.
+     */
+    export function compare(a: Range, b: Range): number {
+        if (Range.within(a, b)) {
+            return 0
+        }
+
+        const start: vsls.Position = {
+            character: a.start.character - b.start.character,
+            line: a.start.line - b.start.line
+        }
+        const end: vsls.Position = {
+            character: a.end.character - b.end.character,
+            line: a.end.line - b.end.line
+        }
+
+        const resolvedStart = (start.line === 0) ? start.character : start.line
+        const resolvedEnd = (end.line === 0) ? end.character : end.line
+
+        if (resolvedStart < 0 && resolvedEnd < 0) {
+            return -1
+        }
+        else if (resolvedStart > 0 && resolvedEnd > 0) {
+            return 1
+        }
+        else {
+            throw Error(`Cannot compare overlapping Ranges ${JSON.stringify(a)} and ${JSON.stringify(b)}`)
+        }
+    }
+
     /**
      * Get the delta of Position to Range.
      * @param position The final Position of the delta calculation.
