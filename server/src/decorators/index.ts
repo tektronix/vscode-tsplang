@@ -17,6 +17,7 @@
 
 export { BaseItem } from './baseItem'
 export { CompletionItemData, CompletionItem } from './completionItem'
+export { DocumentSymbol } from './documentSymbol'
 export { MarkupContent, MarkupContentCallback } from './markupContent'
 export { ParameterInformation } from './parameterInformation'
 export { Range } from './range'

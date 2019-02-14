@@ -75,7 +75,7 @@ connection.onNotification(ChangeNotification, (changes: Array<TextDocumentConten
         return
     }
 
-    proc.context.update(changes)
+    // proc.context.update(changes)
 })
 
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
@@ -84,7 +84,7 @@ connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
 
 connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {
     if (proc.context) {
-        return proc.context.getCompletionItems(params.position)
+        return // proc.context.getCompletionItems(params.position)
     }
 
     return
@@ -100,7 +100,7 @@ connection.onRequest(CompletionResolveRequest, (item: CompletionItem): Completio
 
 connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): SignatureHelp | undefined => {
     if (proc.context) {
-        return proc.context.getSignatureHelp(params.position)
+        return // proc.context.getSignatureHelp(params.position)
     }
 
     return
