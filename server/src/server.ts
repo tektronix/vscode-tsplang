@@ -15,25 +15,7 @@
  */
 'use strict'
 
-import {
-    CompletionItem,
-    CompletionList,
-    createConnection,
-    DidChangeConfigurationParams,
-    DidChangeTextDocumentParams,
-    DidCloseTextDocumentParams,
-    DidOpenTextDocumentParams,
-    Disposable,
-    DocumentSymbol,
-    DocumentSymbolParams,
-    IConnection,
-    InitializeParams,
-    InitializeResult,
-    IPCMessageReader,
-    IPCMessageWriter,
-    SignatureHelp,
-    TextDocumentPositionParams
-} from 'vscode-languageserver'
+import { createConnection, IConnection, IPCMessageReader, IPCMessageWriter } from 'vscode-languageserver'
 
 import { ProcessManager } from './processManager'
 
@@ -50,50 +32,30 @@ const manager = new ProcessManager(connection)
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
-connection.onInitialize((params: InitializeParams): InitializeResult => {
-    return manager.initialize(params)
-})
+connection.onInitialize(manager.initialize.bind(manager))
 
-connection.onInitialized(() => {
-    manager.initialized()
-})
+connection.onInitialized(manager.initialized.bind(manager))
 
-connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
-    manager.documentOpen(params)
-})
+connection.onDidOpenTextDocument(manager.documentOpen.bind(manager))
 
-connection.onDidChangeTextDocument((params: DidChangeTextDocumentParams) => {
-    manager.documentChange(params)
-})
+connection.onDidChangeTextDocument(manager.documentChange.bind(manager))
 
-connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
-    manager.documentClose(params)
-})
+connection.onDidCloseTextDocument(manager.documentClose.bind(manager))
 
 // This handler provides the initial list of completion items.
-connection.onCompletion((params: TextDocumentPositionParams): Promise<CompletionList | undefined> => {
-    return manager.completion(params)
-})
+connection.onCompletion(manager.completion.bind(manager))
 
 // This handler resolves additional information for the item selected in the completion list.
-connection.onCompletionResolve((item: CompletionItem): Promise<CompletionItem> => {
-    return manager.completionResolve(item)
-})
+connection.onCompletionResolve(manager.completionResolve.bind(manager))
 
-connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
-    manager.settingsChange(params)
-})
+connection.onDidChangeConfiguration(manager.settingsChange.bind(manager))
 
-connection.onDocumentSymbol((params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> => {
-    return manager.symbol(params)
-})
+connection.onDocumentSymbol(manager.symbol.bind(manager))
 
-connection.onSignatureHelp((params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
-    return manager.signature(params)
-})
+connection.onSignatureHelp(manager.signature.bind(manager))
 
-connection.onShutdown(manager.dispose)
-connection.onExit(manager.dispose)
+connection.onShutdown(manager.dispose.bind(manager))
+connection.onExit(manager.dispose.bind(manager))
 
 // Listen on the connection
 connection.listen()
