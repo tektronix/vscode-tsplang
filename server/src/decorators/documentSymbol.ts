@@ -19,6 +19,7 @@ import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4
 import * as vsls from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastParser } from '../antlr4-tsplang'
+import { TokenUtil } from '../language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from '../language-comprehension/exclusive-completion'
 import { SignatureContext } from '../language-comprehension/signature'
 
@@ -59,6 +60,12 @@ export class DocumentSymbol implements vsls.DocumentSymbol {
         // TODO: general statement checks here
 
         // this.parseTokens(tokens)
+
+        this.detail = TokenUtil.getString(...tokens)
+        this.kind = vsls.SymbolKind.Module
+        this.name = tokens[0].text
+        this.range = TokenUtil.getRange(tokens[0], tokens[tokens.length - 1])
+        this.selectionRange = this.range
     }
 
     /**

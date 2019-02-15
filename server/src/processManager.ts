@@ -18,10 +18,38 @@
 import { ChildProcess, fork } from 'child_process'
 import * as path from 'path'
 import * as rpc from 'vscode-jsonrpc'
-import { CompletionList, Diagnostic, DidChangeConfigurationNotification, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, PublishDiagnosticsParams, SignatureHelp, TextDocumentPositionParams, TextDocumentSyncKind } from 'vscode-languageserver'
+import {
+    CompletionList,
+    Diagnostic,
+    DidChangeConfigurationNotification,
+    DidChangeConfigurationParams,
+    DidChangeTextDocumentParams,
+    DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams,
+    Disposable,
+    DocumentSymbol,
+    DocumentSymbolParams,
+    IConnection,
+    InitializeParams,
+    InitializeResult,
+    PublishDiagnosticsParams,
+    SignatureHelp,
+    TextDocumentPositionParams,
+    TextDocumentSyncKind
+} from 'vscode-languageserver'
 
 import { CompletionItem } from './decorators'
-import { ChangeNotification, CompletionRequest, CompletionResolveRequest, ContextReply, ContextRequest, ErrorNotification, SettingsNotification, SignatureRequest } from './rpcTypes'
+import {
+    ChangeNotification,
+    CompletionRequest,
+    CompletionResolveRequest,
+    ContextReply,
+    ContextRequest,
+    ErrorNotification,
+    SettingsNotification,
+    SignatureRequest,
+    SymbolRequest
+} from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
@@ -148,6 +176,7 @@ export class ProcessManager {
                     resolveProvider: true,
                     triggerCharacters: ['.']
                 },
+                documentSymbolProvider: true,
                 // display information about the function/method that is being called
                 signatureHelpProvider: {
                     triggerCharacters: [',', '(']
@@ -200,6 +229,12 @@ export class ProcessManager {
         const child = this.children.get(params.textDocument.uri)
 
         return child.connection.sendRequest(SignatureRequest, params)
+    }
+
+    async symbol(params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> {
+        const child = this.children.get(params.textDocument.uri)
+
+        return child.connection.sendRequest(SymbolRequest, undefined)
     }
 
     /* Internal Methods */

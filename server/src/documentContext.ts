@@ -101,6 +101,7 @@ export class DocumentContext extends TspFastListener {
     // ranges: Array<Range>
     // statements: WeakMap<Range, TspFastParser.StatementContext>
     exceptionTokenIndex?: number
+    symbols: Array<DocumentSymbol>
 
     private _settings: TsplangSettings
     private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
@@ -123,7 +124,6 @@ export class DocumentContext extends TspFastListener {
     //  * The associated key-value is a SignatureContext.
     //  */
     // private signatures: Map<number, SignatureContext>
-    private symbols: Array<DocumentSymbol>
     // private readonly tableIndexRegexp: RegExp
     private timer: DebugTimer
     private tokenStream: CommonTokenStream
@@ -150,6 +150,7 @@ export class DocumentContext extends TspFastListener {
 
         this.exceptionRanges = new Array()
         this.symbols = new Array()
+        this.timer = new DebugTimer()
 
         this.inputStream = new InputStream(this.document.getText())
         this.lexer = new TspFastLexer(this.inputStream)

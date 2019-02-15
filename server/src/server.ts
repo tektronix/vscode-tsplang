@@ -15,7 +15,25 @@
  */
 'use strict'
 
-import { CompletionItem, CompletionList, createConnection, DidChangeConfigurationParams, DidChangeTextDocumentParams, DidCloseTextDocumentParams, DidOpenTextDocumentParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentPositionParams } from 'vscode-languageserver'
+import {
+    CompletionItem,
+    CompletionList,
+    createConnection,
+    DidChangeConfigurationParams,
+    DidChangeTextDocumentParams,
+    DidCloseTextDocumentParams,
+    DidOpenTextDocumentParams,
+    Disposable,
+    DocumentSymbol,
+    DocumentSymbolParams,
+    IConnection,
+    InitializeParams,
+    InitializeResult,
+    IPCMessageReader,
+    IPCMessageWriter,
+    SignatureHelp,
+    TextDocumentPositionParams
+} from 'vscode-languageserver'
 
 import { ProcessManager } from './processManager'
 
@@ -64,6 +82,10 @@ connection.onCompletionResolve((item: CompletionItem): Promise<CompletionItem> =
 
 connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
     manager.settingsChange(params)
+})
+
+connection.onDocumentSymbol((params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> => {
+    return manager.symbol(params)
 })
 
 connection.onSignatureHelp((params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {

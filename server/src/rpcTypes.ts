@@ -16,7 +16,16 @@
 // tslint:disable:variable-name max-line-length
 
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
-import { CompletionList, Diagnostic, PublishDiagnosticsParams, SignatureHelp, TextDocumentContentChangeEvent, TextDocumentItem, TextDocumentPositionParams } from 'vscode-languageserver'
+import {
+    CompletionList,
+    Diagnostic,
+    DocumentSymbol,
+    PublishDiagnosticsParams,
+    SignatureHelp,
+    TextDocumentContentChangeEvent,
+    TextDocumentItem,
+    TextDocumentPositionParams
+} from 'vscode-languageserver'
 
 import { CompletionItem } from './decorators'
 import { CommandSet } from './instrument'
@@ -40,3 +49,5 @@ export interface ContextReply {
 export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')
 
 export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')
+
+export const SymbolRequest = new RequestType<undefined, Array<DocumentSymbol>, void, void>('SymbolRequest')

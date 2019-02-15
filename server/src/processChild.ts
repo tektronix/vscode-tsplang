@@ -16,12 +16,30 @@
 'use strict'
 
 import * as rpc from 'vscode-jsonrpc'
-import { CompletionList, Diagnostic, SignatureHelp, TextDocument, TextDocumentContentChangeEvent, TextDocumentItem, TextDocumentPositionParams } from 'vscode-languageserver'
+import {
+    CompletionList,
+    Diagnostic,
+    SignatureHelp,
+    TextDocument,
+    TextDocumentContentChangeEvent,
+    TextDocumentItem,
+    TextDocumentPositionParams
+} from 'vscode-languageserver'
 
-import { CompletionItem } from './decorators'
+import { CompletionItem, DocumentSymbol } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
-import { ChangeNotification, CompletionRequest, CompletionResolveRequest, ContextReply, ContextRequest, ErrorNotification, SettingsNotification, SignatureRequest } from './rpcTypes'
+import {
+    ChangeNotification,
+    CompletionRequest,
+    CompletionResolveRequest,
+    ContextReply,
+    ContextRequest,
+    ErrorNotification,
+    SettingsNotification,
+    SignatureRequest,
+    SymbolRequest
+} from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
@@ -31,28 +49,22 @@ const connection = rpc.createMessageConnection(
 )
 console.log(`pid ${process.pid}: established connection`)
 
-class ProcessChild {
-    context: DocumentContext
-    readonly firstlineRegExp: RegExp
-    instrument: Instrument
-    shebang: Shebang
-
-    constructor() {
-        this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
-    }
-}
-
+let documentContext: Promise<DocumentContext>
+const firstlineRegExp = new RegExp(/^[^\n\r]*/)
+let instrument: Instrument
+let shebang: Shebang
 // tslint:disable-next-line:no-magic-numbers
 const uri: string = process.argv[2]
-const proc = new ProcessChild()
 
-connection.onNotification(ChangeNotification, (changes: Array<TextDocumentContentChangeEvent>) => {
+connection.onNotification(ChangeNotification, async (changes: Array<TextDocumentContentChangeEvent>) => {
+    const context = await documentContext
+
     let shebangEdited = false
     const item: TextDocumentItem = {
         uri,
-        languageId: proc.context.document.languageId,
-        text: proc.context.document.getText(),
-        version: proc.context.document.version
+        languageId: context.document.languageId,
+        text: context.document.getText(),
+        version: context.document.version
     }
     for (const change of changes) {
         shebangEdited = change.range.start.line === 0
@@ -69,7 +81,7 @@ connection.onNotification(ChangeNotification, (changes: Array<TextDocumentConten
     if (shebangEdited) {
         onContextReply({
             item,
-            settings: proc.context.settings
+            settings: context.settings
         })
 
         return
@@ -79,37 +91,39 @@ connection.onNotification(ChangeNotification, (changes: Array<TextDocumentConten
 })
 
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
-    proc.context.settings = settings
+    documentContext.then((value: DocumentContext) => value.settings = settings)
 })
 
 connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {
-    if (proc.context) {
-        return // proc.context.getCompletionItems(params.position)
-    }
+    // if (proc.context) {
+    //     return proc.context.getCompletionItems(params.position)
+    // }
 
     return
 })
 
-connection.onRequest(CompletionResolveRequest, (item: CompletionItem): CompletionItem => {
-    if (proc.context) {
-        return proc.context.resolveCompletion(item)
-    }
+connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Promise<CompletionItem> => {
+    const context = await documentContext
 
-    return item
+    return context.resolveCompletion(item)
 })
 
 connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): SignatureHelp | undefined => {
-    if (proc.context) {
-        return // proc.context.getSignatureHelp(params.position)
-    }
+    // if (proc.context) {
+    //     return proc.context.getSignatureHelp(params.position)
+    // }
 
     return
+})
+
+connection.onRequest(SymbolRequest, async (): Promise<Array<DocumentSymbol>> => {
+    const context = await documentContext
+
+    return context.symbols
 })
 
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
-
-/* Process Child Initialization */
 
 if (process.env.TSPLANG_DEBUG) {
     // Give dev time to attach to this document before continuing.
@@ -121,18 +135,21 @@ else {
     connection.sendRequest(ContextRequest, uri).then(onContextReply)
 }
 
-function onContextReply(context: ContextReply): void {
-    const firstLine = proc.firstlineRegExp.exec(context.item.text)[0]
+function onContextReply(contextReply: ContextReply): void {
+    const firstLine = firstlineRegExp.exec(contextReply.item.text)[0]
 
     let diagnostics: Array<Diagnostic>
-    [proc.shebang, diagnostics] = Shebang.tokenize(firstLine)
+    [shebang, diagnostics] = Shebang.tokenize(firstLine)
 
     let loadDiagnostics: Array<Diagnostic>
     // Try to generate instrument information for this document.
-    [proc.instrument, loadDiagnostics] = load(proc.shebang)
+    [instrument, loadDiagnostics] = load(shebang)
 
     // Create the context for this document.
-    proc.context = new DocumentContext(context.item, proc.instrument.set, context.settings)
+    const context = new DocumentContext(contextReply.item, instrument.set, contextReply.settings)
+    documentContext = new Promise<DocumentContext>(((): DocumentContext => {
+        return context
+    }))
 
     // Collect all diagnostics.
     diagnostics.push(...loadDiagnostics) // , ...proc.context.outline.diagnostics)
