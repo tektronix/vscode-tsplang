@@ -88,7 +88,7 @@ class DebugTimer {
         const padChar = ' '
         const s = n.toString()
 
-        return (s.length >= width) ? s : new Array(width + s.length + 1).join(padChar) + s
+        return (s.length >= width) ? s : new Array(width - s.length + 1).join(padChar) + s
     }
 }
 
