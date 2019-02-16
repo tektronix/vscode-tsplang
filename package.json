@@ -50,7 +50,17 @@
         "configuration": {
             "title": "TSPLang",
             "properties": {
-                "tsplang.enumerationSuggestions": {
+                "tsplang.debug.print.rootStatementParseTime": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Print the parse time of each root statement."
+                },
+                "tsplang.debug.print.rootStatementParseTree": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Print the parse tree of each root statement."
+                },
+                "tsplang.suggestions.enumerationOrder": {
                     "type": "string",
                     "enum": [
                         "top",
@@ -58,7 +68,6 @@
                         "inline"
                     ],
                     "default": "inline",
-                    "title": "Enumeration Suggestions",
                     "description": "Controls how enumeration suggestions are sorted.",
                     "enumDescriptions": [
                         "Show enumeration suggestions above other suggestions.",

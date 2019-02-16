@@ -25,10 +25,18 @@ import { SuggestionSortKind, TsplangSettings } from '../../settings'
 describe('Settings', () => {
     describe('TsplangSettings', () => {
         const defaultSettings: TsplangSettings = {
-            enumerationSuggestions: SuggestionSortKind.INLINE
+            debug: {
+                print: {
+                    rootStatementParseTime: false,
+                    rootStatementParseTree: false
+                }
+            },
+            suggestions: {
+                enumerationOrder: SuggestionSortKind.INLINE
+            }
         }
         const defaultSortMap = new Map<CompletionItemKind, SuggestionSortKind>([
-            [CompletionItemKind.EnumMember, defaultSettings.enumerationSuggestions]
+            [CompletionItemKind.EnumMember, defaultSettings.suggestions.enumerationOrder]
         ])
 
         describe('.defaults()', () => {
@@ -41,7 +49,15 @@ describe('Settings', () => {
             const testCases: Array<[TsplangSettings, Map<CompletionItemKind, SuggestionSortKind>]> = [
                 [
                     {
-                        enumerationSuggestions: SuggestionSortKind.BOTTOM
+                        debug: {
+                            print: {
+                                rootStatementParseTime: false,
+                                rootStatementParseTree: false
+                            }
+                        },
+                        suggestions: {
+                            enumerationOrder: SuggestionSortKind.INLINE
+                        }
                     },
                     new Map<CompletionItemKind, SuggestionSortKind>([
                         [CompletionItemKind.EnumMember, SuggestionSortKind.BOTTOM]

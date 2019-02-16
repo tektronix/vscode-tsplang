@@ -216,7 +216,7 @@ export class DocumentContext extends TspFastListener {
         }
         this.statementDepth++
 
-        if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
+        if (this.settings.debug.print.rootStatementParseTime) {
             if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
                 return
             }
@@ -227,7 +227,7 @@ export class DocumentContext extends TspFastListener {
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-        if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
+        if (this.settings.debug.print.rootStatementParseTime) {
             // Only parse top-level statements
             if (context.parentCtx instanceof TspFastParser.ChunkContext) {
                 console.info(this.timer.createStatementLog(
@@ -235,8 +235,10 @@ export class DocumentContext extends TspFastListener {
                     context.start.column,
                     this.timer.stop()
                 ))
-                const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
-                console.info(tree)
+                if (this.settings.debug.print.rootStatementParseTree) {
+                    const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
+                    console.info(tree)
+                }
             }
         }
 

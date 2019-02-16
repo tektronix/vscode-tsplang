@@ -20,7 +20,15 @@ import { CompletionItemKind } from 'vscode-languageserver'
 import { SuggestionSortKind } from './suggestionSortKind'
 
 export interface TsplangSettings {
-    enumerationSuggestions: SuggestionSortKind
+    debug: {
+        print: {
+            rootStatementParseTime: boolean;
+            rootStatementParseTree: boolean;
+        };
+    }
+    suggestions: {
+        enumerationOrder: SuggestionSortKind;
+    }
 }
 export namespace TsplangSettings {
     /**
@@ -29,7 +37,15 @@ export namespace TsplangSettings {
      */
     export function defaults(): TsplangSettings {
         return {
-            enumerationSuggestions: SuggestionSortKind.INLINE
+            debug: {
+                print: {
+                    rootStatementParseTime: false,
+                    rootStatementParseTree: false
+                }
+            },
+            suggestions: {
+                enumerationOrder: SuggestionSortKind.INLINE
+            }
         }
     }
 
@@ -40,7 +56,7 @@ export namespace TsplangSettings {
      */
     export function sortMap(settings: TsplangSettings): Map<CompletionItemKind, SuggestionSortKind> {
         return new Map([
-            [CompletionItemKind.EnumMember, settings.enumerationSuggestions]
+            [CompletionItemKind.EnumMember, settings.suggestions.enumerationOrder]
         ])
     }
 }
