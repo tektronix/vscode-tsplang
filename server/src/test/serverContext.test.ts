@@ -21,10 +21,10 @@ import * as vsls from 'vscode-languageserver'
 
 import { CompletionItem, SignatureInformation } from '../decorators'
 import { Model } from '../model'
-import { ServerContext } from '../serverContext'
+// import { ServerContext } from '../serverContext'
 import { SuggestionSortKind, TsplangSettings } from '../settings'
 import { TspItem } from '../tspItem'
-import { TspManager } from '../tspManager'
+// import { TspManager } from '../tspManager'
 
 import './fixtures/tspManager.fixture'
 import './fixtures/vscode-languageserver.fixture'

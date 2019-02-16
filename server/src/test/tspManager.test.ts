@@ -20,7 +20,7 @@ import 'mocha'
 import * as vsls from 'vscode-languageserver'
 
 import { TsplangSettings } from '../settings'
-import { TspManager } from '../tspManager'
+// import { TspManager } from '../tspManager'
 
 import './fixtures/tspManager.fixture'
 import './fixtures/vscode-languageserver.fixture'
