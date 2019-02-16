@@ -22,10 +22,10 @@ import 'mocha'
 import { CompletionItemKind } from 'vscode-languageserver'
 
 import { CompletionItem } from '../../decorators'
+// tslint:disable-next-line:no-import-side-effect
+import '../../decorators/antlr4'
 import { SuggestionSortKind } from '../../settings'
 import { SortCharacter } from '../../settings/suggestionSortKind'
-// tslint:disable-next-line:no-import-side-effect
-import '../fixtures/antlr4.fixture'
 
 describe('Decorators', () => {
     describe('CompletionItem', () => {

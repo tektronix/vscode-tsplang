@@ -21,9 +21,9 @@ import 'mocha'
 // tslint:enable:no-implicit-dependencies
 import { Range } from 'vscode-languageserver'
 
-import { TokenUtil } from '../../language-comprehension'
 // tslint:disable-next-line:no-import-side-effect
-import '../fixtures/antlr4.fixture'
+import '../../decorators/antlr4'
+import { TokenUtil } from '../../language-comprehension'
 
 describe('Language Comprehension', () => {
     describe('TokenUtil', () => {

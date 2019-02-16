@@ -23,6 +23,8 @@ import { TokenUtil } from '../language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from '../language-comprehension/exclusive-completion'
 import { SignatureContext } from '../language-comprehension/signature'
 
+// tslint:disable-next-line:no-import-side-effect
+import './antlr4'
 import { Range } from './range'
 
 export class DocumentSymbol implements vsls.DocumentSymbol {
