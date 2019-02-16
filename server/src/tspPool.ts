@@ -102,6 +102,7 @@ export class TspPool {
             case Model.KI2460:
             case Model.KI2461:
             case Model.KI2461SYS:
+            case Model.KI6500:
             case Model.LUA:
                 const instrModule: InstrumentModule = require(`./instrument/${model}`)
 
