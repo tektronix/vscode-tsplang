@@ -77,15 +77,10 @@ export namespace TokenUtil {
     }
 
     export function lighten(token: Token): Token {
-        const result = new Token()
-        result.column = token.column
-        result.line = token.line
-        result.start = token.start
-        result.stop = token.stop
-        result.text = token.text
-        result.tokenIndex = token.tokenIndex
-        result.type = token.type
+        // The default Token.source value is null.
+        // tslint:disable-next-line:no-null-keyword
+        token.source = null
 
-        return result
+        return token
     }
 }
