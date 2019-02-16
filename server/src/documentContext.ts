@@ -105,6 +105,7 @@ export class DocumentContext extends TspFastListener {
 
     private _settings: TsplangSettings
     private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
+    private childCache: Map<number, Array<DocumentSymbol>>
     // private enteredStatementException: boolean
     // /**
     //  * A Map keyed to the ending offset of an assignment operator (`=`) or
@@ -124,6 +125,7 @@ export class DocumentContext extends TspFastListener {
     //  * The associated key-value is a SignatureContext.
     //  */
     // private signatures: Map<number, SignatureContext>
+    private statementDepth = 0
     // private readonly tableIndexRegexp: RegExp
     private timer: DebugTimer
     private tokenStream: CommonTokenStream
@@ -150,6 +152,7 @@ export class DocumentContext extends TspFastListener {
 
         this.exceptionRanges = new Array()
         this.symbols = new Array()
+        this.childCache = new Map()
         this.timer = new DebugTimer()
 
         this.inputStream = new InputStream(this.document.getText())
@@ -173,77 +176,6 @@ export class DocumentContext extends TspFastListener {
         this._sortMap = TsplangSettings.sortMap(this._settings)
     }
 
-    // exitFunctionCall(context: TspParser.FunctionCallContext): void {
-    //     // There's no exception handling in this function.
-    //     if (context.exception !== null) {
-    //         return
-    //     }
-
-    //     // Context decompositions.
-    //     const objectCall = context.objectCall()
-    //     const args = objectCall.args()
-
-    //     // Uninteresting context states
-    //     if (objectCall.NAME() !== null) {
-    //         //  functionCall  --{1}-->  objectCall  --{1}-->  ':' NAME
-    //         return
-    //     }
-
-    //     if (args.tableConstructor() !== null) {
-    //         //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  tableConstructor
-    //         return
-    //     }
-
-    //     if (args.string() !== null) {
-    //         //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  string
-    //         return
-    //     }
-
-    //     // Context TerminalNode filters.
-    //     const openParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
-    //         return value instanceof TerminalNode && value.symbol.text.localeCompare('(') === 0
-    //     })
-    //     const closeParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
-    //         return value instanceof TerminalNode && value.symbol.text.localeCompare(')') === 0
-    //     })
-
-    //     // We need both TerminalNodes in order to proceed.
-    //     if (!(openParenthesis instanceof TerminalNode)) {
-    //         return
-    //     }
-
-    //     if (!(closeParenthesis instanceof TerminalNode)) {
-    //         return
-    //     }
-
-    //     // Filter all matching signatures from the CommandSet
-    //     const signatureLabel = SignatureInformation.resolveNamespace({
-    //         label: context.getText().replace(this.tableIndexRegexp, '')
-    //     })
-    //     const matchingSignatures = this.commandSet.signatures.filter((signature: SignatureInformation) => {
-    //         return SignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
-    //     })
-
-    //     // If we have matching signatures, then create an associated SignatureContext.
-    //     if (matchingSignatures.length > 0) {
-    //         const tokens = this.tokenStream.tokens.slice(
-    //             openParenthesis.symbol.tokenIndex + 1,
-    //             closeParenthesis.symbol.tokenIndex
-    //         )
-
-    //         const signatureContext = SignatureContext.create(
-    //             openParenthesis.symbol,
-    //             tokens,
-    //             closeParenthesis.symbol,
-    //             matchingSignatures,
-    //             this.document.positionAt.bind(this.document)
-    //         )
-
-    //         // Register this SignatureContext
-    //         this.registerSignatureContext(openParenthesis.symbol.stop + 1, signatureContext)
-    //     }
-    // }
-
     enterChunk(): void {
         this.timer.start()
     }
@@ -251,16 +183,39 @@ export class DocumentContext extends TspFastListener {
     exitChunk(): void {
         console.log(this.timer.createChunkLog(this.timer.stop()))
 
-        if (this.exceptionTokenIndex) {
-            this.symbols.push(new DocumentSymbol(
-                this.tokenStream.tokens.slice(this.exceptionTokenIndex, this.tokenStream.tokens.length - 1)
-            ))
+        // if (this.exceptionTokenIndex && this.childCache.length > 0) {
+        //     const child = this.childCache.pop()
+        //     child.tokens = this.tokenStream.tokens.slice(this.exceptionTokenIndex, this.tokenStream.tokens.length - 1)
+        //     this.symbols.push(new DocumentSymbol(
+                
+        //     ))
 
-            this.exceptionTokenIndex = undefined
-        }
+        //     this.exceptionTokenIndex = undefined
+        // }
     }
 
     enterStatement(context: TspFastParser.StatementContext): void {
+        // if (context.exception) {
+        //     const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
+        //         ? (context.exception as CorrectRecogException).startToken.tokenIndex
+        //         : undefined
+
+        //     if (exceptionStartIndex < (this.exceptionTokenIndex || Number.MAX_VALUE)) {
+        //         this.exceptionTokenIndex = exceptionStartIndex
+        //     }
+
+        //     return
+        // }
+        if (context.parentCtx instanceof TspFastParser.ChunkContext) {
+            this.symbols.push(new DocumentSymbol(TokenUtil.getPosition(context.start)))
+        }
+        else {
+            const siblings = this.childCache.get(this.statementDepth) || []
+            siblings.push(new DocumentSymbol(TokenUtil.getPosition(context.start)))
+            this.childCache.set(this.statementDepth, siblings)
+        }
+        this.statementDepth++
+
         if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
             if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
                 return
@@ -272,315 +227,84 @@ export class DocumentContext extends TspFastListener {
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-        // const range: Range = {
-        //     end: {
-        //         character: context.stop.column,
-        //         line: context.stop.line - 1
-        //     },
-        //     start: {
-        //         character: context.start.column,
-        //         line: context.start.line - 1
-        //     }
-        // }
-        // this.ranges.push(range)
-        // this.statements.set(range, context)
+        if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
+            // Only parse top-level statements
+            if (context.parentCtx instanceof TspFastParser.ChunkContext) {
+                console.info(this.timer.createStatementLog(
+                    context.start.line,
+                    context.start.column,
+                    this.timer.stop()
+                ))
+                const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
+                console.info(tree)
+            }
+        }
 
-        // let startIndex: number
+        const previousDepth = this.statementDepth
+        this.statementDepth--
+
         // if (context.exception) {
-        //     if (this.enteredStatementException) {
-        //         return
-        //     }
-
-        //     startIndex = ((context.exception as CorrectRecogException).startToken)
+        //     const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
         //         ? (context.exception as CorrectRecogException).startToken.tokenIndex
         //         : undefined
 
-        //     this.enteredStatementException = true
-        // }
-        // else {
-        //     if (this.enteredStatementException) {
-        //         this.enteredStatementException = false
+        //     if (exceptionStartIndex < (this.exceptionTokenIndex || Number.MAX_VALUE)) {
+        //         this.exceptionTokenIndex = exceptionStartIndex
         //     }
 
-        //     startIndex = (context.start)
-        //         ? context.start.tokenIndex
-        //         : undefined
-        // }
-
-        // if (startIndex === undefined) {
         //     return
         // }
+        // // If this is the first valid statement after an exception.
+        // else if (this.exceptionTokenIndex) {
+        //     this.addSymbol(new DocumentSymbol(
+        //         this.tokenStream.tokens.slice(this.exceptionTokenIndex, context.start.tokenIndex)
+        //     ))
 
-        // Only parse top-level statements
+        //     this.exceptionTokenIndex = undefined
+        // }
+
+        // Perform child updates if this isn't a root statement.
         if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
-            return
-        }
+            // Get all children at the current depth
+            const siblings = this.childCache.get(this.statementDepth)
+            // Remove the latest child
+            const child = siblings.pop()
 
-        if (process.env.TSPLANG_DEBUG.localeCompare('1') === 0) {
-            console.info(this.timer.createStatementLog(context.start.line, context.start.column, this.timer.stop()))
-            const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
-            console.info(tree)
-        }
-
-        if (context.exception) {
-            const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
-                ? (context.exception as CorrectRecogException).startToken.tokenIndex
-                : undefined
-
-            if (exceptionStartIndex < (this.exceptionTokenIndex || Number.MAX_VALUE)) {
-                this.exceptionTokenIndex = exceptionStartIndex
+            // If the previous depth had children, then add them to this child.
+            if (this.childCache.has(previousDepth)) {
+                const children = this.childCache.get(previousDepth)
+                child.children = new Array(...children)
             }
+            // Get all relevant Tokens for this child.
+            child.tokens = this.tokenStream.tokens.slice(
+                context.start.tokenIndex,
+                context.stop.tokenIndex + 1
+            )
 
-            return
-        }
-        // If this is the first valid statement after an exception.
-        else if (this.exceptionTokenIndex) {
-            this.addSymbol(new DocumentSymbol(
-                this.tokenStream.tokens.slice(this.exceptionTokenIndex, context.start.tokenIndex)
-            ))
-
-            this.exceptionTokenIndex = undefined
-        }
-
-        const startIndex = context.start.tokenIndex
-        const stopIndex = context.stop.tokenIndex + 1
-
-        this.addSymbol(new DocumentSymbol(
-            this.tokenStream.tokens.slice(startIndex, stopIndex)
-        ))
-    }
-
-    // getCompletionItems(cursor: Position): CompletionList | undefined {
-    //     let offset = this.document.offsetAt(cursor)
-
-    //     if (!this.exclusives.has(offset)) {
-    //         offset = this.fuzzyOffsets.get(offset) || offset
-    //     }
-
-    //     // Get available exclusive completion items.
-    //     const exclusiveContext = this.exclusives.get(offset)
-
-    //     if (exclusiveContext !== undefined) {
-    //         const exclusiveResult = new Array<CompletionItem>()
-
-    //         if (exclusiveContext.text !== undefined) {
-    //             // Only show those completions which partially match the text.
-    //             for (const completion of exclusiveContext.completions) {
-    //                 if (CompletionItem.namespaceMatch(ResolvedNamespace.create(exclusiveContext.text), completion)) {
-    //                     exclusiveResult.push(completion)
-    //                 }
-    //             }
-    //         }
-    //         else {
-    //             // Only add root completions from this exclusive context if no
-    //             // text is available to filter on.
-    //             exclusiveResult.push(...exclusiveContext.completions.filter((value: CompletionItem) => {
-    //                 return value.data === undefined
-    //             }))
-    //         }
-
-    //         if (exclusiveResult.length > 0) {
-    //             return {
-    //                 isIncomplete: false,
-    //                 items: CompletionItem.addSortText(this._sortMap, ...exclusiveResult)
-    //             }
-    //         }
-    //     }
-
-    //     const rootCompletions = this.commandSet.completionDepthMap.get(0)
-
-    //     if (rootCompletions === undefined || rootCompletions.length === 0) {
-    //         return
-    //     }
-
-    //     return {
-    //         isIncomplete: false,
-    //         items: CompletionItem.addSortText(this._sortMap, ...rootCompletions)
-    //     }
-    // }
-
-    // getSignatureHelp(cursor: Position): SignatureHelp | undefined {
-    //     const offset = this.document.offsetAt(cursor)
-
-    //     let signatureOffset = offset
-    //     if (!this.signatures.has(offset)) {
-    //         signatureOffset = this.fuzzySignatureOffsets.get(signatureOffset) || offset
-    //     }
-
-    //     const context = this.signatures.get(signatureOffset)
-
-    //     if (context === undefined) {
-    //         return
-    //     }
-
-    //     // Get the active parameter.
-    //     let activeParameter = 0
-    //     for (const parameter of context.parameters.values()) {
-    //         const startOffset = this.document.offsetAt(parameter.range.start)
-    //         const endOffset = this.document.offsetAt(parameter.range.end)
-
-    //         // If the cursor position falls within the parameter range.
-    //         if (offset >= startOffset && offset <= endOffset) {
-    //             activeParameter = parameter.index
-    //             break
-    //         }
-    //     }
-
-    //     return {
-    //         activeParameter,
-    //         activeSignature: 0,
-    //         signatures: context.signatures
-    //     }
-    // }
-
-    // registerCompletionTokens(tokens: Array<Token>): void {
-    //     if (tokens.length === 0) {
-    //         return
-    //     }
-
-    //     const resolvedTokens = ResolvedNamespace.create(tokens)
-    //     const depth = ResolvedNamespace.depth(resolvedTokens)
-
-    //     // Filter on any available completions at our current namespace depth.
-    //     const completions = (this.commandSet.completionDepthMap.get(depth) || []).filter(
-    //         (value: CompletionItem) => CompletionItem.namespaceMatch(resolvedTokens, value)
-    //     )
-
-    //     // Register any matching completions.
-    //     if (completions.length > 0) {
-    //         const stopOffset = tokens[tokens.length - 1].stop + 1
-
-    //         // If someone else hasn't already registered at this offset.
-    //         if (!this.exclusives.has(stopOffset)) {
-    //             this.registerExclusiveContext(stopOffset, {
-    //                 completions,
-    //                 text: TokenUtil.getString(...tokens)
-    //             })
-    //         }
-    //     }
-    // }
-
-    // registerExclusiveContext(offset: number, context: ExclusiveContext): void {
-    //     // Fuzz the exclusive offset range.
-    //     this.fuzzyOffsets.fuzz(this.document.getText(), offset)
-
-    //     // Add this new exclusive context.
-    //     this.exclusives.set(offset, context)
-    // }
-
-    // registerExclusiveEntries(entries: Array<[number, ExclusiveContext]>): void {
-    //     entries.forEach(([offset, context]: [number, ExclusiveContext]) => {
-    //         this.registerExclusiveContext(offset, context)
-    //     })
-    // }
-
-    // registerSignatureContext(offset: number, context: SignatureContext): void {
-    //     // Fuzz the signature offset range.
-    //     this.fuzzySignatureOffsets.fuzzRange(this.document, context.range)
-
-    //     // Add this new signature context starting at the stop offset of the open
-    //     // parenthesis.
-    //     this.signatures.set(offset, context)
-
-    //     // Fuzz parameters if they have completions and add them to the ExclusiveMap.
-    //     const allContent = this.document.getText()
-    //     context.parameters.forEach((value: ParameterContext, key: number) => {
-    //         // Continue if we don't have any completions
-    //         if (value.completions.length === 0) {
-    //             return
-    //         }
-
-    //         let text: string | undefined = this.document.getText(value.range).trim()
-    //         if (text.length === 0) {
-    //             text = undefined
-    //         }
-
-    //         this.fuzzyOffsets.fuzz(allContent, key)
-    //         this.exclusives.set(key, {
-    //             text,
-    //             completions: value.completions
-    //         })
-    //     })
-    // }
-
-    resolveCompletion(item: CompletionItem): CompletionItem {
-        // We cannot provide completion documentation if none exist
-        if (this.commandSet.completionDocs.size === 0) {
-            return item
-        }
-
-        // Only service a given item if its "documentation" property is undefined.
-        if (item.documentation === undefined) {
-            const docCallback = this.commandSet.completionDocs.get(CompletionItem.resolveNamespace(item))
-
-            // Nothing to do if no command documentation exists for this label.
-            if (docCallback === undefined) {
-                return item
-            }
-
-            item.documentation = docCallback(this.commandSet.specification)
-        }
-
-        return item
-    }
-
-    // update(changes: Array<TextDocumentContentChangeEvent>): void {
-    //     for (const change of changes) {
-    //         const text = TextDocument.applyEdits(
-    //             this.document,
-    //             [{
-    //                 newText: change.text,
-    //                 range: change.range
-    //             }]
-    //         )
-
-    //         this.document = TextDocument.create(
-    //             this.document.uri,
-    //             this.document.languageId,
-    //             this.document.version,
-    //             text
-    //         )
-    //     }
-
-    //     this.enteredStatementException = false
-    //     this.exceptionTokenIndex = undefined
-    //     this.errors = new Array()
-    //     this.exclusives = new Map()
-    //     this.fuzzyOffsets = new FuzzyOffsetMap()
-    //     this.fuzzySignatureOffsets = new FuzzyOffsetMap()
-    //     this.signatures = new Map()
-
-    //     this.inputStream = new InputStream(this.document.getText())
-
-    //     this.lexer.inputStream = this.inputStream
-    //     this.lexer.reset()
-
-    //     this.tokenStream.setTokenSource(this.lexer)
-    //     this.tokenStream.reset()
-
-    //     this.parser.setTokenStream(this.tokenStream)
-    //     this.parser.reset()
-    //     if (!this.parser.buildParseTrees) {
-    //         this.parser.buildParseTrees = true
-    //     }
-
-    //     this._enterStack = new Array()
-    //     this._stop = [-1, -1]
-    //     this.parseTree = this.parser.chunk()
-    // }
-
-    private addSymbol(newSymbol: DocumentSymbol): void {
-        const index = this.symbols.findIndex((value: DocumentSymbol) => value.within(newSymbol))
-
-        if (index === -1) {
-            this.symbols.push(newSymbol)
-            this.symbols.sort((a: DocumentSymbol, b: DocumentSymbol) => {
-                return Range.compare(a.range, b.range)
-            })
+            // Update data structures
+            siblings.push(child)
+            this.childCache.set(this.statementDepth, siblings)
         }
         else {
-            this.symbols[index].grow(newSymbol)
+            // Get the latest root statement
+            const root = this.symbols.pop()
+
+            // If the previous depth had children, then add them to this root.
+            if (this.childCache.has(previousDepth)) {
+                const children = this.childCache.get(previousDepth)
+                root.children = new Array(...children)
+            }
+            root.tokens = this.tokenStream.tokens.slice(
+                context.start.tokenIndex,
+                context.stop.tokenIndex + 1
+            )
+
+            // Update data structures
+            this.symbols.push(root)
         }
+
+        // Clear the cache at the previous depth
+        this.childCache.delete(previousDepth)
     }
 }
 

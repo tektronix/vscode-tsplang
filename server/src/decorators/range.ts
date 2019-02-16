@@ -83,21 +83,28 @@ export namespace Range {
 
     /**
      * Determine if the Position/Range lies within Range.
-     * @param value The Position/Range to check.
-     * @param range The Range to check.
+     * @param inner The Position/Range to check.
+     * @param outer The Range to check.
      * @returns True if Position/Range lies within Range and false otherwise.
      */
-    export function within(value: vsls.Position | Range | Token, range: Range): boolean {
-        if (Range.is(value)) {
-            return within(value.start, range) || within(value.end, range)
+    export function within(inner: vsls.Position | Range | Token, outer: Range): boolean {
+        if (Range.is(inner)) {
+            return within(inner.start, outer) && within(inner.end, outer)
         }
-        else if (value instanceof Token) {
-            return within(TokenUtil.getRange(value, value), range)
+        else if (inner instanceof Token) {
+            return within(TokenUtil.getRange(inner, inner), outer)
         }
 
-        // Within lower bound.
-        return ((value.character >= range.start.character && value.line >= range.start.line)
-            // And within upper bound.
-            && (value.character <= range.end.character && value.line <= range.end.line))
+        let start = inner.line > outer.start.line
+        if (!start && inner.line === outer.start.line) {
+            start = inner.character >= outer.start.character
+        }
+
+        let end = inner.line < outer.end.line
+        if (!end && inner.line === outer.end.line) {
+            end = inner.character <= outer.end.character
+        }
+
+        return start && end
     }
 }

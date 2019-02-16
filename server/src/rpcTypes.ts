@@ -32,11 +32,18 @@ import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
 
+export interface SymbolNotificationParams {
+    symbols: Array<DocumentSymbol>
+    uri: string
+}
+
 export const ChangeNotification = new NotificationType<Array<TextDocumentContentChangeEvent>, void>('ChangeNotification')
 
 export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, void>('ErrorNotification')
 
 export const SettingsNotification = new NotificationType<TsplangSettings, void>('SettingsNotification')
+
+export const SymbolNotification = new NotificationType<SymbolNotificationParams, void>('SymbolNotification')
 
 export const CompletionRequest = new RequestType<TextDocumentPositionParams, CompletionList | undefined, void, void>('CompletionRequest')
 
@@ -49,5 +56,3 @@ export interface ContextReply {
 export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')
 
 export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')
-
-export const SymbolRequest = new RequestType<undefined, Array<DocumentSymbol>, void, void>('SymbolRequest')

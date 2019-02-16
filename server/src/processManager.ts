@@ -48,7 +48,8 @@ import {
     ErrorNotification,
     SettingsNotification,
     SignatureRequest,
-    SymbolRequest
+    SymbolNotification,
+    SymbolNotificationParams
 } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
@@ -67,12 +68,18 @@ export class ProcessManager {
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
     lastCompletionUri?: string
+    /**
+     * Always lags behind the current state of the document by one
+     * document update.
+     */
+    readonly symbolCache: Map<string, Array<DocumentSymbol>>
 
     constructor(connection: IConnection) {
         this.children = new Map()
         this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
         this.globalSettings = TsplangSettings.defaults()
         this.hasWorkspaceSettings = false
+        this.symbolCache = new Map()
 
         this.connection = connection
     }
@@ -157,6 +164,9 @@ export class ProcessManager {
         child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
             this.connection.sendDiagnostics(value)
         })
+        child.connection.onNotification(SymbolNotification, (value: SymbolNotificationParams) => {
+            this.symbolCache.set(value.uri, value.symbols)
+        })
         child.connection.onRequest(ContextRequest, (uri: string): ContextReply => {
             return this.children.get(uri).init
         })
@@ -231,10 +241,8 @@ export class ProcessManager {
         return child.connection.sendRequest(SignatureRequest, params)
     }
 
-    async symbol(params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> {
-        const child = this.children.get(params.textDocument.uri)
-
-        return child.connection.sendRequest(SymbolRequest, undefined)
+    symbol(params: DocumentSymbolParams): Array<DocumentSymbol> {
+        return this.symbolCache.get(params.textDocument.uri) || []
     }
 
     /* Internal Methods */

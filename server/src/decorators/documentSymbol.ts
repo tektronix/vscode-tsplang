@@ -33,7 +33,10 @@ export class DocumentSymbol implements vsls.DocumentSymbol {
     name: string
     range: vsls.Range
     selectionRange: vsls.Range
+    readonly start: vsls.Position
 
+    private _end: vsls.Position
+    private _tokens: Array<Token>
     private enteredStatementException: boolean
     private exceptionTokenIndex?: number
     /**
@@ -50,49 +53,40 @@ export class DocumentSymbol implements vsls.DocumentSymbol {
      */
     private signatures: Map<number, SignatureContext>
     private readonly tableIndexRegexp: RegExp
-    private tokens: Array<Token>
 
-    constructor(tokens: Array<Token>) {
-        if (tokens.length === 0) {
-            throw Error('DocumentSymbol constructor received zero Tokens')
+    constructor(start: vsls.Position) {
+        this.start = start
+        this.kind = vsls.SymbolKind.Function
+    }
+
+    get end(): vsls.Position {
+        return this._end
+    }
+
+    set end(value: vsls.Position) {
+        this._end = value
+        this.range = {
+            end: this._end,
+            start: this.start
         }
-
-        // TODO: general statement checks here
-
-        // this.parseTokens(tokens)
-
-        this.detail = TokenUtil.getString(...tokens)
-        this.kind = vsls.SymbolKind.Module
-        this.name = tokens[0].text
-        this.range = TokenUtil.getRange(tokens[0], tokens[tokens.length - 1])
         this.selectionRange = this.range
     }
 
-    /**
-     * Add the given DocumentSymbol leaf to this object's tree.
-     */
-    grow(child: DocumentSymbol): void {
-        if (this.children) {
-            // Returns the index of the DocumentSymbol this child resides in,
-            // or -1 if the child is a direct child.
-            const index = this.children.findIndex((value: DocumentSymbol) => {
-                return Range.within(child.range, value.range)
-            })
+    get tokens(): Array<Token> {
+        return this._tokens
+    }
 
-            if (index === -1) {
-                this.children.push(child)
-                this.children.sort((a: DocumentSymbol, b: DocumentSymbol) => {
-                    return Range.compare(a.range, b.range)
-                })
-            }
-            else {
-                this.children[index].grow(child)
-            }
+    set tokens(value: Array<Token>) {
+        this._tokens = value.map((token: Token) => TokenUtil.lighten(token))
+
+        if (this.end === undefined) {
+            const lastToken = this._tokens[this._tokens.length - 1]
+            this.end = TokenUtil.getPosition(lastToken, lastToken.text.length)
         }
-        else {
-            this.children = new Array()
-            this.children.push(child)
-        }
+        this.detail = TokenUtil.getString(...value)
+        const last = value.length - 1
+        this.name = `(${this.range.start.line + 1},${this.range.start.character + 1})`
+        this.name += `->(${this.range.end.line + 1},${this.range.end.character + 1})`
     }
 
     within(symbol: DocumentSymbol): boolean {

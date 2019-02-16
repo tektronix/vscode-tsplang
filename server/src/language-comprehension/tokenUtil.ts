@@ -16,9 +16,16 @@
 'use strict'
 
 import { Token } from 'antlr4'
-import { Range } from 'vscode-languageserver'
+import { Position, Range } from 'vscode-languageserver'
 
 export namespace TokenUtil {
+    /**
+     * Compares the spacial properties of two Tokens to determine their equality.
+     */
+    export function equal(a: Token, b: Token): boolean {
+        return (a.start === b.start) && (a.stop === b.stop)
+    }
+
     /**
      * Get a string representing the given tokens or undefined if no Tokens were given.
      * @param tokens The Tokens whose text should comprise the string.
@@ -32,6 +39,20 @@ export namespace TokenUtil {
         }
 
         return result
+    }
+
+    /**
+     * Extract a Position from the given Token.
+     * @param token The target Token.
+     * @param offset An optional offset. Passing the text length of the given
+     * Token will produce that Token's ending Position.
+     * @returns The Position of the given Token.
+     */
+    export function getPosition(token: Token, offset: number = 0): Position {
+        return {
+            character: token.column + offset,
+            line: token.line - 1
+        }
     }
 
     export function getRange(start: Token, stop: Token): Range {
@@ -49,15 +70,22 @@ export namespace TokenUtil {
         }
         else {
             return {
-                end: {
-                    character: stop.column + stop.text.length,
-                    line: stop.line - 1
-                },
-                start: {
-                    character: start.column,
-                    line: start.line - 1
-                }
+                end: getPosition(stop, stop.text.length),
+                start: getPosition(start)
             }
         }
+    }
+
+    export function lighten(token: Token): Token {
+        const result = new Token()
+        result.column = token.column
+        result.line = token.line
+        result.start = token.start
+        result.stop = token.stop
+        result.text = token.text
+        result.tokenIndex = token.tokenIndex
+        result.type = token.type
+
+        return result
     }
 }

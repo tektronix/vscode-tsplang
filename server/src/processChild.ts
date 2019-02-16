@@ -19,6 +19,7 @@ import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
     Diagnostic,
+    DocumentSymbol as vslsDocumentSymbol,
     SignatureHelp,
     TextDocument,
     TextDocumentContentChangeEvent,
@@ -38,7 +39,7 @@ import {
     ErrorNotification,
     SettingsNotification,
     SignatureRequest,
-    SymbolRequest
+    SymbolNotification
 } from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
@@ -49,7 +50,8 @@ const connection = rpc.createMessageConnection(
 )
 console.log(`pid ${process.pid}: established connection`)
 
-let documentContext: Promise<DocumentContext>
+// let documentContext: Promise<DocumentContext>
+let documentContext: DocumentContext | undefined
 const firstlineRegExp = new RegExp(/^[^\n\r]*/)
 let instrument: Instrument
 let shebang: Shebang
@@ -88,10 +90,13 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     // proc.context.update(changes)
+
+    // Update the server-side symbol cache.
+    connection.sendNotification(SymbolNotification, { uri, symbols: documentContext.symbols })
 })
 
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
-    documentContext.then((value: DocumentContext) => value.settings = settings)
+    // documentContext.then((value: DocumentContext) => value.settings = settings)
 })
 
 connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {
@@ -103,9 +108,10 @@ connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): Co
 })
 
 connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Promise<CompletionItem> => {
-    const context = await documentContext
+    // const context = await documentContext
 
-    return context.resolveCompletion(item)
+    // return context.resolveCompletion(item)
+    return
 })
 
 connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): SignatureHelp | undefined => {
@@ -116,20 +122,16 @@ connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): Sig
     return
 })
 
-connection.onRequest(SymbolRequest, async (): Promise<Array<DocumentSymbol>> => {
-    const context = await documentContext
-
-    return context.symbols
-})
-
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
+
+/* Process Child Initialization */
 
 if (process.env.TSPLANG_DEBUG) {
     // Give dev time to attach to this document before continuing.
     const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, uri)
     // tslint:disable-next-line:no-magic-numbers
-    setTimeout(() => contextRequest.then(onContextReply), 0)
+    setTimeout(() => contextRequest.then(onContextReply), 10000)
 }
 else {
     connection.sendRequest(ContextRequest, uri).then(onContextReply)
@@ -146,13 +148,13 @@ function onContextReply(contextReply: ContextReply): void {
     [instrument, loadDiagnostics] = load(shebang)
 
     // Create the context for this document.
-    const context = new DocumentContext(contextReply.item, instrument.set, contextReply.settings)
-    documentContext = new Promise<DocumentContext>(((): DocumentContext => {
-        return context
-    }))
+    documentContext = new DocumentContext(contextReply.item, instrument.set, contextReply.settings)
+
+    // Update the server-side symbol cache.
+    connection.sendNotification(SymbolNotification, { uri, symbols: documentContext.symbols })
 
     // Collect all diagnostics.
-    diagnostics.push(...loadDiagnostics) // , ...proc.context.outline.diagnostics)
+    diagnostics.push(...loadDiagnostics)
 
     connection.sendNotification(ErrorNotification, { diagnostics, uri })
 }
