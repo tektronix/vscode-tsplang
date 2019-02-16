@@ -123,56 +123,54 @@ export class ProcessManager {
 
     documentOpen(params: DidOpenTextDocumentParams): void {
         // Register this document with global settings.
-        let settings = this.globalSettings
+        const settings = this.globalSettings
+
+        const create = function(initialSettings: TsplangSettings): void {
+            const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
+                // tslint:disable-next-line:no-magic-numbers
+                execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
+                stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
+            })
+
+            const connection = rpc.createMessageConnection(
+                new rpc.IPCMessageReader(proc),
+                new rpc.IPCMessageWriter(proc)
+            )
+
+            const child: Child = {
+                connection,
+                proc,
+                init: {
+                    item: params.textDocument,
+                    settings: initialSettings
+                }
+            }
+
+            this.children.set(params.textDocument.uri, child)
+
+            child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
+                this.connection.sendDiagnostics(value)
+            })
+            child.connection.onNotification(SymbolNotification, (value: SymbolNotificationParams) => {
+                this.symbolCache.set(value.uri, value.symbols)
+            })
+            child.connection.onRequest(ContextRequest, (uri: string): ContextReply => {
+                return this.children.get(uri).init
+            })
+
+            connection.trace(rpc.Trace.Messages, console)
+            child.connection.listen()
+        }
 
         // Override global settings with any workspace settings.
-        if (this.hasWorkspaceSettings) {
-            this.connection.workspace.getConfiguration({
-                scopeUri: params.textDocument.uri,
-                section: 'tsplang'
-            })
-            .then(
-                (value: TsplangSettings) => {
-                    settings = value
-                },
-                () => { return }
-            )
-        }
-
-        const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
-            // tslint:disable-next-line:no-magic-numbers
-            execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
-            stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
+        this.connection.workspace.getConfiguration({
+            scopeUri: params.textDocument.uri,
+            section: 'tsplang'
         })
-
-        const connection = rpc.createMessageConnection(
-            new rpc.IPCMessageReader(proc),
-            new rpc.IPCMessageWriter(proc)
+        .then(
+            create.bind(this),
+            () => { create.bind(this)(settings) }
         )
-
-        const child: Child = {
-            connection,
-            proc,
-            init: {
-                settings,
-                item: params.textDocument
-            }
-        }
-
-        this.children.set(params.textDocument.uri, child)
-
-        child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
-            this.connection.sendDiagnostics(value)
-        })
-        child.connection.onNotification(SymbolNotification, (value: SymbolNotificationParams) => {
-            this.symbolCache.set(value.uri, value.symbols)
-        })
-        child.connection.onRequest(ContextRequest, (uri: string): ContextReply => {
-            return this.children.get(uri).init
-        })
-
-        connection.trace(rpc.Trace.Messages, console)
-        child.connection.listen()
     }
 
     initialize(params: InitializeParams): InitializeResult {
