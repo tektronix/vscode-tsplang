@@ -146,6 +146,17 @@ namespace Buffer {
 
     export const buffer: ApiSpec = {
         children: [
+            {
+                label: 'buffer.channelmath',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [1, bufferEnumUnit ],
+                            [3, bufferEnumExpr ],
+                        ]),
+                    }
+                ]
+            },
             { label: 'buffer.clearstats' },
             { label: 'buffer.delete' },
             { label: 'buffer.getstats' },
@@ -186,6 +197,16 @@ namespace Buffer {
                     {
                         parameters: new Map([
                             [ 2, bufferEnumSave ],
+                        ]),
+                    }
+                ]
+            },
+            {
+                label: 'buffer.unit',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 0, bufferEnumUnit ],
                         ]),
                     }
                 ]

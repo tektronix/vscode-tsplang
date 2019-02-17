@@ -25,13 +25,24 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nbufferVar.capacity\n```\n\
+            value: '```lua\nbufferVar.capacity\n```\n\nbufferVar.capacity -> {number, ...}\n\
 \n\
 Get or set how many readings a buffer can store. Changing the size of a buffer will cause existing buffer data to be \
 lost.'
         },
         kind: CompletionItemKind.Property,
         label: 'capacity',
+    },
+    {
+        data: { domains: ['bufferVar'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '```lua\nbufferVar.channels\n```\n\nbufferVar.channels -> {string, ...}\n\
+\n\
+Returns, as an array, a string containing the channel numbers that produced the readings stored in the reading buffer.'
+        },
+        kind: CompletionItemKind.Property,
+        label: 'channels',
     },
     {
         data: { domains: ['bufferVar'] },
@@ -69,6 +80,47 @@ Returns the ending index of the buffer.'
         },
         kind: CompletionItemKind.Constant,
         label: 'endindex',
+    },
+    {
+        data: { domains: ['bufferVar'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '```lua\nbufferVar.extravalues\n```\n\nbufferVar.extravalues -> number\n\
+\n\
+Returns the additional values in a reading buffer\'s Extra column such as used by the DC voltage ratio function.\n\
+\n\
+The reading buffer must be set to buffer.STYLE_FULL to use this option.'
+        },
+        kind: CompletionItemKind.Constant,
+        label: 'extravalues',
+    },
+    {
+        data: { domains: ['bufferVar'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '```lua\nbufferVar.extraformattedvalues\n```\n\nbufferVar.extraformattedvalues -> string\n\
+\n\
+Returns the measurement and the unit of measure of the additional values in a reading buffer\'s Extra column \
+such as used by the DC voltage ratio function.\n\
+\n\
+The reading buffer must be set to buffer.STYLE_FULL to use this option.'
+        },
+        kind: CompletionItemKind.Constant,
+        label: 'extraformattedvalues',
+    },
+    {
+        data: { domains: ['bufferVar'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '```lua\nbufferVar.extravalueunits\n```\n\nbufferVar.extravalueunits -> string\n\
+\n\
+Returns the unit of measure of the additional values in a reading buffer\'s Extra column \
+such as used by the DC voltage ratio function.\n\
+\n\
+The reading buffer must be set to buffer.STYLE_FULL to use this option.'
+        },
+        kind: CompletionItemKind.Constant,
+        label: 'extravalueunits',
     },
     {
         data: { domains: ['bufferVar'] },

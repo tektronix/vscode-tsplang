@@ -70,7 +70,7 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.PlainText,
-            value: 'r+a \nWhere r is the current reading and a is the previous reading.'
+            value: 'r + a \nWhere r is the current reading and a is the previous reading.'
         },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
@@ -458,7 +458,7 @@ timestamp of the current reading, ta is the timestamp of the previous reading.'
         data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.PlainText,
-            value: 'Defined by buffer.unit()'
+            value: 'Defined by buffer.unit(), default X'
         },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
@@ -468,7 +468,7 @@ timestamp of the current reading, ta is the timestamp of the previous reading.'
         data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.PlainText,
-            value: 'Defined by buffer.unit()'
+            value: 'Defined by buffer.unit(), default Y'
         },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
@@ -478,7 +478,7 @@ timestamp of the current reading, ta is the timestamp of the previous reading.'
         data: { domains: ['buffer'] },
         documentation: {
             kind: MarkupKind.PlainText,
-            value: 'Defined by buffer.unit()'
+            value: 'Defined by buffer.unit(), default Z'
         },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
