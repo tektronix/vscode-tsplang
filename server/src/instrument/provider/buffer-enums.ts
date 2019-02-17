@@ -58,6 +58,138 @@ export const completions: Array<CompletionItem> = [
     },
     {
         data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Removes any previously applied expressions.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_NONE'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'r+a \nWhere r is the current reading and a is the previous reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_ADD'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: '(r + a) / 2 \nWhere r is the current reading and a is the previous reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_AVERAGE'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'r / a \nWhere r is the current reading and a is the previous reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_DIVIDE'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: '10^r \nWhere r is the current reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_EXPONENT'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'log_10(r) \nWhere r is the current reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_LOG10'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'r * a \nWhere r is the current reading and a is the previous reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_MULTIPLY'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'c0 [+ c1*r] [+ c2*r^2] [+ c3*r^3] [+ c4*r^4] [+ c5*r^5] \nWhere r is the current reading and \
+c# are constants given in this function. '
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_POLY'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'r^c \nWhere r is the current reading and c is a constant given in this function.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_POWER'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: '(r - a) / (tr - ta) \nWhere r is the current reading and a is the previous reading. tr is the \
+timestamp of the current reading, ta is the timestamp of the previous reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_RATE'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: '1 / r \nWhere r is the current reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_RECIPROCAL'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'math.sqrt(r) \nWhere r is the current reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_SQROOT'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'r - a \nWhere r is the current reading and a is the previous reading.'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'EXPR_SUBTRACT'
+    },
+    {
+        data: { domains: ['buffer'] },
         detail: 'buffer.FILL_CONTINUOUS: 1',
         kind: CompletionItemKind.EnumMember,
         label: 'FILL_CONTINUOUS'
@@ -324,9 +456,69 @@ export const completions: Array<CompletionItem> = [
     },
     {
         data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Defined by buffer.unit()'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_CUSTOM1'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Defined by buffer.unit()'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_CUSTOM2'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Defined by buffer.unit()'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_CUSTOM3'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'DAC (voltage)'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_DAC'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Decibel-milliwatts'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_DBM'
+    },
+    {
+        data: { domains: ['buffer'] },
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'UNIT_DECIBEL'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Digital I/O'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_DIO'
     },
     {
         data: { domains: ['buffer'] },
@@ -387,6 +579,16 @@ export const completions: Array<CompletionItem> = [
         exclusive: true,
         kind: CompletionItemKind.EnumMember,
         label: 'UNIT_SECOND'
+    },
+    {
+        data: { domains: ['buffer'] },
+        documentation: {
+            kind: MarkupKind.PlainText,
+            value: 'Totalizer'
+        },
+        exclusive: true,
+        kind: CompletionItemKind.EnumMember,
+        label: 'UNIT_TOT'
     },
     {
         data: { domains: ['buffer'] },

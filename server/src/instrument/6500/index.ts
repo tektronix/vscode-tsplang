@@ -34,6 +34,21 @@ namespace Buffer {
         { label: 'buffer.DIGITS_7_5' },
         { label: 'buffer.DIGITS_8_5' },
     ]
+    const bufferEnumExpr: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'buffer.EXPR_NONE' },
+        { label: 'buffer.EXPR_ADD' },
+        { label: 'buffer.EXPR_AVERAGE' },
+        { label: 'buffer.EXPR_DIVIDE' },
+        { label: 'buffer.EXPR_EXPONENT' },
+        { label: 'buffer.EXPR_LOG10' },
+        { label: 'buffer.EXPR_MULTIPLY' },
+        { label: 'buffer.EXPR_POLY' },
+        { label: 'buffer.EXPR_POWER' },
+        { label: 'buffer.EXPR_RATE' },
+        { label: 'buffer.EXPR_RECIPROCAL' },
+        { label: 'buffer.EXPR_SQROOT' },
+        { label: 'buffer.EXPR_SUBTRACT' },
+    ]
     const bufferEnumSave: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.SAVE_FORMAT_TIME' },
         { label: 'buffer.SAVE_RAW_TIME' },
@@ -69,7 +84,13 @@ namespace Buffer {
         { label: 'buffer.UNIT_AMP' },
         { label: 'buffer.UNIT_AMP_AC' },
         { label: 'buffer.UNIT_CELSIUS' },
+        { label: 'buffer.UNIT_CUSTOM1'},
+        { label: 'buffer.UNIT_CUSTOM2'},
+        { label: 'buffer.UNIT_CUSTOM3'},
+        { label: 'buffer.UNIT_DAC' },
+        { label: 'buffer.UNIT_DBM' },
         { label: 'buffer.UNIT_DECIBEL' },
+        { label: 'buffer.UNIT_DIO' },
         { label: 'buffer.UNIT_FAHRENHEIT' },
         { label: 'buffer.UNIT_FARAD' },
         { label: 'buffer.UNIT_HERTZ' },
@@ -80,6 +101,7 @@ namespace Buffer {
         { label: 'buffer.UNIT_RATIO' },
         { label: 'buffer.UNIT_RECIPROCAL' },
         { label: 'buffer.UNIT_SECOND' },
+        { label: 'buffer.UNIT_TOT' },
         { label: 'buffer.UNIT_VOLT' },
         { label: 'buffer.UNIT_VOLT_AC' },
         { label: 'buffer.UNIT_WATT' },
@@ -138,6 +160,17 @@ namespace Buffer {
                 ]
             },
             {
+                label: 'buffer.math',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, bufferEnumUnit ],
+                            [ 2, bufferEnumExpr ],
+                        ]),
+                    }
+                ]
+            },
+            {
                 label: 'buffer.save',
                 signatureExclusives: [
                     {
@@ -160,6 +193,7 @@ namespace Buffer {
         ],
         enums: [
             ...bufferEnumDigits,
+            ...bufferEnumExpr,
             { label: 'buffer.FILL_CONTINUOUS' },
             { label: 'buffer.FILL_ONCE' },
             { label: 'buffer.OFF' },
