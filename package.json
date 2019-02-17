@@ -50,6 +50,11 @@
         "configuration": {
             "title": "TSPLang",
             "properties": {
+                "tsplang.debug.outline": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show all parsed statements in the Outline view."
+                },
                 "tsplang.debug.print.rootStatementParseTime": {
                     "type": "boolean",
                     "default": false,

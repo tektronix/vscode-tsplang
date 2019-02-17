@@ -20,6 +20,78 @@ import { Position, Range } from 'vscode-languageserver'
 
 export namespace TokenUtil {
     /**
+     * Checks if the Token has the possibility of closing pair according to TSP syntax.
+     * @param token The Token to check.
+     * @returns True if the Token a member of a syntactic Token pair and false otherwise.
+     */
+    export function consumable(token: Token): boolean {
+        return (token.text.localeCompare('(') === 0
+            || token.text.localeCompare('[') === 0
+            || token.text.localeCompare('{') === 0)
+    }
+
+    /**
+     * Advances the given index to the index of its pairing token.
+     * @param index The index of the pair-able Token.
+     * @param tokens An array of source Tokens.
+     * @returns The index of the pairing Token or the original index if a partner character was not found before
+     * the end of the given token array or if the given token is not pairable.
+     * @throws If the given index is greater than the list of tokens.
+     */
+    export function consumePair(index: number, tokens: Array<Token>): number {
+        if (index > tokens.length) {
+            throw new Error(`Index ${index} is greater than the length of the given array (${tokens.length}).`)
+        }
+
+        const openingToken = tokens[index]
+
+        if (!consumable(openingToken)) {
+            return index
+        }
+
+        let currentIndex = index + 1
+        for (; currentIndex < tokens.length; currentIndex++) {
+            const currentToken = tokens[currentIndex]
+
+            if (partners(openingToken, currentToken)) {
+                break
+            }
+
+            if (consumable(currentToken)) {
+                currentIndex = consumePair(currentIndex, tokens)
+            }
+        }
+
+        return (currentIndex === tokens.length) ? index : currentIndex
+    }
+
+    /**
+     * Advances the given index until the predicate is true.
+     * @param index The starting index.
+     * @param tokens An array of source Tokens.
+     * @param predicate A callback that returns true when the target token has been reached and false otherwise.
+     * @returns The target index or the original index if the first token matches the predicate or if the predicate
+     * did not return true before the end of the given token array.
+     * @throws If the given index is greater than the list of tokens.
+     */
+    export function consumeUntil(index: number, tokens: Array<Token>, predicate: (value: Token) => boolean): number {
+        if (index > tokens.length) {
+            throw new Error(`Index ${index} is greater than the length of the given array (${tokens.length}).`)
+        }
+
+        let currentIndex = index
+        for (; currentIndex < tokens.length; currentIndex++) {
+            if (predicate(tokens[currentIndex])) {
+                break
+            }
+
+            currentIndex = consumePair(currentIndex, tokens)
+        }
+
+        return (currentIndex === tokens.length) ? index : currentIndex
+    }
+
+    /**
      * Compares the spacial properties of two Tokens to determine their equality.
      */
     export function equal(a: Token, b: Token): boolean {
@@ -76,11 +148,15 @@ export namespace TokenUtil {
         }
     }
 
-    export function lighten(token: Token): Token {
-        // The default Token.source value is null.
-        // tslint:disable-next-line:no-null-keyword
-        token.source = null
-
-        return token
+    /**
+     * Determines if the two Tokens form a pair.
+     * @param single The consumable Token that needs a partner.
+     * @param suitor A potential Token partner.
+     * @returns True when the Tokens form a pair and false otherwise.
+     */
+    function partners(single: Token, suitor: Token): boolean {
+        return ((single.text.localeCompare('(') === 0 && suitor.text.localeCompare(')') === 0)
+            || (single.text.localeCompare('[') === 0 && suitor.text.localeCompare(']') === 0)
+            || (single.text.localeCompare('{') === 0 && suitor.text.localeCompare('}') === 0))
     }
 }

@@ -19,26 +19,31 @@ import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4
 import * as vsls from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastParser } from '../antlr4-tsplang'
-import { TokenUtil } from '../language-comprehension'
+import { Ambiguity, LocalDeclaration, statementRecognizer, StatementType, TokenUtil } from '../language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from '../language-comprehension/exclusive-completion'
 import { SignatureContext } from '../language-comprehension/signature'
 
+import { IToken } from '.'
 // tslint:disable-next-line:no-import-side-effect
 import './antlr4'
 import { Range } from './range'
 
-export class DocumentSymbol implements vsls.DocumentSymbol {
+export interface IDocumentSymbol extends vsls.DocumentSymbol {
+    local: boolean
+}
+export class DocumentSymbol implements IDocumentSymbol {
     children?: Array<DocumentSymbol>
     deprecated?: boolean
     detail?: string
     kind: vsls.SymbolKind
+    local: boolean = false
     name: string
     range: vsls.Range
     selectionRange: vsls.Range
     readonly start: vsls.Position
+    tokens?: Array<IToken>
 
     private _end: vsls.Position
-    private _tokens: Array<Token>
     private enteredStatementException: boolean
     private exceptionTokenIndex?: number
     /**
@@ -58,7 +63,6 @@ export class DocumentSymbol implements vsls.DocumentSymbol {
 
     constructor(start: vsls.Position) {
         this.start = start
-        this.kind = vsls.SymbolKind.Function
     }
 
     get end(): vsls.Position {
@@ -71,24 +75,136 @@ export class DocumentSymbol implements vsls.DocumentSymbol {
             end: this._end,
             start: this.start
         }
-        this.selectionRange = this.range
+
+        if (this.selectionRange === undefined) {
+            this.selectionRange = this.range
+        }
     }
 
-    get tokens(): Array<Token> {
-        return this._tokens
+    /**
+     * Remove children that cause the given predicate to return true.
+     */
+    prune(predicate: (value: DocumentSymbol) => boolean): IDocumentSymbol {
+        const clone: IDocumentSymbol = {
+            children: new Array(),
+            deprecated: this.deprecated,
+            detail: this.detail,
+            kind: this.kind,
+            local: this.local,
+            name: this.name,
+            range: this.range,
+            selectionRange: this.selectionRange
+        }
+
+        for (let i = 0; i < (this.children || []).length; i++) {
+            const child = this.children[i].prune(predicate)
+
+            if (predicate(child as DocumentSymbol)) {
+                // Extract pruned grandchildren that aren't local declarations.
+                const orphans = (child.children || []).filter((v: IDocumentSymbol) => !v.local)
+                clone.children.push(...orphans)
+            }
+            else {
+                clone.children.push(child)
+            }
+        }
+
+        return clone
     }
 
-    set tokens(value: Array<Token>) {
-        this._tokens = value.map((token: Token) => TokenUtil.lighten(token))
+    setSymbolProperties(tokens: Array<Token>): void {
+        const type = statementRecognizer(tokens)
+        let startSelectionPosition: vsls.Position
+        let endSelectionPosition: vsls.Position
+
+        // If we had trouble determining the StatementType from the provided Tokens.
+        if (Ambiguity.is(type)) {
+            if (Ambiguity.equal(type as Ambiguity, Ambiguity.FLOATING_TOKEN)) {
+                let isAssignment = false
+                let isProperty = false
+                let foundComma = false
+                // Try to find the location of an assignment operator ("="),
+                // except for those within consumable pairs.
+                let i = 0
+                for (; i < tokens.length; i++) {
+                    i = TokenUtil.consumePair(i, tokens)
+
+                    if (tokens[i].text.localeCompare('.') === 0) {
+                        isProperty = true
+                    }
+                    else if (tokens[i].text.localeCompare(',') === 0) {
+                        foundComma = true
+                    }
+                    else if (tokens[i].text.localeCompare('=') === 0) {
+                        isAssignment = true
+                        endSelectionPosition = TokenUtil.getPosition(tokens[i - 1], tokens[i - 1].text.length)
+                        this.name = TokenUtil.getString(...tokens.slice(0, i))
+
+                        break
+                    }
+                }
+
+                this.kind = (isAssignment)
+                    ? (isProperty && !foundComma) ? vsls.SymbolKind.Property : vsls.SymbolKind.Variable
+                    : vsls.SymbolKind.File
+
+                this.tokens = tokens.map((value: Token) => IToken.create(value))
+            }
+            else if (Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL)) {
+                this.kind = vsls.SymbolKind.File
+                this.local = true
+            }
+        }
+        else {
+            this.kind = StatementType.toSymbolKind(type as StatementType) || vsls.SymbolKind.File
+            this.local = LocalDeclaration.is(type as StatementType)
+        }
+
+        if (this.kind !== vsls.SymbolKind.File) {
+            this.detail = (this.local) ? 'local' : 'global'
+
+            let lastNameIndexPredicate: (t: Token) => boolean
+            if (this.kind === vsls.SymbolKind.Function) {
+                lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('(') === 0
+            }
+            else if (type === StatementType.AssignmentLocal) {
+                lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('=') === 0
+            }
+
+            if (lastNameIndexPredicate !== undefined) {
+                let lastNameIndex = TokenUtil.consumeUntil(1, tokens, lastNameIndexPredicate)
+                if (lastNameIndex === 1) {
+                    lastNameIndex = tokens.length
+                }
+                endSelectionPosition = TokenUtil.getPosition(
+                    tokens[lastNameIndex - 1],
+                    tokens[lastNameIndex - 1].text.length
+                )
+                startSelectionPosition = TokenUtil.getPosition(tokens[0])
+
+                this.name = TokenUtil.getString(...tokens.slice(1, lastNameIndex))
+            }
+        }
 
         if (this.end === undefined) {
-            const lastToken = this._tokens[this._tokens.length - 1]
-            this.end = TokenUtil.getPosition(lastToken, lastToken.text.length)
+            const lastIndex = tokens.length - 1
+            this.end = TokenUtil.getPosition(tokens[lastIndex], tokens[lastIndex].text.length)
+
+            this.selectionRange = {
+                end: endSelectionPosition || this.end,
+                start: startSelectionPosition || this.start
+            }
         }
-        this.detail = TokenUtil.getString(...value)
-        const last = value.length - 1
-        this.name = `(${this.range.start.line + 1},${this.range.start.character + 1})`
-        this.name += `->(${this.range.end.line + 1},${this.range.end.character + 1})`
+
+        if (this.detail === undefined) {
+            // tslint:disable-next-line:no-magic-numbers
+            this.detail = TokenUtil.getString(...tokens.slice(0, 10))
+        }
+
+        if (this.name === undefined) {
+            this.name = `(${this.range.start.line + 1},${this.range.start.character + 1})`
+            this.name += `->(${this.range.end.line + 1},${this.range.end.character + 1})`
+        }
     }
 
     within(symbol: DocumentSymbol): boolean {

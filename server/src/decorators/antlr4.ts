@@ -49,3 +49,26 @@ Token.makeStringArray = function(...tokens: Array<Token>): Array<string> {
 
     return result
 }
+
+export interface IToken {
+    column: number
+    line: number
+    start: number
+    stop: number
+    text: string
+    tokenIndex: number
+    type: number
+}
+export namespace IToken {
+    export function create(value: Token): IToken {
+        return {
+            column: value.column,
+            line: value.line,
+            start: value.start,
+            stop: value.stop,
+            text: value.text,
+            tokenIndex: value.tokenIndex,
+            type: value.type
+        }
+    }
+}

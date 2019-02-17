@@ -27,6 +27,7 @@ import {
     Diagnostic,
     Position,
     SignatureHelp,
+    SymbolKind,
     TextDocument,
     TextDocumentContentChangeEvent,
     TextDocumentItem
@@ -101,10 +102,10 @@ export class DocumentContext extends TspFastListener {
     // ranges: Array<Range>
     // statements: WeakMap<Range, TspFastParser.StatementContext>
     exceptionTokenIndex?: number
-    symbols: Array<DocumentSymbol>
 
     private _settings: TsplangSettings
     private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
+    private _symbols: Array<DocumentSymbol>
     private childCache: Map<number, Array<DocumentSymbol>>
     // private enteredStatementException: boolean
     // /**
@@ -119,6 +120,7 @@ export class DocumentContext extends TspFastListener {
     private inputStream: InputStream
     private lexer: TspFastLexer
     private parser: TspFastParser
+    private prunePredicate = (value: DocumentSymbol): boolean => value.kind === SymbolKind.File
     // private parseTree: ParserRuleContext
     // /**
     //  * A Map keyed to the ending offset of a function call's open parenthesis.
@@ -151,7 +153,7 @@ export class DocumentContext extends TspFastListener {
         // this.signatures = new Map()
 
         this.exceptionRanges = new Array()
-        this.symbols = new Array()
+        this._symbols = new Array()
         this.childCache = new Map()
         this.timer = new DebugTimer()
 
@@ -174,6 +176,28 @@ export class DocumentContext extends TspFastListener {
     set settings(value: TsplangSettings) {
         this._settings = value
         this._sortMap = TsplangSettings.sortMap(this._settings)
+    }
+
+    get symbols(): Array<DocumentSymbol> {
+        if (this.settings.debug.outline) {
+            return this._symbols
+        }
+        else {
+            const prunedSymbols = new Array<DocumentSymbol>()
+            for (const symbol of this._symbols) {
+                if (this.prunePredicate(symbol)) {
+                    // Extract pruned grandchildren that aren't local declarations.
+                    const orphans = (symbol.prune(this.prunePredicate).children as Array<DocumentSymbol>)
+                        .filter((value: DocumentSymbol) => !value.local)
+                    prunedSymbols.push(...orphans)
+                }
+                else {
+                    prunedSymbols.push(symbol.prune(this.prunePredicate) as DocumentSymbol)
+                }
+            }
+
+            return prunedSymbols
+        }
     }
 
     enterChunk(): void {
@@ -207,7 +231,7 @@ export class DocumentContext extends TspFastListener {
         //     return
         // }
         if (context.parentCtx instanceof TspFastParser.ChunkContext) {
-            this.symbols.push(new DocumentSymbol(TokenUtil.getPosition(context.start)))
+            this._symbols.push(new DocumentSymbol(TokenUtil.getPosition(context.start)))
         }
         else {
             const siblings = this.childCache.get(this.statementDepth) || []
@@ -235,6 +259,7 @@ export class DocumentContext extends TspFastListener {
                     context.start.column,
                     this.timer.stop()
                 ))
+
                 if (this.settings.debug.print.rootStatementParseTree) {
                     const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
                     console.info(tree)
@@ -278,10 +303,10 @@ export class DocumentContext extends TspFastListener {
                 child.children = new Array(...children)
             }
             // Get all relevant Tokens for this child.
-            child.tokens = this.tokenStream.tokens.slice(
+            child.setSymbolProperties(this.tokenStream.tokens.slice(
                 context.start.tokenIndex,
                 context.stop.tokenIndex + 1
-            )
+            ))
 
             // Update data structures
             siblings.push(child)
@@ -289,20 +314,20 @@ export class DocumentContext extends TspFastListener {
         }
         else {
             // Get the latest root statement
-            const root = this.symbols.pop()
+            const root = this._symbols.pop()
 
             // If the previous depth had children, then add them to this root.
             if (this.childCache.has(previousDepth)) {
                 const children = this.childCache.get(previousDepth)
                 root.children = new Array(...children)
             }
-            root.tokens = this.tokenStream.tokens.slice(
+            root.setSymbolProperties(this.tokenStream.tokens.slice(
                 context.start.tokenIndex,
                 context.stop.tokenIndex + 1
-            )
+            ))
 
             // Update data structures
-            this.symbols.push(root)
+            this._symbols.push(root)
         }
 
         // Clear the cache at the previous depth

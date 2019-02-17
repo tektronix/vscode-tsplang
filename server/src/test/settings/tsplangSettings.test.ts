@@ -26,6 +26,7 @@ describe('Settings', () => {
     describe('TsplangSettings', () => {
         const defaultSettings: TsplangSettings = {
             debug: {
+                outline: false,
                 print: {
                     rootStatementParseTime: false,
                     rootStatementParseTree: false
@@ -50,6 +51,7 @@ describe('Settings', () => {
                 [
                     {
                         debug: {
+                            outline: false,
                             print: {
                                 rootStatementParseTime: false,
                                 rootStatementParseTree: false

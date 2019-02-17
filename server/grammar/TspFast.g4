@@ -95,7 +95,8 @@ expression
     ;
 
 prefix
-    : '(' expression ')' | NAME
+    : '(' expression ')'
+    | NAME
     ;
 
 suffix

@@ -96,7 +96,12 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
 })
 
 connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
-    // documentContext.then((value: DocumentContext) => value.settings = settings)
+    if (documentContext) {
+        documentContext.settings = settings
+
+        // Update the server-side symbol cache.
+        connection.sendNotification(SymbolNotification, { uri, symbols: documentContext.symbols })
+    }
 })
 
 connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {

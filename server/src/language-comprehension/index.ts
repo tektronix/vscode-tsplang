@@ -15,4 +15,5 @@
  */
 'use strict'
 
+export { Ambiguity, GlobalDeclaration, LocalDeclaration, StatementType, statementRecognizer } from './recognizer'
 export { TokenUtil } from './tokenUtil'

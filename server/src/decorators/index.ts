@@ -15,9 +15,10 @@
  */
 'use strict'
 
+export { IToken } from './antlr4'
 export { BaseItem } from './baseItem'
 export { CompletionItemData, CompletionItem } from './completionItem'
-export { DocumentSymbol } from './documentSymbol'
+export { DocumentSymbol, IDocumentSymbol } from './documentSymbol'
 export { MarkupContent, MarkupContentCallback } from './markupContent'
 export { ParameterInformation } from './parameterInformation'
 export { Range } from './range'

@@ -21,6 +21,7 @@ import { SuggestionSortKind } from './suggestionSortKind'
 
 export interface TsplangSettings {
     debug: {
+        outline: boolean;
         print: {
             rootStatementParseTime: boolean;
             rootStatementParseTree: boolean;
@@ -38,6 +39,7 @@ export namespace TsplangSettings {
     export function defaults(): TsplangSettings {
         return {
             debug: {
+                outline: false,
                 print: {
                     rootStatementParseTime: false,
                     rootStatementParseTree: false
