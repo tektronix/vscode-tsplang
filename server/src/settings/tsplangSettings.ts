@@ -27,6 +27,9 @@ export interface TsplangSettings {
             rootStatementParseTree: boolean;
         };
     }
+    outline: {
+        showInstrumentSettings: boolean;
+    }
     suggestions: {
         enumerationOrder: SuggestionSortKind;
     }
@@ -44,6 +47,9 @@ export namespace TsplangSettings {
                     rootStatementParseTime: false,
                     rootStatementParseTree: false
                 }
+            },
+            outline: {
+                showInstrumentSettings: false
             },
             suggestions: {
                 enumerationOrder: SuggestionSortKind.INLINE

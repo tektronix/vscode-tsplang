@@ -65,6 +65,11 @@
                     "default": false,
                     "description": "Print the parse tree of each root statement."
                 },
+                "tsplang.outline.showInstrumentSettings": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show instrument setting assignments in the Outline view."
+                },
                 "tsplang.suggestions.enumerationOrder": {
                     "type": "string",
                     "enum": [

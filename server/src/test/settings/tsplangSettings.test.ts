@@ -32,6 +32,9 @@ describe('Settings', () => {
                     rootStatementParseTree: false
                 }
             },
+            outline: {
+                showInstrumentSettings: false
+            },
             suggestions: {
                 enumerationOrder: SuggestionSortKind.INLINE
             }
@@ -56,6 +59,9 @@ describe('Settings', () => {
                                 rootStatementParseTime: false,
                                 rootStatementParseTree: false
                             }
+                        },
+                        outline: {
+                            showInstrumentSettings: false
                         },
                         suggestions: {
                             enumerationOrder: SuggestionSortKind.INLINE
