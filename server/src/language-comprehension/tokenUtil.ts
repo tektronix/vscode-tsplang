@@ -85,8 +85,10 @@ export namespace TokenUtil {
      * @throws If the given index is greater than the list of tokens.
      */
     export function consumePair(index: number, tokens: Array<Token>): number {
-        if (index > tokens.length) {
-            throw new Error(`Index ${index} is greater than the length of the given array (${tokens.length}).`)
+        if (index >= tokens.length) {
+            throw new Error(
+                `Zero-based index ${index} is greater than the length of the given array (${tokens.length}).`
+            )
         }
 
         const openingToken = tokens[index]
@@ -121,8 +123,10 @@ export namespace TokenUtil {
      * @throws If the given index is greater than the list of tokens.
      */
     export function consumeUntil(index: number, tokens: Array<Token>, predicate: (value: Token) => boolean): number {
-        if (index > tokens.length) {
-            throw new Error(`Index ${index} is greater than the length of the given array (${tokens.length}).`)
+        if (index >= tokens.length) {
+            throw new Error(
+                `Zero-based index ${index} is greater than the length of the given array (${tokens.length}).`
+            )
         }
 
         let currentIndex = index
