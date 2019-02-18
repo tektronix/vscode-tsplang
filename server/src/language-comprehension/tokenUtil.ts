@@ -30,6 +30,52 @@ export namespace TokenUtil {
             || token.text.localeCompare('{') === 0)
     }
 
+    export function consumeExpressionFunction(index: number, tokens: Array<Token>): number {
+        if (index >= tokens.length) {
+            throw new Error(
+                `Zero-based index ${index} is greater than the length of the given array (${tokens.length}).`
+            )
+        }
+
+        const offset = (tokens[index].text.localeCompare('(') === 0) ? 1 : 0
+
+        if (index + offset >= tokens.length || index + offset + 1 >= tokens.length) {
+            return index
+        }
+
+        if (tokens[index + offset].text.localeCompare('function') !== 0
+            || tokens[index + offset + 1].text.localeCompare('(') !== 0) {
+
+            return index
+        }
+
+        let endSkips = 0
+
+        let currentIndex = consumePair(index + offset + 1, tokens)
+        for (; tokens.length; currentIndex++) {
+            switch (tokens[currentIndex].text) {
+                case 'do':
+                case 'while':
+                case 'if':
+                case 'for':
+                case 'function':
+                    endSkips++
+                    continue
+            }
+
+            if (tokens[currentIndex].text.localeCompare('end') === 0) {
+                if (endSkips > 0) {
+                    endSkips--
+                    continue
+                }
+
+                break
+            }
+        }
+
+        return (currentIndex === tokens.length) ? index : currentIndex
+    }
+
     /**
      * Advances the given index to the index of its pairing token.
      * @param index The index of the pair-able Token.
