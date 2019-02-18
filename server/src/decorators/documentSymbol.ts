@@ -41,7 +41,13 @@ export class DocumentSymbol implements IDocumentSymbol {
     range: vsls.Range
     selectionRange: vsls.Range
     readonly start: vsls.Position
+    statementType: StatementType
     tokens?: Array<IToken>
+    /**
+     * The indices of comma Tokens that separate variable declarations within this
+     * object's stored Token array.
+     */
+    variableCommaIndices?: Array<number>
 
     private _end: vsls.Position
     private enteredStatementException: boolean
@@ -113,40 +119,53 @@ export class DocumentSymbol implements IDocumentSymbol {
     }
 
     setSymbolProperties(tokens: Array<Token>): void {
-        const type = statementRecognizer(tokens)
         let startSelectionPosition: vsls.Position
         let endSelectionPosition: vsls.Position
+
+        const type = statementRecognizer(tokens)
+
+        // TODO: add support for function assignments.
 
         // If we had trouble determining the StatementType from the provided Tokens.
         if (Ambiguity.is(type)) {
             if (Ambiguity.equal(type as Ambiguity, Ambiguity.FLOATING_TOKEN)) {
-                let isAssignment = false
-                let isProperty = false
-                let foundComma = false
+                let foundAccessor = false
                 // Try to find the location of an assignment operator ("="),
                 // except for those within consumable pairs.
-                let i = 0
-                for (; i < tokens.length; i++) {
+                for (let i = 0; i < tokens.length; i++) {
                     i = TokenUtil.consumePair(i, tokens)
 
                     if (tokens[i].text.localeCompare('.') === 0) {
-                        isProperty = true
+                        foundAccessor = true
                     }
                     else if (tokens[i].text.localeCompare(',') === 0) {
-                        foundComma = true
+                        if (this.variableCommaIndices === undefined) {
+                            this.variableCommaIndices = new Array()
+                        }
+
+                        this.variableCommaIndices.push(i)
                     }
                     else if (tokens[i].text.localeCompare('=') === 0) {
-                        isAssignment = true
+                        this.statementType = StatementType.Assignment
                         endSelectionPosition = TokenUtil.getPosition(tokens[i - 1], tokens[i - 1].text.length)
                         this.name = TokenUtil.getString(...tokens.slice(0, i))
+
+                        // If we found commas, then this symbol will require post-processing. In the meantime, set
+                        // to a non-File symbol so additional processing occurs below.
+                        this.kind = (foundAccessor && !this.variableCommaIndices)
+                            // NOTE: Changing this SymbolKind will require a corresponding change to
+                            // DocumentContext.symbolPostProcess
+                            ? vsls.SymbolKind.Property
+                            : vsls.SymbolKind.Variable
 
                         break
                     }
                 }
 
-                this.kind = (isAssignment)
-                    ? (isProperty && !foundComma) ? vsls.SymbolKind.Property : vsls.SymbolKind.Variable
-                    : vsls.SymbolKind.File
+                // If we couldn't find an assignment operator, then this is a function call.
+                if (this.statementType !== StatementType.Assignment) {
+                    this.statementType = StatementType.FunctionCall
+                }
 
                 this.tokens = tokens.map((value: Token) => IToken.create(value))
             }
@@ -158,13 +177,33 @@ export class DocumentSymbol implements IDocumentSymbol {
         else {
             this.kind = StatementType.toSymbolKind(type as StatementType) || vsls.SymbolKind.File
             this.local = LocalDeclaration.is(type as StatementType)
+            this.statementType = (type as StatementType)
+
+            if (this.statementType === StatementType.AssignmentLocal) {
+                for (let i = 0; i < tokens.length; i++) {
+                    i = TokenUtil.consumePair(i, tokens)
+
+                    if (tokens[i].text.localeCompare(',') === 0) {
+                        if (this.variableCommaIndices === undefined) {
+                            this.variableCommaIndices = new Array()
+                        }
+
+                        this.variableCommaIndices.push(i)
+                    }
+                    else if (tokens[i].text.localeCompare('=') === 0) {
+                        break
+                    }
+                }
+
+                this.tokens = tokens.map((value: Token) => IToken.create(value))
+            }
         }
 
         if (this.kind !== vsls.SymbolKind.File) {
             this.detail = (this.local) ? 'local' : 'global'
 
             let lastNameIndexPredicate: (t: Token) => boolean
-            if (this.kind === vsls.SymbolKind.Function) {
+            if (this.kind === vsls.SymbolKind.Function || this.statementType === StatementType.FunctionCall) {
                 lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('(') === 0
             }
             else if (type === StatementType.AssignmentLocal) {
@@ -172,8 +211,9 @@ export class DocumentSymbol implements IDocumentSymbol {
             }
 
             if (lastNameIndexPredicate !== undefined) {
-                let lastNameIndex = TokenUtil.consumeUntil(1, tokens, lastNameIndexPredicate)
-                if (lastNameIndex === 1) {
+                const startIndex = (this.statementType === StatementType.FunctionCall) ? 0 : 1
+                let lastNameIndex = TokenUtil.consumeUntil(startIndex, tokens, lastNameIndexPredicate)
+                if (lastNameIndex === startIndex) {
                     lastNameIndex = tokens.length
                 }
                 endSelectionPosition = TokenUtil.getPosition(
@@ -182,7 +222,16 @@ export class DocumentSymbol implements IDocumentSymbol {
                 )
                 startSelectionPosition = TokenUtil.getPosition(tokens[0])
 
-                this.name = TokenUtil.getString(...tokens.slice(1, lastNameIndex))
+                this.name = TokenUtil.getString(...tokens.slice(startIndex, lastNameIndex))
+
+                if (this.kind === vsls.SymbolKind.Function) {
+                    const signatureStopIndex = TokenUtil.consumePair(lastNameIndex, tokens)
+                    if (signatureStopIndex !== lastNameIndex) {
+                        this.tokens = tokens.slice(lastNameIndex, signatureStopIndex + 1).map(
+                            (value: Token) => IToken.create(value)
+                        )
+                    }
+                }
             }
         }
 
