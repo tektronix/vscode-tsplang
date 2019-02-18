@@ -80,13 +80,15 @@ namespace Buffer {
         { label: 'buffer.STYLE_WRITABLE' },
         { label: 'buffer.STYLE_WRITABLE_FULL' },
     ]
+    const bufferEnumUnitCustom: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'buffer.UNIT_CUSTOM1'},
+        { label: 'buffer.UNIT_CUSTOM2'},
+        { label: 'buffer.UNIT_CUSTOM3'},
+    ]
     const bufferEnumUnit: Array<ExclusiveCompletionApiSpec> = [
         { label: 'buffer.UNIT_AMP' },
         { label: 'buffer.UNIT_AMP_AC' },
         { label: 'buffer.UNIT_CELSIUS' },
-        { label: 'buffer.UNIT_CUSTOM1'},
-        { label: 'buffer.UNIT_CUSTOM2'},
-        { label: 'buffer.UNIT_CUSTOM3'},
         { label: 'buffer.UNIT_DAC' },
         { label: 'buffer.UNIT_DBM' },
         { label: 'buffer.UNIT_DECIBEL' },
@@ -106,6 +108,7 @@ namespace Buffer {
         { label: 'buffer.UNIT_VOLT_AC' },
         { label: 'buffer.UNIT_WATT' },
         { label: 'buffer.UNIT_X' },
+        ...bufferEnumUnitCustom
     ]
 
     export const bufferWrite: ApiSpec = {
@@ -206,7 +209,7 @@ namespace Buffer {
                 signatureExclusives: [
                     {
                         parameters: new Map([
-                            [ 0, bufferEnumUnit ],
+                            [ 0, bufferEnumUnitCustom ],
                         ]),
                     }
                 ]
@@ -226,6 +229,155 @@ namespace Buffer {
             ...bufferEnumUnit,
         ],
         label: 'buffer'
+    }
+}
+
+namespace Dmm {
+    export const dmmEnumAttr: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'dmm.ATTR_DIGI_APERTURE'},
+        { label: 'dmm.ATTR_DIGI_ATRIG_EDGE_LEVEL'},
+        { label: 'dmm.ATTR_DIGI_ATRIG_EDGE_SLOPE'},
+        { label: 'dmm.ATTR_DIGI_ATRIG_MODE'},
+        { label: 'dmm.ATTR_DIGI_ATRIG_WINDOW_DIRECTION'},
+        { label: 'dmm.ATTR_DIGI_ATRIG_WINDOW_LEVEL_HIGH'},
+        { label: 'dmm.ATTR_DIGI_ATRIG_WINDOW_LEVEL_LOW'},
+        { label: 'dmm.ATTR_DIGI_COUNT'},
+        { label: 'dmm.ATTR_DIGI_DIGITS'},
+        { label: 'dmm.ATTR_DIGI_DB_REFERENCE'},
+        { label: 'dmm.ATTR_DIGI_DBM_REFERENCE'},
+        { label: 'dmm.ATTR_DIGI_FUNCTION'},
+        { label: 'dmm.ATTR_DIGI_INPUT_IMPEDANCE'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_AUDIBLE_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_AUDIBLE_2'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_AUTO_CLEAR_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_AUTO_CLEAR_2'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_CLEAR_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_CLEAR_2'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_ENABLE_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_ENABLE_2'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_FAIL_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_FAIL_2'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_HIGH_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_HIGH_2'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_LOW_1'},
+        { label: 'dmm.ATTR_DIGI_LIMIT_LOW_2'},
+        { label: 'dmm.ATTR_DIGI_MATH_ENABLE'},
+        { label: 'dmm.ATTR_DIGI_MATH_FORMAT'},
+        { label: 'dmm.ATTR_DIGI_MATH_MXB_BF'},
+        { label: 'dmm.ATTR_DIGI_MATH_MXB_MF'},
+        { label: 'dmm.ATTR_DIGI_MATH_PERCENT'},
+        { label: 'dmm.ATTR_DIGI_RANGE'},
+        { label: 'dmm.ATTR_DIGI_REL_ENABLE'},
+        { label: 'dmm.ATTR_DIGI_REL_LEVEL'},
+        { label: 'dmm.ATTR_DIGI_SAMPLE_RATE'},
+        { label: 'dmm.ATTR_DIGI_UNIT'},
+        { label: 'dmm.ATTR_DIGI_USER_DELAY_N'},
+        { label: 'dmm.ATTR_DIGI_TERMINALS'},
+        { label: 'dmm.ATTR_MEAS_APERTURE'},
+        { label: 'dmm.ATTR_MEAS_AUTO_DELAY'},
+        { label: 'dmm.ATTR_MEAS_AUTO_ZERO'},
+        { label: 'dmm.ATTR_MEAS_ATRIG_EDGE_SLOPE'},
+        { label: 'dmm.ATTR_MEAS_ATRIG_MODE'},
+        { label: 'dmm.ATTR_MEAS_ATRIG_WINDOW_DIRECTION'},
+        { label: 'dmm.ATTR_MEAS_ATRIG_WINDOW_LEVEL_HIGH'},
+        { label: 'dmm.ATTR_MEAS_ATRIG_WINDOW_LEVEL_LOW'},
+        { label: 'dmm.ATTR_MEAS_BIAS_LEVEL'},
+        { label: 'dmm.ATTR_MEAS_COUNT'},
+        { label: 'dmm.ATTR_MEAS_DB_REFERENCE'},
+        { label: 'dmm.ATTR_MEAS_DETECTBW'},
+        { label: 'dmm.ATTR_MEAS_DIGITS'},
+        { label: 'dmm.ATTR_MEAS_FUNCTION'},
+        { label: 'dmm.ATTR_MEAS_INPUT_IMPEDANCE'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_AUDIBLE_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_AUDIBLE_2'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_AUTO_CLEAR_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_AUTO_CLEAR_2'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_CLEAR_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_CLEAR_2'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_ENABLE_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_ENABLE_2'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_FAIL_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_FAIL_2'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_HIGH_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_HIGH_2'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_LOW_1'},
+        { label: 'dmm.ATTR_MEAS_LIMIT_LOW_2'},
+        { label: 'dmm.ATTR_MEAS_LINE_SYNC'},
+        { label: 'dmm.ATTR_MEAS_MATH_ENABLE'},
+        { label: 'dmm.ATTR_MEAS_MATH_FORMAT'},
+        { label: 'dmm.ATTR_MEAS_MATH_MXB_BF'},
+        { label: 'dmm.ATTR_MEAS_MATH_MXB_MF'},
+        { label: 'dmm.ATTR_MEAS_MATH_PERCENT'},
+        { label: 'dmm.ATTR_MEAS_NPLC'},
+        { label: 'dmm.ATTR_MEAS_OFFCOMP_ENABLE'},
+        { label: 'dmm.ATTR_MEAS_OPEN_DETECTOR'},
+        { label: 'dmm.ATTR_MEAS_RANGE_AUTO'},
+        { label: 'dmm.ATTR_MEAS_RANGE'},
+        { label: 'dmm.ATTR_MEAS_SENSE_RANGE'},
+        { label: 'dmm.ATTR_MEAS_TERMINALS'},
+        { label: 'dmm.ATTR_MEAS_THREE_RTD'},
+        { label: 'dmm.ATTR_MEAS_TWO_RTD'},
+        { label: 'dmm.ATTR_MEAS_THRESHOLD_RANGE_AUTO'},
+        { label: 'dmm.ATTR_MEAS_THRESHOLD_RANGE'},
+        { label: 'dmm.ATTR_MEAS_UNIT'},
+        { label: 'dmm.ATTR_MEAS_USER_DELAY_N'},
+    ]
+    export const dmmEnumOnOff: Array<ExclusiveCompletionApiSpec> = [
+        { label: 'dmm.OFF' },
+        { label: 'dmm.ON' },
+    ]
+
+    export const dmm: ApiSpec = {
+        enums: [
+            ...dmmEnumAttr,
+            ...dmmEnumOnOff
+        ],
+        label: 'dmm'
+    }
+}
+
+namespace Channel {
+    export const channelMultiple: ApiSpec = {
+        children: [
+            { label: 'channel.multiple.close' },
+            { label: 'channel.multiple.open'}
+        ],
+        label: 'channel.multiple'
+    }
+
+    export const channel: ApiSpec = {
+        children: [
+            { label: 'channel.close' },
+            { label: 'channel.getclose' },
+            { label: 'channel.getcount' },
+            { label: 'channel.getdelay' },
+            {
+                label: 'channel.getdmm',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, Dmm.dmmEnumAttr ],
+                        ]),
+                    }
+                ]
+            },
+            { label: 'channel.getlabel' },
+            { label: 'channel.getstate' },
+            { label: 'channel.open' },
+            { label: 'channel.setdelay' },
+            {
+                label: 'channel.setdmm',
+                signatureExclusives: [
+                    {
+                        parameters: new Map([
+                            [ 1, Dmm.dmmEnumAttr ],
+                        ]),
+                    }
+                ]
+            },
+            { label: 'channel.setlabel' },
+        ],
+        label: 'channel'
     }
 }
 
@@ -433,7 +585,6 @@ namespace Display {
             { label: 'display.BUTTON_CANCEL' },
             { label: 'display.BUTTON_NO' },
             { label: 'display.BUTTON_OK' },
-            { label: 'display.BUTTON_YES' },
             { label: 'display.BUTTON_OPTION1' },
             { label: 'display.BUTTON_OPTION2' },
             { label: 'display.BUTTON_OPTION3' },
@@ -1815,6 +1966,8 @@ export function getApiSpec(): Array<ApiSpec> {
         beeper,
         Buffer.bufferWrite,
         Buffer.buffer,
+        Channel.channel,
+        Channel.channelMultiple,
         createconfigscript,
         dataqueue,
         delay,
@@ -1822,6 +1975,7 @@ export function getApiSpec(): Array<ApiSpec> {
         Digio.digio,
         Display.displayInput,
         Display.display,
+        Dmm.dmm,
         Eventlog.eventlog,
         exit,
         File.file,

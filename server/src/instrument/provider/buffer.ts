@@ -545,7 +545,7 @@ flash drive; given as some buffer.SAVE_*.',
         label: 'buffer.unit(buffer.UNIT_CUSTOMN, unitOfMeasure)',
         parameters: [
             {
-                documentation: 'Must be buffer.UNIT_CUSTOM1, 2, or 3',
+                documentation: 'Custom unit to define: buffer.UNIT_CUSTOM1, 2, or 3',
                 label: 'buffer.UNIT_CUSTOMN'
             },
             {
