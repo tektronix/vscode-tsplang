@@ -539,6 +539,7 @@ namespace Display {
 
     export const display: ApiSpec = {
         children: [
+            { label: 'display.activebuffer' },
             {
                 label: 'display.changescreen',
                 signatureExclusives: [
@@ -580,6 +581,7 @@ namespace Display {
                 ]
             },
             { label: 'display.waitevent' },
+            { label: 'display.watchchannels' },
         ],
         enums: [
             { label: 'display.BUTTON_CANCEL' },

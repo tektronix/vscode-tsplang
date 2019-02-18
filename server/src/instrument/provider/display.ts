@@ -28,6 +28,17 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
+            value: '```lua\nactivebuffer\n```\n\
+\n\
+Get to set the buffer used for measurements that are displayed on the front panel.'
+        },
+        kind: CompletionItemKind.Property,
+        label: 'activebuffer',
+    },
+    {
+        data: { domains: ['display'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
             value: '```lua\nfunction changescreen(screenName)\n```\n\
 \n\
 Change the currently displayed front-panel screen.'
@@ -135,6 +146,21 @@ This command waits until a user responds to a front‑panel prompt that was crea
         },
         kind: CompletionItemKind.Function,
         label: 'waitevent',
+    },
+    {
+        data: { domains: ['display'] },
+        documentation: {
+            kind: MarkupKind.Markdown,
+            value: '```lua\ndisplay.watchchannels\n```\n\
+\n\
+Get or set which channels are set to be watched from the front panel, you can define up to 20.\n\
+\n\
+Watch Channels affect what you see on the scan and statistics swipe screens. In the Reading Table, you can select \
+the watch channels to filter the buffer so that only data from the watch channels is shown. In the Graph screen, \
+you can select the watch channels as the traces to display on the graph.'
+        },
+        kind: CompletionItemKind.Property,
+        label: 'watchchannels'
     },
 ]
 
