@@ -25,10 +25,10 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nbufferVar.capacity\n```\n\nbufferVar.capacity -> {number, ...}\n\
+            value: '```lua\nbufferVar.capacity\n```\n\nbufferVar.capacity -> number\n\
 \n\
-Get or set how many readings a buffer can store. Changing the size of a buffer will cause existing buffer data to be \
-lost.'
+Get or set how many readings a buffer can store as a number. Changing the size of a buffer will cause existing buffer \
+data to be lost.'
         },
         kind: CompletionItemKind.Property,
         label: 'capacity',
@@ -85,9 +85,10 @@ Returns the ending index of the buffer.'
         data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nbufferVar.extravalues\n```\n\nbufferVar.extravalues -> number\n\
+            value: '```lua\nbufferVar.extravalues\n```\n\nbufferVar.extravalues -> {number, ...}\n\
 \n\
-Returns the additional values in a reading buffer\'s Extra column such as used by the DC voltage ratio function.\n\
+Returns an array of the additional values in a reading buffer\'s Extra column, such as the sense voltage froma DC \
+voltage ratio measurement.\n\
 \n\
 The reading buffer must be set to buffer.STYLE_FULL to use this option.'
         },
@@ -98,10 +99,10 @@ The reading buffer must be set to buffer.STYLE_FULL to use this option.'
         data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nbufferVar.extraformattedvalues\n```\n\nbufferVar.extraformattedvalues -> string\n\
+            value: '```lua\nbufferVar.extraformattedvalues\n```\n\nbufferVar.extraformattedvalues -> {string, ...}\n\
 \n\
-Returns the measurement and the unit of measure of the additional values in a reading buffer\'s Extra column \
-such as used by the DC voltage ratio function.\n\
+Returns an array of the measurement and the unit of measure of the additional values in a reading buffer\'s \
+Extra column, such as the sense voltage froma DC voltage ratio measurement.\n\
 \n\
 The reading buffer must be set to buffer.STYLE_FULL to use this option.'
         },
@@ -112,10 +113,10 @@ The reading buffer must be set to buffer.STYLE_FULL to use this option.'
         data: { domains: ['bufferVar'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nbufferVar.extravalueunits\n```\n\nbufferVar.extravalueunits -> string\n\
+            value: '```lua\nbufferVar.extravalueunits\n```\n\nbufferVar.extravalueunits -> {string, ...}\n\
 \n\
-Returns the unit of measure of the additional values in a reading buffer\'s Extra column \
-such as used by the DC voltage ratio function.\n\
+Returns an array of the unit of measure of the additional values in a reading buffer\'s Extra column, \
+such as the sense voltage froma DC voltage ratio measurement.\n\
 \n\
 The reading buffer must be set to buffer.STYLE_FULL to use this option.'
         },

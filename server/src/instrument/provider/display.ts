@@ -28,9 +28,10 @@ export const completions: Array<CompletionItem> = [
         data: { domains: ['display'] },
         documentation: {
             kind: MarkupKind.Markdown,
-            value: '```lua\nactivebuffer\n```\n\
+            value: '```lua\ndisplay.activebuffer\n```\n\
 \n\
-Get to set the buffer used for measurements that are displayed on the front panel.'
+Get or set the buffer used for measurements that are displayed on the front panel by passing the name of a buffer \
+as a string.  The default active buffer is defbuffer1.'
         },
         kind: CompletionItemKind.Property,
         label: 'activebuffer',
@@ -153,11 +154,13 @@ This command waits until a user responds to a front‑panel prompt that was crea
             kind: MarkupKind.Markdown,
             value: '```lua\ndisplay.watchchannels\n```\n\
 \n\
-Get or set which channels are set to be watched from the front panel, you can define up to 20.\n\
+Get or set up to 20 watch channels as a ChannelList string. No channels are watched by default.\n\
 \n\
 Watch Channels affect what you see on the scan and statistics swipe screens. In the Reading Table, you can select \
 the watch channels to filter the buffer so that only data from the watch channels is shown. In the Graph screen, \
-you can select the watch channels as the traces to display on the graph.'
+you can select the watch channels as the traces to display on the graph.\n\
+\n\
+Refer to the manual for more information on the ChannelList string.'
         },
         kind: CompletionItemKind.Property,
         label: 'watchchannels'
