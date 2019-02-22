@@ -25,6 +25,7 @@ import {
     CompletionItemKind,
     CompletionList,
     Diagnostic,
+    LocationLink,
     Position,
     SignatureHelp,
     SymbolKind,
@@ -34,9 +35,9 @@ import {
 } from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastListener, TspFastParser, TspLexer, TspListener, TspParser } from './antlr4-tsplang'
-import { CompletionItem, DocumentSymbol, Range, ResolvedNamespace, SignatureInformation } from './decorators'
+import { CompletionItem, DocumentSymbol, IToken, Range, ResolvedNamespace, SignatureInformation } from './decorators'
 import { CommandSet } from './instrument'
-import { TokenUtil } from './language-comprehension'
+import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
@@ -93,6 +94,44 @@ class DebugTimer {
     }
 }
 
+class SymbolTable {
+    complete: Array<DocumentSymbol>
+    links: Array<LocationLink>
+    statementDepth: number
+    symbolCache: Map<number, Array<DocumentSymbol>>
+
+    constructor() {
+        this.symbolCache = new Map()
+        this.statementDepth = 0
+    }
+
+    cacheSymbol(symbol: DocumentSymbol): void {
+        if (this.symbolCache.has(this.statementDepth)) {
+            this.symbolCache.get(this.statementDepth).push(symbol)
+
+            return
+        }
+
+        this.symbolCache.set(this.statementDepth, [symbol])
+    }
+
+    lastSymbol(): DocumentSymbol | undefined {
+        const result = (this.symbolCache.get(this.statementDepth) || []).pop()
+
+        if (result === undefined) {
+            return
+        }
+
+        // Add any symbols from the previous depth as children.
+        result.children = this.symbolCache.get(this.statementDepth + 1)
+
+        // Clear the cache at the previous depth.
+        this.symbolCache.delete(this.statementDepth + 1)
+
+        return result
+    }
+}
+
 // tslint:disable
 export class DocumentContext extends TspFastListener {
     readonly commandSet: CommandSet
@@ -106,6 +145,7 @@ export class DocumentContext extends TspFastListener {
     private _settings: TsplangSettings
     private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
     private _symbols: Array<DocumentSymbol>
+    private symbolTable: SymbolTable
     private childCache: Map<number, Array<DocumentSymbol>>
     // private enteredStatementException: boolean
     // /**
@@ -154,6 +194,7 @@ export class DocumentContext extends TspFastListener {
 
         this.exceptionRanges = new Array()
         this._symbols = new Array()
+        this.symbolTable = new SymbolTable()
         this.childCache = new Map()
         this.timer = new DebugTimer()
 
@@ -230,15 +271,8 @@ export class DocumentContext extends TspFastListener {
 
         //     return
         // }
-        if (context.parentCtx instanceof TspFastParser.ChunkContext) {
-            this._symbols.push(new DocumentSymbol(TokenUtil.getPosition(context.start)))
-        }
-        else {
-            const siblings = this.childCache.get(this.statementDepth) || []
-            siblings.push(new DocumentSymbol(TokenUtil.getPosition(context.start)))
-            this.childCache.set(this.statementDepth, siblings)
-        }
-        this.statementDepth++
+        this.symbolTable.cacheSymbol(new DocumentSymbol(this.document.uri, TokenUtil.getPosition(context.start)))
+        this.symbolTable.statementDepth++
 
         if (this.settings.debug.print.rootStatementParseTime) {
             if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
@@ -267,8 +301,7 @@ export class DocumentContext extends TspFastListener {
             }
         }
 
-        const previousDepth = this.statementDepth
-        this.statementDepth--
+        this.symbolTable.statementDepth--
 
         // if (context.exception) {
         //     const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
@@ -290,48 +323,66 @@ export class DocumentContext extends TspFastListener {
         //     this.exceptionTokenIndex = undefined
         // }
 
-        // Perform child updates if this isn't a root statement.
-        if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
-            // Get all children at the current depth
-            const siblings = this.childCache.get(this.statementDepth)
-            // Remove the latest child
-            const child = siblings.pop()
+        // Get all relevant ITokens.
+        const tokens = this.tokenStream.tokens
+                        .slice(context.start.tokenIndex, context.stop.tokenIndex + 1)
+                        .map((value: Token) => IToken.create(value))
 
-            // If the previous depth had children, then add them to this child.
-            if (this.childCache.has(previousDepth)) {
-                const children = this.childCache.get(previousDepth)
-                child.children = new Array(...children)
+        /**
+         * We're interested in determining whether this is an Assignment,
+         * AssignmentLocal, Function, or FunctionLocal.
+         *
+         * **Assignment or AssignmentLocal**: will need to be split into
+         * multiple DocumentSymbols if multiple variables are declared.
+         *
+         * **Function or FunctionLocal**: each parameter will need its own
+         * DocumentSymbol.
+         */
+        let type = statementRecognizer(tokens as Array<Token>)
+
+        // (StatementType.Assignment || StatementType.FunctionCall)
+        // || (StatementType.AssignmentLocal || StatementType.FunctionLocal)
+        if (Ambiguity.is(type)) {
+            // Discard evaluaton of incomplete local statements.
+            // (It was ambiguous because the only Token was 'local'.)
+            if (Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL)) {
+                return
             }
-            // Get all relevant Tokens for this child.
-            child.setSymbolProperties(this.tokenStream.tokens.slice(
-                context.start.tokenIndex,
-                context.stop.tokenIndex + 1
-            ))
 
-            // Update data structures
-            siblings.push(child)
-            this.childCache.set(this.statementDepth, siblings)
-        }
-        else {
-            // Get the latest root statement
-            const root = this._symbols.pop()
-
-            // If the previous depth had children, then add them to this root.
-            if (this.childCache.has(previousDepth)) {
-                const children = this.childCache.get(previousDepth)
-                root.children = new Array(...children)
-            }
-            root.setSymbolProperties(this.tokenStream.tokens.slice(
-                context.start.tokenIndex,
-                context.stop.tokenIndex + 1
-            ))
-
-            // Update data structures
-            this._symbols.push(root)
+            // Check the children of the current context for an assignment operator (=) type TerminalNode.
+            type = (context.children.some((value: ParserRuleContext | TerminalNode) => {
+                return (value instanceof TerminalNode) && (value.symbol.text.localeCompare('=') === 0)
+            }))
+            // Resolve the statement ambiguity based on whether we were able to find an assignment operator.
+            ? StatementType.Assignment
+            : StatementType.FunctionCall
         }
 
-        // Clear the cache at the previous depth
-        this.childCache.delete(previousDepth)
+        const variableCommaIndices = new Array<number>()
+        let assignmentIndex: number
+        if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
+            // Indices will be zero-based from the starting Token (which is index 0).
+            const startingIndex = context.start.tokenIndex
+            for (let i = 0; i < context.children.length; i++) {
+                if (context.children[i] instanceof ParserRuleContext) {
+                    continue
+                }
+
+                if ((context.children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
+                    variableCommaIndices.push((context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex)
+                }
+                else if ((context.children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
+                    assignmentIndex = (context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex
+                    break
+                }
+            }
+
+            // TODO: create multiple assignment symbols from the last symbol.
+        }
+
+        // TODO: handle function declarations (create symbols for all params)
+
+        // TODO: update the symbol table
     }
 }
 
