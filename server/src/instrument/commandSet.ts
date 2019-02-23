@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItem, MarkupContentCallback, SignatureInformation } from '../decorators'
+import { CompletionItem, IToken, MarkupContentCallback, SignatureInformation } from '../decorators'
 
 import { InstrumentSpec } from './instrumentSpec'
 
@@ -124,5 +124,11 @@ export class CommandSet implements CommandSetInterface {
                 this.signatureDepthMap.set(depth, signatures)
             })
         }
+    }
+
+    isCompletion(token: IToken): boolean {
+        return (this.completionDepthMap.get(0) || []).some((value: CompletionItem) => {
+            return value.label.localeCompare(token.text) === 0
+        })
     }
 }

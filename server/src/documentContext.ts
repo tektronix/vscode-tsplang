@@ -35,7 +35,16 @@ import {
 } from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastListener, TspFastParser, TspLexer, TspListener, TspParser } from './antlr4-tsplang'
-import { CompletionItem, DocumentSymbol, IToken, Range, ResolvedNamespace, SignatureInformation } from './decorators'
+import {
+    AssignmentLocalSymbol,
+    AssignmentSymbol,
+    CompletionItem,
+    DocumentSymbol,
+    IToken,
+    Range,
+    ResolvedNamespace,
+    SignatureInformation
+} from './decorators'
 import { CommandSet } from './instrument'
 import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
@@ -97,15 +106,32 @@ class DebugTimer {
 class SymbolTable {
     complete: Array<DocumentSymbol>
     links: Array<LocationLink>
-    statementDepth: number
     symbolCache: Map<number, Array<DocumentSymbol>>
 
+    private _statementDepth: number
+
     constructor() {
+        this.complete = new Array()
         this.symbolCache = new Map()
-        this.statementDepth = 0
+        this._statementDepth = 0
+    }
+
+    get statementDepth(): number {
+        return this._statementDepth
+    }
+
+    set statementDepth(value: number) {
+        this._statementDepth = value
     }
 
     cacheSymbol(symbol: DocumentSymbol): void {
+        if (symbol instanceof AssignmentLocalSymbol) {
+            // TODO: add this name to the local name list.
+        }
+        else if (symbol instanceof AssignmentSymbol) {
+            // TODO: add this name to the global name list.
+        }
+
         if (this.symbolCache.has(this.statementDepth)) {
             this.symbolCache.get(this.statementDepth).push(symbol)
 
@@ -358,31 +384,88 @@ export class DocumentContext extends TspFastListener {
             : StatementType.FunctionCall
         }
 
-        const variableCommaIndices = new Array<number>()
-        let assignmentIndex: number
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
-            // Indices will be zero-based from the starting Token (which is index 0).
-            const startingIndex = context.start.tokenIndex
-            for (let i = 0; i < context.children.length; i++) {
-                if (context.children[i] instanceof ParserRuleContext) {
-                    continue
-                }
-
-                if ((context.children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
-                    variableCommaIndices.push((context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex)
-                }
-                else if ((context.children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
-                    assignmentIndex = (context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex
-                    break
-                }
-            }
-
-            // TODO: create multiple assignment symbols from the last symbol.
+            this.handleAssignments(context, tokens, type)
         }
 
         // TODO: handle function declarations (create symbols for all params)
 
         // TODO: update the symbol table
+    }
+
+    handleAssignments(context: TspFastParser.StatementContext, tokens: Array<IToken>, type: StatementType): void {
+        const variableCommaIndices = new Array<number>()
+        let assignmentIndex: number
+
+        // Indices will be zero-based from the starting Token (which is index 0).
+        const startingIndex = context.start.tokenIndex
+        for (let i = 0; i < context.children.length; i++) {
+            if (context.children[i] instanceof ParserRuleContext) {
+                continue
+            }
+
+            if ((context.children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
+                variableCommaIndices.push((context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex)
+            }
+            else if ((context.children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
+                assignmentIndex = (context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex
+                break
+            }
+        }
+
+        // Create one or more assignment symbols from the last symbol.
+        const lastSymbol = this.symbolTable.lastSymbol()
+        for(let i = 0; i <= variableCommaIndices.length; i++) {
+            const symbol = (type === StatementType.Assignment)
+                ? AssignmentSymbol.from(lastSymbol, i, assignmentIndex)
+                : AssignmentLocalSymbol.from(lastSymbol, i, assignmentIndex)
+
+            let startSelectionIndex: number
+            let startSelectionToken: IToken
+            let endSelectionToken: IToken
+            if (i === 0) {
+                startSelectionIndex = (type === StatementType.Assignment) ? 0 : 1
+                startSelectionToken = tokens[startSelectionIndex]
+                endSelectionToken = (variableCommaIndices.length === 0)
+                    ? startSelectionToken
+                    : tokens[variableCommaIndices[i] - 1]
+            }
+            else if (i === variableCommaIndices.length) {
+                startSelectionIndex = variableCommaIndices[i - 1] + 1
+                startSelectionToken = tokens[startSelectionIndex]
+                endSelectionToken = (assignmentIndex === undefined)
+                    ? tokens[tokens.length - 1]
+                    : tokens[assignmentIndex - 1]
+            }
+            else {
+                startSelectionIndex = variableCommaIndices[i - 1] + 1
+                startSelectionToken = tokens[startSelectionIndex]
+                endSelectionToken = tokens[variableCommaIndices[i] - 1]
+            }
+
+            symbol.selectionRange = {
+                end: TokenUtil.getPosition(endSelectionToken as Token, endSelectionToken.text.length),
+                start: TokenUtil.getPosition(startSelectionToken as Token)
+            }
+            symbol.name = this.document.getText(symbol.selectionRange)
+            symbol.end = TokenUtil.getPosition(
+                tokens[tokens.length - 1] as Token,
+                tokens[tokens.length - 1].text.length
+            )
+
+            if (type === StatementType.Assignment) {
+                let tokenIndex: number
+                let firstNameToken: IToken
+                do {
+                    tokenIndex = (tokenIndex || startSelectionIndex - 1) + 1
+                    firstNameToken = tokens[tokenIndex]
+                } while (firstNameToken.type !== TspFastParser.NAME)
+
+                symbol.builtin = this.commandSet.isCompletion(firstNameToken)
+            }
+
+            this.symbolTable.cacheSymbol(symbol)
+        }
     }
 }
 

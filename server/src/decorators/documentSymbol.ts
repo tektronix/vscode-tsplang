@@ -44,29 +44,24 @@ export class DocumentSymbol implements IDocumentSymbol {
     statementType: StatementType
     tokens?: Array<IToken>
     uri: string
-    /**
-     * The indices of comma Tokens that separate variable declarations within this
-     * object's stored Token array.
-     */
-    variableCommaIndices?: Array<number>
 
     private _end: vsls.Position
-    private enteredStatementException: boolean
-    private exceptionTokenIndex?: number
-    /**
-     * A Map keyed to the ending offset of an assignment operator (`=`) or
-     * expression list separator (`,`). The associated key-value is an
-     * ExclusiveContext.
-     */
-    private exclusives: Map<number, ExclusiveContext>
-    private fuzzyOffsets: FuzzyOffsetMap
-    private fuzzySignatureOffsets: FuzzyOffsetMap
-    /**
-     * A Map keyed to the ending offset of a function call's open parenthesis.
-     * The associated key-value is a SignatureContext.
-     */
-    private signatures: Map<number, SignatureContext>
-    private readonly tableIndexRegexp: RegExp
+    // private enteredStatementException: boolean
+    // private exceptionTokenIndex?: number
+    // /**
+    //  * A Map keyed to the ending offset of an assignment operator (`=`) or
+    //  * expression list separator (`,`). The associated key-value is an
+    //  * ExclusiveContext.
+    //  */
+    // private exclusives: Map<number, ExclusiveContext>
+    // private fuzzyOffsets: FuzzyOffsetMap
+    // private fuzzySignatureOffsets: FuzzyOffsetMap
+    // /**
+    //  * A Map keyed to the ending offset of a function call's open parenthesis.
+    //  * The associated key-value is a SignatureContext.
+    //  */
+    // private signatures: Map<number, SignatureContext>
+    // private readonly tableIndexRegexp: RegExp
 
     constructor(uri: string, start: vsls.Position) {
         this.uri = uri
@@ -129,141 +124,146 @@ export class DocumentSymbol implements IDocumentSymbol {
         return clone
     }
 
-    setSymbolProperties(tokens: Array<IToken>): void {
-        this.tokens = tokens
+    // setSymbolProperties(tokens: Array<IToken>): void {
+    //     this.tokens = tokens
 
-        let startSelectionPosition: vsls.Position
-        let endSelectionPosition: vsls.Position
+    //     let startSelectionPosition: vsls.Position
+    //     let endSelectionPosition: vsls.Position
 
-        const type = statementRecognizer(tokens as Array<Token>)
+    //     const type = statementRecognizer(tokens as Array<Token>)
 
-        // TODO: add support for function assignments.
+    //     // TODO: add support for function assignments.
 
-        // If we had trouble determining the StatementType from the provided Tokens.
-        if (Ambiguity.is(type)) {
-            if (Ambiguity.equal(type as Ambiguity, Ambiguity.FLOATING_TOKEN)) {
-                let foundAccessor = false
-                // Try to find the location of an assignment operator ("="),
-                // except for those within consumable pairs.
-                for (let i = 0; i < tokens.length; i++) {
-                    i = TokenUtil.consumePair(i, tokens as Array<Token>)
+    //     // If we had trouble determining the StatementType from the provided Tokens.
+    //     if (Ambiguity.is(type)) {
+    //         if (Ambiguity.equal(type as Ambiguity, Ambiguity.FLOATING_TOKEN)) {
+    //             let foundAccessor = false
+    //             // Try to find the location of an assignment operator ("="),
+    //             // except for those within consumable pairs.
+    //             for (let i = 0; i < tokens.length; i++) {
+    //                 i = TokenUtil.consumePair(i, tokens as Array<Token>)
 
-                    if (tokens[i].text.localeCompare('.') === 0) {
-                        foundAccessor = true
-                    }
-                    else if (tokens[i].text.localeCompare(',') === 0) {
-                        if (this.variableCommaIndices === undefined) {
-                            this.variableCommaIndices = new Array()
-                        }
+    //                 if (tokens[i].text.localeCompare('.') === 0) {
+    //                     foundAccessor = true
+    //                 }
+    //                 else if (tokens[i].text.localeCompare(',') === 0) {
+    //                     if (this.variableCommaIndices === undefined) {
+    //                         this.variableCommaIndices = new Array()
+    //                     }
 
-                        this.variableCommaIndices.push(i)
-                    }
-                    else if (tokens[i].text.localeCompare('=') === 0) {
-                        this.statementType = StatementType.Assignment
-                        endSelectionPosition = TokenUtil.getPosition(tokens[i - 1] as Token, tokens[i - 1].text.length)
-                        this.name = TokenUtil.getString(...tokens.slice(0, i) as Array<Token>)
+    //                     this.variableCommaIndices.push(i)
+    //                 }
+    //                 else if (tokens[i].text.localeCompare('=') === 0) {
+    //                     this.statementType = StatementType.Assignment
+    //                     endSelectionPosition = TokenUtil.getPosition(
+    //                         tokens[i - 1] as Token, tokens[i - 1].text.length
+    //                     )
+    //                     this.name = TokenUtil.getString(...tokens.slice(0, i) as Array<Token>)
 
-                        // If we found commas, then this symbol will require post-processing. In the meantime, set
-                        // to a non-File symbol so additional processing occurs below.
-                        this.kind = (foundAccessor && !this.variableCommaIndices)
-                            // NOTE: Changing this SymbolKind will require a corresponding change to
-                            // DocumentContext.symbolPostProcess
-                            ? vsls.SymbolKind.Property
-                            : vsls.SymbolKind.Variable
+    //                     // If we found commas, then this symbol will require post-processing. In the meantime, set
+    //                     // to a non-File symbol so additional processing occurs below.
+    //                     this.kind = (foundAccessor && !this.variableCommaIndices)
+    //                         // NOTE: Changing this SymbolKind will require a corresponding change to
+    //                         // DocumentContext.symbolPostProcess
+    //                         ? vsls.SymbolKind.Property
+    //                         : vsls.SymbolKind.Variable
 
-                        break
-                    }
-                }
+    //                     break
+    //                 }
+    //             }
 
-                // If we couldn't find an assignment operator, then this is a function call.
-                if (this.statementType !== StatementType.Assignment) {
-                    this.statementType = StatementType.FunctionCall
-                }
-            }
-            else if (Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL)) {
-                this.kind = vsls.SymbolKind.File
-                this.local = true
-            }
-        }
-        else {
-            this.kind = StatementType.toSymbolKind(type as StatementType) || vsls.SymbolKind.File
-            this.local = LocalDeclaration.is(type as StatementType)
-            this.statementType = (type as StatementType)
+    //             // If we couldn't find an assignment operator, then this is a function call.
+    //             if (this.statementType !== StatementType.Assignment) {
+    //                 this.statementType = StatementType.FunctionCall
+    //             }
+    //         }
+    //         else if (Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL)) {
+    //             this.kind = vsls.SymbolKind.File
+    //             this.local = true
+    //         }
+    //     }
+    //     else {
+    //         this.kind = StatementType.toSymbolKind(type as StatementType) || vsls.SymbolKind.File
+    //         this.local = LocalDeclaration.is(type as StatementType)
+    //         this.statementType = (type as StatementType)
 
-            if (this.statementType === StatementType.AssignmentLocal) {
-                for (let i = 0; i < tokens.length; i++) {
-                    i = TokenUtil.consumePair(i, tokens as Array<Token>)
+    //         if (this.statementType === StatementType.AssignmentLocal) {
+    //             for (let i = 0; i < tokens.length; i++) {
+    //                 i = TokenUtil.consumePair(i, tokens as Array<Token>)
 
-                    if (tokens[i].text.localeCompare(',') === 0) {
-                        if (this.variableCommaIndices === undefined) {
-                            this.variableCommaIndices = new Array()
-                        }
+    //                 if (tokens[i].text.localeCompare(',') === 0) {
+    //                     if (this.variableCommaIndices === undefined) {
+    //                         this.variableCommaIndices = new Array()
+    //                     }
 
-                        this.variableCommaIndices.push(i)
-                    }
-                    else if (tokens[i].text.localeCompare('=') === 0) {
-                        break
-                    }
-                }
-            }
-        }
+    //                     this.variableCommaIndices.push(i)
+    //                 }
+    //                 else if (tokens[i].text.localeCompare('=') === 0) {
+    //                     break
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        if (this.kind !== vsls.SymbolKind.File) {
-            this.detail = (this.local) ? 'local' : 'global'
+    //     if (this.kind !== vsls.SymbolKind.File) {
+    //         this.detail = (this.local) ? 'local' : 'global'
 
-            let lastNameIndexPredicate: (t: Token) => boolean
-            if (this.kind === vsls.SymbolKind.Function || this.statementType === StatementType.FunctionCall) {
-                lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('(') === 0
-            }
-            else if (type === StatementType.AssignmentLocal) {
-                lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('=') === 0
-            }
+    //         let lastNameIndexPredicate: (t: Token) => boolean
+    //         if (this.kind === vsls.SymbolKind.Function || this.statementType === StatementType.FunctionCall) {
+    //             lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('(') === 0
+    //         }
+    //         else if (type === StatementType.AssignmentLocal) {
+    //             lastNameIndexPredicate = (t: Token): boolean => t.text.localeCompare('=') === 0
+    //         }
 
-            if (lastNameIndexPredicate !== undefined) {
-                const startIndex = (this.statementType === StatementType.FunctionCall) ? 0 : 1
-                let lastNameIndex = TokenUtil.consumeUntil(startIndex, tokens as Array<Token>, lastNameIndexPredicate)
-                if (lastNameIndex === startIndex) {
-                    lastNameIndex = tokens.length
-                }
-                endSelectionPosition = TokenUtil.getPosition(
-                    tokens[lastNameIndex - 1] as Token,
-                    tokens[lastNameIndex - 1].text.length
-                )
-                startSelectionPosition = TokenUtil.getPosition(tokens[0] as Token)
+    //         if (lastNameIndexPredicate !== undefined) {
+    //             const startIndex = (this.statementType === StatementType.FunctionCall) ? 0 : 1
+    //             let lastNameIndex = TokenUtil.consumeUntil(
+    //                 startIndex, tokens as Array<Token>,
+    //                 lastNameIndexPredicate
+    //             )
+    //             if (lastNameIndex === startIndex) {
+    //                 lastNameIndex = tokens.length
+    //             }
+    //             endSelectionPosition = TokenUtil.getPosition(
+    //                 tokens[lastNameIndex - 1] as Token,
+    //                 tokens[lastNameIndex - 1].text.length
+    //             )
+    //             startSelectionPosition = TokenUtil.getPosition(tokens[0] as Token)
 
-                this.name = TokenUtil.getString(...tokens.slice(startIndex, lastNameIndex) as Array<Token>)
+    //             this.name = TokenUtil.getString(...tokens.slice(startIndex, lastNameIndex) as Array<Token>)
 
-                if (this.kind === vsls.SymbolKind.Function) {
-                    const signatureStopIndex = TokenUtil.consumePair(lastNameIndex, tokens as Array<Token>)
-                    if (signatureStopIndex !== lastNameIndex) {
-                        this.tokens = tokens.slice(lastNameIndex, signatureStopIndex + 1).map(
-                            (value: Token) => IToken.create(value)
-                        )
-                    }
-                }
-            }
-        }
+    //             if (this.kind === vsls.SymbolKind.Function) {
+    //                 const signatureStopIndex = TokenUtil.consumePair(lastNameIndex, tokens as Array<Token>)
+    //                 if (signatureStopIndex !== lastNameIndex) {
+    //                     this.tokens = tokens.slice(lastNameIndex, signatureStopIndex + 1).map(
+    //                         (value: Token) => IToken.create(value)
+    //                     )
+    //                 }
+    //             }
+    //         }
+    //     }
 
-        if (this.end === undefined) {
-            const lastIndex = tokens.length - 1
-            this.end = TokenUtil.getPosition(tokens[lastIndex] as Token, tokens[lastIndex].text.length)
+    //     if (this.end === undefined) {
+    //         const lastIndex = tokens.length - 1
+    //         this.end = TokenUtil.getPosition(tokens[lastIndex] as Token, tokens[lastIndex].text.length)
 
-            this.selectionRange = {
-                end: endSelectionPosition || this.end,
-                start: startSelectionPosition || this.start
-            }
-        }
+    //         this.selectionRange = {
+    //             end: endSelectionPosition || this.end,
+    //             start: startSelectionPosition || this.start
+    //         }
+    //     }
 
-        if (this.detail === undefined) {
-            // tslint:disable-next-line:no-magic-numbers
-            this.detail = TokenUtil.getString(...tokens.slice(0, 10) as Array<Token>)
-        }
+    //     if (this.detail === undefined) {
+    //         // tslint:disable-next-line:no-magic-numbers
+    //         this.detail = TokenUtil.getString(...tokens.slice(0, 10) as Array<Token>)
+    //     }
 
-        if (this.name === undefined) {
-            this.name = `(${this.range.start.line + 1},${this.range.start.character + 1})`
-            this.name += `->(${this.range.end.line + 1},${this.range.end.character + 1})`
-        }
-    }
+    //     if (this.name === undefined) {
+    //         this.name = `(${this.range.start.line + 1},${this.range.start.character + 1})`
+    //         this.name += `->(${this.range.end.line + 1},${this.range.end.character + 1})`
+    //     }
+    // }
 
     within(symbol: DocumentSymbol): boolean {
         return Range.within(symbol.range, this.range)
@@ -363,5 +363,68 @@ export class DocumentSymbol implements IDocumentSymbol {
         //         namespaceTokens = new Array<Token>()
         //     }
         // }
+    }
+}
+
+export class AssignmentSymbol extends DocumentSymbol {
+    /**
+     * The index of the assignment operator (=) within this object's stored Token
+     * array.
+     *
+     * Assignment operators separate variable declarations from their expressions.
+     */
+    assignmentOperatorIndex?: number
+    /**
+     * Whether this symbol is an instrument builtin.
+     *
+     * Defaults to false.
+     */
+    builtin: boolean = false
+    /**
+     * The index of this variable declaration within the comma-delimited list of
+     * variable declarations.
+     *
+     * Defaults to 0.
+     */
+    variableIndex: number = 0
+
+    constructor(uri: string, start: vsls.Position) {
+        super(uri, start)
+    }
+
+    static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): AssignmentSymbol {
+        const result = new AssignmentSymbol(symbol.uri, symbol.start)
+        result.children = symbol.children
+        result.detail = 'global'
+        result.statementType = StatementType.Assignment
+        result.kind = StatementType.toSymbolKind(result.statementType)
+        if (variableIndex !== undefined) {
+            result.variableIndex = variableIndex
+        }
+        result.assignmentOperatorIndex = assignmentOpIndex
+
+        return result
+    }
+}
+
+export class AssignmentLocalSymbol extends AssignmentSymbol {
+    local: boolean = true
+
+    constructor(uri: string, start: vsls.Position) {
+        super(uri, start)
+    }
+
+    static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): AssignmentLocalSymbol {
+        const result = new AssignmentLocalSymbol(symbol.uri, symbol.start)
+        result.children = symbol.children
+        result.detail = 'local'
+        result.statementType = StatementType.AssignmentLocal
+        result.kind = StatementType.toSymbolKind(result.statementType)
+        if (variableIndex !== undefined) {
+            result.variableIndex = variableIndex
+        }
+        result.assignmentOperatorIndex = assignmentOpIndex
+
+        return result
     }
 }
