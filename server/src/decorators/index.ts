@@ -21,6 +21,8 @@ export { CompletionItemData, CompletionItem } from './completionItem'
 export {
     DocumentSymbol,
     IDocumentSymbol,
+    FunctionLocalSymbol,
+    FunctionSymbol,
     VariableLocalSymbol,
     VariableSymbol
 } from './documentSymbol'

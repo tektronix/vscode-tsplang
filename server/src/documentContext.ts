@@ -38,6 +38,8 @@ import { TspFastLexer, TspFastListener, TspFastParser, TspLexer, TspListener, Ts
 import {
     CompletionItem,
     DocumentSymbol,
+    FunctionLocalSymbol,
+    FunctionSymbol,
     IToken,
     Range,
     ResolvedNamespace,
@@ -387,13 +389,96 @@ export class DocumentContext extends TspFastListener {
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
             this.handleVariables(context, tokens, type)
         }
+        else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
+            this.handleFunctionDeclarations(context, tokens, type)
+        }
     }
 
+    handleFunctionDeclarations(
+        context: TspFastParser.StatementContext,
+        tokens: Array<IToken>,
+        type: StatementType
+    ): void {
+        const startIndex = (type === StatementType.Function) ? 1 : 2
+        const startSelectionToken = tokens[startIndex]
+        let endSelectionToken: IToken
+        const paramTokens = new Array<IToken>()
+        for (let i = startIndex; i < context.children.length; i++) {
+            // Lookhead for the opening parenthesis if we have yet to find it and a lookahead is possible.
+            if (endSelectionToken === undefined && i + 1 < context.children.length) {
+                if (context.children[i + 1].getText().localeCompare('(') === 0) {
+                    let endSelectionIndex = (context.children[i + 1] as TerminalNode).symbol.tokenIndex
+                    endSelectionIndex -= tokens[0].tokenIndex
+                    endSelectionToken = tokens[endSelectionIndex]
+                }
+
+                continue
+            }
+
+            const child = context.children[i]
+            if (child instanceof TerminalNode) {
+                if (child.symbol.type === TspFastParser.NAME || child.symbol.type === TspFastParser.VARARG) {
+                    const paramIndex = child.symbol.tokenIndex - tokens[0].tokenIndex
+                    paramTokens.push(tokens[paramIndex])
+                }
+            }
         }
 
-        // TODO: handle function declarations (create symbols for all params)
+        const lastSymbol = this.symbolTable.lastSymbol()
 
-        // TODO: update the symbol table
+        const functionSymbol = (type === StatementType.Function)
+            ? FunctionSymbol.from(lastSymbol)
+            : FunctionLocalSymbol.from(lastSymbol)
+        if (functionSymbol.children === undefined && paramTokens.length > 0) {
+            functionSymbol.children = new Array()
+        }
+        functionSymbol.selectionRange = {
+            end: TokenUtil.getPosition(endSelectionToken as Token, endSelectionToken.text.length),
+            start: TokenUtil.getPosition(startSelectionToken as Token)
+        }
+        functionSymbol.name = this.document.getText(functionSymbol.selectionRange)
+        functionSymbol.end = TokenUtil.getPosition(
+            tokens[tokens.length - 1] as Token,
+            tokens[tokens.length - 1].text.length
+        )
+
+        for(let i = 0; i < paramTokens.length; i++) {
+            const token = paramTokens[i]
+
+            const symbol = new VariableLocalSymbol(
+                functionSymbol.uri,
+                TokenUtil.getPosition(token as Token)
+            )
+            symbol.detail = 'local'
+            symbol.end = TokenUtil.getPosition(token as Token, token.text.length)
+
+            if (token.type === TspFastParser.NAME) {
+                symbol.statementType = StatementType.AssignmentLocal
+                symbol.kind = StatementType.toSymbolKind(symbol.statementType)
+                symbol.name = token.text
+            }
+            else { // token type is VARARG
+                // Variadic functions create a table called "arg" containing all variable arguments.
+                symbol.children = new Array()
+                symbol.statementType = StatementType.AssignmentLocal
+                symbol.kind = SymbolKind.Object
+                symbol.name = 'arg'
+
+                // The "arg" table contains a length attribute "n"
+                const argLength = new VariableLocalSymbol(functionSymbol.uri, symbol.start)
+                argLength.detail = 'length'
+                argLength.end = symbol.end
+                argLength.statementType = StatementType.AssignmentLocal
+                argLength.kind = SymbolKind.Property
+                argLength.name = 'n'
+
+                symbol.children.push(argLength)
+            }
+
+            functionSymbol.children.splice(i, 0, symbol)
+        }
+
+        this.symbolTable.cacheSymbol(functionSymbol)
     }
 
     handleVariables(context: TspFastParser.StatementContext, tokens: Array<IToken>, type: StatementType): void {

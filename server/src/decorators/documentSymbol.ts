@@ -366,6 +366,40 @@ export class DocumentSymbol implements IDocumentSymbol {
     }
 }
 
+export class FunctionSymbol extends DocumentSymbol {
+    constructor(uri: string, start: vsls.Position) {
+        super(uri, start)
+    }
+
+    static from(symbol: DocumentSymbol): FunctionSymbol {
+        const result = new FunctionSymbol(symbol.uri, symbol.start)
+        result.children = result.children
+        result.detail = 'global'
+        result.statementType = StatementType.Function
+        result.kind = StatementType.toSymbolKind(result.statementType)
+
+        return result
+    }
+}
+
+export class FunctionLocalSymbol extends FunctionSymbol {
+    local: boolean = true
+
+    constructor(uri: string, start: vsls.Position) {
+        super(uri, start)
+    }
+
+    static from(symbol: DocumentSymbol): FunctionLocalSymbol {
+        const result = new FunctionLocalSymbol(symbol.uri, symbol.start)
+        result.children = result.children
+        result.detail = 'local'
+        result.statementType = StatementType.FunctionLocal
+        result.kind = StatementType.toSymbolKind(result.statementType)
+
+        return result
+    }
+}
+
 export class VariableSymbol extends DocumentSymbol {
     /**
      * The index of the assignment operator (=) within this object's stored Token
