@@ -18,7 +18,6 @@
 import { Token } from 'antlr4'
 import { SymbolKind } from 'vscode-languageserver'
 
-// tslint:disable:no-magic-numbers
 export enum StatementType {
     None,
     Assignment,
@@ -34,7 +33,6 @@ export enum StatementType {
     FunctionLocal,
     AssignmentLocal
 }
-// tslint:enable:no-magic-numbers
 export namespace StatementType {
     export function toSymbolKind(type: StatementType): SymbolKind | undefined {
         switch (type) {
