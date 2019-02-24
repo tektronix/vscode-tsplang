@@ -366,7 +366,7 @@ export class DocumentSymbol implements IDocumentSymbol {
     }
 }
 
-export class AssignmentSymbol extends DocumentSymbol {
+export class VariableSymbol extends DocumentSymbol {
     /**
      * The index of the assignment operator (=) within this object's stored Token
      * array.
@@ -392,8 +392,8 @@ export class AssignmentSymbol extends DocumentSymbol {
         super(uri, start)
     }
 
-    static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): AssignmentSymbol {
-        const result = new AssignmentSymbol(symbol.uri, symbol.start)
+    static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableSymbol {
+        const result = new VariableSymbol(symbol.uri, symbol.start)
         result.children = symbol.children
         result.detail = 'global'
         result.statementType = StatementType.Assignment
@@ -407,15 +407,15 @@ export class AssignmentSymbol extends DocumentSymbol {
     }
 }
 
-export class AssignmentLocalSymbol extends AssignmentSymbol {
+export class VariableLocalSymbol extends VariableSymbol {
     local: boolean = true
 
     constructor(uri: string, start: vsls.Position) {
         super(uri, start)
     }
 
-    static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): AssignmentLocalSymbol {
-        const result = new AssignmentLocalSymbol(symbol.uri, symbol.start)
+    static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableLocalSymbol {
+        const result = new VariableLocalSymbol(symbol.uri, symbol.start)
         result.children = symbol.children
         result.detail = 'local'
         result.statementType = StatementType.AssignmentLocal

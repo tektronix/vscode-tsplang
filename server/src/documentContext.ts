@@ -36,14 +36,14 @@ import {
 
 import { TspFastLexer, TspFastListener, TspFastParser, TspLexer, TspListener, TspParser } from './antlr4-tsplang'
 import {
-    AssignmentLocalSymbol,
-    AssignmentSymbol,
     CompletionItem,
     DocumentSymbol,
     IToken,
     Range,
     ResolvedNamespace,
-    SignatureInformation
+    SignatureInformation,
+    VariableLocalSymbol,
+    VariableSymbol
 } from './decorators'
 import { CommandSet } from './instrument'
 import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
@@ -125,10 +125,10 @@ class SymbolTable {
     }
 
     cacheSymbol(symbol: DocumentSymbol): void {
-        if (symbol instanceof AssignmentLocalSymbol) {
+        if (symbol instanceof VariableLocalSymbol) {
             // TODO: add this name to the local name list.
         }
-        else if (symbol instanceof AssignmentSymbol) {
+        else if (symbol instanceof VariableSymbol) {
             // TODO: add this name to the global name list.
         }
 
@@ -385,7 +385,10 @@ export class DocumentContext extends TspFastListener {
         }
 
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
-            this.handleAssignments(context, tokens, type)
+            this.handleVariables(context, tokens, type)
+        }
+    }
+
         }
 
         // TODO: handle function declarations (create symbols for all params)
@@ -393,7 +396,7 @@ export class DocumentContext extends TspFastListener {
         // TODO: update the symbol table
     }
 
-    handleAssignments(context: TspFastParser.StatementContext, tokens: Array<IToken>, type: StatementType): void {
+    handleVariables(context: TspFastParser.StatementContext, tokens: Array<IToken>, type: StatementType): void {
         const variableCommaIndices = new Array<number>()
         let assignmentIndex: number
 
@@ -417,8 +420,8 @@ export class DocumentContext extends TspFastListener {
         const lastSymbol = this.symbolTable.lastSymbol()
         for(let i = 0; i <= variableCommaIndices.length; i++) {
             const symbol = (type === StatementType.Assignment)
-                ? AssignmentSymbol.from(lastSymbol, i, assignmentIndex)
-                : AssignmentLocalSymbol.from(lastSymbol, i, assignmentIndex)
+                ? VariableSymbol.from(lastSymbol, i, assignmentIndex)
+                : VariableLocalSymbol.from(lastSymbol, i, assignmentIndex)
 
             let startSelectionIndex: number
             let startSelectionToken: IToken
