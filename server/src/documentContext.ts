@@ -392,6 +392,20 @@ export class DocumentContext extends TspFastListener {
         else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
             this.handleFunctionDeclarations(context, tokens, type)
         }
+        else {
+            const lastSymbol = this.symbolTable.lastSymbol()
+            lastSymbol.detail = TokenUtil.getString(...tokens as Array<Token>)
+            lastSymbol.statementType = StatementType.None
+            lastSymbol.kind = SymbolKind.File
+
+            const lastToken = tokens[tokens.length - 1]
+            lastSymbol.end = TokenUtil.getPosition(lastToken as Token, lastToken.text.length)
+
+            lastSymbol.name = `(${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
+            lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
+
+            this.symbolTable.cacheSymbol(lastSymbol)
+        }
     }
 
     handleFunctionDeclarations(
