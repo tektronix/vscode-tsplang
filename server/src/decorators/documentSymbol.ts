@@ -373,7 +373,7 @@ export class FunctionSymbol extends DocumentSymbol {
 
     static from(symbol: DocumentSymbol): FunctionSymbol {
         const result = new FunctionSymbol(symbol.uri, symbol.start)
-        result.children = result.children
+        result.children = symbol.children
         result.detail = 'global'
         result.statementType = StatementType.Function
         result.kind = StatementType.toSymbolKind(result.statementType)
@@ -391,7 +391,7 @@ export class FunctionLocalSymbol extends FunctionSymbol {
 
     static from(symbol: DocumentSymbol): FunctionLocalSymbol {
         const result = new FunctionLocalSymbol(symbol.uri, symbol.start)
-        result.children = result.children
+        result.children = symbol.children
         result.detail = 'local'
         result.statementType = StatementType.FunctionLocal
         result.kind = StatementType.toSymbolKind(result.statementType)
