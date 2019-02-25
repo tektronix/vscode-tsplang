@@ -39,12 +39,14 @@ export class DocumentSymbol implements IDocumentSymbol {
     local: boolean = false
     name: string
     range: vsls.Range
+    references?: Array<vsls.Location>
     selectionRange: vsls.Range
     readonly start: vsls.Position
     statementType: StatementType
     tokens?: Array<IToken>
     uri: string
 
+    private _declaration?: vsls.LocationLink
     private _end: vsls.Position
     // private enteredStatementException: boolean
     // private exceptionTokenIndex?: number
@@ -68,6 +70,14 @@ export class DocumentSymbol implements IDocumentSymbol {
         this.start = start
     }
 
+    get declaration(): vsls.LocationLink | undefined {
+        return this._declaration
+    }
+
+    set declaration(value: vsls.LocationLink | undefined) {
+        this._declaration = value
+    }
+
     get end(): vsls.Position {
         return this._end
     }
@@ -85,6 +95,14 @@ export class DocumentSymbol implements IDocumentSymbol {
     }
 
     link(from: vsls.Range): vsls.LocationLink {
+        if (this.references === undefined) {
+            this.references = new Array()
+        }
+        this.references.push({
+            range: from,
+            uri: this.uri
+        })
+
         return {
             originSelectionRange: from,
             targetRange: this.range,
