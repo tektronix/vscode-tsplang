@@ -249,11 +249,11 @@ export class DocumentContext extends TspFastListener {
 
     get symbols(): Array<DocumentSymbol> {
         if (this.settings.debug.outline) {
-            return this._symbols
+            return this.symbolTable.complete
         }
         else {
             const prunedSymbols = new Array<DocumentSymbol>()
-            for (const symbol of this._symbols) {
+            for (const symbol of this.symbolTable.complete) {
                 if (this.prunePredicate(symbol)) {
                     // Extract pruned grandchildren that aren't local declarations.
                     const orphans = (symbol.prune(this.prunePredicate).children as Array<DocumentSymbol>)
@@ -285,6 +285,11 @@ export class DocumentContext extends TspFastListener {
 
         //     this.exceptionTokenIndex = undefined
         // }
+
+        // Mark all cached root symbols as completed.
+        this.symbolTable.complete = (this.symbolTable.symbolCache.get(0) || [])
+        // Flush all symbols from the cache.
+        this.symbolTable.symbolCache = new Map()
     }
 
     enterStatement(context: TspFastParser.StatementContext): void {
