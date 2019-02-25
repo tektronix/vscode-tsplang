@@ -426,7 +426,7 @@ export class DocumentContext extends TspFastListener {
             // Lookhead for the opening parenthesis if we have yet to find it and a lookahead is possible.
             if (endSelectionToken === undefined && i + 1 < context.children.length) {
                 if (context.children[i + 1].getText().localeCompare('(') === 0) {
-                    let endSelectionIndex = (context.children[i + 1] as TerminalNode).symbol.tokenIndex
+                    let endSelectionIndex = (context.children[i] as TerminalNode).symbol.tokenIndex
                     endSelectionIndex -= tokens[0].tokenIndex
                     endSelectionToken = tokens[endSelectionIndex]
                 }
