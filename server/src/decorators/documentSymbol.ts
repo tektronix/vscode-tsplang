@@ -29,10 +29,13 @@ import './antlr4'
 import { Range } from './range'
 
 export interface IDocumentSymbol extends vsls.DocumentSymbol {
+    declaration?: vsls.LocationLink
     local: boolean
+    references?: Array<vsls.Location>
 }
 export class DocumentSymbol implements IDocumentSymbol {
     children?: Array<DocumentSymbol>
+    declaration?: vsls.LocationLink
     deprecated?: boolean
     detail?: string
     kind: vsls.SymbolKind
@@ -46,7 +49,6 @@ export class DocumentSymbol implements IDocumentSymbol {
     tokens?: Array<IToken>
     uri: string
 
-    private _declaration?: vsls.LocationLink
     private _end: vsls.Position
     // private enteredStatementException: boolean
     // private exceptionTokenIndex?: number
@@ -68,14 +70,6 @@ export class DocumentSymbol implements IDocumentSymbol {
     constructor(uri: string, start: vsls.Position) {
         this.uri = uri
         this.start = start
-    }
-
-    get declaration(): vsls.LocationLink | undefined {
-        return this._declaration
-    }
-
-    set declaration(value: vsls.LocationLink | undefined) {
-        this._declaration = value
     }
 
     get end(): vsls.Position {
@@ -117,12 +111,14 @@ export class DocumentSymbol implements IDocumentSymbol {
     prune(predicate: (value: DocumentSymbol) => boolean): IDocumentSymbol {
         const clone: IDocumentSymbol = {
             children: new Array(),
+            declaration: this.declaration,
             deprecated: this.deprecated,
             detail: this.detail,
             kind: this.kind,
             local: this.local,
             name: this.name,
             range: this.range,
+            references: this.references,
             selectionRange: this.selectionRange
         }
 
@@ -392,7 +388,9 @@ export class FunctionSymbol extends DocumentSymbol {
     static from(symbol: DocumentSymbol): FunctionSymbol {
         const result = new FunctionSymbol(symbol.uri, symbol.start)
         result.children = symbol.children
+        result.declaration = symbol.declaration
         result.detail = 'global'
+        result.references = symbol.references
         result.statementType = StatementType.Function
         result.kind = StatementType.toSymbolKind(result.statementType)
 
@@ -410,7 +408,9 @@ export class FunctionLocalSymbol extends FunctionSymbol {
     static from(symbol: DocumentSymbol): FunctionLocalSymbol {
         const result = new FunctionLocalSymbol(symbol.uri, symbol.start)
         result.children = symbol.children
+        result.declaration = symbol.declaration
         result.detail = 'local'
+        result.references = symbol.references
         result.statementType = StatementType.FunctionLocal
         result.kind = StatementType.toSymbolKind(result.statementType)
 
@@ -447,7 +447,9 @@ export class VariableSymbol extends DocumentSymbol {
     static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableSymbol {
         const result = new VariableSymbol(symbol.uri, symbol.start)
         result.children = symbol.children
+        result.declaration = symbol.declaration
         result.detail = 'global'
+        result.references = symbol.references
         result.statementType = StatementType.Assignment
         result.kind = StatementType.toSymbolKind(result.statementType)
         if (variableIndex !== undefined) {
@@ -469,7 +471,9 @@ export class VariableLocalSymbol extends VariableSymbol {
     static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableLocalSymbol {
         const result = new VariableLocalSymbol(symbol.uri, symbol.start)
         result.children = symbol.children
+        result.declaration = symbol.declaration
         result.detail = 'local'
+        result.references = symbol.references
         result.statementType = StatementType.AssignmentLocal
         result.kind = StatementType.toSymbolKind(result.statementType)
         if (variableIndex !== undefined) {

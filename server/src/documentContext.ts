@@ -107,7 +107,6 @@ class DebugTimer {
 
 class SymbolTable {
     complete: Array<DocumentSymbol>
-    links: Array<LocationLink>
     symbolCache: Map<number, Array<DocumentSymbol>>
 
     private _statementDepth: number
@@ -157,6 +156,61 @@ class SymbolTable {
         this.symbolCache.delete(this.statementDepth + 1)
 
         return result
+    }
+
+    link(name: string, range: Range): LocationLink | undefined {
+        for (let i = this.statementDepth; i >= 0; i--) {
+            for (const symbol of (this.symbolCache.get(i) || [])) {
+                if (symbol.name === undefined) {
+                    continue
+                }
+
+                if (symbol.name.localeCompare(name) === 0) {
+                    return symbol.link(range)
+                }
+            }
+        }
+
+        return
+    }
+
+    lookup(range: Range): DocumentSymbol | undefined {
+        let lookahead = this.lookupBinarySearch(range, this.complete)
+
+        let result: DocumentSymbol
+        while (lookahead !== undefined) {
+            result = lookahead
+            lookahead = this.lookupBinarySearch(range, lookahead.children || [])
+        }
+
+        return result
+    }
+
+    private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): DocumentSymbol | undefined => {
+        let start = 0
+        let stop = symbols.length - 1
+
+        while (start <= stop) {
+            // tslint:disable-next-line: no-magic-numbers
+            const index = Math.floor((start + stop) / 2)
+
+            const comparison = Range.compare(symbols[index].selectionRange, target)
+
+            // If our index is too small.
+            if (comparison < 0) {
+                start = index + 1
+            }
+            // If our index is too big.
+            else if (comparison > 0) {
+                stop = index - 1
+            }
+            // If our index is just right.
+            else {
+                return symbols[index]
+            }
+        }
+
+        return
     }
 }
 
@@ -494,7 +548,24 @@ export class DocumentContext extends TspFastListener {
                 symbol.children.push(argLength)
             }
 
-            functionSymbol.children.splice(i, 0, symbol)
+            // Update all child symbol links whose name matches the parameter.
+            functionSymbol.children = functionSymbol.children.map((value: DocumentSymbol) => {
+                if (value.name !== undefined && value.name.localeCompare(symbol.name) === 0) {
+                    // Remove all back-references from was is now just a parameter reference.
+                    if (value.references !== undefined) {
+                        value.references = undefined
+                    }
+
+                    value.declaration = symbol.link(value.selectionRange)
+                    value.detail = 'local'
+                    value.local = true
+                    return value as VariableLocalSymbol
+                }
+
+                return value
+            })
+
+            functionSymbol.children.push(symbol)
         }
 
         this.symbolTable.cacheSymbol(functionSymbol)
@@ -559,6 +630,7 @@ export class DocumentContext extends TspFastListener {
                 tokens[tokens.length - 1] as Token,
                 tokens[tokens.length - 1].text.length
             )
+            symbol.declaration = this.symbolTable.link(symbol.name, symbol.range)
 
             if (type === StatementType.Assignment) {
                 let tokenIndex: number
