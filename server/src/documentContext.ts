@@ -242,7 +242,14 @@ export class DocumentContext extends TspFastListener {
     private inputStream: InputStream
     private lexer: TspFastLexer
     private parser: TspFastParser
-    private prunePredicate = (value: DocumentSymbol): boolean => value.kind === SymbolKind.File
+    /**
+     * DocumentSymbols that evaluate to true will be pruned from the reported
+     * array.
+     */
+    private prunePredicate = (value: DocumentSymbol): boolean => {
+        return (value.kind === SymbolKind.File
+            || value.declaration !== undefined)
+    }
     // private parseTree: ParserRuleContext
     // /**
     //  * A Map keyed to the ending offset of a function call's open parenthesis.
