@@ -19,7 +19,6 @@ import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
     Diagnostic,
-    DocumentSymbol as vslsDocumentSymbol,
     SignatureHelp,
     TextDocument,
     TextDocumentContentChangeEvent,
@@ -39,7 +38,7 @@ import {
     ErrorNotification,
     SettingsNotification,
     SignatureRequest,
-    SymbolNotification
+    SymbolRequest
 } from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
@@ -50,11 +49,12 @@ const connection = rpc.createMessageConnection(
 )
 console.log(`pid ${process.pid}: established connection`)
 
-// let documentContext: Promise<DocumentContext>
 let documentContext: DocumentContext | undefined
 const firstlineRegExp = new RegExp(/^[^\n\r]*/)
 let instrument: Instrument
+let settings: TsplangSettings
 let shebang: Shebang
+let textDocumentItem: TextDocumentItem
 // tslint:disable-next-line:no-magic-numbers
 const uri: string = process.argv[2]
 
@@ -90,24 +90,18 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     // proc.context.update(changes)
-
-    // Update the server-side symbol cache.
-    connection.sendNotification(SymbolNotification, { uri, symbols: documentContext.symbols })
 })
 
-connection.onNotification(SettingsNotification, (settings: TsplangSettings) => {
+connection.onNotification(SettingsNotification, (received: TsplangSettings) => {
     if (documentContext) {
-        documentContext.settings = settings
-
-        // Update the server-side symbol cache.
-        connection.sendNotification(SymbolNotification, { uri, symbols: documentContext.symbols })
+        documentContext.settings = received
     }
 })
 
 connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {
-    // if (proc.context) {
-    //     return proc.context.getCompletionItems(params.position)
-    // }
+    // TODO: provide dumb completions while waiting for a DocumentContext.
+
+    // TODO: get completions from the DocumentContext.
 
     return
 })
@@ -127,6 +121,13 @@ connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): Sig
     return
 })
 
+connection.onRequest(SymbolRequest, (): Array<DocumentSymbol> => {
+    // Create the context for this document.
+    documentContext = new DocumentContext(textDocumentItem, instrument.set, settings)
+
+    return documentContext.symbols
+})
+
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
 
@@ -143,6 +144,10 @@ else {
 }
 
 function onContextReply(contextReply: ContextReply): void {
+    // Store information that a later DocumentContext will require.
+    textDocumentItem = contextReply.item
+    settings = contextReply.settings
+
     const firstLine = firstlineRegExp.exec(contextReply.item.text)[0]
 
     let diagnostics: Array<Diagnostic>
@@ -151,12 +156,6 @@ function onContextReply(contextReply: ContextReply): void {
     let loadDiagnostics: Array<Diagnostic>
     // Try to generate instrument information for this document.
     [instrument, loadDiagnostics] = load(shebang)
-
-    // Create the context for this document.
-    documentContext = new DocumentContext(contextReply.item, instrument.set, contextReply.settings)
-
-    // Update the server-side symbol cache.
-    connection.sendNotification(SymbolNotification, { uri, symbols: documentContext.symbols })
 
     // Collect all diagnostics.
     diagnostics.push(...loadDiagnostics)
