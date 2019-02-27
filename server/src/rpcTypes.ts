@@ -42,12 +42,10 @@ export const CompletionRequest = new RequestType<TextDocumentPositionParams, Com
 
 export const CompletionResolveRequest = new RequestType<CompletionItem, CompletionItem, void, void>('CompletionResolveRequest')
 
-export interface ContextReply {
+export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')
+
+export interface ProcessContext {
     item: TextDocumentItem
     settings: TsplangSettings
 }
-export const ContextRequest = new RequestType<string, ContextReply, void, void>('ContextRequest')
-
-export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')
-
-export const SymbolRequest = new RequestType<void, Array<DocumentSymbol>, void, void>('SymbolRequest')
+export const SymbolRequest = new RequestType<ProcessContext | undefined, Array<DocumentSymbol>, void, void>('SymbolRequest')

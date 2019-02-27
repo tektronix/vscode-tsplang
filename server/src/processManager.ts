@@ -43,9 +43,8 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
-    ContextReply,
-    ContextRequest,
     ErrorNotification,
+    ProcessContext,
     SettingsNotification,
     SignatureRequest,
     SymbolRequest
@@ -55,7 +54,7 @@ import { Shebang } from './shebang'
 
 interface Child {
     connection: rpc.MessageConnection
-    init: ContextReply
+    init: ProcessContext
     proc: ChildProcess
 }
 
@@ -67,12 +66,14 @@ export class ProcessManager {
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
     lastCompletionUri?: string
+    readonly notInitialized: Map<string, undefined>
 
     constructor(connection: IConnection) {
         this.children = new Map()
         this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
         this.globalSettings = TsplangSettings.defaults()
         this.hasWorkspaceSettings = false
+        this.notInitialized = new Map()
 
         this.connection = connection
     }
@@ -140,12 +141,10 @@ export class ProcessManager {
             }
 
             this.children.set(params.textDocument.uri, child)
+            this.notInitialized.set(params.textDocument.uri, undefined)
 
             child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
                 this.connection.sendDiagnostics(value)
-            })
-            child.connection.onRequest(ContextRequest, (uri: string): ContextReply => {
-                return this.children.get(uri).init
             })
 
             connection.trace(rpc.Trace.Messages, console)
@@ -229,10 +228,11 @@ export class ProcessManager {
         return child.connection.sendRequest(SignatureRequest, params)
     }
 
-    async symbol(params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> {
+    symbol(params: DocumentSymbolParams): Thenable<Array<DocumentSymbol>> {
         const child = this.children.get(params.textDocument.uri)
+        const check = this.notInitialized.delete(params.textDocument.uri)
 
-        return child.connection.sendRequest(SymbolRequest, undefined)
+        return child.connection.sendRequest(SymbolRequest, (check) ? child.init : undefined)
     }
 
     /* Internal Methods */

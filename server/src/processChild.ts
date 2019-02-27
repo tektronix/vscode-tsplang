@@ -33,9 +33,8 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
-    ContextReply,
-    ContextRequest,
     ErrorNotification,
+    ProcessContext,
     SettingsNotification,
     SignatureRequest,
     SymbolRequest
@@ -81,7 +80,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     if (shebangEdited) {
-        onContextReply({
+        updateProcessContext({
             item,
             settings: context.settings
         })
@@ -121,9 +120,15 @@ connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): Sig
     return
 })
 
-connection.onRequest(SymbolRequest, (): Array<DocumentSymbol> => {
-    // Create the context for this document.
-    documentContext = new DocumentContext(textDocumentItem, instrument.set, settings)
+connection.onRequest(SymbolRequest, (params: ProcessContext): Array<DocumentSymbol> => {
+    if (textDocumentItem === undefined || instrument === undefined || settings === undefined) {
+        updateProcessContext(params)
+    }
+
+    if (documentContext === undefined) {
+        // Create the context for this document.
+        documentContext = new DocumentContext(textDocumentItem, instrument.set, settings)
+    }
 
     return documentContext.symbols
 })
@@ -131,24 +136,12 @@ connection.onRequest(SymbolRequest, (): Array<DocumentSymbol> => {
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
 
-/* Process Child Initialization */
-
-if (process.env.TSPLANG_DEBUG) {
-    // Give dev time to attach to this document before continuing.
-    const contextRequest: Thenable<ContextReply> = connection.sendRequest(ContextRequest, uri)
-    // tslint:disable-next-line:no-magic-numbers
-    setTimeout(() => contextRequest.then(onContextReply), 10000)
-}
-else {
-    connection.sendRequest(ContextRequest, uri).then(onContextReply)
-}
-
-function onContextReply(contextReply: ContextReply): void {
+function updateProcessContext(params: ProcessContext): void {
     // Store information that a later DocumentContext will require.
-    textDocumentItem = contextReply.item
-    settings = contextReply.settings
+    textDocumentItem = params.item
+    settings = params.settings
 
-    const firstLine = firstlineRegExp.exec(contextReply.item.text)[0]
+    const firstLine = firstlineRegExp.exec(textDocumentItem.text)[0]
 
     let diagnostics: Array<Diagnostic>
     [shebang, diagnostics] = Shebang.tokenize(firstLine)
