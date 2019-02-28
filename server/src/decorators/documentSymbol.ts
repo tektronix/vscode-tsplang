@@ -29,11 +29,13 @@ import './antlr4'
 import { Range } from './range'
 
 export interface IDocumentSymbol extends vsls.DocumentSymbol {
+    builtin: boolean
     declaration?: vsls.LocationLink
     local: boolean
     references?: Array<vsls.Location>
 }
 export class DocumentSymbol implements IDocumentSymbol {
+    builtin: boolean = false
     children?: Array<DocumentSymbol>
     declaration?: vsls.LocationLink
     deprecated?: boolean
@@ -110,6 +112,7 @@ export class DocumentSymbol implements IDocumentSymbol {
      */
     prune(predicate: (value: DocumentSymbol) => boolean): IDocumentSymbol {
         const clone: IDocumentSymbol = {
+            builtin: this.builtin,
             children: new Array(),
             declaration: this.declaration,
             deprecated: this.deprecated,
@@ -446,6 +449,7 @@ export class VariableSymbol extends DocumentSymbol {
 
     static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableSymbol {
         const result = new VariableSymbol(symbol.uri, symbol.start)
+        result.builtin = symbol.builtin
         result.children = symbol.children
         result.declaration = symbol.declaration
         result.detail = 'global'

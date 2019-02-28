@@ -247,8 +247,9 @@ export class DocumentContext extends TspFastListener {
      * array.
      */
     private prunePredicate = (value: DocumentSymbol): boolean => {
-        return (value.kind === SymbolKind.File
-            || value.declaration !== undefined)
+        return value.kind === SymbolKind.File
+            || value.declaration !== undefined
+            || value.builtin
     }
     // private parseTree: ParserRuleContext
     // /**
