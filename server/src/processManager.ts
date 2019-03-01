@@ -32,7 +32,10 @@ import {
     IConnection,
     InitializeParams,
     InitializeResult,
+    Location,
+    LocationLink,
     PublishDiagnosticsParams,
+    ReferenceParams,
     SignatureHelp,
     TextDocumentPositionParams,
     TextDocumentSyncKind
@@ -43,8 +46,10 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
+    DefinitionRequest,
     ErrorNotification,
     ProcessContext,
+    ReferencesRequest,
     SettingsNotification,
     SignatureRequest,
     SymbolRequest
@@ -66,14 +71,12 @@ export class ProcessManager {
     globalSettings: TsplangSettings
     hasWorkspaceSettings: boolean
     lastCompletionUri?: string
-    readonly notInitialized: Map<string, undefined>
 
     constructor(connection: IConnection) {
         this.children = new Map()
         this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
         this.globalSettings = TsplangSettings.defaults()
         this.hasWorkspaceSettings = false
-        this.notInitialized = new Map()
 
         this.connection = connection
     }
@@ -94,6 +97,12 @@ export class ProcessManager {
         return child.connection.sendRequest(CompletionResolveRequest, item)
     }
 
+    definition(params: TextDocumentPositionParams): Thenable<LocationLink> {
+        const child = this.children.get(params.textDocument.uri)
+
+        return child.connection.sendRequest(DefinitionRequest, params.position)
+    }
+
     dispose(): void {
         if (this.disposable) {
             this.disposable.then((value: Disposable) => value.dispose())
@@ -104,7 +113,7 @@ export class ProcessManager {
         })
     }
 
-    documentChange = (params: DidChangeTextDocumentParams): void => {
+    documentChange(params: DidChangeTextDocumentParams): void {
         this.children.get(params.textDocument.uri).connection.sendNotification(
             ChangeNotification,
             params.contentChanges
@@ -141,7 +150,6 @@ export class ProcessManager {
             }
 
             this.children.set(params.textDocument.uri, child)
-            this.notInitialized.set(params.textDocument.uri, undefined)
 
             child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
                 this.connection.sendDiagnostics(value)
@@ -173,7 +181,9 @@ export class ProcessManager {
                     resolveProvider: true,
                     triggerCharacters: ['.']
                 },
+                definitionProvider: true,
                 documentSymbolProvider: true,
+                referencesProvider: true,
                 // display information about the function/method that is being called
                 signatureHelpProvider: {
                     triggerCharacters: [',', '(']
@@ -190,6 +200,12 @@ export class ProcessManager {
                 section: 'tsplang'
             })
         }
+    }
+
+    references(params: ReferenceParams): Thenable<Array<Location>> {
+        const child = this.children.get(params.textDocument.uri)
+
+        return child.connection.sendRequest(ReferencesRequest, params.position)
     }
 
     settingsChange = (params: DidChangeConfigurationParams): void => {
@@ -230,9 +246,8 @@ export class ProcessManager {
 
     symbol(params: DocumentSymbolParams): Thenable<Array<DocumentSymbol>> {
         const child = this.children.get(params.textDocument.uri)
-        const check = this.notInitialized.delete(params.textDocument.uri)
 
-        return child.connection.sendRequest(SymbolRequest, (check) ? child.init : undefined)
+        return child.connection.sendRequest(SymbolRequest, child.init)
     }
 
     /* Internal Methods */

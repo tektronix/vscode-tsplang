@@ -194,14 +194,14 @@ class SymbolTable {
             // tslint:disable-next-line: no-magic-numbers
             const index = Math.floor((start + stop) / 2)
 
-            const comparison = Range.compare(symbols[index].selectionRange, target)
+            const comparison = Range.compare(target, symbols[index].range)
 
             // If our index is too small.
-            if (comparison < 0) {
+            if (comparison > 0) {
                 start = index + 1
             }
             // If our index is too big.
-            else if (comparison > 0) {
+            else if (comparison < 0) {
                 stop = index - 1
             }
             // If our index is just right.
@@ -223,11 +223,9 @@ export class DocumentContext extends TspFastListener {
     // ranges: Array<Range>
     // statements: WeakMap<Range, TspFastParser.StatementContext>
     exceptionTokenIndex?: number
+    settings: TsplangSettings
+    symbolTable: SymbolTable
 
-    private _settings: TsplangSettings
-    private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
-    private _symbols: Array<DocumentSymbol>
-    private symbolTable: SymbolTable
     private childCache: Map<number, Array<DocumentSymbol>>
     // private enteredStatementException: boolean
     // /**
@@ -242,15 +240,6 @@ export class DocumentContext extends TspFastListener {
     private inputStream: InputStream
     private lexer: TspFastLexer
     private parser: TspFastParser
-    /**
-     * DocumentSymbols that evaluate to true will be pruned from the reported
-     * array.
-     */
-    private prunePredicate = (value: DocumentSymbol): boolean => {
-        return value.kind === SymbolKind.File
-            || value.declaration !== undefined
-            || value.builtin
-    }
     // private parseTree: ParserRuleContext
     // /**
     //  * A Map keyed to the ending offset of a function call's open parenthesis.
@@ -283,7 +272,6 @@ export class DocumentContext extends TspFastListener {
         // this.signatures = new Map()
 
         this.exceptionRanges = new Array()
-        this._symbols = new Array()
         this.symbolTable = new SymbolTable()
         this.childCache = new Map()
         this.timer = new DebugTimer()
@@ -298,37 +286,6 @@ export class DocumentContext extends TspFastListener {
 
         // this.parseTree = this.parser.chunk()
         this.parser.chunk()
-    }
-
-    get settings(): TsplangSettings {
-        return this._settings
-    }
-
-    set settings(value: TsplangSettings) {
-        this._settings = value
-        this._sortMap = TsplangSettings.sortMap(this._settings)
-    }
-
-    get symbols(): Array<DocumentSymbol> {
-        if (this.settings.debug.outline) {
-            return this.symbolTable.complete
-        }
-        else {
-            const prunedSymbols = new Array<DocumentSymbol>()
-            for (const symbol of this.symbolTable.complete) {
-                if (this.prunePredicate(symbol)) {
-                    // Extract pruned grandchildren that aren't local declarations.
-                    const orphans = (symbol.prune(this.prunePredicate).children as Array<DocumentSymbol>)
-                        .filter((value: DocumentSymbol) => !value.local)
-                    prunedSymbols.push(...orphans)
-                }
-                else {
-                    prunedSymbols.push(symbol.prune(this.prunePredicate) as DocumentSymbol)
-                }
-            }
-
-            return prunedSymbols
-        }
     }
 
     enterChunk(): void {

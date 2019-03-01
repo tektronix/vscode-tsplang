@@ -93,6 +93,14 @@ export class DocumentSymbol implements IDocumentSymbol {
     link(from: vsls.Range): vsls.LocationLink {
         if (this.references === undefined) {
             this.references = new Array()
+            if (this.declaration === undefined) {
+                this.declaration = {
+                    originSelectionRange: this.selectionRange,
+                    targetRange: this.range,
+                    targetSelectionRange: this.selectionRange,
+                    targetUri: this.uri
+                }
+            }
         }
         this.references.push({
             range: from,

@@ -19,7 +19,11 @@ import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
     Diagnostic,
+    Location,
+    LocationLink,
+    Position,
     SignatureHelp,
+    SymbolKind,
     TextDocument,
     TextDocumentContentChangeEvent,
     TextDocumentItem,
@@ -33,8 +37,10 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
+    DefinitionRequest,
     ErrorNotification,
     ProcessContext,
+    ReferencesRequest,
     SettingsNotification,
     SignatureRequest,
     SymbolRequest
@@ -48,9 +54,17 @@ const connection = rpc.createMessageConnection(
 )
 console.log(`pid ${process.pid}: established connection`)
 
+connection.listen()
+console.log(`pid ${process.pid}: listening on the connection`)
+
 let documentContext: DocumentContext | undefined
-const firstlineRegExp = new RegExp(/^[^\n\r]*/)
+let firstlineRegExp: RegExp
 let instrument: Instrument
+/**
+ * DocumentSymbols that evaluate to true will be pruned from the reported
+ * array.
+ */
+let prunePredicate: (value: DocumentSymbol) => boolean
 let settings: TsplangSettings
 let shebang: Shebang
 let textDocumentItem: TextDocumentItem
@@ -92,6 +106,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
 })
 
 connection.onNotification(SettingsNotification, (received: TsplangSettings) => {
+    settings = received
     if (documentContext) {
         documentContext.settings = received
     }
@@ -112,6 +127,27 @@ connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Pro
     return
 })
 
+connection.onRequest(DefinitionRequest, (position: Position): LocationLink | undefined => {
+    const here = documentContext.symbolTable.lookup({ end: position, start: position })
+
+    return here.declaration
+})
+
+connection.onRequest(ReferencesRequest, (position: Position): Array<Location> => {
+    const have = documentContext.symbolTable.lookup({ end: position, start: position })
+
+    if (have === undefined) {
+        return []
+    }
+    else if (have.declaration === undefined) {
+        return []
+    }
+
+    const definition = documentContext.symbolTable.lookup(have.declaration.targetSelectionRange)
+
+    return definition.references || []
+})
+
 connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): SignatureHelp | undefined => {
     // if (proc.context) {
     //     return proc.context.getSignatureHelp(params.position)
@@ -121,6 +157,14 @@ connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): Sig
 })
 
 connection.onRequest(SymbolRequest, (params: ProcessContext): Array<DocumentSymbol> => {
+    if (prunePredicate === undefined) {
+        prunePredicate = (value: DocumentSymbol): boolean => {
+            return value.kind === SymbolKind.File
+                || (value.declaration !== undefined && value.references === undefined)
+                || value.builtin
+        }
+    }
+
     if (textDocumentItem === undefined || instrument === undefined || settings === undefined) {
         updateProcessContext(params)
     }
@@ -130,16 +174,35 @@ connection.onRequest(SymbolRequest, (params: ProcessContext): Array<DocumentSymb
         documentContext = new DocumentContext(textDocumentItem, instrument.set, settings)
     }
 
-    return documentContext.symbols
-})
+    if (settings.debug.outline) {
+        return documentContext.symbolTable.complete
+    }
+    else {
+        const prunedSymbols = new Array<DocumentSymbol>()
+        for (const symbol of documentContext.symbolTable.complete) {
+            if (prunePredicate(symbol)) {
+                // Extract pruned grandchildren that aren't local declarations.
+                const orphans = (symbol.prune(prunePredicate).children as Array<DocumentSymbol>)
+                    .filter((value: DocumentSymbol) => !value.local)
+                prunedSymbols.push(...orphans)
+            }
+            else {
+                prunedSymbols.push(symbol.prune(prunePredicate) as DocumentSymbol)
+            }
+        }
 
-connection.listen()
-console.log(`pid ${process.pid}: listening on the connection`)
+        return prunedSymbols
+    }
+})
 
 function updateProcessContext(params: ProcessContext): void {
     // Store information that a later DocumentContext will require.
     textDocumentItem = params.item
     settings = params.settings
+
+    if (firstlineRegExp === undefined) {
+        firstlineRegExp = new RegExp(/^[^\n\r]*/)
+    }
 
     const firstLine = firstlineRegExp.exec(textDocumentItem.text)[0]
 

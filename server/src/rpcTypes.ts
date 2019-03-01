@@ -20,6 +20,9 @@ import {
     CompletionList,
     Diagnostic,
     DocumentSymbol,
+    Location,
+    LocationLink,
+    Position,
     PublishDiagnosticsParams,
     SignatureHelp,
     TextDocumentContentChangeEvent,
@@ -41,6 +44,10 @@ export const SettingsNotification = new NotificationType<TsplangSettings, void>(
 export const CompletionRequest = new RequestType<TextDocumentPositionParams, CompletionList | undefined, void, void>('CompletionRequest')
 
 export const CompletionResolveRequest = new RequestType<CompletionItem, CompletionItem, void, void>('CompletionResolveRequest')
+
+export const DefinitionRequest = new RequestType<Position, LocationLink | undefined, void, void>('DefinitionRequest')
+
+export const ReferencesRequest = new RequestType<Position, Array<Location>, void, void>('ReferencesRequest')
 
 export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')
 

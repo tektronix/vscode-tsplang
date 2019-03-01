@@ -15,7 +15,15 @@
  */
 'use strict'
 
-import { createConnection, IConnection, IPCMessageReader, IPCMessageWriter } from 'vscode-languageserver'
+import {
+    createConnection,
+    DidOpenTextDocumentParams,
+    DocumentSymbol,
+    DocumentSymbolParams,
+    IConnection,
+    IPCMessageReader,
+    IPCMessageWriter
+} from 'vscode-languageserver'
 
 import { ProcessManager } from './processManager'
 
@@ -24,9 +32,6 @@ const connection: IConnection = createConnection(
     new IPCMessageReader(process),
     new IPCMessageWriter(process)
 )
-
-// // Create a TSP Manager to provide command set completions.
-// const manager: TspManager = new TspManager()
 
 const manager = new ProcessManager(connection)
 
@@ -37,6 +42,9 @@ connection.onInitialize(manager.initialize.bind(manager))
 connection.onInitialized(manager.initialized.bind(manager))
 
 connection.onDidOpenTextDocument(manager.documentOpen.bind(manager))
+// connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams): void => {
+//     manager.documentOpen(params)
+// })
 
 connection.onDidChangeTextDocument(manager.documentChange.bind(manager))
 
@@ -48,9 +56,16 @@ connection.onCompletion(manager.completion.bind(manager))
 // This handler resolves additional information for the item selected in the completion list.
 connection.onCompletionResolve(manager.completionResolve.bind(manager))
 
+connection.onDefinition(manager.definition.bind(manager))
+
 connection.onDidChangeConfiguration(manager.settingsChange.bind(manager))
 
 connection.onDocumentSymbol(manager.symbol.bind(manager))
+// connection.onDocumentSymbol((params: DocumentSymbolParams): Thenable<Array<DocumentSymbol>> => {
+//     return manager.symbol(params)
+// })
+
+connection.onReferences(manager.references.bind(manager))
 
 connection.onSignatureHelp(manager.signature.bind(manager))
 
