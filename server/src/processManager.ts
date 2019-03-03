@@ -64,7 +64,7 @@ interface Child {
 }
 
 export class ProcessManager {
-    readonly children: Map<string, Child>
+    readonly children: Map<string, Promise<Child>>
     connection: IConnection
     disposable?: Thenable<Disposable>
     readonly firstlineRegExp: RegExp
@@ -86,19 +86,19 @@ export class ProcessManager {
     async completion(params: TextDocumentPositionParams): Promise<CompletionList | undefined> {
         this.lastCompletionUri = params.textDocument.uri
 
-        const child = this.children.get(params.textDocument.uri)
+        const child = await this.children.get(params.textDocument.uri)
 
         return child.connection.sendRequest(CompletionRequest, params)
     }
 
     async completionResolve(item: CompletionItem): Promise<CompletionItem> {
-        const child = this.children.get(this.lastCompletionUri)
+        const child = await this.children.get(this.lastCompletionUri)
 
         return child.connection.sendRequest(CompletionResolveRequest, item)
     }
 
-    definition(params: TextDocumentPositionParams): Thenable<LocationLink> {
-        const child = this.children.get(params.textDocument.uri)
+    async definition(params: TextDocumentPositionParams): Promise<LocationLink> {
+        const child = await this.children.get(params.textDocument.uri)
 
         return child.connection.sendRequest(DefinitionRequest, params.position)
     }
@@ -108,13 +108,13 @@ export class ProcessManager {
             this.disposable.then((value: Disposable) => value.dispose())
         }
 
-        this.children.forEach((value: Child) => {
-            this._release(value.init.item.uri)
+        this.children.forEach((value: Promise<Child>) => {
+            value.then((child: Child) => this._release(child.init.item.uri))
         })
     }
 
-    documentChange(params: DidChangeTextDocumentParams): void {
-        this.children.get(params.textDocument.uri).connection.sendNotification(
+    async documentChange(params: DidChangeTextDocumentParams): Promise<void> {
+        (await this.children.get(params.textDocument.uri)).connection.sendNotification(
             ChangeNotification,
             params.contentChanges
         )
@@ -126,7 +126,7 @@ export class ProcessManager {
 
     documentOpen(params: DidOpenTextDocumentParams): void {
         // Register this document with global settings.
-        const settings = this.globalSettings
+        const settings: TsplangSettings = this.globalSettings
 
         const create = function(initialSettings: TsplangSettings): void {
             const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
@@ -202,8 +202,8 @@ export class ProcessManager {
         }
     }
 
-    references(params: ReferenceParams): Thenable<Array<Location>> {
-        const child = this.children.get(params.textDocument.uri)
+    async references(params: ReferenceParams): Promise<Array<Location>> {
+        const child = await this.children.get(params.textDocument.uri)
 
         return child.connection.sendRequest(ReferencesRequest, params.position)
     }
@@ -211,7 +211,7 @@ export class ProcessManager {
     settingsChange = (params: DidChangeConfigurationParams): void => {
         if (this.hasWorkspaceSettings) {
             // Update all open document contexts.
-            this.children.forEach((child: Child, uri: string) => {
+            this.children.forEach((child: Promise<Child>, uri: string) => {
                 let settings = params.settings.tsplang || TsplangSettings.defaults()
 
                 this.connection.workspace.getConfiguration({
@@ -226,34 +226,36 @@ export class ProcessManager {
                     () => { return }
                 )
 
-                child.connection.sendNotification(SettingsNotification, settings)
+                child.then((value: Child) => value.connection.sendNotification(SettingsNotification, settings))
             })
         }
         else {
             this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
 
-            this.children.forEach((child: Child) => {
-                child.connection.sendNotification(SettingsNotification, this.globalSettings)
+            this.children.forEach((child: Promise<Child>) => {
+                child.then(
+                    (value: Child) => value.connection.sendNotification(SettingsNotification, this.globalSettings)
+                )
             })
         }
     }
 
     async signature(params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> {
-        const child = this.children.get(params.textDocument.uri)
+        const child = await this.children.get(params.textDocument.uri)
 
         return child.connection.sendRequest(SignatureRequest, params)
     }
 
-    symbol(params: DocumentSymbolParams): Thenable<Array<DocumentSymbol>> {
-        const child = this.children.get(params.textDocument.uri)
+    async symbol(params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> {
+        const child = await this.children.get(params.textDocument.uri)
 
         return child.connection.sendRequest(SymbolRequest, child.init)
     }
 
     /* Internal Methods */
 
-    private _release(uri: string): void {
-        const child = this.children.get(uri)
+    private async _release(uri: string): Promise<void> {
+        const child = await this.children.get(uri)
 
         child.connection.dispose()
         console.log(`closed connection for ${uri}`)
