@@ -353,6 +353,17 @@ export class DocumentContext extends TspFastListener {
             }
         }
 
+        /**
+         * NOTE:
+         * Sometimes the stop token can be located before the start token. For instance:
+         *      blah = 'blah'
+         *      var
+         * in this case we shouldn't include the stop token.
+         */
+        if (context.exception !== null) {
+            return
+        }
+
         this.symbolTable.statementDepth--
 
         // if (context.exception) {
