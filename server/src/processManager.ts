@@ -125,49 +125,42 @@ export class ProcessManager {
     }
 
     documentOpen(params: DidOpenTextDocumentParams): void {
-        // Register this document with global settings.
-        const settings: TsplangSettings = this.globalSettings
-
-        const create = function(initialSettings: TsplangSettings): void {
-            const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
-                // tslint:disable-next-line:no-magic-numbers
-                execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
-                stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
+        this.children.set(params.textDocument.uri, new Promise((resolve: (value: Child) => void): void => {
+            this.connection.workspace.getConfiguration({
+                scopeUri: params.textDocument.uri,
+                section: 'tsplang'
             })
+            .then((settings: TsplangSettings) => {
+                const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
+                    // tslint:disable-next-line:no-magic-numbers
+                    execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
+                    stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
+                })
 
-            const connection = rpc.createMessageConnection(
-                new rpc.IPCMessageReader(proc),
-                new rpc.IPCMessageWriter(proc)
-            )
+                const connection = rpc.createMessageConnection(
+                    new rpc.IPCMessageReader(proc),
+                    new rpc.IPCMessageWriter(proc)
+                )
 
-            const child: Child = {
-                connection,
-                proc,
-                init: {
-                    item: params.textDocument,
-                    settings: initialSettings
+                const child: Child = {
+                    connection,
+                    proc,
+                    init: {
+                        settings,
+                        item: params.textDocument
+                    }
                 }
-            }
 
-            this.children.set(params.textDocument.uri, child)
+                child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
+                    this.connection.sendDiagnostics(value)
+                })
 
-            child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
-                this.connection.sendDiagnostics(value)
+                connection.trace(rpc.Trace.Messages, console)
+                child.connection.listen()
+
+                resolve(child)
             })
-
-            connection.trace(rpc.Trace.Messages, console)
-            child.connection.listen()
-        }
-
-        // Override global settings with any workspace settings.
-        this.connection.workspace.getConfiguration({
-            scopeUri: params.textDocument.uri,
-            section: 'tsplang'
-        })
-        .then(
-            create.bind(this),
-            () => { create.bind(this)(settings) }
-        )
+        }))
     }
 
     initialize(params: InitializeParams): InitializeResult {

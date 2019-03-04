@@ -64,7 +64,11 @@ let instrument: Instrument
  * DocumentSymbols that evaluate to true will be pruned from the reported
  * array.
  */
-let prunePredicate: (value: DocumentSymbol) => boolean
+const prunePredicate = (value: DocumentSymbol): boolean => {
+    return value.kind === SymbolKind.File
+        || (value.declaration !== undefined && value.references === undefined)
+        || value.builtin
+}
 let settings: TsplangSettings
 let shebang: Shebang
 let textDocumentItem: TextDocumentItem
@@ -156,17 +160,9 @@ connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): Sig
     return
 })
 
-connection.onRequest(SymbolRequest, (params: ProcessContext): Array<DocumentSymbol> => {
-    if (prunePredicate === undefined) {
-        prunePredicate = (value: DocumentSymbol): boolean => {
-            return value.kind === SymbolKind.File
-                || (value.declaration !== undefined && value.references === undefined)
-                || value.builtin
-        }
-    }
-
+connection.onRequest(SymbolRequest, async (params: ProcessContext): Promise<Array<DocumentSymbol>> => {
     if (textDocumentItem === undefined || instrument === undefined || settings === undefined) {
-        updateProcessContext(params)
+        await updateProcessContext(params)
     }
 
     if (documentContext === undefined) {
@@ -195,10 +191,10 @@ connection.onRequest(SymbolRequest, (params: ProcessContext): Array<DocumentSymb
     }
 })
 
-function updateProcessContext(params: ProcessContext): void {
+async function updateProcessContext(params: ProcessContext): Promise<void> {
     // Store information that a later DocumentContext will require.
     textDocumentItem = params.item
-    settings = params.settings
+    settings = await Promise.resolve(params.settings)
 
     if (firstlineRegExp === undefined) {
         firstlineRegExp = new RegExp(/^[^\n\r]*/)
