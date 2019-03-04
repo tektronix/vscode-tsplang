@@ -57,6 +57,10 @@ export namespace Shebang {
         }
     }
 
+    export function has(text: string): boolean {
+        return shebangRegExp.test(text)
+    }
+
     export function tokenize(line: string): [Shebang, Array<Diagnostic>] {
         // Test that the line begins with a shebang prefix.
         if (!shebangRegExp.test(line)) {

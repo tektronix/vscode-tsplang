@@ -86,7 +86,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
         version: context.document.version
     }
     for (const change of changes) {
-        shebangEdited = change.range.start.line === 0
+        shebangEdited = change.range.start.line === 0 && Shebang.has(item.text)
 
         item.text = TextDocument.applyEdits(
             TextDocument.create(item.uri, item.languageId, item.version, item.text),
@@ -98,10 +98,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     if (shebangEdited) {
-        updateProcessContext({
-            item,
-            settings: context.settings
-        })
+        updateProcessContext({ item, settings: context.settings })
 
         return
     }
