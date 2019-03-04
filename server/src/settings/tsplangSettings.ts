@@ -19,13 +19,15 @@ import { CompletionItemKind } from 'vscode-languageserver'
 
 import { SuggestionSortKind } from './suggestionSortKind'
 
+export interface DebugPrintSettings {
+    rootStatementParseTime: boolean
+    rootStatementParseTree: boolean
+}
+
 export interface TsplangSettings {
     debug: {
         outline: boolean;
-        print: {
-            rootStatementParseTime: boolean;
-            rootStatementParseTree: boolean;
-        };
+        print: DebugPrintSettings;
     }
     outline: {
         showInstrumentSettings: boolean;

@@ -17,4 +17,4 @@
 
 export { hasWorkspaceSettings } from './hasWorkspaceSettings'
 export { SuggestionSortKind } from './suggestionSortKind'
-export { TsplangSettings } from './tsplangSettings'
+export { DebugPrintSettings, TsplangSettings } from './tsplangSettings'

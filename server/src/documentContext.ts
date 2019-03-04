@@ -53,7 +53,9 @@ import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclu
 import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { Outline } from './outline'
+import { Parse } from './parse'
 import { SuggestionSortKind, TsplangSettings } from './settings'
+import { SymbolTable } from './symbolTable'
 
 // tslint:disable-next-line:no-empty
 ConsoleErrorListener.prototype.syntaxError = (): void => {}
@@ -102,115 +104,6 @@ class DebugTimer {
         const s = n.toString()
 
         return (s.length >= width) ? s : new Array(width - s.length + 1).join(padChar) + s
-    }
-}
-
-class SymbolTable {
-    complete: Array<DocumentSymbol>
-    symbolCache: Map<number, Array<DocumentSymbol>>
-
-    private _statementDepth: number
-
-    constructor() {
-        this.complete = new Array()
-        this.symbolCache = new Map()
-        this._statementDepth = 0
-    }
-
-    get statementDepth(): number {
-        return this._statementDepth
-    }
-
-    set statementDepth(value: number) {
-        this._statementDepth = value
-    }
-
-    cacheSymbol(symbol: DocumentSymbol): void {
-        if (symbol instanceof VariableLocalSymbol) {
-            // TODO: add this name to the local name list.
-        }
-        else if (symbol instanceof VariableSymbol) {
-            // TODO: add this name to the global name list.
-        }
-
-        if (this.symbolCache.has(this.statementDepth)) {
-            this.symbolCache.get(this.statementDepth).push(symbol)
-
-            return
-        }
-
-        this.symbolCache.set(this.statementDepth, [symbol])
-    }
-
-    lastSymbol(): DocumentSymbol | undefined {
-        const result = (this.symbolCache.get(this.statementDepth) || []).pop()
-
-        if (result === undefined) {
-            return
-        }
-
-        // Add any symbols from the previous depth as children.
-        result.children = this.symbolCache.get(this.statementDepth + 1)
-
-        // Clear the cache at the previous depth.
-        this.symbolCache.delete(this.statementDepth + 1)
-
-        return result
-    }
-
-    link(name: string, range: Range): LocationLink | undefined {
-        for (let i = this.statementDepth; i >= 0; i--) {
-            for (const symbol of (this.symbolCache.get(i) || [])) {
-                if (symbol.name === undefined) {
-                    continue
-                }
-
-                if (symbol.name.localeCompare(name) === 0) {
-                    return symbol.link(range)
-                }
-            }
-        }
-
-        return
-    }
-
-    lookup(range: Range): DocumentSymbol | undefined {
-        let lookahead = this.lookupBinarySearch(range, this.complete)
-
-        let result: DocumentSymbol
-        while (lookahead !== undefined) {
-            result = lookahead
-            lookahead = this.lookupBinarySearch(range, lookahead.children || [])
-        }
-
-        return result
-    }
-
-    private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): DocumentSymbol | undefined => {
-        let start = 0
-        let stop = symbols.length - 1
-
-        while (start <= stop) {
-            // tslint:disable-next-line: no-magic-numbers
-            const index = Math.floor((start + stop) / 2)
-
-            const comparison = Range.compare(target, symbols[index].range)
-
-            // If our index is too small.
-            if (comparison > 0) {
-                start = index + 1
-            }
-            // If our index is too big.
-            else if (comparison < 0) {
-                stop = index - 1
-            }
-            // If our index is just right.
-            else {
-                return symbols[index]
-            }
-        }
-
-        return
     }
 }
 
@@ -276,25 +169,15 @@ export class DocumentContext extends TspFastListener {
         this.childCache = new Map()
         this.timer = new DebugTimer()
 
-        this.inputStream = new InputStream(this.document.getText())
-        this.lexer = new TspFastLexer(this.inputStream)
-        this.tokenStream = new CommonTokenStream(this.lexer)
-        this.parser = new TspFastParser(this.tokenStream)
-        this.parser.buildParseTrees = true
-
-        this.parser.addParseListener(this)
-
-        // this.parseTree = this.parser.chunk()
-        this.parser.chunk()
-    }
-
-    enterChunk(): void {
-        this.timer.start()
+        const parseResult = Parse.chunk(item.text, settings.debug.print)
+        this.inputStream = parseResult.inputStream
+        this.lexer = parseResult.lexer
+        this.tokenStream = parseResult.tokenStream
+        this.parser = parseResult.parser
+        Parse.walk(this, parseResult.root)
     }
 
     exitChunk(): void {
-        console.log(this.timer.createChunkLog(this.timer.stop()))
-
         // if (this.exceptionTokenIndex && this.childCache.length > 0) {
         //     const child = this.childCache.pop()
         //     child.tokens = this.tokenStream.tokens.slice(this.exceptionTokenIndex, this.tokenStream.tokens.length - 1)
@@ -325,34 +208,9 @@ export class DocumentContext extends TspFastListener {
         // }
         this.symbolTable.cacheSymbol(new DocumentSymbol(this.document.uri, TokenUtil.getPosition(context.start)))
         this.symbolTable.statementDepth++
-
-        if (this.settings.debug.print.rootStatementParseTime) {
-            if (!(context.parentCtx instanceof TspFastParser.ChunkContext)) {
-                return
-            }
-
-            // Only time top-level statements
-            this.timer.start()
-        }
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
-        if (this.settings.debug.print.rootStatementParseTime) {
-            // Only parse top-level statements
-            if (context.parentCtx instanceof TspFastParser.ChunkContext) {
-                console.info(this.timer.createStatementLog(
-                    context.start.line,
-                    context.start.column,
-                    this.timer.stop()
-                ))
-
-                if (this.settings.debug.print.rootStatementParseTree) {
-                    const tree = TextTree.prettify(context.toStringTree(this.parser.ruleNames, context.parser), 2)
-                    console.info(tree)
-                }
-            }
-        }
-
         /**
          * NOTE:
          * Sometimes the stop token can be located before the start token. For instance:
@@ -621,62 +479,5 @@ export class DocumentContext extends TspFastListener {
 
             this.symbolTable.cacheSymbol(symbol)
         }
-    }
-}
-
-namespace TextTree {
-    const ruleStartRegExp = new RegExp(/\([a-zA-Z]+/)
-    const ruleEndRegExp = new RegExp(/.*\)$/)
-
-    export function prettify(tree: string, indent: number, from?: string): string {
-        return _(tree.split(' '), indent, from || '')
-    }
-
-    function _(items: Array<string>, indent: number, from: string, level: number = 1): string {
-        const workingSet = new Array<string>(...items)
-        let result = from
-        let workingLevel = level
-        let totalCloseParenIgnores = 0
-
-        while (workingSet.length > 0) {
-            let item = workingSet.shift()
-
-            // If this item is the start of a rule.
-            if (ruleStartRegExp.test(item)) {
-                result = result + ' '.repeat(indent * workingLevel) + item + '\n'
-
-                workingLevel ++
-            }
-            else {
-                if (item.localeCompare('(') === 0) {
-                    totalCloseParenIgnores++
-                }
-
-                result = result + ' '.repeat(indent * workingLevel) + item + '\n'
-            }
-
-            // Reduce the current level if this item ends a rule.
-            if (ruleEndRegExp.test(item)) {
-                // Trim irrelevant close parentheses from the item if it starts with a close parenthesis.
-                if (item[0].localeCompare(')') === 0) {
-                    item = item.slice(totalCloseParenIgnores)
-
-                    totalCloseParenIgnores = 0
-                }
-
-                // Decrement level by total trailing close parentheses.
-                const reversedCharacters = item.split('').reverse()
-                for (const char of reversedCharacters) {
-                    if (char.localeCompare(')') === 0) {
-                        workingLevel--
-                    }
-                    else {
-                        break
-                    }
-                }
-            }
-        }
-
-        return result
     }
 }
