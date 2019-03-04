@@ -57,56 +57,6 @@ import { Parse } from './parse'
 import { SuggestionSortKind, TsplangSettings } from './settings'
 import { SymbolTable } from './symbolTable'
 
-// tslint:disable-next-line:no-empty
-ConsoleErrorListener.prototype.syntaxError = (): void => {}
-
-declare class CorrectRecogException extends RecognitionException {
-    startToken?: Token
-}
-
-declare type HRTime = [number, number]
-
-class DebugTimer {
-    timeStack: Array<HRTime>
-
-    constructor() {
-        this.timeStack = new Array()
-    }
-
-    createChunkLog = (time: HRTime): string => {
-        const pid = `${process.pid}:`
-        // tslint:disable-next-line:no-magic-numbers
-        const clk = `${time[0]}s ${time[1] / 1000000}ms`
-
-        return [pid, '--> total time:', clk].join(' ')
-    }
-
-    createStatementLog(line: number, column: number, time: HRTime): string {
-        const pid = `${process.pid}:`
-        // tslint:disable:no-magic-numbers
-        const loc = `(Ln ${this.pad(line, 4)}, Col ${this.pad(column, 3)})`
-        const clk = `${this.pad(time[0], 3)}s ${this.pad(time[1] / 1000000, 10)}ms`
-        // tslint:enable:no-magic-numbers
-
-        return [pid, loc, clk].join(' ')
-    }
-
-    start(): void {
-        this.timeStack.push(process.hrtime())
-    }
-
-    stop(): HRTime {
-        return process.hrtime(this.timeStack.pop())
-    }
-
-    private pad = (n: number, width: number): string => {
-        const padChar = ' '
-        const s = n.toString()
-
-        return (s.length >= width) ? s : new Array(width - s.length + 1).join(padChar) + s
-    }
-}
-
 // tslint:disable
 export class DocumentContext extends TspFastListener {
     readonly commandSet: CommandSet
@@ -119,7 +69,6 @@ export class DocumentContext extends TspFastListener {
     settings: TsplangSettings
     symbolTable: SymbolTable
 
-    private childCache: Map<number, Array<DocumentSymbol>>
     // private enteredStatementException: boolean
     // /**
     //  * A Map keyed to the ending offset of an assignment operator (`=`) or
@@ -127,21 +76,18 @@ export class DocumentContext extends TspFastListener {
     //  * ExclusiveContext.
     //  */
     // private exclusives: Map<number, ExclusiveContext>
-    private exceptionRanges: Array<Range>
     // private fuzzyOffsets: FuzzyOffsetMap
     // private fuzzySignatureOffsets: FuzzyOffsetMap
-    private inputStream: InputStream
-    private lexer: TspFastLexer
-    private parser: TspFastParser
+    // private inputStream: InputStream
+    // private lexer: TspFastLexer
+    // private parser: TspFastParser
     // private parseTree: ParserRuleContext
     // /**
     //  * A Map keyed to the ending offset of a function call's open parenthesis.
     //  * The associated key-value is a SignatureContext.
     //  */
     // private signatures: Map<number, SignatureContext>
-    private statementDepth = 0
     // private readonly tableIndexRegexp: RegExp
-    private timer: DebugTimer
     private tokenStream: CommonTokenStream
 
     constructor(item: TextDocumentItem, commandSet: CommandSet, settings: TsplangSettings) {
@@ -164,16 +110,10 @@ export class DocumentContext extends TspFastListener {
         // this.fuzzySignatureOffsets = new FuzzyOffsetMap()
         // this.signatures = new Map()
 
-        this.exceptionRanges = new Array()
         this.symbolTable = new SymbolTable()
-        this.childCache = new Map()
-        this.timer = new DebugTimer()
 
         const parseResult = Parse.chunk(item.text, settings.debug.print)
-        this.inputStream = parseResult.inputStream
-        this.lexer = parseResult.lexer
         this.tokenStream = parseResult.tokenStream
-        this.parser = parseResult.parser
         Parse.walk(this, parseResult.root)
     }
 
