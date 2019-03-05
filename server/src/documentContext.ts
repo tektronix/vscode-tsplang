@@ -151,6 +151,8 @@ export class DocumentContext extends TspFastListener {
     }
 
     exitStatement(context: TspFastParser.StatementContext): void {
+        this.symbolTable.statementDepth--
+
         /**
          * NOTE:
          * Sometimes the stop token can be located before the start token. For instance:
@@ -159,10 +161,10 @@ export class DocumentContext extends TspFastListener {
          * in this case we shouldn't include the stop token.
          */
         if (context.exception !== null) {
+            this.handleExceptions(context)
+
             return
         }
-
-        this.symbolTable.statementDepth--
 
         // if (context.exception) {
         //     const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
@@ -239,6 +241,37 @@ export class DocumentContext extends TspFastListener {
 
             this.symbolTable.cacheSymbol(lastSymbol)
         }
+    }
+
+    handleExceptions(context: TspFastParser.StatementContext): void {
+        const lastSymbol = this.symbolTable.lastSymbol()
+
+        if (context.children === null) {
+            return
+        }
+
+        const lastTokenIndex = (context.stop.tokenIndex < context.start.tokenIndex)
+            ? context.start.tokenIndex
+            : context.stop.tokenIndex
+
+        lastSymbol.exception = true
+        lastSymbol.statementType = StatementType.None
+        lastSymbol.kind = SymbolKind.File
+        lastSymbol.tokens = this.tokenStream.tokens
+            .slice(context.start.tokenIndex, lastTokenIndex + 1)
+            .map((value: Token) => IToken.create(value))
+        // TODO: this should be something more meaningful. (It becomes the error message.)
+        lastSymbol.detail = context.exception.name
+        lastSymbol.end = TokenUtil.getPosition(
+            this.tokenStream.tokens[lastTokenIndex],
+            this.tokenStream.tokens[lastTokenIndex].text.length
+        )
+        lastSymbol.name = `EXCEPT (${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
+        lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
+
+        this.symbolTable.cacheSymbol(lastSymbol)
+
+        return
     }
 
     handleFunctionDeclarations(
