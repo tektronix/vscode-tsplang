@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { LocationLink } from 'vscode-languageserver'
+import { Diagnostic, LocationLink } from 'vscode-languageserver'
 
 import { DocumentSymbol, Range, VariableLocalSymbol, VariableSymbol } from './decorators'
 
@@ -29,6 +29,16 @@ export class SymbolTable {
         this.complete = new Array()
         this.symbolCache = new Map()
         this._statementDepth = 0
+    }
+
+    get diagnostics(): Array<Diagnostic> {
+        const result = new Array<Diagnostic>()
+
+        for (const symbol of this.complete) {
+            result.push(...symbol.diagnostics)
+        }
+
+        return result
     }
 
     get statementDepth(): number {

@@ -16,6 +16,8 @@
 'use strict'
 
 import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
+// tslint:disable-next-line: no-submodule-imports
+import { RecognitionException } from 'antlr4/error/Errors'
 import * as vsls from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastParser } from '../antlr4-tsplang'
@@ -31,6 +33,7 @@ import { Range } from './range'
 export interface IDocumentSymbol extends vsls.DocumentSymbol {
     builtin: boolean
     declaration?: vsls.LocationLink
+    exception: boolean
     local: boolean
     references?: Array<vsls.Location>
 }
@@ -40,6 +43,7 @@ export class DocumentSymbol implements IDocumentSymbol {
     declaration?: vsls.LocationLink
     deprecated?: boolean
     detail?: string
+    exception: boolean = false
     kind: vsls.SymbolKind
     local: boolean = false
     name: string
@@ -72,6 +76,26 @@ export class DocumentSymbol implements IDocumentSymbol {
     constructor(uri: string, start: vsls.Position) {
         this.uri = uri
         this.start = start
+    }
+
+    get diagnostics(): Array<vsls.Diagnostic> {
+        const results = new Array<vsls.Diagnostic>()
+
+        for (const child of (this.children || [])) {
+            results.push(...child.diagnostics)
+        }
+
+        if (this.exception) {
+            results.push(vsls.Diagnostic.create(
+                this.range,
+                this.detail,
+                vsls.DiagnosticSeverity.Error,
+                'syntax-error',
+                'tsplang'
+            ))
+        }
+
+        return results
     }
 
     get end(): vsls.Position {
@@ -125,6 +149,7 @@ export class DocumentSymbol implements IDocumentSymbol {
             declaration: this.declaration,
             deprecated: this.deprecated,
             detail: this.detail,
+            exception: this.exception,
             kind: this.kind,
             local: this.local,
             name: this.name,
