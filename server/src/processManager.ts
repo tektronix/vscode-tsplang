@@ -133,7 +133,7 @@ export class ProcessManager {
             .then((settings: TsplangSettings) => {
                 const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
                     // tslint:disable-next-line:no-magic-numbers
-                    execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
+                    execArgv: ['--nolazy', `--inspect=${this.children.size + 6010 - 1}`],
                     stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
                 })
 
