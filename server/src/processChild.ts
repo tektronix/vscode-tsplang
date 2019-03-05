@@ -54,11 +54,9 @@ const connection = rpc.createMessageConnection(
 )
 console.log(`pid ${process.pid}: established connection`)
 
-connection.listen()
-console.log(`pid ${process.pid}: listening on the connection`)
-
 let documentContext: DocumentContext | undefined
 let firstlineRegExp: RegExp
+let initializeErrors = new Array<Diagnostic>()
 let instrument: Instrument
 /**
  * DocumentSymbols that evaluate to true will be pruned from the reported
@@ -167,6 +165,11 @@ connection.onRequest(SymbolRequest, async (params: ProcessContext): Promise<Arra
         documentContext = new DocumentContext(textDocumentItem, instrument.set, settings)
     }
 
+    const diagnostics = documentContext.symbolTable.diagnostics
+    diagnostics.push(...initializeErrors)
+
+    connection.sendNotification(ErrorNotification, { diagnostics, uri })
+
     if (settings.debug.outline) {
         return documentContext.symbolTable.complete
     }
@@ -188,6 +191,9 @@ connection.onRequest(SymbolRequest, async (params: ProcessContext): Promise<Arra
     }
 })
 
+connection.listen()
+console.log(`pid ${process.pid}: listening on the connection`)
+
 async function updateProcessContext(params: ProcessContext): Promise<void> {
     // Store information that a later DocumentContext will require.
     textDocumentItem = params.item
@@ -197,17 +203,16 @@ async function updateProcessContext(params: ProcessContext): Promise<void> {
         firstlineRegExp = new RegExp(/^[^\n\r]*/)
     }
 
-    const firstLine = firstlineRegExp.exec(textDocumentItem.text)[0]
+    const firstLine = firstlineRegExp.exec(textDocumentItem.text)[0];
 
-    let diagnostics: Array<Diagnostic>
-    [shebang, diagnostics] = Shebang.tokenize(firstLine)
+    [shebang, initializeErrors] = Shebang.tokenize(firstLine)
 
     let loadDiagnostics: Array<Diagnostic>
     // Try to generate instrument information for this document.
     [instrument, loadDiagnostics] = load(shebang)
 
     // Collect all diagnostics.
-    diagnostics.push(...loadDiagnostics)
+    initializeErrors.push(...loadDiagnostics)
 
-    connection.sendNotification(ErrorNotification, { diagnostics, uri })
+    connection.sendNotification(ErrorNotification, { uri, diagnostics: initializeErrors })
 }
