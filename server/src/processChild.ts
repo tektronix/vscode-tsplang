@@ -74,34 +74,64 @@ let textDocumentItem: TextDocumentItem
 const uri: string = process.argv[2]
 
 connection.onNotification(ChangeNotification, async (changes: Array<TextDocumentContentChangeEvent>) => {
+    // TODO: detect shebang additions
     const context = await documentContext
 
     let shebangEdited = false
-    const item: TextDocumentItem = {
-        uri,
-        languageId: context.document.languageId,
-        text: context.document.getText(),
-        version: context.document.version
-    }
+    let smallestPosition: Position
     for (const change of changes) {
-        shebangEdited = change.range.start.line === 0 && Shebang.has(item.text)
+        console.log(`{
+  range: {
+    start: ${JSON.stringify(change.range.start)}
+      end: ${JSON.stringify(change.range.end)}
+  },
+  rangeLength: ${change.rangeLength},
+  text: "${change.text}"
+}`)
+        shebangEdited = change.range.start.line === 0 && Shebang.has(textDocumentItem.text)
 
-        item.text = TextDocument.applyEdits(
-            TextDocument.create(item.uri, item.languageId, item.version, item.text),
+        if (!shebangEdited) {
+            if (smallestPosition === undefined
+                || smallestPosition.line > change.range.start.line
+                || (smallestPosition.line === change.range.start.line
+                    && smallestPosition.character > change.range.start.character)) {
+                smallestPosition = change.range.start
+            }
+        }
+
+        textDocumentItem.text = TextDocument.applyEdits(
+            documentContext.document,
             [{
                 newText: change.text,
                 range: change.range
             }]
         )
+        documentContext.document = TextDocument.create(
+            textDocumentItem.uri,
+            textDocumentItem.languageId,
+            textDocumentItem.version,
+            textDocumentItem.text
+        )
     }
 
     if (shebangEdited) {
-        updateProcessContext({ item, settings: context.settings })
+        updateProcessContext({ item: textDocumentItem, settings: context.settings })
 
         return
     }
 
-    // proc.context.update(changes)
+    // Drop all symbols that occur at or after the smallest changed Position.
+    const lastIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
+        return value.range.start.line >= smallestPosition.line || value.range.end.line >= smallestPosition.line
+    })
+    // TODO: append a new symbol.
+    if (lastIndex === -1) {
+        return
+    }
+
+    documentContext.symbolTable.complete.splice(lastIndex)
+
+    return
 })
 
 connection.onNotification(SettingsNotification, (received: TsplangSettings) => {
