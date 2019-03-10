@@ -33,6 +33,7 @@ import {
 import { CompletionItem, DocumentSymbol } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
+import { Parse } from './parse'
 import {
     ChangeNotification,
     CompletionRequest,
@@ -120,7 +121,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
         return
     }
 
-    // Drop all symbols that occur at or after the smallest changed Position.
+    // Get the symbol table index of the symbol containing the smallest Position.
     const lastIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
         return value.range.start.line >= smallestPosition.line || value.range.end.line >= smallestPosition.line
     })
@@ -129,7 +130,18 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
         return
     }
 
+    // Get the Token index of the first Token contained in the symbol containing the smallest Position.
+    const tokenIndex = documentContext.symbolTable.complete[lastIndex].startTokenIndex
+
+    // Remove the symbol containing the smallest Position and all following symbols.
     documentContext.symbolTable.complete.splice(lastIndex)
+
+    // Reparse everything starting at the smallest Position.
+    const parse = Parse.create(textDocumentItem.text, documentContext.settings.debug.print)
+    documentContext.tokenStream = parse.tokenStream
+    parse.parser.getTokenStream().adjustSeekIndex(tokenIndex)
+    parse.parser.addParseListener(documentContext)
+    parse.parser.chunk()
 
     return
 })

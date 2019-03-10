@@ -36,6 +36,7 @@ export interface IDocumentSymbol extends vsls.DocumentSymbol {
     exception: boolean
     local: boolean
     references?: Array<vsls.Location>
+    startTokenIndex: number
 }
 export class DocumentSymbol implements IDocumentSymbol {
     builtin: boolean = false
@@ -51,6 +52,7 @@ export class DocumentSymbol implements IDocumentSymbol {
     references?: Array<vsls.Location>
     selectionRange: vsls.Range
     readonly start: vsls.Position
+    startTokenIndex: number
     statementType: StatementType
     tokens?: Array<IToken>
     uri: string
@@ -73,9 +75,10 @@ export class DocumentSymbol implements IDocumentSymbol {
     // private signatures: Map<number, SignatureContext>
     // private readonly tableIndexRegexp: RegExp
 
-    constructor(uri: string, start: vsls.Position) {
+    constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
         this.uri = uri
         this.start = start
+        this.startTokenIndex = startTokenIndex
     }
 
     get diagnostics(): Array<vsls.Diagnostic> {
@@ -155,7 +158,8 @@ export class DocumentSymbol implements IDocumentSymbol {
             name: this.name,
             range: this.range,
             references: this.references,
-            selectionRange: this.selectionRange
+            selectionRange: this.selectionRange,
+            startTokenIndex: this.startTokenIndex
         }
 
         for (let i = 0; i < (this.children || []).length; i++) {
@@ -417,12 +421,12 @@ export class DocumentSymbol implements IDocumentSymbol {
 }
 
 export class FunctionSymbol extends DocumentSymbol {
-    constructor(uri: string, start: vsls.Position) {
-        super(uri, start)
+    constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
+        super(uri, start, startTokenIndex)
     }
 
     static from(symbol: DocumentSymbol): FunctionSymbol {
-        const result = new FunctionSymbol(symbol.uri, symbol.start)
+        const result = new FunctionSymbol(symbol.uri, symbol.start, symbol.startTokenIndex)
         result.children = symbol.children
         result.declaration = symbol.declaration
         result.detail = 'global'
@@ -437,12 +441,12 @@ export class FunctionSymbol extends DocumentSymbol {
 export class FunctionLocalSymbol extends FunctionSymbol {
     local: boolean = true
 
-    constructor(uri: string, start: vsls.Position) {
-        super(uri, start)
+    constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
+        super(uri, start, startTokenIndex)
     }
 
     static from(symbol: DocumentSymbol): FunctionLocalSymbol {
-        const result = new FunctionLocalSymbol(symbol.uri, symbol.start)
+        const result = new FunctionLocalSymbol(symbol.uri, symbol.start, symbol.startTokenIndex)
         result.children = symbol.children
         result.declaration = symbol.declaration
         result.detail = 'local'
@@ -476,12 +480,12 @@ export class VariableSymbol extends DocumentSymbol {
      */
     variableIndex: number = 0
 
-    constructor(uri: string, start: vsls.Position) {
-        super(uri, start)
+    constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
+        super(uri, start, startTokenIndex)
     }
 
     static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableSymbol {
-        const result = new VariableSymbol(symbol.uri, symbol.start)
+        const result = new VariableSymbol(symbol.uri, symbol.start, symbol.startTokenIndex)
         result.builtin = symbol.builtin
         result.children = symbol.children
         result.declaration = symbol.declaration
@@ -501,12 +505,12 @@ export class VariableSymbol extends DocumentSymbol {
 export class VariableLocalSymbol extends VariableSymbol {
     local: boolean = true
 
-    constructor(uri: string, start: vsls.Position) {
-        super(uri, start)
+    constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
+        super(uri, start, startTokenIndex)
     }
 
     static from(symbol: DocumentSymbol, variableIndex?: number, assignmentOpIndex?: number): VariableLocalSymbol {
-        const result = new VariableLocalSymbol(symbol.uri, symbol.start)
+        const result = new VariableLocalSymbol(symbol.uri, symbol.start, symbol.startTokenIndex)
         result.children = symbol.children
         result.declaration = symbol.declaration
         result.detail = 'local'

@@ -151,13 +151,13 @@ export interface Parse {
 }
 export namespace Parse {
     export function chunk(text: string, printSettings: DebugPrintSettings): Parse {
-        const result = parseFactory(text, printSettings)
+        const result = create(text, printSettings)
         result.root = result.parser.chunk()
 
         return result
     }
 
-    function parseFactory(text: string, printSettings: DebugPrintSettings): Parse {
+    export function create(text: string, printSettings: DebugPrintSettings): Parse {
         const result = {
             inputStream: undefined,
             lexer: undefined,
@@ -179,7 +179,7 @@ export namespace Parse {
     }
 
     export function statement(text: string, printSettings: DebugPrintSettings): Parse {
-        const result = parseFactory(text, printSettings)
+        const result = create(text, printSettings)
         result.root = result.parser.statement()
 
         return result

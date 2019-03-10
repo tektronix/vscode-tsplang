@@ -68,6 +68,7 @@ export class DocumentContext extends TspFastListener {
     exceptionTokenIndex?: number
     settings: TsplangSettings
     symbolTable: SymbolTable
+    tokenStream: CommonTokenStream
 
     // private enteredStatementException: boolean
     // /**
@@ -88,7 +89,6 @@ export class DocumentContext extends TspFastListener {
     //  */
     // private signatures: Map<number, SignatureContext>
     // private readonly tableIndexRegexp: RegExp
-    private tokenStream: CommonTokenStream
 
     constructor(item: TextDocumentItem, commandSet: CommandSet, settings: TsplangSettings) {
         super()
@@ -146,7 +146,11 @@ export class DocumentContext extends TspFastListener {
 
         //     return
         // }
-        this.symbolTable.cacheSymbol(new DocumentSymbol(this.document.uri, TokenUtil.getPosition(context.start)))
+        this.symbolTable.cacheSymbol(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(context.start),
+            context.start.tokenIndex
+        ))
         this.symbolTable.statementDepth++
     }
 
@@ -327,7 +331,8 @@ export class DocumentContext extends TspFastListener {
 
             const symbol = new VariableLocalSymbol(
                 functionSymbol.uri,
-                TokenUtil.getPosition(token as Token)
+                TokenUtil.getPosition(token as Token),
+                tokens[0].tokenIndex
             )
             symbol.detail = 'local'
             symbol.end = TokenUtil.getPosition(token as Token, token.text.length)
@@ -345,7 +350,7 @@ export class DocumentContext extends TspFastListener {
                 symbol.name = 'arg'
 
                 // The "arg" table contains a length attribute "n"
-                const argLength = new VariableLocalSymbol(functionSymbol.uri, symbol.start)
+                const argLength = new VariableLocalSymbol(functionSymbol.uri, symbol.start, symbol.startTokenIndex)
                 argLength.detail = 'length'
                 argLength.end = symbol.end
                 argLength.statementType = StatementType.AssignmentLocal
