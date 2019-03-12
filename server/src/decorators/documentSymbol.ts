@@ -51,10 +51,9 @@ export class DocumentSymbol implements IDocumentSymbol {
     range: vsls.Range
     references?: Array<vsls.Location>
     selectionRange: vsls.Range
-    readonly start: vsls.Position
+    start: vsls.Position
     startTokenIndex: number
     statementType: StatementType
-    tokens?: Array<IToken>
     uri: string
 
     private _end: vsls.Position

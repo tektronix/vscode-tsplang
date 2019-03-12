@@ -18,7 +18,7 @@
 import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
 // tslint:disable:no-submodule-imports
 import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
-import { RecognitionException } from 'antlr4/error/Errors'
+import { InputMismatchException, NoViableAltException, RecognitionException } from 'antlr4/error/Errors'
 import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
 import {
@@ -254,22 +254,39 @@ export class DocumentContext extends TspFastListener {
             return
         }
 
-        const lastTokenIndex = (context.stop.tokenIndex < context.start.tokenIndex)
-            ? context.start.tokenIndex
-            : context.stop.tokenIndex
-
         lastSymbol.exception = true
         lastSymbol.statementType = StatementType.None
         lastSymbol.kind = SymbolKind.File
-        lastSymbol.tokens = this.tokenStream.tokens
-            .slice(context.start.tokenIndex, lastTokenIndex + 1)
-            .map((value: Token) => IToken.create(value))
-        // TODO: this should be something more meaningful. (It becomes the error message.)
-        lastSymbol.detail = context.exception.name
-        lastSymbol.end = TokenUtil.getPosition(
-            this.tokenStream.tokens[lastTokenIndex],
-            this.tokenStream.tokens[lastTokenIndex].text.length
-        )
+
+        if (context.exception instanceof InputMismatchException) {
+            lastSymbol.detail = `Unexpected "${context.exception.offendingToken.text}".`
+            lastSymbol.start = TokenUtil.getPosition(context.exception.offendingToken)
+            lastSymbol.end = TokenUtil.getPosition(
+                context.exception.offendingToken,
+                context.exception.offendingToken.text.length
+            )
+        }
+        else {
+            if (context.exception instanceof NoViableAltException) {
+                lastSymbol.detail = 'Invalid statement.'
+            }
+            else if (context.exception instanceof RecognitionException) {
+                lastSymbol.detail = 'TSPLang has no prettification support for ANTLR4 RecognitionExceptions.'
+            }
+            else {
+                lastSymbol.detail = 'ANTLR4 threw an unrecognized exception type.'
+            }
+
+            const lastTokenIndex = (context.stop.tokenIndex < context.start.tokenIndex)
+                ? context.start.tokenIndex
+                : context.stop.tokenIndex
+
+            lastSymbol.end = TokenUtil.getPosition(
+                this.tokenStream.tokens[lastTokenIndex],
+                this.tokenStream.tokens[lastTokenIndex].text.length
+            )
+        }
+
         lastSymbol.name = `EXCEPT (${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
         lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
 
