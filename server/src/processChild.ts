@@ -15,6 +15,7 @@
  */
 'use strict'
 
+import { CommonTokenStream, InputStream, Token } from 'antlr4'
 import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
@@ -30,7 +31,8 @@ import {
     TextDocumentPositionParams
 } from 'vscode-languageserver'
 
-import { CompletionItem, DocumentSymbol } from './decorators'
+import { TspFastLexer } from './antlr4-tsplang'
+import { CompletionItem, DocumentSymbol, IToken } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
 import { Parse } from './parse'
@@ -138,7 +140,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
 
     // Reparse everything starting at the smallest Position.
     const parse = Parse.create(textDocumentItem.text, documentContext.settings.debug.print)
-    documentContext.tokenStream = parse.tokenStream
+    documentContext.tokens = parse.tokenStream.tokens.map((value: Token) => IToken.create(value))
     parse.parser.getTokenStream().adjustSeekIndex(tokenIndex)
     parse.parser.addParseListener(documentContext)
     parse.parser.chunk()
@@ -153,13 +155,35 @@ connection.onNotification(SettingsNotification, (received: TsplangSettings) => {
     }
 })
 
-connection.onRequest(CompletionRequest, (params: TextDocumentPositionParams): CompletionList | undefined => {
-    // TODO: provide dumb completions while waiting for a DocumentContext.
+connection.onRequest(
+    CompletionRequest,
+    async (params: TextDocumentPositionParams): Promise<CompletionList | undefined> => {
+        await documentContext
 
-    // TODO: get completions from the DocumentContext.
+        const symbol = documentContext.symbolTable.lookup(params.position)
 
-    return
-})
+        if (symbol === undefined) {
+            return { isIncomplete: true, items: documentContext.commandSet.completionDepthMap.get(0) }
+        }
+
+        const range = { end: params.position, start: symbol.start }
+        const text = documentContext.document.getText(range)
+        const lexer = new TspFastLexer(new InputStream(text))
+        const results = documentContext.commandSet.suggestCompletions(
+            lexer.getAllTokens()
+                .filter((value: Token) => value.channel === 0)
+                .map((value: Token) => IToken.create(value)),
+            symbol.statementType
+        )
+
+        if (results.length === 0) {
+            // TODO: combine with user completions.
+            return { isIncomplete: true, items: documentContext.commandSet.completionDepthMap.get(0) }
+        }
+
+        return { isIncomplete: true, items: results }
+    }
+)
 
 connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Promise<CompletionItem> => {
     // const context = await documentContext

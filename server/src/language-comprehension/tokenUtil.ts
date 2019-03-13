@@ -80,11 +80,12 @@ export namespace TokenUtil {
      * Advances the given index to the index of its pairing token.
      * @param index The index of the pair-able Token.
      * @param tokens An array of source Tokens.
+     * @param leftToRight Whether to consume left-to-right or right-to-left. Defaults to left-to-right.
      * @returns The index of the pairing Token or the original index if a partner character was not found before
      * the end of the given token array or if the given token is not pairable.
      * @throws If the given index is greater than the list of tokens.
      */
-    export function consumePair(index: number, tokens: Array<Token>): number {
+    export function consumePair(index: number, tokens: Array<Token>, leftToRight: boolean = true): number {
         if (index >= tokens.length) {
             throw new Error(
                 `Zero-based index ${index} is greater than the length of the given array (${tokens.length}).`
@@ -97,8 +98,17 @@ export namespace TokenUtil {
             return index
         }
 
-        let currentIndex = index + 1
-        for (; currentIndex < tokens.length; currentIndex++) {
+        const condition = (leftToRight)
+            ? (value: number): boolean => value < tokens.length
+            : (value: number): boolean => value >= 0
+        // tslint:disable:no-parameter-reassignment
+        const postLoop = (leftToRight)
+            ? (value: number): number => value++
+            : (value: number): number => value--
+        // tslint:enable:no-parameter-reassignment
+
+        let currentIndex = index + ((leftToRight) ? 1 : -1)
+        for (; condition(currentIndex); postLoop(currentIndex)) {
             const currentToken = tokens[currentIndex]
 
             if (partners(openingToken, currentToken)) {

@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { Diagnostic, LocationLink } from 'vscode-languageserver'
+import { Diagnostic, LocationLink, Position } from 'vscode-languageserver'
 
 import { DocumentSymbol, Range, VariableLocalSymbol, VariableSymbol } from './decorators'
 
@@ -98,7 +98,9 @@ export class SymbolTable {
         return
     }
 
-    lookup(range: Range): DocumentSymbol | undefined {
+    lookup(target: Range | Position): DocumentSymbol | undefined {
+        const range = (Position.is(target)) ? { end: target, start: target } : target
+
         let lookahead = this.lookupBinarySearch(range, this.complete)
 
         let result: DocumentSymbol

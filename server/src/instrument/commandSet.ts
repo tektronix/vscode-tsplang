@@ -15,7 +15,11 @@
  */
 'use strict'
 
+import { Token } from 'antlr4'
+
+import { TspFastLexer } from '../antlr4-tsplang'
 import { CompletionItem, IToken, MarkupContentCallback, SignatureInformation } from '../decorators'
+import { Ambiguity, StatementType, TokenUtil } from '../language-comprehension'
 
 import { InstrumentSpec } from './instrumentSpec'
 
@@ -130,5 +134,225 @@ export class CommandSet implements CommandSetInterface {
         return (this.completionDepthMap.get(0) || []).some((value: CompletionItem) => {
             return value.label.localeCompare(token.text) === 0
         })
+    }
+
+    /**
+     * NOTE: The end of the last Token is the current location of the cursor.
+     */
+    suggestCompletions(tokens: Array<IToken>, type: StatementType | Ambiguity): Array<CompletionItem> {
+        const result = new Array()
+
+        /**
+         * # Rules
+         *
+         * ## No Completions
+         * 0. tokens is empty
+         * 1. type is Break
+         * 2. type is Function
+         * 3. type is FunctionLocal
+         * 4. type is Ambiguity.LOCAL
+         * 5. type is AssignmentLocal & '=' is not present
+         * 6. type is Assignment or AssignmentLocal or Ambiguity.FLOATING_TOKEN
+         *      & last Token is neither a NAME nor accessor ('.', ':')
+         */
+
+        // No Completions: Rule 0
+        if (tokens.length === 0) {
+            return []
+        }
+
+        // No Completions: Rules 1, 2, 3, 4
+        if (type === StatementType.Break
+            || type === StatementType.Function
+            || type === StatementType.FunctionLocal
+            || (Ambiguity.is(type) && Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL))) {
+            return []
+        }
+
+        /**
+         * Information relevant only to Assignment & AssignmentLocal.
+         * Stores left-hand/right-hand side information.
+         */
+        interface SideAssignmentInfo {
+            /**
+             * The total number of commas that occur before this assignment item.
+             */
+            commaIndex: number
+            /**
+             * An array of NAME Tokens that comprise a namespace.
+             * The array is cleared when a non-namespace Token is encountered before either
+             * the end of the Token array or a non-consumable comma.
+             */
+            names: Array<String>
+            // /**
+            //  * The inclusive start of the subarray of ITokens for this side of the assignment
+            //  * within the passed IToken array.
+            //  */
+            // startIndex: number
+            // /**
+            //  * The exclusive stop of the subarray of ITokens for this side of the assignment
+            //  * within the passed IToken array.
+            //  */
+            // stopIndex: number
+        }
+        interface AssignmentInfo {
+            /**
+             * The optional index of the assignment operator within the passed IToken array.
+             */
+            assignmentIndex?: number
+            /**
+             * Information comprising the left-hand side of the assignment.
+             */
+            left: SideAssignmentInfo
+            /**
+             * Information comprising the right-hand side of the assigment.
+             */
+            right?: SideAssignmentInfo
+        }
+
+        if (type === StatementType.Assignment
+            || type === StatementType.AssignmentLocal
+            || (Ambiguity.is(type) && Ambiguity.equal(type as Ambiguity, Ambiguity.FLOATING_TOKEN))) {
+            const assignInfo: AssignmentInfo = {
+                left: {
+                    commaIndex: 0,
+                    names: new Array(),
+                    // startIndex: -1,
+                    // // Since we are assuming there is not an assignment operator,
+                    // // we would want any slice operation to continue until the
+                    // // end of the array.
+                    // stopIndex: undefined
+                }
+            }
+
+            const lastIndex = tokens.length - 1
+
+            if (lastIndex === -1) {
+                return []
+            }
+
+            // No Completions: Rule 6
+            if (!(tokens[lastIndex].type === TspFastLexer.NAME
+                || tokens[lastIndex].text.localeCompare('.') === 0
+                || tokens[lastIndex].text.localeCompare(':') === 0)) {
+                return []
+            }
+
+            /**
+             * Handle Tokens from right-to-left until the assignment operator.
+             * If the assignment operator is found and we have identified commas, then
+             * perform left-hand-side parsing left-to-right through the Token array.
+             *
+             * This mitigates the cost of parsing multi-assignment statements where
+             * the cursor is somewhere along the right-hand-side.
+             * Parsing this case left-to-right requires us to store N total LHS
+             * assignment items when we may only care about providing exclusive
+             * completions for a single item.
+             * Parsing the same case right-to-left requires us to store potentially 2N
+             * total assignment items (one for each side), since we cannot determine
+             * the position (relative to the assignment operator) of the RHS item that
+             * the cursor resides in until the entire assignment statement has been
+             * parsed.
+             *
+             * However, if we start parsing right-to-left then conditionally switch to
+             * right-to-left parsing, we gain the following advantages:
+             * * If we come across a non-cosumable comma before the assignment operator,
+             *      then we only need to store the total number of non-consumable commas
+             *      before finding it.
+             * * If we do not find any non-consumable commas before the assignment
+             *      operator, then we can continue parsing right-to-left since we know
+             *      that our LHS will immediately follow.
+             * * If we switch our parse direction, then we only need to count the number
+             *      of non-consumable commas before storing the relevant LHS information.
+             */
+            for (let i = lastIndex; i >= 0; i--) {
+                i = TokenUtil.consumePair(i, tokens as Array<Token>, false)
+
+                if (tokens[i].type === TspFastLexer.NAME) {
+                    assignInfo.left.names.push(tokens[i].text)
+                }
+                else if (tokens[i].text.localeCompare('.') === 0 || tokens[i].text.localeCompare(':') === 0) {
+                    continue
+                }
+                else if (tokens[i].text.localeCompare(',') === 0) {
+                    // We seem to be parsing the entire assignment left-to-right since both
+                    // the RHS and assignment operator have been identified.
+                    if (assignInfo.right !== undefined && assignInfo.assignmentIndex !== undefined) {
+                        break
+                    }
+
+                    assignInfo.left.commaIndex++
+                }
+                else if (tokens[i].text.localeCompare('=') === 0) {
+                    assignInfo.assignmentIndex = i
+                    // assignInfo.left.startIndex = i + 1
+
+                    // Move what we assumed to be the left-hand side to the right-hand side.
+                    assignInfo.right = assignInfo.left
+                    assignInfo.left = undefined
+
+                    // We want to handle the left-hand-side while iterating from left-to-right.
+                    if (assignInfo.right.commaIndex > 0
+                        // Only global assignments benefit from LHS & RHS analysis.
+                        || type === StatementType.AssignmentLocal) {
+                        break
+                    }
+
+                    assignInfo.left = {
+                        commaIndex: 0,
+                        names: new Array(),
+                        // startIndex: -1,
+                        // stopIndex: -1
+                    }
+                }
+                else {
+                    if (assignInfo.left.names.length > 0) {
+                        assignInfo.left.names = new Array()
+                    }
+                }
+            }
+
+            // No Completions: Rule 5
+            if (assignInfo.assignmentIndex === undefined && type === StatementType.AssignmentLocal) {
+                return []
+            }
+            // Handle the left-hand-side of the assignment if applicable.
+            else if (assignInfo.left === undefined
+                && assignInfo.assignmentIndex !== undefined
+                && assignInfo.right.commaIndex > 0
+                && type !== StatementType.AssignmentLocal) {
+
+                assignInfo.left = {
+                    commaIndex: 0,
+                    names: new Array()
+                }
+
+                for (let i = 0; i < assignInfo.assignmentIndex; i++) {
+                    i = TokenUtil.consumePair(i, tokens as Array<Token>)
+
+                    if (tokens[i].text.localeCompare(',') === 0) {
+                        assignInfo.left.commaIndex++
+                    }
+                    else if (assignInfo.left.commaIndex < assignInfo.right.commaIndex) {
+                        continue
+                    }
+                    else if (assignInfo.left.commaIndex > assignInfo.right.commaIndex) {
+                        break
+                    }
+                    else if (tokens[i].type === TspFastLexer.NAME) {
+                        assignInfo.left.names.push(tokens[i].text)
+                    }
+                    else {
+                        if (assignInfo.left.names.length > 0) {
+                            assignInfo.left.names = new Array()
+                        }
+                    }
+                }
+            }
+
+            return []
+        }
+
+        return []
     }
 }

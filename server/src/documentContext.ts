@@ -68,7 +68,7 @@ export class DocumentContext extends TspFastListener {
     exceptionTokenIndex?: number
     settings: TsplangSettings
     symbolTable: SymbolTable
-    tokenStream: CommonTokenStream
+    tokens: Array<IToken>
 
     // private enteredStatementException: boolean
     // /**
@@ -113,7 +113,7 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable = new SymbolTable()
 
         const parseResult = Parse.chunk(item.text, settings.debug.print)
-        this.tokenStream = parseResult.tokenStream
+        this.tokens = parseResult.tokenStream.tokens.map((value: Token) => IToken.create(value))
         Parse.walk(this, parseResult.root)
     }
 
@@ -191,9 +191,7 @@ export class DocumentContext extends TspFastListener {
         // }
 
         // Get all relevant ITokens.
-        const tokens = this.tokenStream.tokens
-                        .slice(context.start.tokenIndex, context.stop.tokenIndex + 1)
-                        .map((value: Token) => IToken.create(value))
+        const tokens = this.tokens.slice(context.start.tokenIndex, context.stop.tokenIndex + 1)
 
         /**
          * We're interested in determining whether this is an Assignment,
@@ -282,8 +280,8 @@ export class DocumentContext extends TspFastListener {
                 : context.stop.tokenIndex
 
             lastSymbol.end = TokenUtil.getPosition(
-                this.tokenStream.tokens[lastTokenIndex],
-                this.tokenStream.tokens[lastTokenIndex].text.length
+                this.tokens[lastTokenIndex] as Token,
+                this.tokens[lastTokenIndex].text.length
             )
         }
 
