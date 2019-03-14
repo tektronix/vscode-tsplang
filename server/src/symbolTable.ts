@@ -21,14 +21,13 @@ import { DocumentSymbol, Range, VariableLocalSymbol, VariableSymbol } from './de
 
 export class SymbolTable {
     complete: Array<DocumentSymbol>
+    statementDepth: number
     symbolCache: Map<number, Array<DocumentSymbol>>
-
-    private _statementDepth: number
 
     constructor() {
         this.complete = new Array()
         this.symbolCache = new Map()
-        this._statementDepth = 0
+        this.statementDepth = 0
     }
 
     get diagnostics(): Array<Diagnostic> {
@@ -39,14 +38,6 @@ export class SymbolTable {
         }
 
         return result
-    }
-
-    get statementDepth(): number {
-        return this._statementDepth
-    }
-
-    set statementDepth(value: number) {
-        this._statementDepth = value
     }
 
     cacheSymbol(symbol: DocumentSymbol): void {
