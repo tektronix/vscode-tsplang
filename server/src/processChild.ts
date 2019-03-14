@@ -35,7 +35,6 @@ import { TspFastLexer } from './antlr4-tsplang'
 import { CompletionItem, DocumentSymbol, IToken } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
-import { Parse } from './parse'
 import {
     ChangeNotification,
     CompletionRequest,
@@ -78,7 +77,7 @@ const uri: string = process.argv[2]
 
 connection.onNotification(ChangeNotification, async (changes: Array<TextDocumentContentChangeEvent>) => {
     // TODO: detect shebang additions
-    const context = await documentContext
+    await documentContext
 
     let shebangEdited = false
     let smallestPosition: Position
@@ -118,7 +117,7 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     if (shebangEdited) {
-        updateProcessContext({ item: textDocumentItem, settings: context.settings })
+        updateProcessContext({ item: textDocumentItem, settings: documentContext.settings })
 
         return
     }
@@ -127,23 +126,22 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     const lastIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
         return value.range.start.line >= smallestPosition.line || value.range.end.line >= smallestPosition.line
     })
-    // TODO: append a new symbol.
+
+    let tokenIndex: number
     if (lastIndex === -1) {
-        return
+        // Reparse everything starting after the last Token on the default channel.
+        documentContext.reParse(-1)
     }
+    else {
+        // Get the Token index of the first Token contained in the symbol containing the smallest Position.
+        tokenIndex = documentContext.symbolTable.complete[lastIndex].startTokenIndex
 
-    // Get the Token index of the first Token contained in the symbol containing the smallest Position.
-    const tokenIndex = documentContext.symbolTable.complete[lastIndex].startTokenIndex
+        // Remove the symbol containing the smallest Position and all following symbols.
+        documentContext.symbolTable.complete.splice(lastIndex)
 
-    // Remove the symbol containing the smallest Position and all following symbols.
-    documentContext.symbolTable.complete.splice(lastIndex)
-
-    // Reparse everything starting at the smallest Position.
-    const parse = Parse.create(textDocumentItem.text, documentContext.settings.debug.print)
-    documentContext.tokens = parse.tokenStream.tokens.map((value: Token) => IToken.create(value))
-    parse.parser.getTokenStream().adjustSeekIndex(tokenIndex)
-    parse.parser.addParseListener(documentContext)
-    parse.parser.chunk()
+        // Reparse everything starting at the smallest Position.
+        documentContext.reParse(tokenIndex)
+    }
 
     return
 })
@@ -228,7 +226,7 @@ connection.onRequest(SymbolRequest, async (params: ProcessContext): Promise<Arra
 
     if (documentContext === undefined) {
         // Create the context for this document.
-        documentContext = new DocumentContext(textDocumentItem, instrument.set, settings)
+        documentContext = (new DocumentContext(textDocumentItem, instrument.set, settings)).initialParse()
     }
 
     const diagnostics = documentContext.symbolTable.diagnostics

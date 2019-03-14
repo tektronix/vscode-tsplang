@@ -26,9 +26,9 @@ import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tsplang'
 import { DebugTimer } from './debugTimer'
 import { DebugPrintSettings } from './settings'
 
-ConsoleErrorListener.prototype.syntaxError = (): void => { return }
+// ConsoleErrorListener.prototype.syntaxError = (): void => { return }
 
-class DebugParseTimer extends TspFastListener {
+export class DebugParseTimer extends TspFastListener {
     readonly printStatementTimes: boolean
     readonly timer: DebugTimer
 
@@ -63,7 +63,7 @@ class DebugParseTimer extends TspFastListener {
     }
 }
 
-class DebugParseTree extends TspFastListener {
+export class DebugParseTree extends TspFastListener {
     readonly ruleEndRegExp: RegExp
     readonly ruleStartRegExp: RegExp
     statementDepth: number

@@ -18,8 +18,8 @@
 import { Token } from 'antlr4'
 
 import { TspFastLexer } from '../antlr4-tsplang'
-import { CompletionItem, IToken, MarkupContentCallback, SignatureInformation } from '../decorators'
-import { Ambiguity, StatementType, TokenUtil } from '../language-comprehension'
+import { CompletionItem, IToken, MarkupContentCallback, ResolvedNamespace, SignatureInformation } from '../decorators'
+import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from '../language-comprehension'
 
 import { InstrumentSpec } from './instrumentSpec'
 
@@ -140,7 +140,7 @@ export class CommandSet implements CommandSetInterface {
      * NOTE: The end of the last Token is the current location of the cursor.
      */
     suggestCompletions(tokens: Array<IToken>, type: StatementType | Ambiguity): Array<CompletionItem> {
-        const result = new Array()
+        const _type = (type === StatementType.None) ? statementRecognizer(tokens as Array<Token>) : type
 
         /**
          * # Rules
@@ -162,10 +162,10 @@ export class CommandSet implements CommandSetInterface {
         }
 
         // No Completions: Rules 1, 2, 3, 4
-        if (type === StatementType.Break
-            || type === StatementType.Function
-            || type === StatementType.FunctionLocal
-            || (Ambiguity.is(type) && Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL))) {
+        if (_type === StatementType.Break
+            || _type === StatementType.Function
+            || _type === StatementType.FunctionLocal
+            || (Ambiguity.is(_type) && Ambiguity.equal(_type as Ambiguity, Ambiguity.LOCAL))) {
             return []
         }
 
@@ -179,21 +179,16 @@ export class CommandSet implements CommandSetInterface {
              */
             commaIndex: number
             /**
+             * Whether or not we encountered an accessor before our first NAME token.
+             * Only applicable to the RHS.
+             */
+            hangingAccessor: boolean
+            /**
              * An array of NAME Tokens that comprise a namespace.
              * The array is cleared when a non-namespace Token is encountered before either
              * the end of the Token array or a non-consumable comma.
              */
-            names: Array<String>
-            // /**
-            //  * The inclusive start of the subarray of ITokens for this side of the assignment
-            //  * within the passed IToken array.
-            //  */
-            // startIndex: number
-            // /**
-            //  * The exclusive stop of the subarray of ITokens for this side of the assignment
-            //  * within the passed IToken array.
-            //  */
-            // stopIndex: number
+            names: Array<string>
         }
         interface AssignmentInfo {
             /**
@@ -210,18 +205,14 @@ export class CommandSet implements CommandSetInterface {
             right?: SideAssignmentInfo
         }
 
-        if (type === StatementType.Assignment
-            || type === StatementType.AssignmentLocal
-            || (Ambiguity.is(type) && Ambiguity.equal(type as Ambiguity, Ambiguity.FLOATING_TOKEN))) {
+        if (_type === StatementType.Assignment
+            || _type === StatementType.AssignmentLocal
+            || (Ambiguity.is(_type) && Ambiguity.equal(_type as Ambiguity, Ambiguity.FLOATING_TOKEN))) {
             const assignInfo: AssignmentInfo = {
                 left: {
                     commaIndex: 0,
-                    names: new Array(),
-                    // startIndex: -1,
-                    // // Since we are assuming there is not an assignment operator,
-                    // // we would want any slice operation to continue until the
-                    // // end of the array.
-                    // stopIndex: undefined
+                    hangingAccessor: false,
+                    names: new Array()
                 }
             }
 
@@ -268,10 +259,14 @@ export class CommandSet implements CommandSetInterface {
             for (let i = lastIndex; i >= 0; i--) {
                 i = TokenUtil.consumePair(i, tokens as Array<Token>, false)
 
-                if (tokens[i].type === TspFastLexer.NAME) {
+                if (tokens[i].type === TspFastLexer.NAME && assignInfo.left.commaIndex === 0) {
                     assignInfo.left.names.push(tokens[i].text)
                 }
                 else if (tokens[i].text.localeCompare('.') === 0 || tokens[i].text.localeCompare(':') === 0) {
+                    if (assignInfo.left.names.length === 0) {
+                        assignInfo.left.hangingAccessor = true
+                    }
+
                     continue
                 }
                 else if (tokens[i].text.localeCompare(',') === 0) {
@@ -294,36 +289,36 @@ export class CommandSet implements CommandSetInterface {
                     // We want to handle the left-hand-side while iterating from left-to-right.
                     if (assignInfo.right.commaIndex > 0
                         // Only global assignments benefit from LHS & RHS analysis.
-                        || type === StatementType.AssignmentLocal) {
+                        || _type === StatementType.AssignmentLocal) {
                         break
                     }
 
                     assignInfo.left = {
                         commaIndex: 0,
-                        names: new Array(),
-                        // startIndex: -1,
-                        // stopIndex: -1
+                        hangingAccessor: false,
+                        names: new Array()
                     }
                 }
                 else {
-                    if (assignInfo.left.names.length > 0) {
+                    if (assignInfo.left.commaIndex === 0 && assignInfo.left.names.length > 0) {
                         assignInfo.left.names = new Array()
                     }
                 }
             }
 
             // No Completions: Rule 5
-            if (assignInfo.assignmentIndex === undefined && type === StatementType.AssignmentLocal) {
+            if (assignInfo.assignmentIndex === undefined && _type === StatementType.AssignmentLocal) {
                 return []
             }
             // Handle the left-hand-side of the assignment if applicable.
             else if (assignInfo.left === undefined
                 && assignInfo.assignmentIndex !== undefined
                 && assignInfo.right.commaIndex > 0
-                && type !== StatementType.AssignmentLocal) {
+                && _type !== StatementType.AssignmentLocal) {
 
                 assignInfo.left = {
                     commaIndex: 0,
+                    hangingAccessor: false,
                     names: new Array()
                 }
 
@@ -343,14 +338,75 @@ export class CommandSet implements CommandSetInterface {
                         assignInfo.left.names.push(tokens[i].text)
                     }
                     else {
-                        if (assignInfo.left.names.length > 0) {
+                        if (assignInfo.left.commaIndex !== assignInfo.right.commaIndex
+                            && assignInfo.left.names.length > 0) {
                             assignInfo.left.names = new Array()
                         }
                     }
                 }
             }
 
-            return []
+            // Get any exclusive assignment completions.
+            if (assignInfo.left !== undefined && assignInfo.right !== undefined) {
+                const rootLHS = assignInfo.left.names.shift()
+                const domainsLHS = new Array<string>(...assignInfo.left.names).reverse()
+                const completionFragmentLHS = {
+                    data: (domainsLHS.length > 0) ? { domains: domainsLHS } : undefined,
+                    label: rootLHS
+                }
+                let namespaceRHS = assignInfo.right.names.reverse().join('.')
+
+                // Append an accessor as necessary.
+                if (assignInfo.right.hangingAccessor) {
+                    namespaceRHS += '.'
+                }
+
+                // Get any completions that exactly match the LHS.
+                const completionsLHS = (this.completionDepthMap.get(assignInfo.left.names.length - 1) || []).filter(
+                    (value: CompletionItem) => CompletionItem.namespacesEqual(completionFragmentLHS, value)
+                )
+
+                // Provide regular completions should no exclusive completions be available.
+                if (completionsLHS.length === 0) {
+                    const depth = ResolvedNamespace.depth(namespaceRHS)
+
+                    // Get any completions that match the LHS.
+                    return (this.completionDepthMap.get(depth) || []).filter(
+                        (value: CompletionItem) => CompletionItem.namespaceMatch(namespaceRHS, value)
+                    )
+                }
+
+                // Get all valid exclusive assignments.
+                const exclusiveAssigns = new Array<CompletionItem>()
+                for (const completion of completionsLHS) {
+                    if (completion.data === undefined || completion.data.types === undefined) {
+                        continue
+                    }
+
+                    exclusiveAssigns.push(...completion.data.types)
+                }
+
+                // Return any exclusive completions that match the RHS.
+                return exclusiveAssigns.filter(
+                    (value: CompletionItem) => CompletionItem.namespaceMatch(namespaceRHS, value)
+                )
+            }
+            // Handle the left-hand-side of Assignments/Function Calls.
+            else if (assignInfo.right === undefined && assignInfo.assignmentIndex === undefined) {
+                let namespaceLHS = assignInfo.left.names.reverse().join('.')
+
+                // Append an accessor as necessary.
+                if (assignInfo.left.hangingAccessor) {
+                    namespaceLHS += '.'
+                }
+
+                const depth = ResolvedNamespace.depth(namespaceLHS)
+
+                // Get any completions that match the LHS.
+                return (this.completionDepthMap.get(depth) || []).filter(
+                    (value: CompletionItem) => CompletionItem.namespaceMatch(namespaceLHS, value)
+                )
+            }
         }
 
         return []

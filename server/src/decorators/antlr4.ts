@@ -51,6 +51,7 @@ Token.makeStringArray = function(...tokens: Array<Token>): Array<string> {
 }
 
 export interface IToken {
+    channel: number
     column: number
     line: number
     start: number
@@ -62,6 +63,7 @@ export interface IToken {
 export namespace IToken {
     export function create(value: Token): IToken {
         return {
+            channel: value.channel,
             column: value.column,
             line: value.line,
             start: value.start,

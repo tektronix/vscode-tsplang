@@ -48,12 +48,13 @@ export class DocumentSymbol implements IDocumentSymbol {
     kind: vsls.SymbolKind
     local: boolean = false
     name: string
+    previousSymbol: DocumentSymbol
     range: vsls.Range
     references?: Array<vsls.Location>
     selectionRange: vsls.Range
     start: vsls.Position
     startTokenIndex: number
-    statementType: StatementType
+    statementType: StatementType | Ambiguity
     uri: string
 
     private _end: vsls.Position

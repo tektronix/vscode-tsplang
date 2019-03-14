@@ -41,14 +41,23 @@ export class SymbolTable {
     }
 
     cacheSymbol(symbol: DocumentSymbol): void {
-        if (symbol instanceof VariableLocalSymbol) {
-            // TODO: add this name to the local name list.
-        }
-        else if (symbol instanceof VariableSymbol) {
-            // TODO: add this name to the global name list.
+        if (!symbol.exception) {
+            if (symbol instanceof VariableLocalSymbol) {
+                // TODO: add this name to the local name list.
+            }
+            else if (symbol instanceof VariableSymbol) {
+                // TODO: add this name to the global name list.
+            }
         }
 
         if (this.symbolCache.has(this.statementDepth)) {
+            // Tie this exception to the previous symbol.
+            if (symbol.exception) {
+                const lastIndex = this.symbolCache.get(this.statementDepth).length - 1
+                if (lastIndex >= 0) {
+                    symbol.previousSymbol = this.symbolCache.get(this.statementDepth)[lastIndex]
+                }
+            }
             this.symbolCache.get(this.statementDepth).push(symbol)
 
             return
@@ -64,8 +73,11 @@ export class SymbolTable {
             return
         }
 
-        // Add any symbols from the previous depth as children.
-        result.children = this.symbolCache.get(this.statementDepth + 1)
+        // Only get children if this symbol has yet to be modified.
+        if (result.children === undefined) {
+            // Add any symbols from the previous depth as children.
+            result.children = this.symbolCache.get(this.statementDepth + 1)
+        }
 
         // Clear the cache at the previous depth.
         this.symbolCache.delete(this.statementDepth + 1)
@@ -74,6 +86,16 @@ export class SymbolTable {
     }
 
     link(name: string, range: Range): LocationLink | undefined {
+        for (const symbol of this.complete) {
+            if (symbol.name === undefined) {
+                continue
+            }
+
+            if (symbol.name.localeCompare(name) === 0) {
+                return symbol.link(range)
+            }
+        }
+
         for (let i = this.statementDepth; i >= 0; i--) {
             for (const symbol of (this.symbolCache.get(i) || [])) {
                 if (symbol.name === undefined) {

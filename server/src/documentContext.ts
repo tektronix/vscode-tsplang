@@ -53,9 +53,11 @@ import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclu
 import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { Outline } from './outline'
-import { Parse } from './parse'
+import { DebugParseTimer, DebugParseTree } from './parse'
 import { SuggestionSortKind, TsplangSettings } from './settings'
 import { SymbolTable } from './symbolTable'
+
+ConsoleErrorListener.prototype.syntaxError = (): void => { return }
 
 // tslint:disable
 export class DocumentContext extends TspFastListener {
@@ -79,9 +81,10 @@ export class DocumentContext extends TspFastListener {
     // private exclusives: Map<number, ExclusiveContext>
     // private fuzzyOffsets: FuzzyOffsetMap
     // private fuzzySignatureOffsets: FuzzyOffsetMap
-    // private inputStream: InputStream
-    // private lexer: TspFastLexer
-    // private parser: TspFastParser
+    inputStream: InputStream
+    lexer: TspFastLexer
+    parser: TspFastParser
+    tokenStream: CommonTokenStream
     // private parseTree: ParserRuleContext
     // /**
     //  * A Map keyed to the ending offset of a function call's open parenthesis.
@@ -109,12 +112,59 @@ export class DocumentContext extends TspFastListener {
         // this.fuzzyOffsets = new FuzzyOffsetMap()
         // this.fuzzySignatureOffsets = new FuzzyOffsetMap()
         // this.signatures = new Map()
+        this.tokens = new Array()
 
         this.symbolTable = new SymbolTable()
+    }
 
-        const parseResult = Parse.chunk(item.text, settings.debug.print)
-        this.tokens = parseResult.tokenStream.tokens.map((value: Token) => IToken.create(value))
-        Parse.walk(this, parseResult.root)
+    initialParse(): DocumentContext {
+        this.inputStream = new InputStream(this.document.getText())
+        this.lexer = new TspFastLexer(this.inputStream)
+        this.tokenStream = new CommonTokenStream(this.lexer)
+        this.tokenStream.fill()
+        this.tokens = this.tokenStream.tokens.map((value: Token) => IToken.create(value))
+        this.tokenStream.reset()
+        this.parser = new TspFastParser(this.tokenStream)
+        this.parser.buildParseTrees = true
+        this.parser.addParseListener(new DebugParseTimer(this.settings.debug.print.rootStatementParseTime))
+        if (this.settings.debug.print.rootStatementParseTree) {
+            this.parser.addParseListener(new DebugParseTree())
+        }
+        const root = this.parser.chunk()
+        ParseTreeWalker.DEFAULT.walk(this, root)
+
+        this.parser.removeParseListeners()
+
+        return this
+    }
+
+    reParse(from: number): void {
+        let start = from
+        if (from === -1) {
+            for(let i = this.tokens.length - 1; i >= 0; i--) {
+                if (this.tokens[i].channel === 0 && this.tokens[i].type !== TspFastLexer.EOF) {
+                    start = i + 1
+                    break
+                }
+            }
+        }
+
+        this.inputStream = new InputStream(this.document.getText())
+        this.lexer = new TspFastLexer(this.inputStream)
+        this.tokenStream.setTokenSource(this.lexer)
+        this.tokenStream.fill()
+        this.tokens = this.tokenStream.tokens.map((value: Token) => IToken.create(value))
+        this.tokenStream.seek(start)
+        this.parser = new TspFastParser(this.tokenStream)
+        this.parser.buildParseTrees = true
+        this.parser.addParseListener(new DebugParseTimer(this.settings.debug.print.rootStatementParseTime))
+        if (this.settings.debug.print.rootStatementParseTree) {
+            this.parser.addParseListener(new DebugParseTree())
+        }
+        const root = this.parser.chunk()
+        ParseTreeWalker.DEFAULT.walk(this, root)
+
+        this.parser.removeParseListeners()
     }
 
     exitChunk(): void {
@@ -129,7 +179,7 @@ export class DocumentContext extends TspFastListener {
         // }
 
         // Mark all cached root symbols as completed.
-        this.symbolTable.complete = (this.symbolTable.symbolCache.get(0) || [])
+        this.symbolTable.complete.push(...(this.symbolTable.symbolCache.get(0) || []))
         // Flush all symbols from the cache.
         this.symbolTable.symbolCache = new Map()
     }
@@ -265,16 +315,6 @@ export class DocumentContext extends TspFastListener {
             )
         }
         else {
-            if (context.exception instanceof NoViableAltException) {
-                lastSymbol.detail = 'Invalid statement.'
-            }
-            else if (context.exception instanceof RecognitionException) {
-                lastSymbol.detail = 'TSPLang has no prettification support for ANTLR4 RecognitionExceptions.'
-            }
-            else {
-                lastSymbol.detail = 'ANTLR4 threw an unrecognized exception type.'
-            }
-
             const lastTokenIndex = (context.stop.tokenIndex < context.start.tokenIndex)
                 ? context.start.tokenIndex
                 : context.stop.tokenIndex
@@ -283,14 +323,46 @@ export class DocumentContext extends TspFastListener {
                 this.tokens[lastTokenIndex] as Token,
                 this.tokens[lastTokenIndex].text.length
             )
+
+            if (context.exception instanceof NoViableAltException) {
+                lastSymbol.detail = 'Invalid statement.'
+
+                const lastTokenText = this.tokens[lastTokenIndex].text
+                if (lastTokenText.localeCompare('.') === 0 || lastTokenText.localeCompare(':') === 0) {
+                    const preceedingIndex = context.start.tokenIndex - 1
+                    if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(',') === 0
+                        || (this.tokens[preceedingIndex] || { text: '' }.text.localeCompare('=') === 0)) {
+                        // Modify the symbol before last to be an exception.
+                        const symbolBeforeLastSymbol = this.symbolTable.lastSymbol()
+
+                        if (symbolBeforeLastSymbol !== undefined) {
+                            symbolBeforeLastSymbol.exception = true
+                            symbolBeforeLastSymbol.end = lastSymbol.end
+                            symbolBeforeLastSymbol.detail = 'Identifier expected.'
+
+                            this.symbolTable.cacheSymbol(symbolBeforeLastSymbol)
+
+                            return
+                        }
+                    }
+                    else {
+                        lastSymbol.detail = 'Identifier expected.'
+                        lastSymbol.statementType = Ambiguity.FLOATING_TOKEN
+                    }
+                }
+            }
+            else if (context.exception instanceof RecognitionException) {
+                lastSymbol.detail = 'TSPLang has no prettification support for ANTLR4 RecognitionExceptions.'
+            }
+            else {
+                lastSymbol.detail = 'ANTLR4 threw an unrecognized exception type.'
+            }
         }
 
         lastSymbol.name = `EXCEPT (${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
         lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
 
         this.symbolTable.cacheSymbol(lastSymbol)
-
-        return
     }
 
     handleFunctionDeclarations(
@@ -432,7 +504,7 @@ export class DocumentContext extends TspFastListener {
                 startSelectionIndex = (type === StatementType.Assignment) ? 0 : 1
                 startSelectionToken = tokens[startSelectionIndex]
                 endSelectionToken = (variableCommaIndices.length === 0)
-                    ? startSelectionToken
+                    ? tokens[assignmentIndex - 1]
                     : tokens[variableCommaIndices[i] - 1]
             }
             else if (i === variableCommaIndices.length) {
@@ -463,7 +535,7 @@ export class DocumentContext extends TspFastListener {
                 let tokenIndex: number
                 let firstNameToken: IToken
                 do {
-                    tokenIndex = (tokenIndex || startSelectionIndex - 1) + 1
+                    tokenIndex = ((tokenIndex === undefined) ? startSelectionIndex - 1: tokenIndex) + 1
                     firstNameToken = tokens[tokenIndex]
                 } while (firstNameToken.type !== TspFastParser.NAME)
 
