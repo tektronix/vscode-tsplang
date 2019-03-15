@@ -231,10 +231,10 @@ export class DocumentContext extends TspFastListener {
         }
 
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
-            this.handleVariables(context, tokens, type)
+            this.handleVariables(context.children, context.start.tokenIndex, tokens, type)
         }
         else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
-            this.handleFunctionDeclarations(context, tokens, type)
+            this.handleFunctionDeclarations(context.children, tokens, type)
         }
         else {
             const lastSymbol = this.symbolTable.lastSymbol()
@@ -254,41 +254,37 @@ export class DocumentContext extends TspFastListener {
         }
     }
 
-    handleExceptions(context: TspFastParser.StatementContext): void {
+    handleExceptions(exception: Error, start: Token, stop: Token): void {
         const lastSymbol = this.symbolTable.lastSymbol()
-
-        if (context.children === null) {
-            return
-        }
 
         lastSymbol.exception = true
         lastSymbol.statementType = StatementType.None
         lastSymbol.kind = SymbolKind.File
 
-        if (context.exception instanceof InputMismatchException) {
-            lastSymbol.detail = `Unexpected "${context.exception.offendingToken.text}".`
-            lastSymbol.start = TokenUtil.getPosition(context.exception.offendingToken)
+        if (exception instanceof InputMismatchException) {
+            lastSymbol.detail = `Unexpected "${exception.offendingToken.text}".`
+            lastSymbol.start = TokenUtil.getPosition(exception.offendingToken)
             lastSymbol.end = TokenUtil.getPosition(
-                context.exception.offendingToken,
-                context.exception.offendingToken.text.length
+                exception.offendingToken,
+                exception.offendingToken.text.length
             )
         }
         else {
-            const lastTokenIndex = (context.stop.tokenIndex < context.start.tokenIndex)
-                ? context.start.tokenIndex
-                : context.stop.tokenIndex
+            const lastTokenIndex = (stop.tokenIndex < start.tokenIndex)
+                ? start.tokenIndex
+                : stop.tokenIndex
 
             lastSymbol.end = TokenUtil.getPosition(
                 this.tokens[lastTokenIndex] as Token,
                 this.tokens[lastTokenIndex].text.length
             )
 
-            if (context.exception instanceof NoViableAltException) {
+            if (exception instanceof NoViableAltException) {
                 lastSymbol.detail = 'Invalid statement.'
 
                 const lastTokenText = this.tokens[lastTokenIndex].text
                 if (lastTokenText.localeCompare('.') === 0 || lastTokenText.localeCompare(':') === 0) {
-                    const preceedingIndex = context.start.tokenIndex - 1
+                    const preceedingIndex = start.tokenIndex - 1
                     if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(',') === 0
                         || (this.tokens[preceedingIndex] || { text: '' }.text.localeCompare('=') === 0)) {
                         // Modify the symbol before last to be an exception.
@@ -310,7 +306,7 @@ export class DocumentContext extends TspFastListener {
                     }
                 }
             }
-            else if (context.exception instanceof RecognitionException) {
+            else if (exception instanceof RecognitionException) {
                 lastSymbol.detail = 'TSPLang has no prettification support for ANTLR4 RecognitionExceptions.'
             }
             else {
@@ -325,7 +321,7 @@ export class DocumentContext extends TspFastListener {
     }
 
     handleFunctionDeclarations(
-        context: TspFastParser.StatementContext,
+        children: Array<ParserRuleContext | TerminalNode>,
         tokens: Array<IToken>,
         type: StatementType
     ): void {
@@ -333,11 +329,11 @@ export class DocumentContext extends TspFastListener {
         const startSelectionToken = tokens[startIndex]
         let endSelectionToken: IToken
         const paramTokens = new Array<IToken>()
-        for (let i = startIndex; i < context.children.length; i++) {
+        for (let i = startIndex; i < children.length; i++) {
             // Lookhead for the opening parenthesis if we have yet to find it and a lookahead is possible.
-            if (endSelectionToken === undefined && i + 1 < context.children.length) {
-                if (context.children[i + 1].getText().localeCompare('(') === 0) {
-                    let endSelectionIndex = (context.children[i] as TerminalNode).symbol.tokenIndex
+            if (endSelectionToken === undefined && i + 1 < children.length) {
+                if (children[i + 1].getText().localeCompare('(') === 0) {
+                    let endSelectionIndex = (children[i] as TerminalNode).symbol.tokenIndex
                     endSelectionIndex -= tokens[0].tokenIndex
                     endSelectionToken = tokens[endSelectionIndex]
                 }
@@ -345,7 +341,7 @@ export class DocumentContext extends TspFastListener {
                 continue
             }
 
-            const child = context.children[i]
+            const child = children[i]
             if (child instanceof TerminalNode) {
                 if (child.symbol.type === TspFastParser.NAME || child.symbol.type === TspFastParser.VARARG) {
                     const paramIndex = child.symbol.tokenIndex - tokens[0].tokenIndex
@@ -429,22 +425,26 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(functionSymbol)
     }
 
-    handleVariables(context: TspFastParser.StatementContext, tokens: Array<IToken>, type: StatementType): void {
+    handleVariables(
+        children: Array<ParserRuleContext | TerminalNode>,
+        startingTokenIndex: number,
+        tokens: Array<IToken>,
+        type: StatementType
+    ): void {
         const variableCommaIndices = new Array<number>()
         let assignmentIndex: number
 
         // Indices will be zero-based from the starting Token (which is index 0).
-        const startingIndex = context.start.tokenIndex
-        for (let i = 0; i < context.children.length; i++) {
-            if (context.children[i] instanceof ParserRuleContext) {
+        for (let i = 0; i < children.length; i++) {
+            if (children[i] instanceof ParserRuleContext) {
                 continue
             }
 
-            if ((context.children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
-                variableCommaIndices.push((context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex)
+            if ((children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
+                variableCommaIndices.push((children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex)
             }
-            else if ((context.children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
-                assignmentIndex = (context.children[i] as TerminalNode).symbol.tokenIndex - startingIndex
+            else if ((children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
+                assignmentIndex = (children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex
                 break
             }
         }
