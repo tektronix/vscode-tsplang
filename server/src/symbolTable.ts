@@ -149,6 +149,7 @@ export class SymbolTable {
             }
         }
 
-        return
+        // Return the closest result if an exact match does not exist.
+        return symbols[stop]
     }
 }

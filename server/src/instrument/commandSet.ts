@@ -153,7 +153,7 @@ export class CommandSet implements CommandSetInterface {
          * 4. type is Ambiguity.LOCAL
          * 5. type is AssignmentLocal & '=' is not present
          * 6. type is Assignment or AssignmentLocal or Ambiguity.FLOATING_TOKEN
-         *      & last Token is neither a NAME nor accessor ('.', ':')
+         *      & last Token is neither a NAME, accessor ('.', ':'), nor comma (',')
          */
 
         // No Completions: Rule 0
@@ -225,7 +225,8 @@ export class CommandSet implements CommandSetInterface {
             // No Completions: Rule 6
             if (!(tokens[lastIndex].type === TspFastLexer.NAME
                 || tokens[lastIndex].text.localeCompare('.') === 0
-                || tokens[lastIndex].text.localeCompare(':') === 0)) {
+                || tokens[lastIndex].text.localeCompare(':') === 0
+                || tokens[lastIndex].text.localeCompare(',') === 0)) {
                 return []
             }
 
@@ -348,11 +349,11 @@ export class CommandSet implements CommandSetInterface {
 
             // Get any exclusive assignment completions.
             if (assignInfo.left !== undefined && assignInfo.right !== undefined) {
-                const rootLHS = assignInfo.left.names.shift()
+                const labelLHS = assignInfo.left.names.pop()
                 const domainsLHS = new Array<string>(...assignInfo.left.names).reverse()
                 const completionFragmentLHS = {
                     data: (domainsLHS.length > 0) ? { domains: domainsLHS } : undefined,
-                    label: rootLHS
+                    label: labelLHS
                 }
                 let namespaceRHS = assignInfo.right.names.reverse().join('.')
 
@@ -362,7 +363,7 @@ export class CommandSet implements CommandSetInterface {
                 }
 
                 // Get any completions that exactly match the LHS.
-                const completionsLHS = (this.completionDepthMap.get(assignInfo.left.names.length - 1) || []).filter(
+                const completionsLHS = (this.completionDepthMap.get(domainsLHS.length) || []).filter(
                     (value: CompletionItem) => CompletionItem.namespacesEqual(completionFragmentLHS, value)
                 )
 
@@ -384,6 +385,13 @@ export class CommandSet implements CommandSetInterface {
                     }
 
                     exclusiveAssigns.push(...completion.data.types)
+                }
+
+                // If there are no NAME Tokens on the RHS, then only provide root excusive completions.
+                if (assignInfo.right.names.length === 0) {
+                    return exclusiveAssigns.filter(
+                        (value: CompletionItem) => value.data === undefined || value.data.domains === undefined
+                    )
                 }
 
                 // Return any exclusive completions that match the RHS.
