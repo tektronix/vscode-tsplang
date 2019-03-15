@@ -234,7 +234,7 @@ export class DocumentContext extends TspFastListener {
             this.handleVariables(context.children, context.start.tokenIndex, tokens, type)
         }
         else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
-            this.handleFunctionDeclarations(context.children, tokens, type)
+            this.handleFunctionDeclarations(tokens, type)
         }
         else {
             const lastSymbol = this.symbolTable.lastSymbol()
@@ -320,20 +320,16 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(lastSymbol)
     }
 
-    handleFunctionDeclarations(
-        children: Array<ParserRuleContext | TerminalNode>,
-        tokens: Array<IToken>,
-        type: StatementType
-    ): void {
+    handleFunctionDeclarations(tokens: Array<IToken>, type: StatementType): void {
         const startIndex = (type === StatementType.Function) ? 1 : 2
         const startSelectionToken = tokens[startIndex]
         let endSelectionToken: IToken
         const paramTokens = new Array<IToken>()
-        for (let i = startIndex; i < children.length; i++) {
+        for (let i = startIndex; i < tokens.length; i++) {
             // Lookhead for the opening parenthesis if we have yet to find it and a lookahead is possible.
-            if (endSelectionToken === undefined && i + 1 < children.length) {
-                if (children[i + 1].getText().localeCompare('(') === 0) {
-                    let endSelectionIndex = (children[i] as TerminalNode).symbol.tokenIndex
+            if (endSelectionToken === undefined && i + 1 < tokens.length) {
+                if (tokens[i + 1].text.localeCompare('(') === 0) {
+                    let endSelectionIndex = tokens[i].tokenIndex
                     endSelectionIndex -= tokens[0].tokenIndex
                     endSelectionToken = tokens[endSelectionIndex]
                 }
@@ -341,12 +337,14 @@ export class DocumentContext extends TspFastListener {
                 continue
             }
 
-            const child = children[i]
-            if (child instanceof TerminalNode) {
-                if (child.symbol.type === TspFastParser.NAME || child.symbol.type === TspFastParser.VARARG) {
-                    const paramIndex = child.symbol.tokenIndex - tokens[0].tokenIndex
-                    paramTokens.push(tokens[paramIndex])
-                }
+            if (tokens[i].text.localeCompare(')') === 0) {
+                break
+            }
+
+            const child = tokens[i]
+            if (child.type === TspFastParser.NAME || child.type === TspFastParser.VARARG) {
+                const paramIndex = child.tokenIndex - tokens[0].tokenIndex
+                paramTokens.push(tokens[paramIndex])
             }
         }
 
