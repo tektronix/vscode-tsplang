@@ -463,7 +463,9 @@ export class DocumentContext extends TspFastListener {
                 startSelectionIndex = (type === StatementType.Assignment) ? 0 : 1
                 startSelectionToken = tokens[startSelectionIndex]
                 endSelectionToken = (variableCommaIndices.length === 0)
-                    ? tokens[assignmentIndex - 1]
+                    ? (assignmentIndex === undefined)
+                        ? startSelectionToken
+                        : tokens[assignmentIndex - 1]
                     : tokens[variableCommaIndices[i] - 1]
             }
             else if (i === variableCommaIndices.length) {
