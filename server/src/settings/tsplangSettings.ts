@@ -19,6 +19,10 @@ import { CompletionItemKind } from 'vscode-languageserver'
 
 import { SuggestionSortKind } from './suggestionSortKind'
 
+export interface DebugOpenSettings {
+    documentInitializationDelay: null | number
+}
+
 export interface DebugPrintSettings {
     rootStatementParseTime: boolean
     rootStatementParseTree: boolean
@@ -26,6 +30,7 @@ export interface DebugPrintSettings {
 
 export interface TsplangSettings {
     debug: {
+        open: DebugOpenSettings;
         outline: boolean;
         print: DebugPrintSettings;
     }
@@ -44,6 +49,10 @@ export namespace TsplangSettings {
     export function defaults(): TsplangSettings {
         return {
             debug: {
+                open: {
+                    // tslint:disable-next-line: no-null-keyword
+                    documentInitializationDelay: null
+                },
                 outline: false,
                 print: {
                     rootStatementParseTime: false,

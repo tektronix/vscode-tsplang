@@ -26,6 +26,10 @@ describe('Settings', () => {
     describe('TsplangSettings', () => {
         const defaultSettings: TsplangSettings = {
             debug: {
+                open: {
+                    // tslint:disable-next-line: no-null-keyword
+                    documentInitializationDelay: null
+                },
                 outline: false,
                 print: {
                     rootStatementParseTime: false,
@@ -54,6 +58,10 @@ describe('Settings', () => {
                 [
                     {
                         debug: {
+                            open: {
+                                // tslint:disable-next-line: no-null-keyword
+                                documentInitializationDelay: null
+                            },
                             outline: false,
                             print: {
                                 rootStatementParseTime: false,

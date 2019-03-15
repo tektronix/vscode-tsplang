@@ -50,6 +50,11 @@
         "configuration": {
             "title": "TSPLang",
             "properties": {
+                "tsplang.debug.open.documentInitializationDelay": {
+                    "type": ["integer", "null"],
+                    "default": null,
+                    "description": "Number of seconds to delay initializing a newly opened document.\nAllows the debugger time to attach before resuming execution."
+                },
                 "tsplang.debug.outline": {
                     "type": "boolean",
                     "default": false,

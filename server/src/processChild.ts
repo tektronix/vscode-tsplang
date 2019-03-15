@@ -263,6 +263,15 @@ async function updateProcessContext(params: ProcessContext): Promise<void> {
     textDocumentItem = params.item
     settings = await Promise.resolve(params.settings)
 
+    if (settings.debug.open.documentInitializationDelay !== null) {
+        // tslint:disable-next-line: prefer-const
+        let [start, _]: [number, number] = process.hrtime()
+        let seconds: number
+        do {
+            [seconds, _] = process.hrtime([start, _])
+        } while (seconds < settings.debug.open.documentInitializationDelay)
+    }
+
     if (firstlineRegExp === undefined) {
         firstlineRegExp = new RegExp(/^[^\n\r]*/)
     }
