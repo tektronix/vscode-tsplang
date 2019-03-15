@@ -168,16 +168,6 @@ export class DocumentContext extends TspFastListener {
     }
 
     exitChunk(): void {
-        // if (this.exceptionTokenIndex && this.childCache.length > 0) {
-        //     const child = this.childCache.pop()
-        //     child.tokens = this.tokenStream.tokens.slice(this.exceptionTokenIndex, this.tokenStream.tokens.length - 1)
-        //     this.symbols.push(new DocumentSymbol(
-                
-        //     ))
-
-        //     this.exceptionTokenIndex = undefined
-        // }
-
         // Mark all cached root symbols as completed.
         this.symbolTable.complete.push(...(this.symbolTable.symbolCache.get(0) || []))
         // Flush all symbols from the cache.
@@ -185,17 +175,6 @@ export class DocumentContext extends TspFastListener {
     }
 
     enterStatement(context: TspFastParser.StatementContext): void {
-        // if (context.exception) {
-        //     const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
-        //         ? (context.exception as CorrectRecogException).startToken.tokenIndex
-        //         : undefined
-
-        //     if (exceptionStartIndex < (this.exceptionTokenIndex || Number.MAX_VALUE)) {
-        //         this.exceptionTokenIndex = exceptionStartIndex
-        //     }
-
-        //     return
-        // }
         this.symbolTable.cacheSymbol(new DocumentSymbol(
             this.document.uri,
             TokenUtil.getPosition(context.start),
@@ -220,26 +199,6 @@ export class DocumentContext extends TspFastListener {
             return
         }
 
-        // if (context.exception) {
-        //     const exceptionStartIndex = ((context.exception as CorrectRecogException).startToken)
-        //         ? (context.exception as CorrectRecogException).startToken.tokenIndex
-        //         : undefined
-
-        //     if (exceptionStartIndex < (this.exceptionTokenIndex || Number.MAX_VALUE)) {
-        //         this.exceptionTokenIndex = exceptionStartIndex
-        //     }
-
-        //     return
-        // }
-        // // If this is the first valid statement after an exception.
-        // else if (this.exceptionTokenIndex) {
-        //     this.addSymbol(new DocumentSymbol(
-        //         this.tokenStream.tokens.slice(this.exceptionTokenIndex, context.start.tokenIndex)
-        //     ))
-
-        //     this.exceptionTokenIndex = undefined
-        // }
-
         // Get all relevant ITokens.
         const tokens = this.tokens.slice(context.start.tokenIndex, context.stop.tokenIndex + 1)
 
@@ -255,8 +214,6 @@ export class DocumentContext extends TspFastListener {
          */
         let type = statementRecognizer(tokens as Array<Token>)
 
-        // (StatementType.Assignment || StatementType.FunctionCall)
-        // || (StatementType.AssignmentLocal || StatementType.FunctionLocal)
         if (Ambiguity.is(type)) {
             // Discard evaluaton of incomplete local statements.
             // (It was ambiguous because the only Token was 'local'.)
@@ -281,8 +238,10 @@ export class DocumentContext extends TspFastListener {
         }
         else {
             const lastSymbol = this.symbolTable.lastSymbol()
-            lastSymbol.detail = TokenUtil.getString(...tokens as Array<Token>)
-            lastSymbol.statementType = StatementType.None
+            lastSymbol.statementType = type
+            lastSymbol.detail = (typeof(type) === 'object')
+                ? Ambiguity.toString(type)
+                : StatementType.toString(type)
             lastSymbol.kind = SymbolKind.File
 
             const lastToken = tokens[tokens.length - 1]

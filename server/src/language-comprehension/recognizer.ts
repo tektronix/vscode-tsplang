@@ -34,6 +34,38 @@ export enum StatementType {
     AssignmentLocal
 }
 export namespace StatementType {
+    export function toString(type: StatementType): string {
+        switch (type) {
+            case StatementType.None:
+                return 'None'
+            case StatementType.Assignment:
+                return 'Assignment'
+            case StatementType.FunctionCall:
+                return 'FunctionCall'
+            case StatementType.Do:
+                return 'Do'
+            case StatementType.While:
+                return 'While'
+            case StatementType.Repeat:
+                return 'Repeat'
+            case StatementType.If:
+                return 'If'
+            case StatementType.Return:
+                return 'Return'
+            case StatementType.Break:
+                return 'Break'
+            case StatementType.For:
+                return 'For'
+            case StatementType.Function:
+                return 'Function'
+            case StatementType.FunctionLocal:
+                return 'FunctionLocal'
+            case StatementType.AssignmentLocal:
+                return 'AssignmentLocal'
+            default:
+                return 'Unknown'
+        }
+    }
     export function toSymbolKind(type: StatementType): SymbolKind | undefined {
         switch (type) {
             case StatementType.Assignment:
@@ -74,6 +106,16 @@ export namespace Ambiguity {
             && (value.length === Ambiguity.LOCAL.length)
             && (typeof(value[0]) === 'number')
             && (typeof(value[1]) === 'number')
+    }
+    export function toString(value: [StatementType, StatementType]): string {
+        switch (value) {
+            case Ambiguity.FLOATING_TOKEN:
+                return 'Floating Token Ambiguity'
+            case Ambiguity.LOCAL:
+                return 'Local Ambiguity'
+            default:
+                return '[' + StatementType.toString(value[0]) + ',' + StatementType.toString(value[1]) + ']'
+        }
     }
 }
 export type Ambiguity = [StatementType, StatementType]
