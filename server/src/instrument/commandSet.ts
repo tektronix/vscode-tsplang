@@ -143,9 +143,8 @@ export class CommandSet implements CommandSetInterface {
         const _type = (type === StatementType.None) ? statementRecognizer(tokens as Array<Token>) : type
 
         /**
-         * # Rules
-         *
-         * ## No Completions
+         * No Completion Rules
+         * ---
          * 0. tokens is empty
          * 1. type is Break
          * 2. type is Function
@@ -153,7 +152,11 @@ export class CommandSet implements CommandSetInterface {
          * 4. type is Ambiguity.LOCAL
          * 5. type is AssignmentLocal & '=' is not present
          * 6. type is Assignment or AssignmentLocal or Ambiguity.FLOATING_TOKEN
-         *      & last Token is neither a NAME, accessor ('.', ':'), nor comma (',')
+         *      & last Token is not a
+         *      * NAME
+         *      * accessor ('.', ':')
+         *      * comma (',')
+         *      * assignment operator ('=')
          */
 
         // No Completions: Rule 0
@@ -226,7 +229,8 @@ export class CommandSet implements CommandSetInterface {
             if (!(tokens[lastIndex].type === TspFastLexer.NAME
                 || tokens[lastIndex].text.localeCompare('.') === 0
                 || tokens[lastIndex].text.localeCompare(':') === 0
-                || tokens[lastIndex].text.localeCompare(',') === 0)) {
+                || tokens[lastIndex].text.localeCompare(',') === 0
+                || tokens[lastIndex].text.localeCompare('=') === 0)) {
                 return []
             }
 
@@ -349,8 +353,19 @@ export class CommandSet implements CommandSetInterface {
 
             // Get any exclusive assignment completions.
             if (assignInfo.left !== undefined && assignInfo.right !== undefined) {
-                const labelLHS = assignInfo.left.names.pop()
-                const domainsLHS = new Array<string>(...assignInfo.left.names).reverse()
+                let labelLHS: string
+                const domainsLHS = new Array<string>()
+                // If no commas were found, then LHS names will be in right-to-left order.
+                if (assignInfo.right.commaIndex === 0) {
+                    labelLHS = assignInfo.left.names.shift()
+                    domainsLHS.push(...assignInfo.left.names)
+                }
+                // If commas were found, then LHS names will be in left-to-right order.
+                else {
+                    labelLHS = assignInfo.left.names.pop()
+                    domainsLHS.push(...assignInfo.left.names.reverse())
+                }
+
                 const completionFragmentLHS = {
                     data: (domainsLHS.length > 0) ? { domains: domainsLHS } : undefined,
                     label: labelLHS
