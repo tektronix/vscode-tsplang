@@ -501,6 +501,10 @@ export class DocumentContext extends TspFastListener {
                 } while (firstNameToken.type !== TspFastParser.NAME)
 
                 symbol.builtin = this.commandSet.isCompletion(firstNameToken)
+
+                if (symbol.builtin) {
+                    symbol.detail = '\u2302 ' + symbol.detail
+                }
             }
 
             this.symbolTable.cacheSymbol(symbol)
