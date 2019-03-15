@@ -15,11 +15,11 @@
  */
 'use strict'
 
-import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
+import { CommonTokenStream, InputStream, Interval, ParserRuleContext, Token } from 'antlr4'
 // tslint:disable:no-submodule-imports
 import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
 import { InputMismatchException, NoViableAltException, RecognitionException } from 'antlr4/error/Errors'
-import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
+import { ErrorNodeImpl, ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
 import {
     CompletionItemKind,
@@ -186,6 +186,13 @@ export class DocumentContext extends TspFastListener {
     exitStatement(context: TspFastParser.StatementContext): void {
         this.symbolTable.statementDepth--
 
+        const pseudoContext = {
+            children: context.children,
+            exception: context.exception,
+            start: context.start,
+            stop: context.stop
+        }
+
         /**
          * NOTE:
          * Sometimes the stop token can be located before the start token. For instance:
@@ -193,14 +200,81 @@ export class DocumentContext extends TspFastListener {
          *      var
          * in this case we shouldn't include the stop token.
          */
-        if (context.exception !== null) {
-            this.handleExceptions(context)
+        if (pseudoContext.exception !== null) {
+            if (pseudoContext.children === null) {
+                this.symbolTable.lastSymbol()
+
+                return
+            }
+
+            this.handleExceptions(pseudoContext.exception, pseudoContext.start, pseudoContext.stop)
 
             return
         }
+        else if (pseudoContext.children !== null
+            && pseudoContext.children.some(value => value instanceof ErrorNodeImpl)) {
+
+            // This should always resolve to a number due to "some" evaluating true.
+            let lastChildrenErrorIndex: number
+            let interval: Interval
+            let i = 0
+            for (; i < pseudoContext.children.length; i++) {
+                if (pseudoContext.children[i] instanceof ErrorNodeImpl) {
+                    if (interval === undefined) {
+                        lastChildrenErrorIndex = i
+                        continue
+                    }
+
+                    // Generate a new exception symbol.
+                    const symbol = new DocumentSymbol(
+                        this.document.uri,
+                        TokenUtil.getPosition(this.tokens[interval.start] as Token),
+                        interval.start
+                    )
+                    symbol.exception = true
+                    symbol.statementType = StatementType.None
+                    symbol.kind = SymbolKind.File
+                    symbol.detail = pseudoContext.children[i].getText()
+                    symbol.end = TokenUtil.getPosition(
+                        this.tokens[interval.stop] as Token,
+                        this.tokens[interval.stop].text.length
+                    )
+                    symbol.name = `EXCEPT (${symbol.range.start.line + 1},${symbol.range.start.character + 1})`
+                    symbol.name += `->(${symbol.range.end.line + 1},${symbol.range.end.character + 1})`
+
+                    // Insert the exception symbol before the last symbol at this cache depth.
+                    this.symbolTable.symbolCache.get(this.symbolTable.statementDepth).splice(
+                        this.symbolTable.symbolCache.get(this.symbolTable.statementDepth).length - 1,
+                        0,
+                        symbol
+                    )
+
+                    interval = undefined
+                    lastChildrenErrorIndex = i
+                }
+                else {
+                    const childInterval = pseudoContext.children[i].getSourceInterval()
+                    if (interval === undefined) {
+                        interval = childInterval
+                    }
+                    else if (interval.stop < childInterval.stop) {
+                        interval = new Interval(interval.start, childInterval.stop)
+                    }
+                }
+            }
+
+            // If all children were ErrorNodes or children ended with an ErrorNode.
+            if (interval === undefined) {
+                return
+            }
+
+            // Update the context to exclude all children before the last ErrorNode.
+            pseudoContext.children = pseudoContext.children.slice(lastChildrenErrorIndex + 1)
+            pseudoContext.start = this.tokens[interval.start] as Token
+        }
 
         // Get all relevant ITokens.
-        const tokens = this.tokens.slice(context.start.tokenIndex, context.stop.tokenIndex + 1)
+        const tokens = this.tokens.slice(pseudoContext.start.tokenIndex, pseudoContext.stop.tokenIndex + 1)
 
         /**
          * We're interested in determining whether this is an Assignment,
@@ -222,7 +296,7 @@ export class DocumentContext extends TspFastListener {
             }
 
             // Check the children of the current context for an assignment operator (=) type TerminalNode.
-            type = (context.children.some((value: ParserRuleContext | TerminalNode) => {
+            type = (pseudoContext.children.some((value: ParserRuleContext | TerminalNode) => {
                 return (value instanceof TerminalNode) && (value.symbol.text.localeCompare('=') === 0)
             }))
             // Resolve the statement ambiguity based on whether we were able to find an assignment operator.
@@ -231,7 +305,7 @@ export class DocumentContext extends TspFastListener {
         }
 
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
-            this.handleVariables(context.children, context.start.tokenIndex, tokens, type)
+            this.handleVariables(pseudoContext.children, pseudoContext.start.tokenIndex, tokens, type)
         }
         else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
             this.handleFunctionDeclarations(tokens, type)
