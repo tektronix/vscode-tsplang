@@ -329,6 +329,9 @@ export class DocumentContext extends TspFastListener {
     }
 
     handleExceptions(exception: Error, start: Token, stop: Token): void {
+        // NOTE: Later calls to retrieve the last symbol do not have no worry about
+        // mis-associated child symbols because they will be removed and attached
+        // during this call.
         const lastSymbol = this.symbolTable.lastSymbol()
 
         lastSymbol.exception = true
@@ -374,10 +377,31 @@ export class DocumentContext extends TspFastListener {
                             return
                         }
                     }
-                    else {
-                        lastSymbol.detail = 'Identifier expected.'
-                        lastSymbol.statementType = Ambiguity.FLOATING_TOKEN
+
+                    if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare('.') === 0
+                        || (this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(':') === 0) {
+                        const symbolBeforeLastSymbol = this.symbolTable.lastSymbol()
+
+                        // Extend the symbol before last if it was also an exception.
+                        if (symbolBeforeLastSymbol !== undefined && symbolBeforeLastSymbol.exception) {
+                            symbolBeforeLastSymbol.end = lastSymbol.end
+
+                            if (symbolBeforeLastSymbol.name.startsWith('EXCEPT')) {
+                                symbolBeforeLastSymbol.name = 'EXCEPT '
+                                symbolBeforeLastSymbol.name += `(${symbolBeforeLastSymbol.range.start.line + 1},`
+                                symbolBeforeLastSymbol.name += `${symbolBeforeLastSymbol.range.start.character + 1})`
+                                symbolBeforeLastSymbol.name += `->(${symbolBeforeLastSymbol.range.end.line + 1},`
+                                symbolBeforeLastSymbol.name += `,${symbolBeforeLastSymbol.range.end.character + 1})`
+                            }
+
+                            this.symbolTable.cacheSymbol(symbolBeforeLastSymbol)
+
+                            return
+                        }
                     }
+
+                    lastSymbol.detail = 'Identifier expected.'
+                    lastSymbol.statementType = Ambiguity.FLOATING_TOKEN
                 }
             }
             else if (exception instanceof RecognitionException) {
