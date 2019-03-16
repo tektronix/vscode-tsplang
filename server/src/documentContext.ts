@@ -360,7 +360,7 @@ export class DocumentContext extends TspFastListener {
                 if (lastTokenText.localeCompare('.') === 0 || lastTokenText.localeCompare(':') === 0) {
                     const preceedingIndex = start.tokenIndex - 1
                     if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(',') === 0
-                        || (this.tokens[preceedingIndex] || { text: '' }.text.localeCompare('=') === 0)) {
+                        || (this.tokens[preceedingIndex] || { text: '' }).text.localeCompare('=') === 0) {
                         // Modify the symbol before last to be an exception.
                         const symbolBeforeLastSymbol = this.symbolTable.lastSymbol()
 
