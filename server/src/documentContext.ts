@@ -588,6 +588,10 @@ export class DocumentContext extends TspFastListener {
             )
             symbol.declaration = this.symbolTable.link(symbol.name, symbol.range)
 
+            if (symbol.declaration !== undefined) {
+                symbol.detail = 'reference'
+            }
+
             if (type === StatementType.Assignment) {
                 let tokenIndex: number
                 let firstNameToken: IToken

@@ -41,6 +41,10 @@ export interface IDocumentSymbol extends vsls.DocumentSymbol {
 export class DocumentSymbol implements IDocumentSymbol {
     builtin: boolean = false
     children?: Array<DocumentSymbol>
+    /**
+     * The location where this DocumentSymbol was originally declared or
+     * undefined if no previous declaration could be found.
+     */
     declaration?: vsls.LocationLink
     deprecated?: boolean
     detail?: string
