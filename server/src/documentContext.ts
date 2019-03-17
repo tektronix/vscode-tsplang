@@ -50,6 +50,7 @@ import {
 import { CommandSet } from './instrument'
 import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
+import { getTerminals } from './language-comprehension/parser-context-handler/getTerminals'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { Outline } from './outline'
 import { DebugParseTimer, DebugParseTree } from './parse'
@@ -323,6 +324,15 @@ export class DocumentContext extends TspFastListener {
             lastSymbol.name = `(${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
             lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
 
+            if (type === StatementType.FunctionCall && context.children !== null) {
+                const functionCallContext = context.children.find(
+                    (value: ParserRuleContext | TerminalNode) => value instanceof TspFastParser.FunctionCallContext
+                )
+                this.handleFunctionCalls([functionCallContext as TspFastParser.FunctionCallContext], [lastSymbol])
+
+                return
+            }
+
             this.symbolTable.cacheSymbol(lastSymbol)
         }
     }
@@ -415,6 +425,60 @@ export class DocumentContext extends TspFastListener {
         lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
 
         this.symbolTable.cacheSymbol(lastSymbol)
+    }
+
+    handleFunctionCalls(contexts: Array<TspFastParser.FunctionCallContext>, parents: Array<DocumentSymbol>): void {
+        if (contexts.length === 0 || parents.length === 0) {
+            return
+        }
+
+        // This is a statement-type function call. There can be only one.
+        if (contexts[0].parentCtx instanceof TspFastParser.StatementContext) {
+            const symbol = parents.shift()
+
+            let name = ''
+            const selectionRange: Range = {
+                end: undefined,
+                start: undefined
+            }
+            const terminalNodes = getTerminals(contexts[0])
+            for (const terminal of terminalNodes) {
+                if (terminal.symbol.type === TspFastLexer.NAME
+                    || terminal.symbol.text.localeCompare('.') === 0) {
+
+                    name += terminal.symbol.text
+
+                    if (selectionRange.start === undefined) {
+                        selectionRange.start = TokenUtil.getPosition(terminal.symbol)
+                    }
+
+                    selectionRange.end = TokenUtil.getPosition(terminal.symbol, terminal.symbol.text.length)
+
+                    continue
+                }
+
+                break
+            }
+
+            if (selectionRange.start !== undefined && selectionRange.end !== undefined) {
+                symbol.selectionRange = selectionRange
+            }
+
+            symbol.builtin = this.commandSet.isCompletion(terminalNodes[0].symbol)
+
+            if (symbol.builtin) {
+                symbol.detail = '\u2302 ' + symbol.detail
+            }
+            else {
+                symbol.declaration = this.symbolTable.link(name, selectionRange)
+            }
+
+            this.symbolTable.cacheSymbol(symbol)
+
+            return
+        }
+
+        // TODO: need to handle FunctionCall assignments.
     }
 
     handleFunctionDeclarations(tokens: Array<IToken>, type: StatementType): void {
