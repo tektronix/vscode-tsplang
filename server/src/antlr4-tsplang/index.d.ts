@@ -16,6 +16,3 @@
 export { TspFastLexer } from './TspFastLexer'
 export { TspFastListener } from './TspFastListener'
 export { TspFastParser } from './TspFastParser'
-export { TspLexer } from './TspLexer'
-export { TspListener } from './TspListener'
-export { TspParser } from './TspParser'

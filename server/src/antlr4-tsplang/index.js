@@ -16,6 +16,3 @@
 exports.TspFastLexer = require('./TspFastLexer').TspFastLexer;
 exports.TspFastListener = require('./TspFastListener').TspFastListener;
 exports.TspFastParser = require('./TspFastParser').TspFastParser;
-exports.TspLexer = require('./TspLexer').TspLexer;
-exports.TspListener = require('./TspListener').TspListener;
-exports.TspParser = require('./TspParser').TspParser;

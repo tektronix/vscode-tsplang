@@ -34,7 +34,7 @@ import {
     TextDocumentItem
 } from 'vscode-languageserver'
 
-import { TspFastLexer, TspFastListener, TspFastParser, TspLexer, TspListener, TspParser } from './antlr4-tsplang'
+import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tsplang'
 import {
     CompletionItem,
     DocumentSymbol,
@@ -50,7 +50,6 @@ import {
 import { CommandSet } from './instrument'
 import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
-import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { Outline } from './outline'
 import { DebugParseTimer, DebugParseTree } from './parse'
