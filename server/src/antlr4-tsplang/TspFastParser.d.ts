@@ -148,7 +148,107 @@ export namespace TspFastParser {
         EOF(): TerminalNode
     }
 
+    export class ArgsContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class ExpressionContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class FieldContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class FieldListContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class FunctionCallContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class IndexContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class NumberContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorAddSubContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorAndContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorBitwiseAndContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorBitwiseOrContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorBitwiseShiftContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorBitwiseXorContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorComparisonContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorMulDivContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorOrContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorPowerContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorStrcatContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class OperatorUnaryContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class PrefixContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
     export class StatementContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class StringContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class SuffixContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class TableConstructorContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class ValueContext extends BaseContext {
+        constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
+    }
+
+    export class VariableContext extends BaseContext {
         constructor(parser: Parser, parent?: ParserRuleContext, invokingState?: number)
     }
 }
