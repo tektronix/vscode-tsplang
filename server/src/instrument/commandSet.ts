@@ -151,7 +151,7 @@ export class CommandSet implements CommandSetInterface {
          * 3. type is FunctionLocal
          * 4. type is Ambiguity.LOCAL
          * 5. type is AssignmentLocal & '=' is not present
-         * 6. type is Assignment or AssignmentLocal or Ambiguity.FLOATING_TOKEN
+         * 6. type is Assignment or AssignmentLocal or FunctionCall or Ambiguity.FLOATING_TOKEN
          *      & last Token is not a
          *      * NAME
          *      * accessor ('.', ':')
@@ -210,6 +210,7 @@ export class CommandSet implements CommandSetInterface {
 
         if (_type === StatementType.Assignment
             || _type === StatementType.AssignmentLocal
+            || _type === StatementType.FunctionCall
             || (Ambiguity.is(_type) && Ambiguity.equal(_type as Ambiguity, Ambiguity.FLOATING_TOKEN))) {
             const assignInfo: AssignmentInfo = {
                 left: {

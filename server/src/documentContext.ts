@@ -369,7 +369,11 @@ export class DocumentContext extends TspFastListener {
                 lastSymbol.detail = 'Invalid statement.'
 
                 const lastTokenText = this.tokens[lastTokenIndex].text
-                if (lastTokenText.localeCompare('.') === 0 || lastTokenText.localeCompare(':') === 0) {
+                const lastTokenType = this.tokens[lastTokenIndex].type
+                if (lastTokenText.localeCompare('.') === 0
+                    || lastTokenText.localeCompare(':') === 0
+                    || lastTokenType === TspFastLexer.NAME) {
+
                     const preceedingIndex = start.tokenIndex - 1
                     if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(',') === 0
                         || (this.tokens[preceedingIndex] || { text: '' }).text.localeCompare('=') === 0) {

@@ -32,9 +32,10 @@ import {
 } from 'vscode-languageserver'
 
 import { TspFastLexer } from './antlr4-tsplang'
-import { CompletionItem, DocumentSymbol, IToken } from './decorators'
+import { CompletionItem, DocumentSymbol, IToken, Range } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
+import { TokenUtil } from './language-comprehension'
 import {
     ChangeNotification,
     CompletionRequest,
@@ -123,24 +124,30 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     // Get the symbol table index of the symbol containing the smallest Position.
-    const lastIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
+    const symbolIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
         return value.range.start.line >= smallestPosition.line || value.range.end.line >= smallestPosition.line
     })
 
     let tokenIndex: number
-    if (lastIndex === -1) {
+    if (symbolIndex === -1) {
         // Reparse everything starting after the last Token on the default channel.
         documentContext.reParse(-1)
     }
     else {
+        // Get the Token index of the first Token containing the smallest Position.
+        tokenIndex = documentContext.tokens.findIndex((value: IToken) => {
+            return value.line - 1 >= smallestPosition.line
+                && value.column + value.text.length >= smallestPosition.character
+        })
+
         // Get the Token index of the first Token contained in the symbol containing the smallest Position.
-        tokenIndex = documentContext.symbolTable.complete[lastIndex].startTokenIndex
+        const symbolTokenIndex = documentContext.symbolTable.complete[symbolIndex].startTokenIndex
 
         // Remove the symbol containing the smallest Position and all following symbols.
-        documentContext.symbolTable.complete.splice(lastIndex)
+        documentContext.symbolTable.complete.splice(symbolIndex)
 
-        // Reparse everything starting at the smallest Position.
-        documentContext.reParse(tokenIndex)
+        // Reparse everything starting at the smallest Token index.
+        documentContext.reParse((tokenIndex < symbolTokenIndex) ? tokenIndex : symbolTokenIndex)
     }
 
     return
@@ -184,10 +191,18 @@ connection.onRequest(
 )
 
 connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Promise<CompletionItem> => {
-    // const context = await documentContext
+    // Only service an item if its "documentation" property is undefined.
+    if (item.documentation === undefined) {
+        const makeDocs = documentContext.commandSet.completionDocs.get(CompletionItem.resolveNamespace(item))
 
-    // return context.resolveCompletion(item)
-    return
+        if (makeDocs === undefined) {
+            return item
+        }
+
+        item.documentation = makeDocs(documentContext.commandSet.specification)
+    }
+
+    return item
 })
 
 connection.onRequest(DefinitionRequest, (position: Position): LocationLink | undefined => {
