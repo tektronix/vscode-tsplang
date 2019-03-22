@@ -112,6 +112,7 @@ export class SymbolTable {
     }
 
     lookup(target: Range | Position): DocumentSymbol | undefined {
+        // TODO look inside Assignment Containers.
         const range = (Position.is(target)) ? { end: target, start: target } : target
 
         let lookahead = this.lookupBinarySearch(range, this.complete)

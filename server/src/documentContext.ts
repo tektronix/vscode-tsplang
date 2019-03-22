@@ -50,6 +50,7 @@ import {
 import { CommandSet } from './instrument'
 import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
 import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
+import { getChildRecursively } from './language-comprehension/getChildRecursively'
 import { getTerminals } from './language-comprehension/parser-context-handler/getTerminals'
 import { ParameterContext, SignatureContext } from './language-comprehension/signature'
 import { Outline } from './outline'
@@ -305,7 +306,63 @@ export class DocumentContext extends TspFastListener {
         }
 
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
-            this.handleVariables(pseudoContext.children, pseudoContext.start.tokenIndex, tokens, type)
+            const startingTokenIndex = pseudoContext.start.tokenIndex
+            const variableCommaIndices = new Array<number>()
+            let assignmentIndex: number
+
+            // Indices will be zero-based from the starting Token (which is index 0).
+            for (let i = 0; i < context.children.length; i++) {
+                if (context.children[i] instanceof ParserRuleContext) {
+                    this.symbolTable.statementDepth++
+
+                    if (context.children[i] instanceof TspFastParser.VariableContext) {
+                        this.handleGlobalVariables(context.children[i] as TspFastParser.VariableContext, false)
+                    }
+                    else if (context.children[i] instanceof TspFastParser.ExpressionContext) {
+                        const functionCall: TspFastParser.FunctionCallContext = getChildRecursively(
+                            context.children[i] as ParserRuleContext,
+                            0,
+                            TspFastParser.FunctionCallContext
+                        )
+
+                        if (functionCall !== null) {
+                            this.handleFunctionCalls(functionCall)
+                        }
+                    }
+
+                    this.symbolTable.statementDepth--
+                }
+                else {
+                    if ((context.children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
+                        variableCommaIndices.push(
+                            (context.children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex
+                        )
+                    }
+                    else if ((context.children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
+                        assignmentIndex = (context.children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex
+                    }
+                    else if ((context.children[i] as TerminalNode).symbol.type === TspFastLexer.NAME) {
+                        this.symbolTable.statementDepth++
+                        this.handleLocalVariables(context.children[i] as TerminalNode, false)
+                        this.symbolTable.statementDepth--
+                    }
+                }
+            }
+
+            const lastSymbol = this.symbolTable.lastSymbol()
+            lastSymbol.statementType = StatementType.Assignment
+            lastSymbol.detail = 'Assignment Container'
+            lastSymbol.kind = SymbolKind.File
+
+            const lastToken = tokens[tokens.length - 1]
+            lastSymbol.end = TokenUtil.getPosition(lastToken as Token, lastToken.text.length)
+
+            lastSymbol.name = `(${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
+            lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
+
+            this.symbolTable.cacheSymbol(lastSymbol)
+
+            // this.handleAssignments(variableCommaIndices, assignmentIndex, tokens, type)
         }
         else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
             this.handleFunctionDeclarations(tokens, type)
@@ -325,10 +382,11 @@ export class DocumentContext extends TspFastListener {
             lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
 
             if (type === StatementType.FunctionCall && context.children !== null) {
-                const functionCallContext = context.children.find(
-                    (value: ParserRuleContext | TerminalNode) => value instanceof TspFastParser.FunctionCallContext
-                )
-                this.handleFunctionCalls([functionCallContext as TspFastParser.FunctionCallContext], [lastSymbol])
+                const functionCallContext = context.getChild(0, TspFastParser.FunctionCallContext)
+
+                if (functionCallContext !== null) {
+                    this.handleFunctionCalls(functionCallContext as TspFastParser.FunctionCallContext, lastSymbol)
+                }
 
                 return
             }
@@ -336,6 +394,78 @@ export class DocumentContext extends TspFastListener {
             this.symbolTable.cacheSymbol(lastSymbol)
         }
     }
+
+    // handleAssignments(
+    //     variableCommaIndices: Array<number>,
+    //     assignmentIndex: number,
+    //     tokens: Array<IToken>,
+    //     type: StatementType
+    // ): void {
+    //     // Create one or more assignment symbols from the last symbol.
+    //     const lastSymbol = this.symbolTable.lastSymbol()
+    //     for(let i = 0; i <= variableCommaIndices.length; i++) {
+    //         const symbol = (type === StatementType.Assignment)
+    //             ? VariableSymbol.from(lastSymbol, i, assignmentIndex)
+    //             : VariableLocalSymbol.from(lastSymbol, i, assignmentIndex)
+
+    //         let startSelectionIndex: number
+    //         let startSelectionToken: IToken
+    //         let endSelectionToken: IToken
+    //         if (i === 0) {
+    //             startSelectionIndex = (type === StatementType.Assignment) ? 0 : 1
+    //             startSelectionToken = tokens[startSelectionIndex]
+    //             endSelectionToken = (variableCommaIndices.length === 0)
+    //                 ? (assignmentIndex === undefined)
+    //                     ? startSelectionToken
+    //                     : tokens[assignmentIndex - 1]
+    //                 : tokens[variableCommaIndices[i] - 1]
+    //         }
+    //         else if (i === variableCommaIndices.length) {
+    //             startSelectionIndex = variableCommaIndices[i - 1] + 1
+    //             startSelectionToken = tokens[startSelectionIndex]
+    //             endSelectionToken = (assignmentIndex === undefined)
+    //                 ? tokens[tokens.length - 1]
+    //                 : tokens[assignmentIndex - 1]
+    //         }
+    //         else {
+    //             startSelectionIndex = variableCommaIndices[i - 1] + 1
+    //             startSelectionToken = tokens[startSelectionIndex]
+    //             endSelectionToken = tokens[variableCommaIndices[i] - 1]
+    //         }
+
+    //         symbol.selectionRange = {
+    //             end: TokenUtil.getPosition(endSelectionToken as Token, endSelectionToken.text.length),
+    //             start: TokenUtil.getPosition(startSelectionToken as Token)
+    //         }
+    //         symbol.name = this.document.getText(symbol.selectionRange)
+    //         symbol.end = TokenUtil.getPosition(
+    //             tokens[tokens.length - 1] as Token,
+    //             tokens[tokens.length - 1].text.length
+    //         )
+    //         symbol.declaration = this.symbolTable.link(symbol.name, symbol.range)
+
+    //         if (symbol.declaration !== undefined) {
+    //             symbol.detail = 'reference'
+    //         }
+
+    //         if (type === StatementType.Assignment) {
+    //             let tokenIndex: number
+    //             let firstNameToken: IToken
+    //             do {
+    //                 tokenIndex = ((tokenIndex === undefined) ? startSelectionIndex - 1: tokenIndex) + 1
+    //                 firstNameToken = tokens[tokenIndex]
+    //             } while (firstNameToken.type !== TspFastParser.NAME)
+
+    //             symbol.builtin = this.commandSet.isCompletion(firstNameToken)
+
+    //             if (symbol.builtin) {
+    //                 symbol.detail = '\u2302 ' + symbol.detail
+    //             }
+    //         }
+
+    //         this.symbolTable.cacheSymbol(symbol)
+    //     }
+    // }
 
     handleExceptions(exception: Error, start: Token, stop: Token): void {
         // NOTE: Later calls to retrieve the last symbol do not have no worry about
@@ -431,58 +561,62 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(lastSymbol)
     }
 
-    handleFunctionCalls(contexts: Array<TspFastParser.FunctionCallContext>, parents: Array<DocumentSymbol>): void {
-        if (contexts.length === 0 || parents.length === 0) {
-            return
+    handleFunctionCalls(context: TspFastParser.FunctionCallContext, symbol?: DocumentSymbol): void {
+        const functionCall = (symbol !== undefined)
+            ? symbol
+            : new DocumentSymbol(this.document.uri, TokenUtil.getPosition(context.start), context.start.tokenIndex)
+
+        functionCall.statementType = functionCall.statementType || StatementType.FunctionCall
+        functionCall.kind = functionCall.kind || SymbolKind.File
+        functionCall.detail = functionCall.detail || StatementType.toString(StatementType.FunctionCall)
+
+        if (functionCall.name === undefined) {
+            functionCall.name = ''
         }
 
-        // This is a statement-type function call. There can be only one.
-        if (contexts[0].parentCtx instanceof TspFastParser.StatementContext) {
-            const symbol = parents.shift()
-
-            let name = ''
-            const selectionRange: Range = {
+        if (functionCall.selectionRange === undefined) {
+            functionCall.selectionRange = {
                 end: undefined,
                 start: undefined
             }
-            const terminalNodes = getTerminals(contexts[0])
-            for (const terminal of terminalNodes) {
-                if (terminal.symbol.type === TspFastLexer.NAME
-                    || terminal.symbol.text.localeCompare('.') === 0) {
-
-                    name += terminal.symbol.text
-
-                    if (selectionRange.start === undefined) {
-                        selectionRange.start = TokenUtil.getPosition(terminal.symbol)
-                    }
-
-                    selectionRange.end = TokenUtil.getPosition(terminal.symbol, terminal.symbol.text.length)
-
-                    continue
-                }
-
-                break
-            }
-
-            if (selectionRange.start !== undefined && selectionRange.end !== undefined) {
-                symbol.selectionRange = selectionRange
-            }
-
-            symbol.builtin = this.commandSet.isCompletion(terminalNodes[0].symbol)
-
-            if (symbol.builtin) {
-                symbol.detail = '\u2302 ' + symbol.detail
-            }
-            else {
-                symbol.declaration = this.symbolTable.link(name, selectionRange)
-            }
-
-            this.symbolTable.cacheSymbol(symbol)
-
-            return
         }
 
-        // TODO: need to handle FunctionCall assignments.
+        const terminalNodes = getTerminals(context)
+        for (const terminal of terminalNodes) {
+            if (terminal.symbol.type === TspFastLexer.NAME
+                || terminal.symbol.text.localeCompare('.') === 0) {
+
+                if (symbol === undefined) {
+                    functionCall.name += terminal.symbol.text
+                }
+
+                if (functionCall.selectionRange.start === undefined) {
+                    functionCall.selectionRange.start = TokenUtil.getPosition(terminal.symbol)
+                }
+
+                functionCall.selectionRange.end = TokenUtil.getPosition(
+                    terminal.symbol,
+                    terminal.symbol.text.length
+                )
+
+                continue
+            }
+
+            break
+        }
+
+        functionCall.end = TokenUtil.getPosition(context.stop, context.stop.text.length)
+
+        functionCall.builtin = this.commandSet.isCompletion(terminalNodes[0].symbol)
+
+        if (functionCall.builtin) {
+            functionCall.detail = '\u2302 ' + functionCall.detail
+        }
+        else {
+            functionCall.declaration = this.symbolTable.link(functionCall.name, functionCall.selectionRange)
+        }
+
+        this.symbolTable.cacheSymbol(functionCall)
     }
 
     handleFunctionDeclarations(tokens: Array<IToken>, type: StatementType): void {
@@ -588,93 +722,72 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(functionSymbol)
     }
 
-    handleVariables(
-        children: Array<ParserRuleContext | TerminalNode>,
-        startingTokenIndex: number,
-        tokens: Array<IToken>,
-        type: StatementType
-    ): void {
-        const variableCommaIndices = new Array<number>()
-        let assignmentIndex: number
+    handleGlobalVariables(context: TspFastParser.VariableContext, useLast: boolean): void {
+        const variable = VariableSymbol.from(
+            (useLast)
+                ? this.symbolTable.lastSymbol()
+                : new DocumentSymbol(
+                    this.document.uri,
+                    TokenUtil.getPosition(context.start),
+                    context.start.tokenIndex
+                  )
+        )
 
-        // Indices will be zero-based from the starting Token (which is index 0).
-        for (let i = 0; i < children.length; i++) {
-            if (children[i] instanceof ParserRuleContext) {
-                continue
-            }
+        variable.selectionRange = {
+            end: TokenUtil.getPosition(context.stop, context.stop.text.length),
+            start: TokenUtil.getPosition(context.start)
+        }
+        variable.name = this.document.getText(variable.selectionRange)
+        variable.end = (context.parentCtx instanceof TspFastParser.StatementContext)
+            ? TokenUtil.getPosition(context.parentCtx.stop, context.parentCtx.stop.text.length)
+            : variable.selectionRange.end
 
-            if ((children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
-                variableCommaIndices.push((children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex)
-            }
-            else if ((children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
-                assignmentIndex = (children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex
-                break
-            }
+        variable.declaration = this.symbolTable.link(variable.name, variable.range)
+        if (variable.declaration !== undefined) {
+            variable.detail = 'reference'
         }
 
-        // Create one or more assignment symbols from the last symbol.
-        const lastSymbol = this.symbolTable.lastSymbol()
-        for(let i = 0; i <= variableCommaIndices.length; i++) {
-            const symbol = (type === StatementType.Assignment)
-                ? VariableSymbol.from(lastSymbol, i, assignmentIndex)
-                : VariableLocalSymbol.from(lastSymbol, i, assignmentIndex)
+        let tokenIndex: number
+        let firstNameToken: IToken
+        do {
+            tokenIndex = ((tokenIndex === undefined) ? context.start.tokenIndex - 1 : tokenIndex) + 1
+            firstNameToken = this.tokens[tokenIndex]
+        } while (firstNameToken.type !== TspFastParser.NAME)
 
-            let startSelectionIndex: number
-            let startSelectionToken: IToken
-            let endSelectionToken: IToken
-            if (i === 0) {
-                startSelectionIndex = (type === StatementType.Assignment) ? 0 : 1
-                startSelectionToken = tokens[startSelectionIndex]
-                endSelectionToken = (variableCommaIndices.length === 0)
-                    ? (assignmentIndex === undefined)
-                        ? startSelectionToken
-                        : tokens[assignmentIndex - 1]
-                    : tokens[variableCommaIndices[i] - 1]
-            }
-            else if (i === variableCommaIndices.length) {
-                startSelectionIndex = variableCommaIndices[i - 1] + 1
-                startSelectionToken = tokens[startSelectionIndex]
-                endSelectionToken = (assignmentIndex === undefined)
-                    ? tokens[tokens.length - 1]
-                    : tokens[assignmentIndex - 1]
-            }
-            else {
-                startSelectionIndex = variableCommaIndices[i - 1] + 1
-                startSelectionToken = tokens[startSelectionIndex]
-                endSelectionToken = tokens[variableCommaIndices[i] - 1]
-            }
+        variable.builtin = this.commandSet.isCompletion(firstNameToken)
 
-            symbol.selectionRange = {
-                end: TokenUtil.getPosition(endSelectionToken as Token, endSelectionToken.text.length),
-                start: TokenUtil.getPosition(startSelectionToken as Token)
-            }
-            symbol.name = this.document.getText(symbol.selectionRange)
-            symbol.end = TokenUtil.getPosition(
-                tokens[tokens.length - 1] as Token,
-                tokens[tokens.length - 1].text.length
-            )
-            symbol.declaration = this.symbolTable.link(symbol.name, symbol.range)
-
-            if (symbol.declaration !== undefined) {
-                symbol.detail = 'reference'
-            }
-
-            if (type === StatementType.Assignment) {
-                let tokenIndex: number
-                let firstNameToken: IToken
-                do {
-                    tokenIndex = ((tokenIndex === undefined) ? startSelectionIndex - 1: tokenIndex) + 1
-                    firstNameToken = tokens[tokenIndex]
-                } while (firstNameToken.type !== TspFastParser.NAME)
-
-                symbol.builtin = this.commandSet.isCompletion(firstNameToken)
-
-                if (symbol.builtin) {
-                    symbol.detail = '\u2302 ' + symbol.detail
-                }
-            }
-
-            this.symbolTable.cacheSymbol(symbol)
+        if (variable.builtin) {
+            variable.detail = '\u2302 ' + variable.detail
         }
+
+        this.symbolTable.cacheSymbol(variable)
+    }
+
+    handleLocalVariables(terminal: TerminalNode, useLast: boolean): void {
+        const local = VariableLocalSymbol.from(
+            (useLast)
+                ? this.symbolTable.lastSymbol()
+                : new DocumentSymbol(
+                    this.document.uri,
+                    TokenUtil.getPosition(terminal.symbol),
+                    terminal.symbol.tokenIndex
+                  )
+        )
+
+        local.selectionRange = {
+            end: TokenUtil.getPosition(terminal.symbol, terminal.symbol.text.length),
+            start: TokenUtil.getPosition(terminal.symbol)
+        }
+        local.name = this.document.getText(local.selectionRange)
+        local.end = (terminal.parentCtx instanceof TspFastParser.StatementContext)
+            ? TokenUtil.getPosition(terminal.parentCtx.stop, terminal.parentCtx.stop.text.length)
+            : local.selectionRange.end
+
+        local.declaration = this.symbolTable.link(local.name, local.range)
+        if (local.declaration !== undefined) {
+            local.detail = 'reference'
+        }
+
+        this.symbolTable.cacheSymbol(local)
     }
 }

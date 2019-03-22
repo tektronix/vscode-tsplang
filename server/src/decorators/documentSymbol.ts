@@ -36,7 +36,8 @@ export interface IDocumentSymbol extends vsls.DocumentSymbol {
     exception: boolean
     local: boolean
     references?: Array<vsls.Location>
-    startTokenIndex: number
+    startTokenIndex: number,
+    statementType: StatementType | Ambiguity
 }
 export class DocumentSymbol implements IDocumentSymbol {
     builtin: boolean = false
@@ -163,15 +164,19 @@ export class DocumentSymbol implements IDocumentSymbol {
             range: this.range,
             references: this.references,
             selectionRange: this.selectionRange,
-            startTokenIndex: this.startTokenIndex
+            startTokenIndex: this.startTokenIndex,
+            statementType: this.statementType
         }
 
         for (let i = 0; i < (this.children || []).length; i++) {
             const child = this.children[i].prune(predicate)
 
             if (predicate(child as DocumentSymbol)) {
-                // Extract pruned grandchildren that aren't local declarations.
-                const orphans = (child.children || []).filter((v: IDocumentSymbol) => !v.local)
+                // Extract pruned grandchildren that aren't local declarations
+                // or local declarations residing within assignment containers.
+                const orphans = (child.children || []).filter(
+                    (v: IDocumentSymbol) => !v.local || (v.local && child.statementType === StatementType.Assignment)
+                )
                 clone.children.push(...orphans)
             }
             else {
