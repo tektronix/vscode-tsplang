@@ -15,9 +15,10 @@
  */
 'use strict'
 
-import { Diagnostic, LocationLink, Position } from 'vscode-languageserver'
+import { Diagnostic, LocationLink, Position, SymbolKind } from 'vscode-languageserver'
 
 import { DocumentSymbol, Range, VariableLocalSymbol, VariableSymbol } from './decorators'
+import { StatementType } from './language-comprehension'
 
 export class SymbolTable {
     complete: Array<DocumentSymbol>
@@ -86,9 +87,30 @@ export class SymbolTable {
     }
 
     link(name: string, range: Range): LocationLink | undefined {
+        const linkAssignment = (symbol: DocumentSymbol): LocationLink | undefined => {
+            for (const child of (symbol.children || [])) {
+                if (child.name === undefined) {
+                    continue
+                }
+
+                if (child.name.localeCompare(name) === 0
+                    && child.kind === SymbolKind.Variable) {
+                    return symbol.link(range)
+                }
+            }
+        }
+
         for (const symbol of this.complete) {
             if (symbol.name === undefined) {
                 continue
+            }
+
+            if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
+                const result = linkAssignment(symbol)
+
+                if (result !== undefined) {
+                    return result
+                }
             }
 
             if (symbol.name.localeCompare(name) === 0) {
@@ -100,6 +122,14 @@ export class SymbolTable {
             for (const symbol of (this.symbolCache.get(i) || [])) {
                 if (symbol.name === undefined) {
                     continue
+                }
+
+                if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
+                    const result = linkAssignment(symbol)
+
+                    if (result !== undefined) {
+                        return result
+                    }
                 }
 
                 if (symbol.name.localeCompare(name) === 0) {

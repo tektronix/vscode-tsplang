@@ -175,7 +175,9 @@ export class DocumentSymbol implements IDocumentSymbol {
                 // Extract pruned grandchildren that aren't local declarations
                 // or local declarations residing within assignment containers.
                 const orphans = (child.children || []).filter(
-                    (v: IDocumentSymbol) => !v.local || (v.local && child.statementType === StatementType.Assignment)
+                    (v: IDocumentSymbol) => {
+                        return !v.local || (v.local && child.statementType === StatementType.Assignment)
+                    }
                 )
                 clone.children.push(...orphans)
             }

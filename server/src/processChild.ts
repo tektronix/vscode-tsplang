@@ -35,7 +35,7 @@ import { TspFastLexer } from './antlr4-tsplang'
 import { CompletionItem, DocumentSymbol, IToken, Range } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
-import { TokenUtil } from './language-comprehension'
+import { StatementType, TokenUtil } from './language-comprehension'
 import {
     ChangeNotification,
     CompletionRequest,
@@ -256,9 +256,14 @@ connection.onRequest(SymbolRequest, async (params: ProcessContext): Promise<Arra
         const prunedSymbols = new Array<DocumentSymbol>()
         for (const symbol of documentContext.symbolTable.complete) {
             if (prunePredicate(symbol)) {
-                // Extract pruned grandchildren that aren't local declarations.
+                // Extract pruned grandchildren that aren't local declarations
+                // or local declarations residing within assignment containers.
                 const orphans = (symbol.prune(prunePredicate).children as Array<DocumentSymbol>)
-                    .filter((value: DocumentSymbol) => !value.local)
+                    .filter(
+                        (value: DocumentSymbol) => {
+                            return !value.local || (value.local && symbol.statementType === StatementType.Assignment)
+                        }
+                    )
                 prunedSymbols.push(...orphans)
             }
             else {
