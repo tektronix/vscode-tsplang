@@ -758,14 +758,12 @@ export class DocumentContext extends TspFastListener {
             variable.detail = 'reference'
         }
 
-        let tokenIndex: number
-        let firstNameToken: IToken
-        do {
-            tokenIndex = ((tokenIndex === undefined) ? context.start.tokenIndex - 1 : tokenIndex) + 1
-            firstNameToken = this.tokens[tokenIndex]
-        } while (firstNameToken.type !== TspFastParser.NAME)
-
-        variable.builtin = this.commandSet.isCompletion(firstNameToken)
+        const index = this.tokens.slice(context.start.tokenIndex, context.stop.tokenIndex + 1).findIndex(
+            (value: IToken) => value.type === TspFastLexer.NAME
+        )
+        if (index > -1) {
+            variable.builtin = this.commandSet.isCompletion(this.tokens[context.start.tokenIndex + index])
+        }
 
         if (variable.builtin) {
             variable.detail = '\u2302 ' + variable.detail
