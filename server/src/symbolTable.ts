@@ -150,7 +150,21 @@ export class SymbolTable {
         let result: DocumentSymbol
         while (lookahead !== undefined) {
             result = lookahead
-            lookahead = this.lookupBinarySearch(range, lookahead.children || [])
+            if ((result.detail || '').localeCompare('Assignment Container') === 0) {
+                // Search assignment containers linearly and in reverse.
+                for (let i = (result.children || []).length - 1; i >= 0; i--) {
+                    const comparison = Range.compare(range, result.children[i].range)
+
+                    if (comparison === 0) {
+                        lookahead = result.children[i]
+
+                        break
+                    }
+                }
+            }
+            else {
+                lookahead = this.lookupBinarySearch(range, lookahead.children || [])
+            }
         }
 
         return result

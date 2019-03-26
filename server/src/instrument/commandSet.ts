@@ -70,6 +70,7 @@ export class CommandSet implements CommandSetInterface {
     readonly reserved: Array<CompletionItem>
     readonly signatureDepthMap: Map<number, Array<SignatureInformation>>
     readonly specification: InstrumentSpec
+    private readonly tableIndexRegexp: RegExp
 
     constructor(spec: InstrumentSpec) {
         this.completionDepthMap = new Map()
@@ -77,6 +78,7 @@ export class CommandSet implements CommandSetInterface {
         this.reserved = new Array()
         this.signatureDepthMap = new Map()
         this.specification = spec
+        this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
     }
 
     get completions(): Array<CompletionItem> {
@@ -157,6 +159,7 @@ export class CommandSet implements CommandSetInterface {
          *      * accessor ('.', ':')
          *      * comma (',')
          *      * assignment operator ('=')
+         *      * open parenthesis ('(')
          */
 
         // No Completions: Rule 0
@@ -196,6 +199,9 @@ export class CommandSet implements CommandSetInterface {
         interface AssignmentInfo {
             /**
              * The optional index of the assignment operator within the passed IToken array.
+             *
+             * When the current type is of StatementType.FunctionCall, this is the first
+             * unconsumable open parenthesis.
              */
             assignmentIndex?: number
             /**
@@ -231,7 +237,8 @@ export class CommandSet implements CommandSetInterface {
                 || tokens[lastIndex].text.localeCompare('.') === 0
                 || tokens[lastIndex].text.localeCompare(':') === 0
                 || tokens[lastIndex].text.localeCompare(',') === 0
-                || tokens[lastIndex].text.localeCompare('=') === 0)) {
+                || tokens[lastIndex].text.localeCompare('=') === 0
+                || tokens[lastIndex].text.localeCompare('(') === 0)) {
                 return []
             }
 
@@ -252,10 +259,10 @@ export class CommandSet implements CommandSetInterface {
              * parsed.
              *
              * However, if we start parsing right-to-left then conditionally switch to
-             * right-to-left parsing, we gain the following advantages:
-             * * If we come across a non-cosumable comma before the assignment operator,
+             * left-to-right parsing, we gain the following advantages:
+             * * If we come across a non-consumable comma before the assignment operator,
              *      then we only need to store the total number of non-consumable commas
-             *      before finding it.
+             *      before finding said assignment operator.
              * * If we do not find any non-consumable commas before the assignment
              *      operator, then we can continue parsing right-to-left since we know
              *      that our LHS will immediately follow.
@@ -276,26 +283,30 @@ export class CommandSet implements CommandSetInterface {
                     continue
                 }
                 else if (tokens[i].text.localeCompare(',') === 0) {
-                    // We seem to be parsing the entire assignment left-to-right since both
-                    // the RHS and assignment operator have been identified.
+                    // We seem to be parsing the entire assignment right-to-left since both
+                    // the RHS and assignment operator have been identified. However, since
+                    // we found a comma on the LHS, we can stop parsing.
                     if (assignInfo.right !== undefined && assignInfo.assignmentIndex !== undefined) {
                         break
                     }
 
                     assignInfo.left.commaIndex++
                 }
-                else if (tokens[i].text.localeCompare('=') === 0) {
-                    assignInfo.assignmentIndex = i
-                    // assignInfo.left.startIndex = i + 1
+                else if (tokens[i].text.localeCompare('=') === 0
+                    || (tokens[i].text.localeCompare('(') === 0 && _type === StatementType.FunctionCall)) {
 
-                    // Move what we assumed to be the left-hand side to the right-hand side.
+                    assignInfo.assignmentIndex = i
+
+                    // Move what we assumed to be the LHS to the RHS.
                     assignInfo.right = assignInfo.left
                     assignInfo.left = undefined
 
-                    // We want to handle the left-hand-side while iterating from left-to-right.
+                    // We want to handle the LHS while iterating from left-to-right
+                    // when we have encountered one or more commas.
                     if (assignInfo.right.commaIndex > 0
                         // Only global assignments benefit from LHS & RHS analysis.
-                        || _type === StatementType.AssignmentLocal) {
+                        || _type === StatementType.AssignmentLocal
+                        || _type === StatementType.FunctionCall) {
                         break
                     }
 
@@ -316,11 +327,12 @@ export class CommandSet implements CommandSetInterface {
             if (assignInfo.assignmentIndex === undefined && _type === StatementType.AssignmentLocal) {
                 return []
             }
-            // Handle the left-hand-side of the assignment if applicable.
+            // Handle the LHS of the assignment if applicable.
             else if (assignInfo.left === undefined
                 && assignInfo.assignmentIndex !== undefined
                 && assignInfo.right.commaIndex > 0
-                && _type !== StatementType.AssignmentLocal) {
+                && _type !== StatementType.AssignmentLocal
+                && _type !== StatementType.FunctionCall) {
 
                 assignInfo.left = {
                     commaIndex: 0,
@@ -334,16 +346,22 @@ export class CommandSet implements CommandSetInterface {
                     if (tokens[i].text.localeCompare(',') === 0) {
                         assignInfo.left.commaIndex++
                     }
-                    else if (assignInfo.left.commaIndex < assignInfo.right.commaIndex) {
+                    else if (_type !== StatementType.FunctionCall
+                        && assignInfo.left.commaIndex < assignInfo.right.commaIndex) {
                         continue
                     }
-                    else if (assignInfo.left.commaIndex > assignInfo.right.commaIndex) {
+                    else if (_type !== StatementType.FunctionCall
+                        && assignInfo.left.commaIndex > assignInfo.right.commaIndex) {
                         break
                     }
                     else if (tokens[i].type === TspFastLexer.NAME) {
                         assignInfo.left.names.push(tokens[i].text)
                     }
                     else {
+                        if (_type === StatementType.FunctionCall) {
+                            continue
+                        }
+
                         if (assignInfo.left.commaIndex !== assignInfo.right.commaIndex
                             && assignInfo.left.names.length > 0) {
                             assignInfo.left.names = new Array()
@@ -352,8 +370,54 @@ export class CommandSet implements CommandSetInterface {
                 }
             }
 
+            // Get any exclusive parameters from matching functions.
+            if (_type === StatementType.FunctionCall
+                && assignInfo.left === undefined
+                && assignInfo.right !== undefined) {
+                const signatureLabel = SignatureInformation.resolveNamespace({
+                    label: TokenUtil
+                        .getString(...(tokens.slice(0, assignInfo.assignmentIndex) as Array<Token>))
+                        .replace(this.tableIndexRegexp, '')
+                })
+                const depth = SignatureInformation.depth({ label: signatureLabel })
+                const matchingSignatures = (this.signatureDepthMap.get(depth) || []).filter(
+                    (value: SignatureInformation) => {
+                        return (SignatureInformation
+                            .resolveNamespace(value)
+                            .localeCompare(signatureLabel) === 0)
+                    }
+                )
+
+                // Get all valid exclusive assignments.
+                const exclusiveAssigns = new Array<CompletionItem>()
+                for (const signature of matchingSignatures) {
+                    if (signature.data === undefined || signature.data.parameterTypes === undefined) {
+                        continue
+                    }
+
+                    exclusiveAssigns.push(...(signature.data.parameterTypes.get(assignInfo.right.commaIndex) || []))
+                }
+
+                let namespaceRHS = assignInfo.right.names.reverse().join('.')
+                // Append an accessor as necessary.
+                if (assignInfo.right.hangingAccessor) {
+                    namespaceRHS += '.'
+                }
+
+                // If there are no NAME Tokens on the RHS, then only provide root excusive completions.
+                if (assignInfo.right.names.length === 0) {
+                    return exclusiveAssigns.filter(
+                        (value: CompletionItem) => value.data === undefined || value.data.domains === undefined
+                    )
+                }
+
+                // Return any exclusive completions that match the RHS.
+                return exclusiveAssigns.filter(
+                    (value: CompletionItem) => CompletionItem.namespaceMatch(namespaceRHS, value)
+                )
+            }
             // Get any exclusive assignment completions.
-            if (assignInfo.left !== undefined && assignInfo.right !== undefined) {
+            else if (assignInfo.left !== undefined && assignInfo.right !== undefined) {
                 let labelLHS: string
                 const domainsLHS = new Array<string>()
                 // If no commas were found, then LHS names will be in right-to-left order.
@@ -371,8 +435,8 @@ export class CommandSet implements CommandSetInterface {
                     data: (domainsLHS.length > 0) ? { domains: domainsLHS } : undefined,
                     label: labelLHS
                 }
-                let namespaceRHS = assignInfo.right.names.reverse().join('.')
 
+                let namespaceRHS = assignInfo.right.names.reverse().join('.')
                 // Append an accessor as necessary.
                 if (assignInfo.right.hangingAccessor) {
                     namespaceRHS += '.'

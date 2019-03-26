@@ -22,12 +22,17 @@ export namespace TokenUtil {
     /**
      * Checks if the Token has the possibility of closing pair according to TSP syntax.
      * @param token The Token to check.
+     * @param leftToRight Whether to check left-to-right Tokens or right-to-left Tokens. Defaults to left-to-right.
      * @returns True if the Token a member of a syntactic Token pair and false otherwise.
      */
-    export function consumable(token: Token): boolean {
-        return (token.text.localeCompare('(') === 0
-            || token.text.localeCompare('[') === 0
-            || token.text.localeCompare('{') === 0)
+    export function consumable(token: Token, leftToRight: boolean = true): boolean {
+        return (leftToRight)
+            ? (token.text.localeCompare('(') === 0
+                || token.text.localeCompare('[') === 0
+                || token.text.localeCompare('{') === 0)
+            : (token.text.localeCompare(')') === 0
+                || token.text.localeCompare(']') === 0
+                || token.text.localeCompare('}') === 0)
     }
 
     export function consumeExpressionFunction(index: number, tokens: Array<Token>): number {
@@ -101,14 +106,12 @@ export namespace TokenUtil {
         const condition = (leftToRight)
             ? (value: number): boolean => value < tokens.length
             : (value: number): boolean => value >= 0
-        // tslint:disable:no-parameter-reassignment
         const postLoop = (leftToRight)
-            ? (value: number): number => value++
-            : (value: number): number => value--
-        // tslint:enable:no-parameter-reassignment
+            ? (value: number): number => value + 1
+            : (value: number): number => value - 1
 
         let currentIndex = index + ((leftToRight) ? 1 : -1)
-        for (; condition(currentIndex); postLoop(currentIndex)) {
+        while (condition(currentIndex)) {
             const currentToken = tokens[currentIndex]
 
             if (partners(openingToken, currentToken)) {
@@ -118,9 +121,11 @@ export namespace TokenUtil {
             if (consumable(currentToken)) {
                 currentIndex = consumePair(currentIndex, tokens)
             }
+
+            currentIndex = postLoop(currentIndex)
         }
 
-        return (currentIndex === tokens.length) ? index : currentIndex
+        return (currentIndex === ((leftToRight) ? tokens.length : -1)) ? index : currentIndex
     }
 
     /**
@@ -212,11 +217,17 @@ export namespace TokenUtil {
      * Determines if the two Tokens form a pair.
      * @param single The consumable Token that needs a partner.
      * @param suitor A potential Token partner.
+     * @param leftToRight Whether to compare as left-to-right Tokens or right-to-left Tokens.
+     * Defaults to left-to-right.
      * @returns True when the Tokens form a pair and false otherwise.
      */
-    function partners(single: Token, suitor: Token): boolean {
-        return ((single.text.localeCompare('(') === 0 && suitor.text.localeCompare(')') === 0)
-            || (single.text.localeCompare('[') === 0 && suitor.text.localeCompare(']') === 0)
-            || (single.text.localeCompare('{') === 0 && suitor.text.localeCompare('}') === 0))
+    function partners(single: Token, suitor: Token, leftToRight: boolean = true): boolean {
+        // Flip the comparison based on the given direction.
+        const a = (leftToRight) ? single : suitor
+        const b = (leftToRight) ? suitor : single
+
+        return ((a.text.localeCompare('(') === 0 && b.text.localeCompare(')') === 0)
+            || (a.text.localeCompare('[') === 0 && b.text.localeCompare(']') === 0)
+            || (a.text.localeCompare('{') === 0 && b.text.localeCompare('}') === 0))
     }
 }

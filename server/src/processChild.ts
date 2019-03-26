@@ -226,12 +226,18 @@ connection.onRequest(ReferencesRequest, (position: Position): Array<Location> =>
     return definition.references || []
 })
 
-connection.onRequest(SignatureRequest, (params: TextDocumentPositionParams): SignatureHelp | undefined => {
-    // if (proc.context) {
-    //     return proc.context.getSignatureHelp(params.position)
-    // }
+connection.onRequest(
+    SignatureRequest,
+    async (params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
+        await documentContext
 
-    return
+        const symbol = documentContext.symbolTable.lookup(params.position)
+
+        if (symbol === undefined) {
+            return
+        }
+
+        return
 })
 
 connection.onRequest(SymbolRequest, async (params: ProcessContext): Promise<Array<DocumentSymbol>> => {
