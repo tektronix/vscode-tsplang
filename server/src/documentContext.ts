@@ -409,10 +409,10 @@ export class DocumentContext extends TspFastListener {
 
         if (exception instanceof InputMismatchException) {
             lastSymbol.detail = `Unexpected "${exception.offendingToken.text}".`
-            lastSymbol.start = TokenUtil.getPosition(exception.offendingToken)
+            lastSymbol.start = TokenUtil.getPosition(start)
             lastSymbol.end = TokenUtil.getPosition(
-                exception.offendingToken,
-                exception.offendingToken.text.length
+                stop,
+                stop.text.length
             )
         }
         else {
