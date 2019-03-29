@@ -156,6 +156,26 @@ export namespace TokenUtil {
         return (currentIndex === tokens.length) ? index : currentIndex
     }
 
+    export function count(index: number, tokens: Array<Token>, predicate: (value: Token) => boolean): number {
+        if (index >= tokens.length) {
+            throw new Error(
+                `Zero-based index ${index} is greater than the length of the given array (${tokens.length}).`
+            )
+        }
+
+        let result = 0
+        let currentIndex = index
+        for (; currentIndex < tokens.length; currentIndex++) {
+            if (predicate(tokens[currentIndex])) {
+                result++
+            }
+
+            currentIndex = consumePair(currentIndex, tokens)
+        }
+
+        return result
+    }
+
     /**
      * Compares the spacial properties of two Tokens to determine their equality.
      */

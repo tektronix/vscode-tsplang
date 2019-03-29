@@ -32,7 +32,7 @@ import {
 } from 'vscode-languageserver'
 
 import { TspFastLexer } from './antlr4-tsplang'
-import { CompletionItem, DocumentSymbol, IToken, Range } from './decorators'
+import { CompletionItem, DocumentSymbol, IToken, Range, ResolvedNamespace, SignatureInformation } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
 import { StatementType, TokenUtil } from './language-comprehension'
@@ -235,6 +235,40 @@ connection.onRequest(
 
         if (symbol === undefined) {
             return
+        }
+
+        if (symbol.statementType === StatementType.FunctionCall) {
+            const depth = ResolvedNamespace.depth(symbol.name)
+            const matchingSignatures = (documentContext.commandSet.signatureDepthMap.get(depth) || []).filter(
+                (value: SignatureInformation) => {
+                    return SignatureInformation.resolveNamespace(value).localeCompare(symbol.name) === 0
+                }
+            )
+
+            if (matchingSignatures.length > 0) {
+                const range = { end: params.position, start: symbol.start }
+                const text = documentContext.document.getText(range)
+                const lexer = new TspFastLexer(new InputStream(text))
+
+                const tokens = lexer.getAllTokens()
+                    .filter((value: Token) => value.channel === 0)
+
+                const startCounting = TokenUtil.consumeUntil(
+                    0,
+                    tokens,
+                    (value: Token) => value.text.localeCompare('(') === 0
+                )
+
+                return {
+                    activeParameter: TokenUtil.count(
+                        startCounting,
+                        tokens,
+                        (value: Token) => value.text.localeCompare(',') === 0
+                    ),
+                    activeSignature: 0,
+                    signatures: matchingSignatures
+                }
+            }
         }
 
         return
