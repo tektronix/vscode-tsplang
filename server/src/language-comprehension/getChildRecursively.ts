@@ -17,6 +17,14 @@
 
 import { ParserRuleContext } from 'antlr4'
 
+/**
+ * Recursively calls `antlr4.ParserRuleContext.getChild` until the ith instance of the given type is found.
+ * @param context The context whose ith child of the given type should be retrieved.
+ * @param i The number of instances of the given type that should be ignored.
+ * Passing zero will retrieve the first instance.
+ * @param type The type of child that should be retrieved.
+ * @returns The ith instance of the given type or null if the target could not be found.
+ */
 // tslint:disable:no-any
 export function getChildRecursively(context: ParserRuleContext, i: number, type: any): any | null {
     let result: any | null = context.getChild(i, type)
