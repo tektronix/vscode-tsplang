@@ -194,13 +194,67 @@ export class DocumentContext extends TspFastListener {
             stop: context.stop
         }
 
-        /**
-         * NOTE:
-         * Sometimes the stop token can be located before the start token. For instance:
-         *      blah = 'blah'
-         *      var
-         * in this case we shouldn't include the stop token.
-         */
+        // /**
+        //  * Depth-first search of children (except StatementContexts) until an exception is found.
+        //  */
+        // const getDeepExceptionContext = function (value: ParserRuleContext): ParserRuleContext | undefined {
+        //     if (value.exception === null && value.getChildCount() === 0) {
+        //         return
+        //     }
+
+        //     let result: ParserRuleContext
+        //     for (let i = 0; i < value.getChildCount(); i++) {
+        //         const child = value.getChild(i)
+
+        //         // Avoid evaluating anything covered by a previous exitStatement call.
+        //         if (child instanceof TspFastParser.StatementContext) {
+        //             continue
+        //         }
+
+        //         if (child instanceof TerminalNode) {
+        //             continue
+        //         }
+
+        //         if (child.exception !== null) {
+        //             return child
+        //         }
+
+        //         result = getDeepExceptionContext(child)
+
+        //         // Pass results up the call-stack.
+        //         if (result !== undefined) {
+        //             return result
+        //         }
+        //     }
+        // }
+
+        // const someDeepErrorNode = function (value: ParserRuleContext | TerminalNode | null): boolean {
+        //     if (value === null) {
+        //         return false
+        //     }
+
+        //     // Avoid evaluating anything covered by a previous exitStatement call.
+        //     if (value instanceof TspFastParser.StatementContext) {
+        //         return false
+        //     }
+
+        //     if (value instanceof ErrorNodeImpl) {
+        //         return true
+        //     }
+
+        //     if (value instanceof ParserRuleContext) {
+        //         let result: boolean = false
+
+        //         for (let i = 0; i < value.getChildCount(); i++) {
+        //             result = result || someDeepErrorNode(value.getChild(i))
+        //         }
+
+        //         return result
+        //     }
+
+        //     return false
+        // }
+
         if (pseudoContext.exception !== null) {
             if (pseudoContext.children === null) {
                 this.symbolTable.lastSymbol()
@@ -326,7 +380,33 @@ export class DocumentContext extends TspFastListener {
                         )
 
                         if (functionCall !== null) {
-                            this.handleFunctionCalls(functionCall)
+                            this.handleFunctionCalls(
+                                functionCall.start,
+                                functionCall.stop,
+                                getTerminals(functionCall)
+                            )
+                        }
+
+                        const startToken = (context.children[i] as TspFastParser.ExpressionContext).start
+                        const stopToken = (context.children[i] as TspFastParser.ExpressionContext).stop
+                        const subtokens = this.tokens.slice(startToken.tokenIndex, stopToken.tokenIndex)
+                        const subtype = statementRecognizer(subtokens as Array<Token>)
+
+                        if (Ambiguity.is(subtype)
+                            && Ambiguity.equal(subtype as Ambiguity, Ambiguity.FLOATING_TOKEN)) {
+                            const subAssignmentIndex = TokenUtil.consumeUntil(
+                                i,
+                                subtokens as Array<Token>,
+                                value => value.text.localeCompare('=') === 0
+                            )
+                            // If we did not find an assignment operator, then treat this as a function call.
+                            if (subAssignmentIndex === i) {
+                                this.handleFunctionCalls(
+                                    startToken,
+                                    stopToken,
+                                    getTerminals(context.children[i] as ParserRuleContext)
+                                )
+                            }
                         }
                     }
 
@@ -387,7 +467,12 @@ export class DocumentContext extends TspFastListener {
                 const functionCallContext = context.getChild(0, TspFastParser.FunctionCallContext)
 
                 if (functionCallContext !== null) {
-                    this.handleFunctionCalls(functionCallContext as TspFastParser.FunctionCallContext, lastSymbol)
+                    this.handleFunctionCalls(
+                        functionCallContext.start,
+                        functionCallContext.stop,
+                        getTerminals(functionCallContext),
+                        lastSymbol
+                    )
                 }
 
                 return
@@ -506,10 +591,15 @@ export class DocumentContext extends TspFastListener {
         }
     }
 
-    handleFunctionCalls(context: TspFastParser.FunctionCallContext, symbol?: DocumentSymbol): void {
+    handleFunctionCalls(
+        start: Token,
+        stop: Token,
+        terminals: Array<TerminalNode>,
+        symbol?: DocumentSymbol
+    ): void {
         const functionCall = (symbol !== undefined)
             ? symbol
-            : new DocumentSymbol(this.document.uri, TokenUtil.getPosition(context.start), context.start.tokenIndex)
+            : new DocumentSymbol(this.document.uri, TokenUtil.getPosition(start), start.tokenIndex)
 
         functionCall.statementType = functionCall.statementType || StatementType.FunctionCall
         functionCall.kind = functionCall.kind || SymbolKind.File
@@ -526,8 +616,7 @@ export class DocumentContext extends TspFastListener {
             }
         }
 
-        const terminalNodes = getTerminals(context)
-        for (const terminal of terminalNodes) {
+        for (const terminal of terminals) {
             if (terminal.symbol.type === TspFastLexer.NAME
                 || terminal.symbol.text.localeCompare('.') === 0) {
 
@@ -550,9 +639,9 @@ export class DocumentContext extends TspFastListener {
             break
         }
 
-        functionCall.end = TokenUtil.getPosition(context.stop, context.stop.text.length)
+        functionCall.end = TokenUtil.getPosition(stop, stop.text.length)
 
-        functionCall.builtin = this.commandSet.isCompletion(terminalNodes[0].symbol)
+        functionCall.builtin = this.commandSet.isCompletion(terminals[0].symbol)
 
         if (functionCall.builtin) {
             functionCall.detail = '\u2302 ' + functionCall.detail
