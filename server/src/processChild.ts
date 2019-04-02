@@ -171,6 +171,8 @@ connection.onRequest(
             return { isIncomplete: true, items: documentContext.commandSet.completionDepthMap.get(0) }
         }
 
+        // TODO: lookaround to see if we resemble a function call
+
         const range = { end: params.position, start: symbol.start }
         const text = documentContext.document.getText(range)
         const lexer = new TspFastLexer(new InputStream(text))
@@ -231,10 +233,94 @@ connection.onRequest(
     async (params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
         await documentContext
 
-        const symbol = documentContext.symbolTable.lookup(params.position)
+        let symbol = documentContext.symbolTable.lookup(params.position)
 
         if (symbol === undefined) {
             return
+        }
+
+        if (symbol.statementType !== StatementType.FunctionCall) {
+            const stopIndex = documentContext.tokens.findIndex((value: IToken) => {
+                return value.line - 1 >= params.position.line
+                    && value.column >= params.position.character
+            })
+            const tokens = documentContext.tokens.slice(symbol.startTokenIndex, stopIndex + 1)
+            // Get the token index of the first token whose starting position
+            // is greater than or equal to the request position.
+            const index = tokens.findIndex((value: IToken) => {
+                return value.line - 1 >= params.position.line
+                    && value.column >= params.position.character
+            })
+
+            // Check to see if this position is surrounded by parenthesis.
+            let closeIndex = index
+            let besideClose = true
+            if (tokens[index].text.localeCompare(')') !== 0) {
+                besideClose = false
+                closeIndex = TokenUtil.consumeUntil(
+                    index,
+                    tokens as Array<Token>,
+                    (value: Token) => value.text.localeCompare(')') === 0
+                )
+            }
+
+            let openIndex = index - 1
+            let besideOpen = true
+            if (tokens[index - 1].text.localeCompare('(') !== 0) {
+                besideOpen = false
+                openIndex = TokenUtil.consumeUntil(
+                    index - 1,
+                    tokens as Array<Token>,
+                    (value: Token) => value.text.localeCompare('(') === 0,
+                    false
+                )
+            }
+
+            // This position is not surrounded by parenthesis
+            if ((!besideClose && closeIndex === index) && (!besideOpen && openIndex === index - 1)) {
+                return
+            }
+
+            const nameStart = TokenUtil.consumeUntil(
+                openIndex,
+                tokens as Array<Token>,
+                (value: Token) => value.text.localeCompare(',') === 0 || value.text.localeCompare('=') === 0,
+                false
+            ) + 1
+
+            if (nameStart === openIndex - 1) {
+                return
+            }
+
+            symbol = new DocumentSymbol(
+                uri,
+                TokenUtil.getPosition(tokens[nameStart] as Token),
+                nameStart
+            )
+            symbol.statementType = StatementType.FunctionCall
+            if (symbol.name === undefined) {
+                symbol.name = ''
+            }
+            const subtokens = tokens.slice(nameStart, openIndex)
+            for (const token of subtokens) {
+                if (token.type === TspFastLexer.NAME || token.text.localeCompare('.') === 0) {
+                    symbol.name += token.text
+                    continue
+                }
+                break
+            }
+            symbol.selectionRange = {
+                end: undefined,
+                start: TokenUtil.getPosition(tokens[nameStart] as Token)
+            }
+            symbol.selectionRange.end = TokenUtil.getPosition(
+                tokens[openIndex - 1] as Token,
+                tokens[openIndex - 1].text.length
+            )
+            symbol.end = TokenUtil.getPosition(
+                tokens[closeIndex] as Token,
+                tokens[closeIndex].text.length
+            )
         }
 
         if (symbol.statementType === StatementType.FunctionCall) {
