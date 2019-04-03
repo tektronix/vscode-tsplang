@@ -173,21 +173,46 @@ export namespace TokenUtil {
         return (currentIndex === ((leftToRight) ? tokens.length : -1)) ? index : currentIndex
     }
 
-    export function count(index: number, tokens: Array<Token>, predicate: (value: Token) => boolean): number {
+    /**
+     * Counts the number of times the predicate is true.
+     * @param index The starting index.
+     * @param tokens An array of source Tokens.
+     * @param predicate A callback that returns true when the target token has been reached and false otherwise.
+     * @param leftToRight Whether to consume left-to-right or right-to-left. Defaults to left-to-right.
+     * @returns The total number of times the predicate returned true.
+     * @throws If the given index is greater than the list of tokens.
+     */
+    export function count(
+        index: number,
+        tokens: Array<Token>,
+        predicate: (value: Token) => boolean,
+        leftToRight: boolean = true
+    ): number {
         if (index >= tokens.length) {
             throw new Error(
                 `Zero-based index ${index} is greater than the length of the given array (${tokens.length}).`
             )
         }
 
+        const condition = (leftToRight)
+            ? (value: number): boolean => value < tokens.length
+            : (value: number): boolean => value >= 0
+        const postLoop = (leftToRight)
+            ? (value: number): number => value + 1
+            : (value: number): number => value - 1
+
         let result = 0
         let currentIndex = index
-        for (; currentIndex < tokens.length; currentIndex++) {
+        while (condition(currentIndex)) {
             if (predicate(tokens[currentIndex])) {
                 result++
             }
 
-            currentIndex = consumePair(currentIndex, tokens)
+            if (consumable(tokens[currentIndex])) {
+                currentIndex = consumePair(currentIndex, tokens, leftToRight)
+            }
+
+            currentIndex = postLoop(currentIndex)
         }
 
         return result
