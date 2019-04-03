@@ -451,7 +451,7 @@ export class CommandSet implements CommandSetInterface {
                 if (completionsLHS.length === 0) {
                     const depth = ResolvedNamespace.depth(namespaceRHS)
 
-                    // Get any completions that match the LHS.
+                    // Get any completions that match the RHS.
                     return (this.completionDepthMap.get(depth) || []).filter(
                         (value: CompletionItem) => CompletionItem.namespaceMatch(namespaceRHS, value)
                     )
