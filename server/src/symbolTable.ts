@@ -20,6 +20,11 @@ import { Diagnostic, LocationLink, Position, SymbolKind } from 'vscode-languages
 import { DocumentSymbol, Range, VariableLocalSymbol, VariableSymbol } from './decorators'
 import { StatementType } from './language-comprehension'
 
+export interface LookupResult {
+    path: Array<number>
+    symbol: DocumentSymbol
+}
+
 export class SymbolTable {
     complete: Array<DocumentSymbol>
     statementDepth: number
@@ -65,6 +70,27 @@ export class SymbolTable {
         }
 
         this.symbolCache.set(this.statementDepth, [symbol])
+    }
+
+    getChildSymbol(path: Array<number>): DocumentSymbol | undefined {
+        // tslint:disable-next-line: no-null-keyword
+        let result: DocumentSymbol = null
+
+        for (const index of path) {
+            if (result === null) {
+                result = this.complete[index]
+
+                continue
+            }
+
+            if (result === undefined || result.children === undefined) {
+                break
+            }
+
+            result = result.children[index]
+        }
+
+        return (result === null) ? undefined : result
     }
 
     lastSymbol(): DocumentSymbol | undefined {
@@ -141,36 +167,43 @@ export class SymbolTable {
         return
     }
 
-    lookup(target: Range | Position): DocumentSymbol | undefined {
+    lookup(target: Range | Position): LookupResult | undefined {
         // TODO look inside Assignment Containers.
         const range = (Position.is(target)) ? { end: target, start: target } : target
 
-        let lookahead = this.lookupBinarySearch(range, this.complete)
+        let [lookahead, nextIndex]: [DocumentSymbol, number] = this.lookupBinarySearch(range, this.complete)
 
-        let result: DocumentSymbol
+        const result: LookupResult = {
+            path: new Array(),
+            symbol: undefined
+        }
         while (lookahead !== undefined) {
-            result = lookahead
-            if ((result.detail || '').localeCompare('Assignment Container') === 0) {
+            result.symbol = lookahead
+            result.path.push(nextIndex)
+            if ((result.symbol.detail || '').localeCompare('Assignment Container') === 0) {
                 // Search assignment containers linearly and in reverse.
-                for (let i = (result.children || []).length - 1; i >= 0; i--) {
-                    const comparison = Range.compare(range, result.children[i].range)
+                for (let i = (result.symbol.children || []).length - 1; i >= 0; i--) {
+                    const comparison = Range.compare(range, result.symbol.children[i].range)
 
                     if (comparison === 0) {
-                        lookahead = result.children[i]
+                        lookahead = result.symbol.children[i]
 
                         break
                     }
                 }
             }
             else {
-                lookahead = this.lookupBinarySearch(range, lookahead.children || [])
+                [lookahead, nextIndex] = this.lookupBinarySearch(range, lookahead.children || [])
             }
         }
 
         return result
     }
 
-    private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): DocumentSymbol | undefined => {
+    private lookupBinarySearch = (
+        target: Range,
+        symbols: Array<DocumentSymbol>
+    ): [DocumentSymbol, number] | undefined => {
         let start = 0
         let stop = symbols.length - 1
 
@@ -190,11 +223,11 @@ export class SymbolTable {
             }
             // If our index is just right.
             else {
-                return symbols[index]
+                return [symbols[index], index]
             }
         }
 
         // Return the closest result if an exact match does not exist.
-        return symbols[stop]
+        return [symbols[stop], stop]
     }
 }

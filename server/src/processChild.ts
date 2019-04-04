@@ -166,32 +166,70 @@ connection.onRequest(
     async (params: TextDocumentPositionParams): Promise<CompletionList | undefined> => {
         await documentContext
 
-        const symbol = documentContext.symbolTable.lookup(params.position)
+        const found = documentContext.symbolTable.lookup(params.position)
 
-        if (symbol === undefined) {
+        if (found === undefined) {
             return { isIncomplete: true, items: documentContext.commandSet.completionDepthMap.get(0) }
         }
 
         let results: Array<CompletionItem>
-        let text = documentContext.document.getText(symbol.range)
+        let text = documentContext.document.getText(found.symbol.range)
 
-        const signatureContext = SignatureContext.create(text, params.position)
+        let signatureContext: SignatureContext
+        if (found.symbol.exception) {
+            let previousStart: Position
+            let previousExceptions = 0
+            let lastPathIndex = found.path.pop()
+            while (lastPathIndex > 0) {
+                lastPathIndex--
+                const previousSymbol = documentContext.symbolTable.getChildSymbol(
+                    found.path.concat(lastPathIndex)
+                )
+
+                if (previousSymbol === undefined) {
+                    break
+                }
+
+                // If the previous symbol is also an exception,
+                // then keep performing lookbehinds.
+                if (previousSymbol.exception) {
+                    previousExceptions++
+                    previousStart = previousSymbol.start
+                }
+                // If this previous symbol is not an exception but we encountered
+                // multiple exceptions, then we only want exceptions.
+                else if (previousExceptions > 0) {
+                    break
+                }
+                // If the first lookbehind is not an exception.
+                else {
+                    previousStart = previousSymbol.start
+                    break
+                }
+            }
+            const start = previousStart || found.symbol.start
+            text = documentContext.document.getText({ start, end: found.symbol.range.end})
+            signatureContext = SignatureContext.create(text, params.position, start)
+        }
+        else {
+            signatureContext = SignatureContext.create(text, params.position, found.symbol.start)
+        }
 
         if (signatureContext !== undefined) {
             results = documentContext.commandSet.suggestCompletions(
-                signatureContext.tokens,
+                signatureContext.tokens.slice(0, signatureContext.activeParameter.tokens.end),
                 StatementType.FunctionCall
             )
         }
         else {
-            const range = { end: params.position, start: symbol.start }
+            const range = { end: params.position, start: found.symbol.start }
             text = documentContext.document.getText(range)
             const lexer = new TspFastLexer(new InputStream(text))
             results = documentContext.commandSet.suggestCompletions(
                 lexer.getAllTokens()
                     .filter((value: Token) => value.channel === 0)
                     .map((value: Token) => IToken.create(value)),
-                symbol.statementType
+                found.symbol.statementType
             )
         }
 
@@ -222,7 +260,11 @@ connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Pro
 connection.onRequest(DefinitionRequest, (position: Position): LocationLink | undefined => {
     const here = documentContext.symbolTable.lookup({ end: position, start: position })
 
-    return here.declaration
+    if (here === undefined) {
+        return
+    }
+
+    return here.symbol.declaration
 })
 
 connection.onRequest(ReferencesRequest, (position: Position): Array<Location> => {
@@ -231,13 +273,13 @@ connection.onRequest(ReferencesRequest, (position: Position): Array<Location> =>
     if (have === undefined) {
         return []
     }
-    else if (have.declaration === undefined) {
+    else if (have.symbol.declaration === undefined) {
         return []
     }
 
-    const definition = documentContext.symbolTable.lookup(have.declaration.targetSelectionRange)
+    const definition = documentContext.symbolTable.lookup(have.symbol.declaration.targetSelectionRange)
 
-    return definition.references || []
+    return definition.symbol.references || []
 })
 
 connection.onRequest(
@@ -245,17 +287,27 @@ connection.onRequest(
     async (params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
         await documentContext
 
-        const symbol = documentContext.symbolTable.lookup(params.position)
+        const found = documentContext.symbolTable.lookup(params.position)
 
-        if (symbol === undefined) {
+        if (found === undefined) {
             return
         }
 
-        if (symbol.statementType !== StatementType.FunctionCall) {
-            const signatureContext = SignatureContext.create(
-                documentContext.document.getText(symbol.range),
-                params.position
-            )
+        if (found.symbol.statementType !== StatementType.FunctionCall) {
+            let text = documentContext.document.getText(found.symbol.range)
+            let signatureContext: SignatureContext
+            if (found.symbol.exception) {
+                const lastIndex = found.path.length - 1
+                found.path[lastIndex] = found.path[lastIndex] - 1
+
+                const start = (documentContext.symbolTable.getChildSymbol(found.path)
+                    || { start: found.symbol.start }).start
+                text = documentContext.document.getText({ start, end: found.symbol.range.end })
+                signatureContext = SignatureContext.create(text, params.position, start)
+            }
+            else {
+                signatureContext = SignatureContext.create(text, params.position, found.symbol.start)
+            }
 
             if (signatureContext === undefined) {
                 return
@@ -267,7 +319,7 @@ connection.onRequest(
             const depth = ResolvedNamespace.depth(name)
             const matchingSignatures = (documentContext.commandSet.signatureDepthMap.get(depth) || []).filter(
                 (value: SignatureInformation) => {
-                    return SignatureInformation.resolveNamespace(value).localeCompare(symbol.name) === 0
+                    return SignatureInformation.resolveNamespace(value).localeCompare(name) === 0
                 }
             )
 
@@ -280,16 +332,17 @@ connection.onRequest(
             }
         }
         else {
-            const depth = ResolvedNamespace.depth(symbol.name)
+            let text = ResolvedNamespace.create(documentContext.document.getText(found.symbol.range))
+            const depth = ResolvedNamespace.depth(text)
             const matchingSignatures = (documentContext.commandSet.signatureDepthMap.get(depth) || []).filter(
                 (value: SignatureInformation) => {
-                    return SignatureInformation.resolveNamespace(value).localeCompare(symbol.name) === 0
+                    return SignatureInformation.resolveNamespace(value).localeCompare(text) === 0
                 }
             )
 
             if (matchingSignatures.length > 0) {
-                const range = { end: params.position, start: symbol.start }
-                const text = documentContext.document.getText(range)
+                const range = { end: params.position, start: found.symbol.start }
+                text = documentContext.document.getText(range)
                 const lexer = new TspFastLexer(new InputStream(text))
 
                 const tokens = lexer.getAllTokens()

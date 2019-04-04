@@ -71,12 +71,12 @@ export interface SignatureContext {
     tokens: Array<IToken>
 }
 export namespace SignatureContext {
-    export function create(text: string, position: Position): SignatureContext | undefined {
+    export function create(text: string, position: Position, offset: Position): SignatureContext | undefined {
         const lexer = new TspFastLexer(new InputStream(text))
         const tokens = lexer.getAllTokens().filter((value: Token) => value.channel === 0)
 
         // Try to find a function call in the given Tokens.
-        const relevant = lookaround(tokens, position)
+        const relevant = lookaround(tokens, position, offset)
 
         if (relevant === undefined) {
             return
@@ -110,27 +110,32 @@ export namespace SignatureContext {
         const activeParameterIndex = TokenUtil.count(
             0,
             tokens.slice(relevant.parentheses.openIndex + 1, relevant.pivotIndex),
-            (value: Token) => value.text.localeCompare(',') === 0,
-            false
+            (value: Token) => value.text.localeCompare(',') === 0
         )
 
         return {
             activeParameter: {
                 index: activeParameterIndex,
-                tokens: { start: startingParamIndex, end: relevant.pivotIndex + 1 }
+                tokens: {
+                    end: relevant.pivotIndex - relevant.startIndex,
+                    start: startingParamIndex - relevant.startIndex
+                }
             },
-            name: { start: relevant.startIndex, end: relevant.parentheses.openIndex },
+            name: {
+                end: relevant.parentheses.openIndex - relevant.startIndex,
+                start: 0
+            },
             tokens: tokens
                         .slice(relevant.startIndex, relevant.parentheses.closeIndex + 1)
                         .map((value: Token) => IToken.create(value))
         }
     }
 
-    function lookaround(tokens: Array<IToken>, pivot: Position): IntermediateContext | undefined {
+    function lookaround(tokens: Array<IToken>, pivot: Position, offset: Position): IntermediateContext | undefined {
         // Get the token index of the first token whose starting position
         // is greater than or equal to the pivot position.
         const pivotIndex = tokens.findIndex((value: IToken) => {
-            return value.line - 1 >= pivot.line && value.column >= pivot.character
+            return value.line - 1 + offset.line >= pivot.line && value.column + offset.character >= pivot.character
         })
 
         // Check to see if we have an opening parenthesis to our right.
@@ -173,17 +178,13 @@ export namespace SignatureContext {
         // We actually want the index after our search target, so increment the result by one.
         ) + 1
 
-        if (startIndex === openIndex - 1) {
-            return
-        }
-
         return {
             pivotIndex,
-            startIndex,
             parentheses: {
                 closeIndex,
                 openIndex
-            }
+            },
+            startIndex: (startIndex - 1 === openIndex) ? 0 : startIndex
         }
     }
 }
