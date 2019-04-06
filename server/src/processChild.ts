@@ -169,7 +169,13 @@ connection.onRequest(
         const found = documentContext.symbolTable.lookup(params.position)
 
         if (found === undefined) {
-            return { isIncomplete: true, items: documentContext.commandSet.completionDepthMap.get(0) }
+            return {
+                isIncomplete: true,
+                items: CompletionItem.addSortText(
+                    TsplangSettings.sortMap(documentContext.settings),
+                    ...documentContext.commandSet.completionDepthMap.get(0)
+                )
+            }
         }
 
         let results: Array<CompletionItem>
@@ -235,10 +241,19 @@ connection.onRequest(
 
         if (results.length === 0) {
             // TODO: combine with user completions.
-            return { isIncomplete: true, items: documentContext.commandSet.completionDepthMap.get(0) }
+            return {
+                isIncomplete: true,
+                items: CompletionItem.addSortText(
+                    TsplangSettings.sortMap(documentContext.settings),
+                    ...documentContext.commandSet.completionDepthMap.get(0)
+                )
+            }
         }
 
-        return { isIncomplete: true, items: results }
+        return {
+            isIncomplete: true,
+            items: CompletionItem.addSortText(TsplangSettings.sortMap(documentContext.settings), ...results)
+        }
     }
 )
 
