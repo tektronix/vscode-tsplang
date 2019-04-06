@@ -166,6 +166,35 @@ export class DocumentSymbol implements IDocumentSymbol {
         return clone
     }
 
+    updateReferences(declaration: DocumentSymbol): void {
+        if (declaration.statementType !== StatementType.Assignment
+            && declaration.statementType !== StatementType.AssignmentLocal
+            && declaration.statementType !== StatementType.Function
+            && declaration.statementType !== StatementType.FunctionLocal) {
+            return
+        }
+
+        for (let i = 0; i < (this.children || []).length; i++) {
+            const child = this.children[i]
+
+            if (child.statementType === declaration.statementType) {
+                break
+            }
+
+            if (!!child.name && child.name.localeCompare(declaration.name) === 0) {
+                child.references = undefined
+                child.declaration = declaration.link(child.selectionRange)
+                child.detail = 'reference'
+                child.local = declaration.local
+                child.statementType = declaration.statementType
+
+                this.children.splice(i, 1, child)
+            }
+
+            this.children[i].updateReferences(declaration)
+        }
+    }
+
     within(symbol: DocumentSymbol): boolean {
         return Range.within(symbol.range, this.range)
     }

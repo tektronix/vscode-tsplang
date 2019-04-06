@@ -650,33 +650,7 @@ export class DocumentContext extends TspFastListener {
                 symbol.children.push(argLength)
             }
 
-            const makeLocalReference = (value: DocumentSymbol): VariableLocalSymbol => {
-                value.references = undefined
-                value.declaration = symbol.link(value.selectionRange)
-                value.detail = 'reference'
-                value.local = true
-
-                return value as VariableLocalSymbol
-            }
-
-            // Update all child symbol links whose name matches the parameter.
-            functionSymbol.children = functionSymbol.children.map((value: DocumentSymbol) => {
-                if (value.name !== undefined && value.name.localeCompare(symbol.name) === 0) {
-                    // Remove all back-references from was is now just a parameter reference.
-                    return makeLocalReference(value)
-                }
-
-                if (value.statementType === StatementType.Assignment && !!value.children) {
-                    // Remove all back-references contained in any assignment containers.
-                    value.children.map((child: DocumentSymbol) => {
-                        if (child.name !== undefined && child.name.localeCompare(symbol.name) === 0) {
-                            return makeLocalReference(child)
-                        }
-                    })
-                }
-
-                return value
-            })
+            functionSymbol.updateReferences(symbol)
 
             functionSymbol.children.push(symbol)
         }
