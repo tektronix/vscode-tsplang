@@ -138,32 +138,34 @@ export namespace SignatureContext {
             return value.line - 1 + offset.line >= pivot.line && value.column + offset.character >= pivot.character
         })
 
+        if (pivotIndex === -1) {
+            return
+        }
+
         // Check to see if we have an opening parenthesis to our right.
         let closeIndex = pivotIndex
-        let besideClose = true
         if (tokens[pivotIndex].text.localeCompare(')') !== 0) {
-            besideClose = false
             closeIndex = TokenUtil.consumeUntil(
                 pivotIndex,
                 tokens as Array<Token>,
                 (value: Token) => value.text.localeCompare(')') === 0
             )
+            closeIndex = (closeIndex === pivotIndex) ? undefined : closeIndex
         }
 
         // Check to see if we have an closing parenthesis to our left.
         let openIndex = pivotIndex - 1
-        let besideOpen = true
         if (tokens[pivotIndex - 1].text.localeCompare('(') !== 0) {
-            besideOpen = false
             openIndex = TokenUtil.consumeUntil(
                 pivotIndex - 1,
                 tokens as Array<Token>,
                 (value: Token) => value.text.localeCompare('(') === 0,
                 false
             )
+            openIndex = (openIndex === pivotIndex - 1) ? undefined : openIndex
         }
 
-        if ((!besideClose && closeIndex === pivotIndex) && (!besideOpen && openIndex === pivotIndex - 1)) {
+        if (openIndex === undefined || closeIndex === undefined) {
             // This position is not surrounded by parenthesis.
             return
         }
