@@ -22,99 +22,53 @@ import { InputMismatchException, NoViableAltException, RecognitionException } fr
 import { ErrorNodeImpl, ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
 import {
-    CompletionItemKind,
-    CompletionList,
     Diagnostic,
-    LocationLink,
-    Position,
-    SignatureHelp,
     SymbolKind,
     TextDocument,
-    TextDocumentContentChangeEvent,
     TextDocumentItem
 } from 'vscode-languageserver'
 
 import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tsplang'
 import {
-    CompletionItem,
     DocumentSymbol,
     FunctionLocalSymbol,
     FunctionSymbol,
     IToken,
-    Range,
-    ResolvedNamespace,
-    SignatureInformation,
     VariableLocalSymbol,
     VariableSymbol
 } from './decorators'
 import { CommandSet } from './instrument'
 import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
-import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
 import { getChildRecursively } from './language-comprehension/getChildRecursively'
 import { getTerminals } from './language-comprehension/parser-context-handler/getTerminals'
-import { ParameterContext, SignatureContext } from './language-comprehension/signature'
-import { Outline } from './outline'
 import { DebugParseTimer, DebugParseTree } from './parse'
-import { SuggestionSortKind, TsplangSettings } from './settings'
+import { TsplangSettings } from './settings'
 import { SymbolTable } from './symbolTable'
 
 ConsoleErrorListener.prototype.syntaxError = (): void => { return }
 
-// tslint:disable
+// tslint:disable: member-ordering
 export class DocumentContext extends TspFastListener {
     readonly commandSet: CommandSet
     document: TextDocument
     errors: Array<Diagnostic>
-    // readonly outline: Outline
-    // ranges: Array<Range>
-    // statements: WeakMap<Range, TspFastParser.StatementContext>
     exceptionTokenIndex?: number
-    settings: TsplangSettings
-    symbolTable: SymbolTable
-    tokens: Array<IToken>
-
-    // private enteredStatementException: boolean
-    // /**
-    //  * A Map keyed to the ending offset of an assignment operator (`=`) or
-    //  * expression list separator (`,`). The associated key-value is an
-    //  * ExclusiveContext.
-    //  */
-    // private exclusives: Map<number, ExclusiveContext>
-    // private fuzzyOffsets: FuzzyOffsetMap
-    // private fuzzySignatureOffsets: FuzzyOffsetMap
     inputStream: InputStream
     lexer: TspFastLexer
     parser: TspFastParser
+    settings: TsplangSettings
+    symbolTable: SymbolTable
+    tokens: Array<IToken>
     tokenStream: CommonTokenStream
-    // private parseTree: ParserRuleContext
-    // /**
-    //  * A Map keyed to the ending offset of a function call's open parenthesis.
-    //  * The associated key-value is a SignatureContext.
-    //  */
-    // private signatures: Map<number, SignatureContext>
-    // private readonly tableIndexRegexp: RegExp
 
     constructor(item: TextDocumentItem, commandSet: CommandSet, settings: TsplangSettings) {
         super()
 
         this.document = TextDocument.create(item.uri, item.languageId, item.version, item.text)
         this.commandSet = commandSet
-        // this.outline = new Outline(item)
         this.settings = settings
-
-        // this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
-
-        // this.ranges = new Array()
-        // this.statements = new WeakMap()
-
-        // this.enteredStatementException = false
         this.errors = new Array()
-        // this.exclusives = new Map()
-        // this.fuzzyOffsets = new FuzzyOffsetMap()
-        // this.fuzzySignatureOffsets = new FuzzyOffsetMap()
-        // this.signatures = new Map()
         this.tokens = new Array()
-
         this.symbolTable = new SymbolTable()
     }
 
@@ -142,7 +96,7 @@ export class DocumentContext extends TspFastListener {
     reParse(from: number): void {
         let start = from
         if (from === -1) {
-            for(let i = this.tokens.length - 1; i >= 0; i--) {
+            for (let i = this.tokens.length - 1; i >= 0; i--) {
                 if (this.tokens[i].channel === 0 && this.tokens[i].type !== TspFastLexer.EOF) {
                     start = i + 1
                     break
@@ -194,6 +148,8 @@ export class DocumentContext extends TspFastListener {
             stop: context.stop
         }
 
+        const hasErrorNode = (value: ParserRuleContext | TerminalNode): boolean => value instanceof ErrorNodeImpl
+
         if (pseudoContext.exception !== null) {
             if (pseudoContext.children === null) {
                 this.symbolTable.lastSymbol()
@@ -206,7 +162,7 @@ export class DocumentContext extends TspFastListener {
             return
         }
         else if (pseudoContext.children !== null
-            && pseudoContext.children.some(value => value instanceof ErrorNodeImpl)) {
+            && pseudoContext.children.some(hasErrorNode)) {
 
             // This should always resolve to a number due to "some" evaluating true.
             let lastChildrenErrorIndex: number
@@ -299,21 +255,17 @@ export class DocumentContext extends TspFastListener {
         }
 
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
-            const startingTokenIndex = pseudoContext.start.tokenIndex
-            const variableCommaIndices = new Array<number>()
-            let assignmentIndex: number
-
             // Indices will be zero-based from the starting Token (which is index 0).
-            for (let i = 0; i < context.children.length; i++) {
-                if (context.children[i] instanceof ParserRuleContext) {
+            for (const child of context.children) {
+                if (child instanceof ParserRuleContext) {
                     this.symbolTable.statementDepth++
 
-                    if (context.children[i] instanceof TspFastParser.VariableContext) {
-                        this.handleGlobalVariables(context.children[i] as TspFastParser.VariableContext, false)
+                    if (child instanceof TspFastParser.VariableContext) {
+                        this.handleGlobalVariables(child as TspFastParser.VariableContext, false)
                     }
-                    else if (context.children[i] instanceof TspFastParser.ExpressionContext) {
+                    else if (child instanceof TspFastParser.ExpressionContext) {
                         const functionCall: TspFastParser.FunctionCallContext = getChildRecursively(
-                            context.children[i] as ParserRuleContext,
+                            child as ParserRuleContext,
                             0,
                             TspFastParser.FunctionCallContext
                         )
@@ -330,17 +282,9 @@ export class DocumentContext extends TspFastListener {
                     this.symbolTable.statementDepth--
                 }
                 else {
-                    if ((context.children[i] as TerminalNode).symbol.text.localeCompare(',') === 0) {
-                        variableCommaIndices.push(
-                            (context.children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex
-                        )
-                    }
-                    else if ((context.children[i] as TerminalNode).symbol.text.localeCompare('=') === 0) {
-                        assignmentIndex = (context.children[i] as TerminalNode).symbol.tokenIndex - startingTokenIndex
-                    }
-                    else if ((context.children[i] as TerminalNode).symbol.type === TspFastLexer.NAME) {
+                    if ((child as TerminalNode).symbol.type === TspFastLexer.NAME) {
                         this.symbolTable.statementDepth++
-                        this.handleLocalVariables(context.children[i] as TerminalNode, false)
+                        this.handleLocalVariables(child as TerminalNode, false)
                         this.symbolTable.statementDepth--
                     }
                 }
@@ -479,6 +423,7 @@ export class DocumentContext extends TspFastListener {
                     lastSymbol.statementType = Ambiguity.FLOATING_TOKEN
                 }
             }
+            // tslint:disable-next-line: prefer-conditional-expression
             else if (exception instanceof RecognitionException) {
                 lastSymbol.detail = 'TSPLang has no prettification support for ANTLR4 RecognitionExceptions.'
             }
@@ -571,6 +516,7 @@ export class DocumentContext extends TspFastListener {
     }
 
     handleFunctionDeclarations(tokens: Array<IToken>, type: StatementType): void {
+        // tslint:disable-next-line: no-magic-numbers
         const startIndex = (type === StatementType.Function) ? 1 : 2
         const startSelectionToken = tokens[startIndex]
         let endSelectionToken: IToken
@@ -616,9 +562,7 @@ export class DocumentContext extends TspFastListener {
             tokens[tokens.length - 1].text.length
         )
 
-        for(let i = 0; i < paramTokens.length; i++) {
-            const token = paramTokens[i]
-
+        for (const token of paramTokens) {
             const symbol = new VariableLocalSymbol(
                 functionSymbol.uri,
                 TokenUtil.getPosition(token as Token),
