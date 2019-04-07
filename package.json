@@ -76,7 +76,7 @@
                 "tsplang.debug.print.rootStatementParseTree": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Print the parse tree of each root statement."
+                    "description": "Print a formatted parse tree of each root statement."
                 },
                 "tsplang.outline.showInstrumentSettings": {
                     "type": "boolean",
