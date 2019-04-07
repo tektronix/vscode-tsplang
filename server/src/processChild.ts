@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CommonTokenStream, InputStream, Token } from 'antlr4'
+import { InputStream, Token } from 'antlr4'
 import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
@@ -32,7 +32,7 @@ import {
 } from 'vscode-languageserver'
 
 import { TspFastLexer } from './antlr4-tsplang'
-import { CompletionItem, DocumentSymbol, IToken, Range, ResolvedNamespace, SignatureInformation } from './decorators'
+import { CompletionItem, DocumentSymbol, IToken, ResolvedNamespace, SignatureInformation } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
 import { StatementType, TokenUtil } from './language-comprehension'
@@ -51,6 +51,7 @@ import {
 } from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
+import { LookupResult } from './symbolTable'
 
 const connection = rpc.createMessageConnection(
     new rpc.IPCMessageReader(process),
@@ -179,47 +180,8 @@ connection.onRequest(
         }
 
         let results: Array<CompletionItem>
-        let text = documentContext.document.getText(found.symbol.range)
 
-        let signatureContext: SignatureContext
-        if (found.symbol.exception) {
-            let previousStart: Position
-            let previousExceptions = 0
-            let lastPathIndex = found.path.pop()
-            while (lastPathIndex > 0) {
-                lastPathIndex--
-                const previousSymbol = documentContext.symbolTable.getChildSymbol(
-                    found.path.concat(lastPathIndex)
-                )
-
-                if (previousSymbol === undefined) {
-                    break
-                }
-
-                // If the previous symbol is also an exception,
-                // then keep performing lookbehinds.
-                if (previousSymbol.exception) {
-                    previousExceptions++
-                    previousStart = previousSymbol.start
-                }
-                // If this previous symbol is not an exception but we encountered
-                // multiple exceptions, then we only want exceptions.
-                else if (previousExceptions > 0) {
-                    break
-                }
-                // If the first lookbehind is not an exception.
-                else {
-                    previousStart = previousSymbol.start
-                    break
-                }
-            }
-            const start = previousStart || found.symbol.start
-            text = documentContext.document.getText({ start, end: found.symbol.range.end})
-            signatureContext = SignatureContext.create(text, params.position, start)
-        }
-        else {
-            signatureContext = SignatureContext.create(text, params.position, found.symbol.start)
-        }
+        const signatureContext = await getSignatureContext(found, params.position)
 
         if (signatureContext !== undefined) {
             results = documentContext.commandSet.suggestCompletions(
@@ -229,7 +191,7 @@ connection.onRequest(
         }
         else {
             const range = { end: params.position, start: found.symbol.start }
-            text = documentContext.document.getText(range)
+            const text = documentContext.document.getText(range)
             const lexer = new TspFastLexer(new InputStream(text))
             results = documentContext.commandSet.suggestCompletions(
                 lexer.getAllTokens()
@@ -309,20 +271,7 @@ connection.onRequest(
         }
 
         if (found.symbol.statementType !== StatementType.FunctionCall) {
-            let text = documentContext.document.getText(found.symbol.range)
-            let signatureContext: SignatureContext
-            if (found.symbol.exception) {
-                const lastIndex = found.path.length - 1
-                found.path[lastIndex] = found.path[lastIndex] - 1
-
-                const start = (documentContext.symbolTable.getChildSymbol(found.path)
-                    || { start: found.symbol.start }).start
-                text = documentContext.document.getText({ start, end: found.symbol.range.end })
-                signatureContext = SignatureContext.create(text, params.position, start)
-            }
-            else {
-                signatureContext = SignatureContext.create(text, params.position, found.symbol.start)
-            }
+            const signatureContext = await getSignatureContext(found, params.position)
 
             if (signatureContext === undefined) {
                 return
@@ -458,4 +407,58 @@ async function updateProcessContext(params: ProcessContext): Promise<void> {
     initializeErrors.push(...loadDiagnostics)
 
     connection.sendNotification(ErrorNotification, { uri, diagnostics: initializeErrors })
+}
+
+async function getSignatureContext(lookup: LookupResult, position: Position): Promise<SignatureContext | undefined> {
+    if (lookup.symbol.exception) {
+        // The last value of the path array is removed so it can be repeatedly
+        // decremented without affecting the array itself.
+        let lastPathIndex = lookup.path.pop() - 1
+        let previousStart: Position
+        // The number of encountered exceptions alters where we choose to start.
+        let previousExceptions = 0
+
+        for (; lastPathIndex > 0; lastPathIndex--) {
+            // Update the array with the previously removed value before using it
+            // to walk the symbol table.
+            const previousSymbol = await documentContext.symbolTable.getChildSymbol(
+                lookup.path.concat(lastPathIndex)
+            )
+
+            if (previousSymbol === undefined) {
+                break
+            }
+
+            // If the previous symbol is also an exception, then keep performing lookbehinds.
+            if (previousSymbol.exception) {
+                previousExceptions++
+                previousStart = previousSymbol.start
+            }
+            // If the symbol at this path is not an exception but we encountered multiple
+            // exceptions, then we only want exception symbols.
+            else if (previousExceptions > 0) {
+                break
+            }
+            // If the first lookbehind is not an exception, then combine it with
+            // the exception symbol returned from our lookup.
+            else {
+                previousStart = previousSymbol.start
+                break
+            }
+        }
+        const start = previousStart || lookup.symbol.start
+
+        return SignatureContext.create(
+            await documentContext.document.getText({ start, end: lookup.symbol.range.end }),
+            position,
+            start
+        )
+    }
+    else {
+        return SignatureContext.create(
+            await documentContext.document.getText(lookup.symbol.range),
+            position,
+            lookup.symbol.start
+        )
+    }
 }
