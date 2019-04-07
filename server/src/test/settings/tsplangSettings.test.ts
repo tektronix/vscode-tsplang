@@ -32,6 +32,7 @@ describe('Settings', () => {
                 },
                 outline: false,
                 print: {
+                    documentChangeEvents: false,
                     rootStatementParseTime: false,
                     rootStatementParseTree: false
                 }
@@ -64,6 +65,7 @@ describe('Settings', () => {
                             },
                             outline: false,
                             print: {
+                                documentChangeEvents: false,
                                 rootStatementParseTime: false,
                                 rootStatementParseTree: false
                             }

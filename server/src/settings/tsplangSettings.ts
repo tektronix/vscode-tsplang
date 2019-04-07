@@ -15,7 +15,7 @@
  */
 'use strict'
 
-import { CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind, TextDocumentContentChangeEvent } from 'vscode-languageserver'
 
 import { SuggestionSortKind } from './suggestionSortKind'
 
@@ -24,6 +24,7 @@ export interface DebugOpenSettings {
 }
 
 export interface DebugPrintSettings {
+    documentChangeEvents: boolean
     rootStatementParseTime: boolean
     rootStatementParseTree: boolean
 }
@@ -55,6 +56,7 @@ export namespace TsplangSettings {
                 },
                 outline: false,
                 print: {
+                    documentChangeEvents: false,
                     rootStatementParseTime: false,
                     rootStatementParseTree: false
                 }
@@ -66,6 +68,24 @@ export namespace TsplangSettings {
                 enumerationOrder: SuggestionSortKind.INLINE
             }
         }
+    }
+
+    /**
+     * Returns a formatted string representing the contents of the given event.
+     * @param event The event whose contents should be formatted.
+     * @returns A formatted string.
+     */
+    export function formatDocumentChangeEvent(event: TextDocumentContentChangeEvent): string {
+        return [
+            '{',
+            '  range: {',
+            `    start: ${JSON.stringify(event.range.start)}`,
+            `      end: ${JSON.stringify(event.range.end)}`,
+            '  },',
+            `  rangeLength: ${event.rangeLength}`,
+            `  text: "${event.text}"`,
+            '}'
+        ].join('\n')
     }
 
     /**

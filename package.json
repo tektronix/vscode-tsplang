@@ -63,6 +63,11 @@
                     "default": false,
                     "description": "Show all parsed statements in the Outline view.\nStatements that are usually hidden (for loops, if statements, returns, etc.) will be displayed as the File type."
                 },
+                "tsplang.debug.print.documentChangeEvents": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Print all document change events."
+                },
                 "tsplang.debug.print.rootStatementParseTime": {
                     "type": "boolean",
                     "default": false,

@@ -85,14 +85,10 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     let shebangEdited = false
     let smallestPosition: Position
     for (const change of changes) {
-        console.log(`{
-  range: {
-    start: ${JSON.stringify(change.range.start)}
-      end: ${JSON.stringify(change.range.end)}
-  },
-  rangeLength: ${change.rangeLength},
-  text: "${change.text}"
-}`)
+        if (documentContext.settings.debug.print.documentChangeEvents) {
+            console.log(TsplangSettings.formatDocumentChangeEvent(change))
+        }
+
         shebangEdited = change.range.start.line === 0 && Shebang.has(textDocumentItem.text)
 
         if (!shebangEdited) {
