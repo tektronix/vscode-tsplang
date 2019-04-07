@@ -343,6 +343,25 @@ export class DocumentContext extends TspFastListener {
         }
     }
 
+    exitExpression(context: TspFastParser.ExpressionContext): void {
+        const pseudoContext = {
+            children: context.children,
+            exception: context.exception,
+            start: context.start,
+            stop: context.stop
+        }
+
+        if (pseudoContext.exception !== null) {
+            this.symbolTable.cacheSymbol(new DocumentSymbol(
+                this.document.uri,
+                TokenUtil.getPosition(context.start),
+                context.start.tokenIndex
+            ))
+
+            this.handleExceptions(pseudoContext.exception, pseudoContext.start, pseudoContext.stop)
+        }
+    }
+
     handleExceptions(exception: Error, start: Token, stop: Token): void {
         // NOTE: Later calls to retrieve the last symbol do not have no worry about
         // mis-associated child symbols because they will be removed and attached
