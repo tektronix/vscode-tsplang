@@ -33,6 +33,13 @@ export interface CompletionItemData {
 export interface CompletionItem extends vscode_ls.CompletionItem, BaseItem {
     allowBitwise?: boolean
     data?: CompletionItemData
+    /**
+     * Set to `true` if this enumeration completion is only ever used as an input value. When set, this
+     * enumeration is eligible to be hidden from the suggestion list.
+     *
+     * Leave unspecified or set to `false` if this completion is not an enumeration or otherwise should
+     * not be hidden.
+     */
     exclusive?: boolean
     reserved?: boolean
 }

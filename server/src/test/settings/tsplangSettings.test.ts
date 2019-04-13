@@ -41,7 +41,8 @@ describe('Settings', () => {
                 showInstrumentSettings: false
             },
             suggestions: {
-                enumerationOrder: SuggestionSortKind.INLINE
+                enumerationOrder: SuggestionSortKind.INLINE,
+                hideInputEnumerations: false
             }
         }
         const defaultSortMap = new Map<CompletionItemKind, SuggestionSortKind>([
@@ -74,7 +75,8 @@ describe('Settings', () => {
                             showInstrumentSettings: false
                         },
                         suggestions: {
-                            enumerationOrder: SuggestionSortKind.INLINE
+                            enumerationOrder: SuggestionSortKind.INLINE,
+                            hideInputEnumerations: false
                         }
                     },
                     new Map<CompletionItemKind, SuggestionSortKind>([

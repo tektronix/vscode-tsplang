@@ -17,6 +17,8 @@
 
 import { CompletionItemKind, TextDocumentContentChangeEvent } from 'vscode-languageserver'
 
+import { CompletionItem } from '../decorators'
+
 import { SuggestionSortKind } from './suggestionSortKind'
 
 export interface DebugOpenSettings {
@@ -40,6 +42,7 @@ export interface TsplangSettings {
     }
     suggestions: {
         enumerationOrder: SuggestionSortKind;
+        hideInputEnumerations: boolean;
     }
 }
 export namespace TsplangSettings {
@@ -65,7 +68,8 @@ export namespace TsplangSettings {
                 showInstrumentSettings: false
             },
             suggestions: {
-                enumerationOrder: SuggestionSortKind.INLINE
+                enumerationOrder: SuggestionSortKind.INLINE,
+                hideInputEnumerations: false
             }
         }
     }
@@ -86,6 +90,17 @@ export namespace TsplangSettings {
             `  text: "${event.text}"`,
             '}'
         ].join('\n')
+    }
+
+    /**
+     * Removes all input-only enumeration completions from the given completion array.
+     * @param completions An array of CompletionItem.
+     * @returns A filtered array of CompletionItem.
+     */
+    export function hideInputEnumerations(completions: Array<CompletionItem>): Array<CompletionItem> {
+        return completions.filter((value: CompletionItem) => {
+            return value.kind === CompletionItemKind.EnumMember && !value.exclusive
+        })
     }
 
     /**

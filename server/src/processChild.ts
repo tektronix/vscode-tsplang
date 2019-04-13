@@ -397,7 +397,7 @@ async function updateProcessContext(params: ProcessContext): Promise<void> {
 
     let loadDiagnostics: Array<Diagnostic>
     // Try to generate instrument information for this document.
-    [instrument, loadDiagnostics] = load(shebang)
+    [instrument, loadDiagnostics] = load(shebang, settings.suggestions.hideInputEnumerations)
 
     // Collect all diagnostics.
     initializeErrors.push(...loadDiagnostics)

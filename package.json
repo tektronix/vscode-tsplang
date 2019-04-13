@@ -97,6 +97,11 @@
                         "Show enumeration suggestions below other suggestions.",
                         "Show enumeration suggestions with other suggestions."
                     ]
+                },
+                "tsplang.suggestions.hideInputEnumerations": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Hide enumerations that are only used as input values until they become contextually relevant."
                 }
             }
         },

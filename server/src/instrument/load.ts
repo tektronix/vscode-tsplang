@@ -31,13 +31,13 @@ export interface Instrument {
     spec: InstrumentSpec
 }
 
-export function load(shebang: Shebang): [Instrument, Array<Diagnostic>] {
+export function load(shebang: Shebang, hideInputEnums: boolean): [Instrument, Array<Diagnostic>] {
     let diagnostics: Array<Diagnostic>
     let luaEntry: Instrument | undefined
 
     // All models need the Lua entry, except the Lua model.
     if (shebang.model !== Model.LUA) {
-        [luaEntry, diagnostics] = load({ model: Model.LUA, range: shebang.range })
+        [luaEntry, diagnostics] = load({ model: Model.LUA, range: shebang.range }, hideInputEnums)
     }
 
     switch (shebang.model) {
@@ -51,7 +51,7 @@ export function load(shebang: Shebang): [Instrument, Array<Diagnostic>] {
             const api: Array<ApiSpec> = instrModule.getApiSpec()
             const spec: InstrumentSpec = instrModule.getInstrumentSpec()
 
-            const set: CommandSet = generateCommandSet(api, spec)
+            const set: CommandSet = generateCommandSet(api, spec, hideInputEnums)
 
             // If this is not a Lua model, then merge the Lua entry.
             if (luaEntry !== undefined) {

@@ -400,7 +400,7 @@ describe('Instrument Provider', () => {
             let signatureLength: number
 
             beforeEach('Generate', () => {
-                commandSet = generateCommandSet(test.given.api, emptySpec)
+                commandSet = generateCommandSet(test.given.api, emptySpec, false)
                 completionDocLength = test.expected.filter((value: ExpectedCompletion) => !!value.formattable).length
                 signatureLength = 0
                 test.expected.forEach((value: ExpectedCompletion) => {
@@ -702,7 +702,7 @@ describe('Instrument Provider', () => {
                 it(errorTest.name, () => {
                     expect(
                         () => {
-                            generateCommandSet(errorTest.given.api, errorTest.given.spec)
+                            generateCommandSet(errorTest.given.api, errorTest.given.spec, false)
                         }
                     ).to.throw(errorTest.expected)
                 })
