@@ -31,13 +31,21 @@ export interface Instrument {
     spec: InstrumentSpec
 }
 
-export function load(shebang: Shebang, hideInputEnums: boolean): [Instrument, Array<Diagnostic>] {
-    let diagnostics: Array<Diagnostic>
-    let luaEntry: Instrument | undefined
+export interface Loaded {
+    diagnostic?: Diagnostic
+    instrument?: Instrument
+}
 
-    // All models need the Lua entry, except the Lua model.
+export async function load(shebang: Shebang, hideInputEnums: boolean): Promise<Loaded> {
+    let loadedLua: Loaded
+
+    // Load Lua entries for all models except the Lua model.
     if (shebang.model !== Model.LUA) {
-        [luaEntry, diagnostics] = load({ model: Model.LUA, range: shebang.range }, hideInputEnums)
+        loadedLua = await load({ model: Model.LUA, range: shebang.range }, hideInputEnums)
+
+        if (loadedLua.diagnostic !== undefined) {
+            return loadedLua
+        }
     }
 
     switch (shebang.model) {
@@ -46,34 +54,96 @@ export function load(shebang: Shebang, hideInputEnums: boolean): [Instrument, Ar
         case Model.KI2461:
         case Model.KI2461SYS:
         case Model.LUA:
-            const instrModule: InstrumentModule = require(`./${shebang.model}`)
+            let instrModule: InstrumentModule
+            let api: Array<ApiSpec>
+            let spec: InstrumentSpec
+            let set: CommandSet
 
-            const api: Array<ApiSpec> = instrModule.getApiSpec()
-            const spec: InstrumentSpec = instrModule.getInstrumentSpec()
+            try {
+                instrModule = require(`./${shebang.model}`)
+            }
+            catch (e) {
+                return {
+                    diagnostic: {
+                        code: 'load-import-error',
+                        message: `Cannot find instrument module '${shebang.model}'`,
+                        range: shebang.range,
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    }
+                }
+            }
 
-            const set: CommandSet = generateCommandSet(api, spec, hideInputEnums)
+            try {
+                api = instrModule.getApiSpec()
+            }
+            catch (e) {
+                return {
+                    diagnostic: {
+                        code: 'load-api-error',
+                        message: `Cannot load API from instrument module '${shebang.model}'`,
+                        range: shebang.range,
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    }
+                }
+            }
+
+            try {
+                spec = instrModule.getInstrumentSpec()
+            }
+            catch (e) {
+                return {
+                    diagnostic: {
+                        code: 'load-spec-error',
+                        message: `Cannot load specification from instrument module '${shebang.model}'`,
+                        range: shebang.range,
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    }
+                }
+            }
+
+            try {
+                set = generateCommandSet(api, spec, hideInputEnums)
+            }
+            catch (e) {
+                return {
+                    diagnostic: {
+                        code: 'load-generate-error',
+                        message: `Cannot generate commands from instrument module '${shebang.model}'`,
+                        range: shebang.range,
+                        severity: DiagnosticSeverity.Error,
+                        source: 'tsplang'
+                    }
+                }
+            }
 
             // If this is not a Lua model, then merge the Lua entry.
-            if (luaEntry !== undefined) {
+            if (loadedLua !== undefined) {
                 set.add({
-                    completionDocs: luaEntry.set.completionDocs,
+                    completionDocs: loadedLua.instrument.set.completionDocs,
                     completions: [
-                        ...luaEntry.set.completions,
-                        ...luaEntry.set.reserved
+                        ...loadedLua.instrument.set.completions,
+                        ...loadedLua.instrument.set.reserved
                     ],
-                    signatures: luaEntry.set.signatures
+                    signatures: loadedLua.instrument.set.signatures
                 })
             }
 
-            return [{ set, spec }, diagnostics || []]
+            return {
+                instrument: { set, spec }
+            }
 
         default:
-            return [luaEntry, [{
-                code: 'unsupported-model',
-                message: `Model ${shebang.model} is not supported.`,
-                range: shebang.range,
-                severity: DiagnosticSeverity.Error,
-                source: 'tsplang'
-            }]]
+            return {
+                diagnostic: {
+                    code: 'unsupported-model',
+                    message: `Model ${shebang.model} is not supported.`,
+                    range: shebang.range,
+                    severity: DiagnosticSeverity.Error,
+                    source: 'tsplang'
+                }
+            }
     }
 }

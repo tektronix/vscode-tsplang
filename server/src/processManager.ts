@@ -46,6 +46,7 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
+    ContextRequest,
     DefinitionRequest,
     ErrorNotification,
     ProcessContext,
@@ -59,8 +60,8 @@ import { Shebang } from './shebang'
 
 interface Child {
     connection: rpc.MessageConnection
-    init: ProcessContext
-    proc: ChildProcess
+    proc: ChildProcess,
+    uri: string
 }
 
 export class ProcessManager {
@@ -109,7 +110,7 @@ export class ProcessManager {
         }
 
         this.children.forEach((value: Promise<Child>) => {
-            value.then((child: Child) => this._release(child.init.item.uri))
+            value.then((child: Child) => this._release(child.uri))
         })
     }
 
@@ -145,14 +146,17 @@ export class ProcessManager {
                 const child: Child = {
                     connection,
                     proc,
-                    init: {
-                        settings,
-                        item: params.textDocument
-                    }
+                    uri: params.textDocument.uri
                 }
 
                 child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
                     this.connection.sendDiagnostics(value)
+                })
+                child.connection.onRequest(ContextRequest, (): ProcessContext => {
+                    return {
+                        settings,
+                        item: params.textDocument
+                    }
                 })
 
                 connection.trace(rpc.Trace.Messages, console)
@@ -242,7 +246,7 @@ export class ProcessManager {
     async symbol(params: DocumentSymbolParams): Promise<Array<DocumentSymbol>> {
         const child = await this.children.get(params.textDocument.uri)
 
-        return child.connection.sendRequest(SymbolRequest, child.init)
+        return child.connection.sendRequest(SymbolRequest, undefined)
     }
 
     /* Internal Methods */
