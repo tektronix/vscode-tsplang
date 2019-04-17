@@ -174,11 +174,11 @@ connection.onRequest(
     async (params: CompletionParams): Promise<CompletionList | undefined> => {
         const documentContext = await documentContextPromise
 
-        const found = documentContext.symbolTable.lookup(params.position)
+        const found = documentContext.symbolTable.lookup(params.position, false)
 
         if (found === undefined) {
             return {
-                isIncomplete: true,
+                isIncomplete: false,
                 items: CompletionItem.addSortText(
                     TsplangSettings.sortMap(documentContext.settings),
                     ...documentContext.commandSet.completionDepthMap.get(0)
@@ -211,7 +211,7 @@ connection.onRequest(
         if (results.length === 0) {
             // TODO: combine with user completions.
             return {
-                isIncomplete: true,
+                isIncomplete: false,
                 items: CompletionItem.addSortText(
                     TsplangSettings.sortMap(documentContext.settings),
                     ...documentContext.commandSet.completionDepthMap.get(0)
@@ -220,7 +220,7 @@ connection.onRequest(
         }
 
         return {
-            isIncomplete: true,
+            isIncomplete: false,
             items: CompletionItem.addSortText(TsplangSettings.sortMap(documentContext.settings), ...results)
         }
     }
@@ -246,7 +246,7 @@ connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Pro
 connection.onRequest(DefinitionRequest, async (position: Position): Promise<LocationLink | undefined> => {
     const documentContext = await documentContextPromise
 
-    const here = documentContext.symbolTable.lookup({ end: position, start: position })
+    const here = documentContext.symbolTable.lookup({ end: position, start: position }, false)
 
     if (here === undefined) {
         return
@@ -258,7 +258,7 @@ connection.onRequest(DefinitionRequest, async (position: Position): Promise<Loca
 connection.onRequest(ReferencesRequest, async (position: Position): Promise<Array<Location>> => {
     const documentContext = await documentContextPromise
 
-    const have = documentContext.symbolTable.lookup({ end: position, start: position })
+    const have = documentContext.symbolTable.lookup({ end: position, start: position }, false)
 
     if (have === undefined) {
         return []
@@ -277,7 +277,7 @@ connection.onRequest(
     async (params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
         const documentContext = await documentContextPromise
 
-        const found = documentContext.symbolTable.lookup(params.position)
+        const found = documentContext.symbolTable.lookup(params.position, false)
 
         if (found === undefined) {
             return
