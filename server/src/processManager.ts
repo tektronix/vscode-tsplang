@@ -20,7 +20,7 @@ import * as path from 'path'
 import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
-    Diagnostic,
+    CompletionParams,
     DidChangeConfigurationNotification,
     DidChangeConfigurationParams,
     DidChangeTextDocumentParams,
@@ -57,17 +57,11 @@ import {
     TsplangSettingsRequest
 } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
-import { Shebang } from './shebang'
 
 interface Child {
     connection: rpc.MessageConnection
     proc: ChildProcess,
     uri: string
-}
-
-interface ProcessContext {
-    item: TextDocumentItem
-    settings: TsplangSettings
 }
 
 export class ProcessManager {
@@ -90,7 +84,7 @@ export class ProcessManager {
 
     /* Server Message Handlers */
 
-    async completion(params: TextDocumentPositionParams): Promise<CompletionList | undefined> {
+    async completion(params: CompletionParams): Promise<CompletionList | undefined> {
         this.lastCompletionUri = params.textDocument.uri
 
         const child = await this.children.get(params.textDocument.uri)

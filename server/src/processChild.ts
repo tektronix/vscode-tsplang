@@ -19,6 +19,8 @@ import { InputStream, Token } from 'antlr4'
 import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
+    CompletionParams,
+    CompletionTriggerKind,
     Diagnostic,
     Location,
     LocationLink,
@@ -169,7 +171,7 @@ connection.onNotification(SettingsNotification, (received: TsplangSettings) => {
 
 connection.onRequest(
     CompletionRequest,
-    async (params: TextDocumentPositionParams): Promise<CompletionList | undefined> => {
+    async (params: CompletionParams): Promise<CompletionList | undefined> => {
         const documentContext = await documentContextPromise
 
         const found = documentContext.symbolTable.lookup(params.position)

@@ -18,6 +18,7 @@
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
 import {
     CompletionList,
+    CompletionParams,
     DocumentSymbol,
     Location,
     LocationLink,
@@ -38,7 +39,7 @@ export const ErrorNotification = new NotificationType<PublishDiagnosticsParams, 
 
 export const SettingsNotification = new NotificationType<TsplangSettings, void>('SettingsNotification')
 
-export const CompletionRequest = new RequestType<TextDocumentPositionParams, CompletionList | undefined, void, void>('CompletionRequest')
+export const CompletionRequest = new RequestType<CompletionParams, CompletionList | undefined, void, void>('CompletionRequest')
 
 export const CompletionResolveRequest = new RequestType<CompletionItem, CompletionItem, void, void>('CompletionResolveRequest')
 

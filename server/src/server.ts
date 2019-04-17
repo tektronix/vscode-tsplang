@@ -17,9 +17,6 @@
 
 import {
     createConnection,
-    DidOpenTextDocumentParams,
-    DocumentSymbol,
-    DocumentSymbolParams,
     IConnection,
     IPCMessageReader,
     IPCMessageWriter
