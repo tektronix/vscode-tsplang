@@ -37,6 +37,7 @@ import {
     PublishDiagnosticsParams,
     ReferenceParams,
     SignatureHelp,
+    TextDocumentItem,
     TextDocumentPositionParams,
     TextDocumentSyncKind
 } from 'vscode-languageserver'
@@ -46,14 +47,14 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
-    ContextRequest,
     DefinitionRequest,
     ErrorNotification,
-    ProcessContext,
     ReferencesRequest,
     SettingsNotification,
     SignatureRequest,
-    SymbolRequest
+    SymbolRequest,
+    TextDocumentItemRequest,
+    TsplangSettingsRequest
 } from './rpcTypes'
 import { hasWorkspaceSettings, TsplangSettings } from './settings'
 import { Shebang } from './shebang'
@@ -62,6 +63,11 @@ interface Child {
     connection: rpc.MessageConnection
     proc: ChildProcess,
     uri: string
+}
+
+interface ProcessContext {
+    item: TextDocumentItem
+    settings: TsplangSettings
 }
 
 export class ProcessManager {
@@ -152,11 +158,11 @@ export class ProcessManager {
                 child.connection.onNotification(ErrorNotification, (value: PublishDiagnosticsParams) => {
                     this.connection.sendDiagnostics(value)
                 })
-                child.connection.onRequest(ContextRequest, (): ProcessContext => {
-                    return {
-                        settings,
-                        item: params.textDocument
-                    }
+                child.connection.onRequest(TextDocumentItemRequest, (): TextDocumentItem => {
+                    return params.textDocument
+                })
+                child.connection.onRequest(TsplangSettingsRequest, (): TsplangSettings => {
+                    return settings
                 })
 
                 connection.trace(rpc.Trace.Messages, console)

@@ -28,8 +28,7 @@ import {
     TextDocument,
     TextDocumentContentChangeEvent,
     TextDocumentItem,
-    TextDocumentPositionParams,
-    TextEdit
+    TextDocumentPositionParams
 } from 'vscode-languageserver'
 
 import { TspFastLexer } from './antlr4-tsplang'
@@ -42,14 +41,14 @@ import {
     ChangeNotification,
     CompletionRequest,
     CompletionResolveRequest,
-    ContextRequest,
     DefinitionRequest,
     ErrorNotification,
-    ProcessContext,
     ReferencesRequest,
     SettingsNotification,
     SignatureRequest,
-    SymbolRequest
+    SymbolRequest,
+    TextDocumentItemRequest,
+    TsplangSettingsRequest
 } from './rpcTypes'
 import { TsplangSettings } from './settings'
 import { Shebang } from './shebang'
@@ -61,254 +60,7 @@ const connection = rpc.createMessageConnection(
 )
 console.log(`pid ${process.pid}: established connection`)
 
-class AsyncContextProxy {
-    readonly uri: string
-    private _initializeErrors: Array<Diagnostic>
-    private asyncDocumentContext: Promise<DocumentContext>
-    private asyncInstrument: Promise<Instrument>
-    private asyncSettings: Promise<TsplangSettings>
-    private asyncShebang: Promise<Shebang>
-    private asyncTextDocumentItem: Promise<TextDocumentItem>
-    private contextRequest: Promise<ProcessContext>
-
-    constructor(uri: string) {
-        this.uri = uri
-
-        this._initializeErrors = new Array()
-    }
-
-    get initializeErrors(): Array<Diagnostic> {
-        return this._initializeErrors
-    }
-
-    async getDocumentContext(): Promise<DocumentContext | undefined> {
-        if (this.asyncDocumentContext !== undefined) {
-            return this.asyncDocumentContext
-        }
-
-        const documentItem = await this.getTextDocumentItem()
-
-        const instrument = await this.getInstrument()
-        if (instrument === undefined) {
-            return new Promise((resolve: (value: undefined) => void): void => {
-                resolve(undefined)
-            })
-        }
-
-        const settings = await this.getSettings()
-
-        const documentContext = (new DocumentContext(documentItem, instrument.set, settings)).initialParse()
-
-        this._initializeErrors.push(...documentContext.symbolTable.diagnostics)
-        connection.sendNotification(ErrorNotification, {
-            diagnostics: this.initializeErrors,
-            uri: this.uri
-        })
-
-        this.asyncDocumentContext = new Promise((resolve: (value: DocumentContext) => void): void => {
-            resolve(documentContext)
-        })
-
-        return this.asyncDocumentContext
-    }
-
-    async getInstrument(): Promise<Instrument | undefined> {
-        if (this.asyncInstrument !== undefined) {
-            return this.asyncInstrument
-        }
-
-        const shebang = await this.getShebang()
-        const settings = await this.getSettings()
-
-        const loaded = await load(shebang, settings.suggestions.hideInputEnumerations)
-
-        if (loaded.diagnostic !== undefined) {
-            this._initializeErrors.push(loaded.diagnostic)
-            connection.sendNotification(ErrorNotification, {
-                diagnostics: this.initializeErrors,
-                uri: this.uri
-            })
-        }
-        else if (loaded.instrument !== undefined) {
-            this.asyncInstrument = new Promise((resolve: (value: Instrument) => void): void => {
-                resolve(loaded.instrument)
-            })
-
-            return this.asyncInstrument
-        }
-
-        return new Promise((resolve: (value: undefined) => void): void => {
-            resolve(undefined)
-        })
-    }
-
-    getSettings(): Promise<TsplangSettings> {
-        if (this.asyncSettings !== undefined) {
-            return this.asyncSettings
-        }
-
-        if (this.contextRequest === undefined) {
-            this.requestProcessContext()
-        }
-
-        this.asyncSettings = new Promise(
-            async (resolve: (value: TsplangSettings) => void, reject: (error: Error) => void): Promise<void> => {
-                try {
-                    const reply = await this.contextRequest
-                    resolve(reply.settings)
-                }
-                catch (e) {
-                    reject(e)
-                }
-            }
-        )
-    }
-
-    async getShebang(delay: boolean = true): Promise<Shebang> {
-        if (this.asyncShebang !== undefined) {
-            return this.asyncShebang
-        }
-
-        if (delay) {
-            const settings = await this.getSettings()
-            if (settings.debug.open.documentInitializationDelay !== null) {
-                this.delay(settings.debug.open.documentInitializationDelay)
-            }
-        }
-
-        const documentItem = await this.getTextDocumentItem()
-        const firstLine = firstlineRegExp.exec(documentItem.text)[0]
-        const tokenized = Shebang.tokenize(firstLine)
-
-        this._initializeErrors.push(...tokenized[1])
-        connection.sendNotification(ErrorNotification, {
-            diagnostics: this.initializeErrors,
-            uri: this.uri
-        })
-
-        this.asyncShebang = new Promise((resolve: (value: Shebang) => void): void => {
-            resolve(tokenized[0])
-        })
-
-        return this.asyncShebang
-    }
-
-    getTextDocumentItem(): Promise<TextDocumentItem> {
-        if (this.asyncTextDocumentItem !== undefined) {
-            return this.asyncTextDocumentItem
-        }
-
-        if (this.contextRequest === undefined) {
-            this.requestProcessContext()
-        }
-
-        this.asyncTextDocumentItem = new Promise(
-            async (resolve: (value: TextDocumentItem) => void, reject: (error: Error) => void): Promise<void> => {
-                try {
-                    const reply = await this.contextRequest
-                    resolve(reply.item)
-                } catch (e) {
-                    reject(e)
-                }
-            }
-        )
-
-        return this.asyncTextDocumentItem
-    }
-
-    updateDocumentContext(documentContext: DocumentContext): void {
-        this.asyncDocumentContext = new Promise((resolve: (value: DocumentContext) => void): void => {
-            resolve(documentContext)
-        })
-    }
-
-    async updateSettings(settings: TsplangSettings): Promise<[TsplangSettings, DocumentContext | undefined]> {
-        this.asyncSettings = new Promise((resolve: (value: TsplangSettings) => void): void => {
-                resolve(settings)
-        })
-
-        let documentContext: DocumentContext
-        if (this.asyncDocumentContext !== undefined) {
-            documentContext = await this.getDocumentContext()
-            documentContext.settings = settings
-
-            this.asyncDocumentContext = new Promise((resolve: (value: DocumentContext) => void): void => {
-                resolve(documentContext)
-            })
-        }
-
-        return new Promise((resolve: (value: [TsplangSettings, DocumentContext | undefined]) => void): void => {
-            resolve([settings, documentContext])
-        })
-    }
-
-    async updateShebang(): Promise<void> {
-        await this.getShebang(false)
-
-        this.asyncInstrument = undefined
-        await this.getInstrument()
-
-        this.asyncDocumentContext = undefined
-        await this.getDocumentContext()
-    }
-
-    async updateTextDocumentItem(
-        edits: Array<TextEdit>,
-        updateDocumentContext: boolean = true
-    ): Promise<[TextDocumentItem, DocumentContext | undefined]> {
-        const documentItem = await this.getTextDocumentItem()
-        documentItem.text = TextDocument.applyEdits(
-            TextDocument.create(
-                documentItem.uri,
-                documentItem.languageId,
-                documentItem.version,
-                documentItem.text
-            ),
-            edits
-        )
-
-        this.asyncTextDocumentItem = new Promise((resolve: (value: TextDocumentItem) => void): void => {
-            resolve(documentItem)
-        })
-
-        let documentContext: DocumentContext
-        if (updateDocumentContext && this.asyncDocumentContext !== undefined) {
-            documentContext = await this.getDocumentContext()
-            documentContext.document = TextDocument.create(
-                documentItem.uri,
-                documentItem.languageId,
-                documentItem.version,
-                documentItem.text
-            )
-
-            this.asyncDocumentContext = new Promise((resolve: (value: DocumentContext) => void): void => {
-                resolve(documentContext)
-            })
-        }
-
-        return new Promise((resolve: (value: [TextDocumentItem, DocumentContext | undefined]) => void): void => {
-            resolve([documentItem, documentContext])
-        })
-    }
-
-    private delay = (seconds: number): void => {
-        // tslint:disable-next-line: prefer-const
-        let [start, _]: [number, number] = process.hrtime()
-        let now: number
-        do {
-            [now, _] = process.hrtime([start, _])
-        } while (now < seconds)
-    }
-
-    private requestProcessContext(): void {
-        this.contextRequest = new Promise(
-            (resolve: (value: ProcessContext) => void, reject: (error: Error) => void): void => {
-                connection.sendRequest(ContextRequest, undefined).then(resolve, reject)
-            }
-        )
-    }
-}
-
+let initializationErrors = new Array<Diagnostic>()
 const firstlineRegExp = new RegExp(/^[^\n\r]*/)
 /**
  * DocumentSymbols that evaluate to true will be pruned from the reported
@@ -320,14 +72,15 @@ const prunePredicate = (value: DocumentSymbol): boolean => {
         || value.builtin
 }
 // tslint:disable-next-line:no-magic-numbers
-const context: AsyncContextProxy = new AsyncContextProxy(process.argv[2])
+const uri: string = process.argv[2]
 
 connection.onNotification(ChangeNotification, async (changes: Array<TextDocumentContentChangeEvent>) => {
     // TODO: detect shebang additions
 
-    let textDocumentItem = await context.getTextDocumentItem()
-    const settings = await context.getSettings()
+    const textDocumentItem = await textDocumentItemPromise
+    const settings = await settingsPromise
     let documentContext: DocumentContext
+    let textDocument: TextDocument
 
     let shebangEdited = false
     let smallestPosition: Position
@@ -347,24 +100,36 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
             }
         }
 
-        [textDocumentItem, documentContext] = await context.updateTextDocumentItem(
+        textDocument = TextDocument.create(
+            textDocumentItem.uri,
+            textDocumentItem.languageId,
+            textDocumentItem.version,
+            textDocumentItem.text
+        )
+
+        textDocumentItem.text = TextDocument.applyEdits(
+            textDocument,
             [{
                 newText: change.text,
                 range: change.range
-            }],
-            !shebangEdited
+            }]
         )
     }
 
+    textDocumentItemPromise = Promise.resolve(textDocumentItem)
+
     if (shebangEdited) {
-        context.updateShebang()
+        initializationErrors = new Array()
+
+        shebangPromise = new Promise(handleShebang)
+        instrumentPromise = new Promise(handleInstrument)
+        documentContextPromise = new Promise(handleDocumentContext)
 
         return
     }
 
-    if (documentContext === undefined) {
-        documentContext = await context.getDocumentContext()
-    }
+    documentContext = await documentContextPromise
+    documentContext.document = textDocument
 
     // Get the symbol table index of the symbol containing the smallest Position.
     const symbolIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
@@ -393,19 +158,19 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
         documentContext.reParse((tokenIndex < symbolTokenIndex) ? tokenIndex : symbolTokenIndex)
     }
 
-    context.updateDocumentContext(documentContext)
+    documentContextPromise = Promise.resolve(documentContext)
 
     return
 })
 
 connection.onNotification(SettingsNotification, (received: TsplangSettings) => {
-    context.updateSettings(received)
+    settingsPromise = Promise.resolve(received)
 })
 
 connection.onRequest(
     CompletionRequest,
     async (params: TextDocumentPositionParams): Promise<CompletionList | undefined> => {
-        const documentContext = await context.getDocumentContext()
+        const documentContext = await documentContextPromise
 
         const found = documentContext.symbolTable.lookup(params.position)
 
@@ -460,7 +225,7 @@ connection.onRequest(
 )
 
 connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Promise<CompletionItem> => {
-    const documentContext = await context.getDocumentContext()
+    const documentContext = await documentContextPromise
 
     // Only service an item if its "documentation" property is undefined.
     if (item.documentation === undefined) {
@@ -477,7 +242,7 @@ connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Pro
 })
 
 connection.onRequest(DefinitionRequest, async (position: Position): Promise<LocationLink | undefined> => {
-    const documentContext = await context.getDocumentContext()
+    const documentContext = await documentContextPromise
 
     const here = documentContext.symbolTable.lookup({ end: position, start: position })
 
@@ -489,7 +254,7 @@ connection.onRequest(DefinitionRequest, async (position: Position): Promise<Loca
 })
 
 connection.onRequest(ReferencesRequest, async (position: Position): Promise<Array<Location>> => {
-    const documentContext = await context.getDocumentContext()
+    const documentContext = await documentContextPromise
 
     const have = documentContext.symbolTable.lookup({ end: position, start: position })
 
@@ -508,7 +273,7 @@ connection.onRequest(ReferencesRequest, async (position: Position): Promise<Arra
 connection.onRequest(
     SignatureRequest,
     async (params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
-        const documentContext = await context.getDocumentContext()
+        const documentContext = await documentContextPromise
 
         const found = documentContext.symbolTable.lookup(params.position)
 
@@ -580,8 +345,8 @@ connection.onRequest(
 })
 
 connection.onRequest(SymbolRequest, async (): Promise<Array<DocumentSymbol>> => {
-    const settings = await context.getSettings()
-    const documentContext = await context.getDocumentContext()
+    const settings = await settingsPromise
+    const documentContext = await documentContextPromise
 
     if (settings.debug.outline) {
         return documentContext.symbolTable.complete
@@ -611,6 +376,27 @@ connection.onRequest(SymbolRequest, async (): Promise<Array<DocumentSymbol>> => 
 
 connection.listen()
 console.log(`pid ${process.pid}: listening on the connection`)
+
+let settingsPromise = new Promise(requestSettings)
+let textDocumentItemPromise = new Promise(requestTextDocumentItem);
+
+// Delay after process initialization.
+(async function(): Promise<void> {
+    const settings = await settingsPromise
+
+    if (settings.debug.open.documentInitializationDelay !== null) {
+        // tslint:disable-next-line: prefer-const
+        let [start, _]: [number, number] = process.hrtime()
+        let now: number
+        do {
+            [now, _] = process.hrtime([start, _])
+        } while (now < settings.debug.open.documentInitializationDelay)
+    }
+})()
+
+let shebangPromise = new Promise(handleShebang)
+let instrumentPromise = new Promise(handleInstrument)
+let documentContextPromise = new Promise(handleDocumentContext)
 
 function getSignatureContext(
     documentContext: DocumentContext,
@@ -667,5 +453,83 @@ function getSignatureContext(
             position,
             lookup.symbol.start
         )
+    }
+}
+
+async function handleDocumentContext(resolve: (value: DocumentContext | undefined) => void): Promise<void> {
+    const instrument = await instrumentPromise
+    if (instrument === undefined) {
+        return resolve(undefined)
+    }
+
+    const settings = await settingsPromise
+    const textDocumentItem = await textDocumentItemPromise
+
+    const documentContext = (new DocumentContext(textDocumentItem, instrument.set, settings)).initialParse()
+
+    initializationErrors.push(...documentContext.symbolTable.diagnostics)
+    connection.sendNotification(ErrorNotification, {
+        uri,
+        diagnostics: initializationErrors
+    })
+
+    resolve(documentContext)
+}
+
+async function handleInstrument(resolve: (value: Instrument | undefined) => void): Promise<void> {
+    const shebang = await shebangPromise
+    const settings = await settingsPromise
+
+    const loaded = await load(shebang, settings.suggestions.hideInputEnumerations)
+
+    if (loaded.diagnostic !== undefined) {
+        initializationErrors.push(loaded.diagnostic)
+        connection.sendNotification(ErrorNotification, {
+            uri,
+            diagnostics: initializationErrors
+        })
+    }
+    else if (loaded.instrument !== undefined) {
+        return resolve(loaded.instrument)
+    }
+
+    return resolve(undefined)
+}
+
+async function handleShebang(resolve: (value: Shebang) => void): Promise<void> {
+    const documentItem = await textDocumentItemPromise
+    const firstLine = firstlineRegExp.exec(documentItem.text)[0]
+    const tokenized = Shebang.tokenize(firstLine)
+
+    initializationErrors.push(...tokenized[1])
+    connection.sendNotification(ErrorNotification, {
+        uri,
+        diagnostics: initializationErrors
+    })
+
+    resolve(tokenized[0])
+}
+
+async function requestSettings(resolve: (value: TsplangSettings) => void): Promise<void> {
+    try {
+        const reply = await connection.sendRequest(TsplangSettingsRequest, undefined)
+        resolve(reply)
+    }
+    catch (e) {
+        console.log(e)
+        connection.dispose()
+        process.abort()
+    }
+}
+
+async function requestTextDocumentItem(resolve: (value: TextDocumentItem) => void): Promise<void> {
+    try {
+        const reply = await connection.sendRequest(TextDocumentItemRequest, undefined)
+        resolve(reply)
+    }
+    catch (e) {
+        console.log(e)
+        connection.dispose()
+        process.abort()
     }
 }

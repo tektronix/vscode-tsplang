@@ -18,7 +18,6 @@
 import { NotificationType, RequestType } from 'vscode-jsonrpc'
 import {
     CompletionList,
-    Diagnostic,
     DocumentSymbol,
     Location,
     LocationLink,
@@ -31,9 +30,7 @@ import {
 } from 'vscode-languageserver'
 
 import { CompletionItem } from './decorators'
-import { CommandSet } from './instrument'
 import { TsplangSettings } from './settings'
-import { Shebang } from './shebang'
 
 export const ChangeNotification = new NotificationType<Array<TextDocumentContentChangeEvent>, void>('ChangeNotification')
 
@@ -45,12 +42,6 @@ export const CompletionRequest = new RequestType<TextDocumentPositionParams, Com
 
 export const CompletionResolveRequest = new RequestType<CompletionItem, CompletionItem, void, void>('CompletionResolveRequest')
 
-export interface ProcessContext {
-    item: TextDocumentItem
-    settings: TsplangSettings
-}
-export const ContextRequest = new RequestType<void, ProcessContext, void, void>('ContextRequest')
-
 export const DefinitionRequest = new RequestType<Position, LocationLink | undefined, void, void>('DefinitionRequest')
 
 export const ReferencesRequest = new RequestType<Position, Array<Location>, void, void>('ReferencesRequest')
@@ -58,3 +49,7 @@ export const ReferencesRequest = new RequestType<Position, Array<Location>, void
 export const SignatureRequest = new RequestType<TextDocumentPositionParams, SignatureHelp, void, void>('SignatureRequest')
 
 export const SymbolRequest = new RequestType<void, Array<DocumentSymbol>, void, void>('SymbolRequest')
+
+export const TextDocumentItemRequest = new RequestType<void, TextDocumentItem, void, void>('TextDocumentItemRequest')
+
+export const TsplangSettingsRequest = new RequestType<void, TsplangSettings, void, void>('TsplangSettingsRequest')
