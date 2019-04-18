@@ -21,7 +21,54 @@ import { Ambiguity, StatementType } from '../language-comprehension'
 
 // tslint:disable-next-line:no-import-side-effect
 import './antlr4'
-import { Range } from './range'
+
+/**
+ * In the following tables A and B represent the parameters to
+ * some comparison function such that
+ *
+ * ```
+ *      A < B, compare(A, B) -> -1
+ * when A = B, compare(A, B) ->  0
+ *      A > B, compare(A, B) -> +1```
+ *
+ * Each quadrant of the following 2-D table was added together
+ * to get a unique key:
+ *
+ * |             | A_start | A_end |
+ * | -----------:|:-------:|:-----:|
+ * | **B_start** |  AsBs   | AeBs  |
+ * | **B_end**   |  AsBe   | AeBe  |
+ *
+ * All valid results are shown in the following 1-D table, where
+ * each column is a quadrant:
+ *
+ * | AsBe | AeBe | AsBs | AeBs | Sum |
+ * | ----:| ----:| ----:| ----:| ---:|
+ * |   -1 |   -1 |   -1 |   -1 |  -4 |
+ * |   -1 |   -1 |   -1 |    0 |  -3 |
+ * |   -1 |   -1 |   -1 |   +1 |  -2 |
+ * |   -1 |   -1 |    0 |   +1 |  -1 |
+ * |   -1 |    0 |    0 |   +1 |   0 |
+ * |   -1 |   -1 |   +1 |   +1 |   0 |
+ * |   -1 |    0 |   +1 |   +1 |  +1 |
+ * |   -1 |   +1 |   +1 |   +1 |  +2 |
+ * |    0 |   +1 |   +1 |   +1 |  +3 |
+ * |   +1 |   +1 |   +1 |   +1 |  +4 |
+ */
+// tslint:disable: no-magic-numbers
+const compareResult = new Map<number, number | undefined>([
+    [ -4, -1        ],
+    [ -3, -1        ],
+    [ -2, undefined ], // overlapping
+    [ -1,  0        ],
+    [  0,  0        ],
+    [  0,  0        ],
+    [ +1,  0        ],
+    [ +2, undefined ], // overlapping
+    [ +3, +1        ],
+    [ +4, +1        ],
+])
+// tslint:enable: no-magic-numbers
 
 export interface IDocumentSymbol extends vsls.DocumentSymbol {
     builtin: boolean
@@ -195,8 +242,21 @@ export class DocumentSymbol implements IDocumentSymbol {
         }
     }
 
-    within(symbol: DocumentSymbol): boolean {
-        return Range.within(symbol.range, this.range)
+    /**
+     * a < b = -N
+     *
+     * a = b = 0
+     *
+     * a > b = +N
+     */
+    protected static comparePosition(a: vsls.Position, b: vsls.Position): number {
+        const lineOffset = a.line - b.line
+
+        if (lineOffset === 0) {
+            return a.character - b.character
+        }
+
+        return lineOffset
     }
 }
 
