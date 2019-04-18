@@ -60,25 +60,6 @@ export namespace Range {
         }
     }
 
-    /**
-     * Get the delta of Position to Range.
-     * @param position The final Position of the delta calculation.
-     * @param range The initial Positions of the delta calculation.
-     * @return A Range whose Positions are relative distances from the given Position.
-     */
-    export function delta(position: vsls.Position, range: Range): Range {
-        return {
-            end: {
-                character: range.end.character - position.character,
-                line: range.end.character - position.line
-            },
-            start: {
-                character: range.start.character - position.character,
-                line: range.start.line - position.line
-            }
-        }
-    }
-
     export const is = vsls.Range.is
 
     /**
