@@ -146,6 +146,22 @@ export class DocumentSymbol implements IDocumentSymbol {
         }
     }
 
+    compare(value: vsls.Range): number | undefined {
+        if (this._end === undefined) {
+            return
+        }
+
+        // tslint:disable: variable-name
+        // Rule disabled for name clarity.
+        const AsBs = DocumentSymbol.comparePosition(this.range.start, value.start)
+        const AsBe = DocumentSymbol.comparePosition(this.range.end, value.start)
+        const AeBs = DocumentSymbol.comparePosition(this.range.start, value.end)
+        const AeBe = DocumentSymbol.comparePosition(this.range.end, value.end)
+        // tslint:enable: variable-name
+
+        return compareResult.get(AsBs + AsBe + AeBs + AeBe)
+    }
+
     link(from: vsls.Range): vsls.LocationLink {
         if (this.references === undefined) {
             this.references = new Array()
@@ -243,20 +259,28 @@ export class DocumentSymbol implements IDocumentSymbol {
     }
 
     /**
-     * a < b = -N
+     * `a < b -> -1`
      *
-     * a = b = 0
+     * `a = b ->  0`
      *
-     * a > b = +N
+     * `a > b -> +1`
      */
     protected static comparePosition(a: vsls.Position, b: vsls.Position): number {
+        const coerce = function(value: number): number {
+            return (value === 0)
+                ? value
+                : (value < 0)
+                    ? -1
+                    : +1
+        }
+
         const lineOffset = a.line - b.line
 
         if (lineOffset === 0) {
-            return a.character - b.character
+            return coerce(a.character - b.character)
         }
 
-        return lineOffset
+        return coerce(lineOffset)
     }
 }
 

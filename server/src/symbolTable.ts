@@ -15,9 +15,9 @@
  */
 'use strict'
 
-import { Diagnostic, LocationLink, Position, SymbolKind } from 'vscode-languageserver'
+import { Diagnostic, LocationLink, Position, Range, SymbolKind } from 'vscode-languageserver'
 
-import { DocumentSymbol, Range, VariableLocalSymbol, VariableSymbol } from './decorators'
+import { DocumentSymbol, VariableLocalSymbol, VariableSymbol } from './decorators'
 import { StatementType } from './language-comprehension'
 
 interface BinarySearchResult {
@@ -172,11 +172,11 @@ export class SymbolTable {
         return
     }
 
-    lookup(target: Range | Position, closest: boolean = true): LookupResult | undefined {
+    lookup(target: Range | Position): LookupResult | undefined {
         // TODO look inside Assignment Containers.
         const range = (Position.is(target)) ? { end: target, start: target } : target
 
-        let search = this.lookupBinarySearch(range, this.complete, closest)
+        let search = this.lookupBinarySearch(range, this.complete)
 
         const result: LookupResult = {
             path: new Array(),
@@ -188,7 +188,7 @@ export class SymbolTable {
             if ((result.symbol.detail || '').localeCompare('Assignment Container') === 0) {
                 // Search assignment containers linearly and in reverse.
                 for (let i = (result.symbol.children || []).length - 1; i >= 0; i--) {
-                    const comparison = Range.compare(range, result.symbol.children[i].range)
+                    const comparison = result.symbol.children[i].compare(range)
 
                     if (comparison === 0) {
                         search.symbol = result.symbol.children[i]
@@ -198,18 +198,14 @@ export class SymbolTable {
                 }
             }
             else {
-                search = this.lookupBinarySearch(range, search.symbol.children || [], closest)
+                search = this.lookupBinarySearch(range, result.symbol.children || [])
             }
         }
 
         return (result.symbol !== undefined) ? result : undefined
     }
 
-    private lookupBinarySearch = (
-        target: Range,
-        symbols: Array<DocumentSymbol>,
-        getClosest: boolean
-    ): BinarySearchResult | undefined => {
+    private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): BinarySearchResult | undefined => {
         let start = 0
         let stop = symbols.length - 1
 
@@ -217,24 +213,22 @@ export class SymbolTable {
             // tslint:disable-next-line: no-magic-numbers
             const index = Math.floor((start + stop) / 2)
 
-            // TODO: change this to use some as-yet-uncreated Position v Range f(x)
-            const comparison = Range.compare(target, symbols[index].range)
+            const comparison = symbols[index].compare(target)
 
             // If our index is too small.
-            if (comparison > 0) {
+            if (comparison < 0) {
                 start = index + 1
             }
             // If our index is too big.
-            else if (comparison < 0) {
+            else if (comparison > 0) {
                 stop = index - 1
             }
             // If our index is just right.
             else {
-                return { index: stop, symbol: symbols[stop] }
+                return { index, symbol: symbols[index] }
             }
         }
 
-        // Optionally return the closest result if an exact match does not exist.
-        return (getClosest) ? { index: stop, symbol: symbols[stop] } : undefined
+        return
     }
 }

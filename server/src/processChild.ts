@@ -174,7 +174,7 @@ connection.onRequest(
     async (params: CompletionParams): Promise<CompletionList | undefined> => {
         const documentContext = await documentContextPromise
 
-        const found = documentContext.symbolTable.lookup(params.position, false)
+        const found = documentContext.symbolTable.lookup(params.position)
 
         if (found === undefined) {
             return {
@@ -246,7 +246,7 @@ connection.onRequest(CompletionResolveRequest, async (item: CompletionItem): Pro
 connection.onRequest(DefinitionRequest, async (position: Position): Promise<LocationLink | undefined> => {
     const documentContext = await documentContextPromise
 
-    const here = documentContext.symbolTable.lookup({ end: position, start: position }, false)
+    const here = documentContext.symbolTable.lookup({ end: position, start: position })
 
     if (here === undefined) {
         return
@@ -258,7 +258,7 @@ connection.onRequest(DefinitionRequest, async (position: Position): Promise<Loca
 connection.onRequest(ReferencesRequest, async (position: Position): Promise<Array<Location>> => {
     const documentContext = await documentContextPromise
 
-    const have = documentContext.symbolTable.lookup({ end: position, start: position }, false)
+    const have = documentContext.symbolTable.lookup({ end: position, start: position })
 
     if (have === undefined) {
         return []
@@ -277,7 +277,7 @@ connection.onRequest(
     async (params: TextDocumentPositionParams): Promise<SignatureHelp | undefined> => {
         const documentContext = await documentContextPromise
 
-        const found = documentContext.symbolTable.lookup(params.position, false)
+        const found = documentContext.symbolTable.lookup(params.position)
 
         if (found === undefined) {
             return

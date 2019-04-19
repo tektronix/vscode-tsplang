@@ -28,6 +28,5 @@ export {
 } from './documentSymbol'
 export { MarkupContent, MarkupContentCallback } from './markupContent'
 export { ParameterInformation } from './parameterInformation'
-export { Range } from './range'
 export { ResolvedNamespace } from './resolvedNamespace'
 export { SignatureInformation, SignatureData } from './signatureInformation'
