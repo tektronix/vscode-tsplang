@@ -25,6 +25,7 @@ import {
     Location,
     LocationLink,
     Position,
+    Range,
     SignatureHelp,
     SymbolKind,
     TextDocument,
@@ -34,10 +35,16 @@ import {
 } from 'vscode-languageserver'
 
 import { TspFastLexer } from './antlr4-tsplang'
-import { CompletionItem, DocumentSymbol, IToken, ResolvedNamespace, SignatureInformation } from './decorators'
+import {
+    CompletionItem,
+    DocumentSymbol,
+    IToken,
+    ResolvedNamespace,
+    SignatureInformation
+} from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
-import { StatementType, TokenUtil } from './language-comprehension'
+import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
 import { SignatureContext } from './language-comprehension/signature'
 import {
     ChangeNotification,
@@ -188,6 +195,18 @@ connection.onRequest(
 
         let results: Array<CompletionItem>
 
+        const getPartialCompletions = (range: Range, type?: StatementType | Ambiguity): Array<CompletionItem> => {
+            const text = documentContext.document.getText(range)
+            const lexer = new TspFastLexer(new InputStream(text))
+
+            return documentContext.commandSet.suggestCompletions(
+                lexer.getAllTokens()
+                    .filter((value: Token) => value.channel === 0)
+                    .map((value: Token) => IToken.create(value)),
+                type || found.symbol.statementType
+            )
+        }
+
         const signatureContext = getSignatureContext(documentContext, found, params.position)
 
         if (signatureContext !== undefined) {
@@ -195,17 +214,27 @@ connection.onRequest(
                 signatureContext.tokens.slice(0, signatureContext.activeParameter.tokens.end),
                 StatementType.FunctionCall
             )
+
+            if (results === undefined || results.length === 0) {
+                const startToken = signatureContext.tokens[signatureContext.activeParameter.tokens.start]
+
+                if (startToken !== undefined) {
+                    const start = TokenUtil.getPosition(startToken as Token)
+                    start.character += found.symbol.start.character
+                    start.line += found.symbol.start.line
+
+                    results = getPartialCompletions(
+                        {
+                            start,
+                            end: params.position
+                        },
+                        statementRecognizer([startToken] as Array<Token>)
+                    )
+                }
+            }
         }
         else {
-            const range = { end: params.position, start: found.symbol.start }
-            const text = documentContext.document.getText(range)
-            const lexer = new TspFastLexer(new InputStream(text))
-            results = documentContext.commandSet.suggestCompletions(
-                lexer.getAllTokens()
-                    .filter((value: Token) => value.channel === 0)
-                    .map((value: Token) => IToken.create(value)),
-                found.symbol.statementType
-            )
+            results = getPartialCompletions({ end: params.position, start: found.symbol.start })
         }
 
         if (results.length === 0) {

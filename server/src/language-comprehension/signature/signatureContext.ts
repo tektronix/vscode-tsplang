@@ -34,8 +34,8 @@ interface IntermediateContext {
         openIndex: number;
     }
     /**
-     * The index within a Token array which coincides with the current cursor position.
-     * (The starting position of the Token found at this index is the actual cursor position.)
+     * The index of the first Token (from left-to-right) within a Token array whose
+     * starting position is greater than or equal to the cursor position.
      */
     pivotIndex: number
     /**
@@ -96,10 +96,17 @@ export namespace SignatureContext {
             }
         }
 
+        const pivotToken = tokens[relevant.pivotIndex]
+        if (pivotToken === undefined) {
+            return
+        }
+
         // Find the index of the first comma (',') or opening parenthesis ('(')
         // starting from the pivot index and scanning right-to-left.
+        // If the Token at the pivot index is an opening parenthesis, then start
+        // at the index before it.
         const startingParamIndex = TokenUtil.consumeUntil(
-            relevant.pivotIndex,
+            (pivotToken.text.localeCompare('(') === 0) ? relevant.pivotIndex - 1 : relevant.pivotIndex,
             tokens,
             (value: Token) => value.text.localeCompare(',') === 0 || value.text.localeCompare('(') === 0,
             false
@@ -107,11 +114,14 @@ export namespace SignatureContext {
         ) + 1
 
         // Count all commas between the opening parenthesis and our pivot index.
-        const activeParameterIndex = TokenUtil.count(
-            0,
-            tokens.slice(relevant.parentheses.openIndex + 1, relevant.pivotIndex),
-            (value: Token) => value.text.localeCompare(',') === 0
-        )
+        const activeParameterIndex =
+            (relevant.parentheses.openIndex + 1 >= relevant.pivotIndex)
+                ? 0
+                : TokenUtil.count(
+                    0,
+                    tokens.slice(relevant.parentheses.openIndex + 1, relevant.pivotIndex),
+                    (value: Token) => value.text.localeCompare(',') === 0
+                  )
 
         return {
             activeParameter: {
@@ -142,7 +152,7 @@ export namespace SignatureContext {
             return
         }
 
-        // Check to see if we have an opening parenthesis to our right.
+        // Check to see if we have an closing parenthesis to our right.
         let closeIndex = pivotIndex
         if (tokens[pivotIndex].text.localeCompare(')') !== 0) {
             closeIndex = TokenUtil.consumeUntil(
@@ -153,7 +163,7 @@ export namespace SignatureContext {
             closeIndex = (closeIndex === pivotIndex) ? undefined : closeIndex
         }
 
-        // Check to see if we have an closing parenthesis to our left.
+        // Check to see if we have an opening parenthesis to our left.
         let openIndex = pivotIndex - 1
         if (tokens[pivotIndex - 1].text.localeCompare('(') !== 0) {
             openIndex = TokenUtil.consumeUntil(
