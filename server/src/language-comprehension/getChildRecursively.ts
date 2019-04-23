@@ -23,10 +23,11 @@ import { ParserRuleContext } from 'antlr4'
  * @param i The number of instances of the given type that should be ignored.
  * Passing zero will retrieve the first instance.
  * @param type The type of child that should be retrieved.
+ * @param avoid An optional array of types that should not be recursed into. Empty by default.
  * @returns The ith instance of the given type or null if the target could not be found.
  */
 // tslint:disable:no-any
-export function getChildRecursively(context: ParserRuleContext, i: number, type: any): any | null {
+export function getChildRecursively(context: ParserRuleContext, i: number, type: any, avoid?: Array<any>): any | null {
     let result: any | null = context.getChild(i, type)
 
     for (let j = 0; j < context.getChildCount(); j++) {
@@ -34,7 +35,13 @@ export function getChildRecursively(context: ParserRuleContext, i: number, type:
             return result
         }
 
-        result = getChildRecursively(context.getChild(j), i, type)
+        const next = context.getChild(j)
+
+        if ((avoid || []).some((value: any) => next instanceof value)) {
+            continue
+        }
+
+        result = getChildRecursively(next, i, type, avoid)
     }
 
     return result
