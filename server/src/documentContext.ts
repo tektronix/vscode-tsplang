@@ -254,14 +254,17 @@ export class DocumentContext extends TspFastListener {
             : StatementType.FunctionCall
         }
 
+        /**
+         * Create symbols as lazily as possible.
+         */
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
             // Indices will be zero-based from the starting Token (which is index 0).
-            for (const child of context.children) {
+            for (const child of pseudoContext.children) {
                 if (child instanceof ParserRuleContext) {
                     this.symbolTable.statementDepth++
 
                     if (child instanceof TspFastParser.VariableContext) {
-                        this.handleGlobalVariables(child as TspFastParser.VariableContext, false)
+                        this.handleGlobalVariables(child as TspFastParser.VariableContext)
                     }
                     else if (child instanceof TspFastParser.ExpressionContext) {
                         const functionCall: TspFastParser.FunctionCallContext = getChildRecursively(
@@ -285,7 +288,7 @@ export class DocumentContext extends TspFastListener {
                 else {
                     if ((child as TerminalNode).symbol.type === TspFastLexer.NAME) {
                         this.symbolTable.statementDepth++
-                        this.handleLocalVariables(child as TerminalNode, false)
+                        this.handleLocalVariables(child as TerminalNode)
                         this.symbolTable.statementDepth--
                     }
                 }
@@ -466,7 +469,7 @@ export class DocumentContext extends TspFastListener {
                 }
                 else if (child.symbol.type === TspFastLexer.NAME) {
                     this.symbolTable.statementDepth++
-                    this.handleLocalVariables(child, false)
+                    this.handleLocalVariables(child)
                     this.symbolTable.statementDepth--
                 }
             }
@@ -622,16 +625,12 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(functionSymbol)
     }
 
-    handleGlobalVariables(context: TspFastParser.VariableContext, useLast: boolean): void {
-        const variable = VariableSymbol.from(
-            (useLast)
-                ? this.symbolTable.lastSymbol()
-                : new DocumentSymbol(
-                    this.document.uri,
-                    TokenUtil.getPosition(context.start),
-                    context.start.tokenIndex
-                  )
-        )
+    handleGlobalVariables(context: TspFastParser.VariableContext): void {
+        const variable = VariableSymbol.from(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(context.start),
+            context.start.tokenIndex
+        ))
 
         variable.selectionRange = {
             end: TokenUtil.getPosition(context.stop, context.stop.text.length),
@@ -661,16 +660,12 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(variable)
     }
 
-    handleLocalVariables(terminal: TerminalNode, useLast: boolean): void {
-        const local = VariableLocalSymbol.from(
-            (useLast)
-                ? this.symbolTable.lastSymbol()
-                : new DocumentSymbol(
-                    this.document.uri,
-                    TokenUtil.getPosition(terminal.symbol),
-                    terminal.symbol.tokenIndex
-                  )
-        )
+    handleLocalVariables(terminal: TerminalNode): void {
+        const local = VariableLocalSymbol.from(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(terminal.symbol),
+            terminal.symbol.tokenIndex
+        ))
 
         local.selectionRange = {
             end: TokenUtil.getPosition(terminal.symbol, terminal.symbol.text.length),
