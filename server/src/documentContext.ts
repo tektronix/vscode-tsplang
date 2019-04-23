@@ -267,7 +267,8 @@ export class DocumentContext extends TspFastListener {
                         const functionCall: TspFastParser.FunctionCallContext = getChildRecursively(
                             child as ParserRuleContext,
                             0,
-                            TspFastParser.FunctionCallContext
+                            TspFastParser.FunctionCallContext,
+                            [TspFastParser.StatementContext]
                         )
 
                         if (functionCall !== null) {
