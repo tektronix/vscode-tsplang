@@ -15,6 +15,6 @@
  */
 'use strict'
 
-export { hasWorkspaceSettings } from './hasWorkspaceSettings'
 export { SuggestionSortKind } from './suggestionSortKind'
 export { DebugPrintSettings, TsplangSettings } from './tsplangSettings'
+export { localWorkspaceSettings, multiWorkspaceSettings } from './workspaceSettings'

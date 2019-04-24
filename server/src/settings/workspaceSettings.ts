@@ -13,10 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ClientCapabilities, InitializeParams, TextDocumentChangeEvent } from 'vscode-languageserver'
+'use strict'
 
-declare module 'vscode-languageserver' {
-    export interface ClientCapabilities { workspace?: { configuration?: boolean } }
-    export interface InitializeParams { capabilities: { workspace?: { configuration?: boolean } } }
-    export interface TextDocumentChangeEvent { document: { uri: string } }
+import { ClientCapabilities } from 'vscode-languageserver'
+
+export function localWorkspaceSettings(clientCapabilities: ClientCapabilities): boolean {
+    if (clientCapabilities.workspace === undefined) {
+        return false
+    }
+
+    return clientCapabilities.workspace.configuration
+}
+
+export function multiWorkspaceSettings(clientCapabilities: ClientCapabilities): boolean {
+    if (clientCapabilities.workspace === undefined) {
+        return false
+    }
+
+    return clientCapabilities.workspace.workspaceFolders
 }

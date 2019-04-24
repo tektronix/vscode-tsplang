@@ -56,32 +56,38 @@
                         "null"
                     ],
                     "default": null,
-                    "description": "Number of seconds to delay initializing a newly opened document.\nAllows the debugger time to attach before resuming execution."
+                    "description": "Number of seconds to delay initializing a newly opened document.\nAllows the debugger time to attach before resuming execution.",
+                    "scope": "resource"
                 },
                 "tsplang.debug.outline": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Show all parsed statements in the Outline view.\nStatements that are usually hidden (for loops, if statements, returns, etc.) will be displayed as the File type."
+                    "description": "Show all parsed statements in the Outline view.\nStatements that are usually hidden (for loops, if statements, returns, etc.) will be displayed as the File type.",
+                    "scope": "resource"
                 },
                 "tsplang.debug.print.documentChangeEvents": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Print all document change events."
+                    "description": "Print all document change events.",
+                    "scope": "resource"
                 },
                 "tsplang.debug.print.rootStatementParseTime": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Print the parse time of each root statement."
+                    "description": "Print the parse time of each root statement.",
+                    "scope": "resource"
                 },
                 "tsplang.debug.print.rootStatementParseTree": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Print a formatted parse tree of each root statement."
+                    "description": "Print a formatted parse tree of each root statement.",
+                    "scope": "resource"
                 },
                 "tsplang.outline.showInstrumentSettings": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Show instrument setting assignments in the Outline view."
+                    "description": "Show instrument setting assignments in the Outline view.",
+                    "scope": "resource"
                 },
                 "tsplang.suggestions.enumerationOrder": {
                     "type": "string",
@@ -96,12 +102,14 @@
                         "Show enumeration suggestions above other suggestions.",
                         "Show enumeration suggestions below other suggestions.",
                         "Show enumeration suggestions with other suggestions."
-                    ]
+                    ],
+                    "scope": "resource"
                 },
                 "tsplang.suggestions.hideInputEnumerations": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Hide enumerations that are only used as input values until they become contextually relevant."
+                    "description": "Hide enumerations that are only used as input values until they become contextually relevant.",
+                    "scope": "resource"
                 }
             }
         },

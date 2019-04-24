@@ -39,9 +39,6 @@ connection.onInitialize(manager.initialize.bind(manager))
 connection.onInitialized(manager.initialized.bind(manager))
 
 connection.onDidOpenTextDocument(manager.documentOpen.bind(manager))
-// connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams): void => {
-//     manager.documentOpen(params)
-// })
 
 connection.onDidChangeTextDocument(manager.documentChange.bind(manager))
 
@@ -58,9 +55,6 @@ connection.onDefinition(manager.definition.bind(manager))
 connection.onDidChangeConfiguration(manager.settingsChange.bind(manager))
 
 connection.onDocumentSymbol(manager.symbol.bind(manager))
-// connection.onDocumentSymbol((params: DocumentSymbolParams): Thenable<Array<DocumentSymbol>> => {
-//     return manager.symbol(params)
-// })
 
 connection.onReferences(manager.references.bind(manager))
 

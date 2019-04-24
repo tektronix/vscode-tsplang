@@ -39,7 +39,9 @@ import {
     SignatureHelp,
     TextDocumentItem,
     TextDocumentPositionParams,
-    TextDocumentSyncKind
+    TextDocumentSyncKind,
+    WorkspaceFolder,
+    WorkspaceFoldersChangeEvent
 } from 'vscode-languageserver'
 
 import { CompletionItem } from './decorators'
@@ -56,7 +58,7 @@ import {
     TextDocumentItemRequest,
     TsplangSettingsRequest
 } from './rpcTypes'
-import { hasWorkspaceSettings, TsplangSettings } from './settings'
+import { localWorkspaceSettings, multiWorkspaceSettings, TsplangSettings } from './settings'
 
 interface Child {
     connection: rpc.MessageConnection
@@ -65,19 +67,24 @@ interface Child {
 }
 
 export class ProcessManager {
-    readonly children: Map<string, Promise<Child>>
+    readonly children: Map<string, Thenable<Child>>
     connection: IConnection
-    disposable?: Thenable<Disposable>
+    disposables: Array<Thenable<Disposable>>
     readonly firstlineRegExp: RegExp
     globalSettings: TsplangSettings
-    hasWorkspaceSettings: boolean
     lastCompletionUri?: string
+    localWorkspaceSettings: boolean
+    multiWorkspaceSettings: boolean
+    settingsCache: Map<string, Thenable<TsplangSettings>>
 
     constructor(connection: IConnection) {
         this.children = new Map()
+        this.disposables = new Array()
         this.firstlineRegExp = new RegExp(/^[^\n\r]*/)
         this.globalSettings = TsplangSettings.defaults()
-        this.hasWorkspaceSettings = false
+        this.localWorkspaceSettings = false
+        this.multiWorkspaceSettings = false
+        this.settingsCache = new Map<string, Thenable<TsplangSettings>>()
 
         this.connection = connection
     }
@@ -105,9 +112,9 @@ export class ProcessManager {
     }
 
     dispose(): void {
-        if (this.disposable) {
-            this.disposable.then((value: Disposable) => value.dispose())
-        }
+        this.disposables.forEach((value: Thenable<Disposable>) => {
+            value.then((disposable: Disposable) => disposable.dispose())
+        })
 
         this.children.forEach((value: Promise<Child>) => {
             value.then((child: Child) => this._release(child.uri))
@@ -126,15 +133,13 @@ export class ProcessManager {
     }
 
     documentOpen(params: DidOpenTextDocumentParams): void {
-        this.children.set(params.textDocument.uri, new Promise((resolve: (value: Child) => void): void => {
-            this.connection.workspace.getConfiguration({
-                scopeUri: params.textDocument.uri,
-                section: 'tsplang'
-            })
-            .then((settings: TsplangSettings) => {
+        this.children.set(
+            params.textDocument.uri,
+            // TODO: add promise rejections
+            new Promise((resolve: (value: Child) => void): void => {
                 const proc = fork(path.resolve(__dirname, 'processChild.js'), [params.textDocument.uri], {
                     // tslint:disable-next-line:no-magic-numbers
-                    execArgv: ['--nolazy', `--inspect=${this.children.size + 6010 - 1}`],
+                    execArgv: ['--nolazy', `--inspect=${this.children.size + 6010}`],
                     stdio: [ 'inherit', 'inherit', 'inherit', 'ipc' ]
                 })
 
@@ -155,8 +160,8 @@ export class ProcessManager {
                 child.connection.onRequest(TextDocumentItemRequest, (): TextDocumentItem => {
                     return params.textDocument
                 })
-                child.connection.onRequest(TsplangSettingsRequest, (): TsplangSettings => {
-                    return settings
+                child.connection.onRequest(TsplangSettingsRequest, async (): Promise<TsplangSettings> => {
+                    return this.getSettings(params.textDocument.uri)
                 })
 
                 connection.trace(rpc.Trace.Messages, console)
@@ -164,13 +169,14 @@ export class ProcessManager {
 
                 resolve(child)
             })
-        }))
+        )
     }
 
     initialize(params: InitializeParams): InitializeResult {
         console.log('tsplang connection initialized')
 
-        this.hasWorkspaceSettings = hasWorkspaceSettings(params.capabilities)
+        this.localWorkspaceSettings = localWorkspaceSettings(params.capabilities)
+        this.multiWorkspaceSettings = multiWorkspaceSettings(params.capabilities)
 
         return {
             capabilities: {
@@ -185,17 +191,29 @@ export class ProcessManager {
                 signatureHelpProvider: {
                     triggerCharacters: [',', '(']
                 },
-                // Tell the client that the server works in FULL text document sync mode
-                textDocumentSync: TextDocumentSyncKind.Incremental
+                // Tell the client that the server works in incremental text document sync mode
+                textDocumentSync: TextDocumentSyncKind.Incremental,
+                workspace: {
+                    workspaceFolders: {
+                        changeNotifications: this.multiWorkspaceSettings,
+                        supported: true
+                    }
+                }
             }
         }
     }
 
     initialized(): void {
-        if (this.hasWorkspaceSettings) {
-            this.disposable = this.connection.client.register(DidChangeConfigurationNotification.type, {
+        if (this.localWorkspaceSettings) {
+            this.disposables.push(this.connection.client.register(DidChangeConfigurationNotification.type, {
                 section: 'tsplang'
-            })
+            }))
+        }
+
+        if (this.multiWorkspaceSettings) {
+            this.disposables.push(Promise.resolve(
+                this.connection.workspace.onDidChangeWorkspaceFolders(this.workspaceFolders)
+            ))
         }
     }
 
@@ -205,35 +223,19 @@ export class ProcessManager {
         return child.connection.sendRequest(ReferencesRequest, params.position)
     }
 
-    settingsChange = (params: DidChangeConfigurationParams): void => {
-        if (this.hasWorkspaceSettings) {
-            // Update all open document contexts.
-            this.children.forEach((child: Promise<Child>, uri: string) => {
-                let settings = params.settings.tsplang || TsplangSettings.defaults()
-
-                this.connection.workspace.getConfiguration({
-                    scopeUri: uri,
-                    section: 'tsplang'
-                })
-                .then(
-                    (value: TsplangSettings) => {
-                        settings = value
-                    },
-                    // On rejection, just use the values we set above.
-                    () => { return }
-                )
-
-                child.then((value: Child) => value.connection.sendNotification(SettingsNotification, settings))
-            })
+    async settingsChange(params: DidChangeConfigurationParams): Promise<void> {
+        if (this.localWorkspaceSettings) {
+            this.settingsCache.clear()
         }
         else {
             this.globalSettings = params.settings.tsplang || TsplangSettings.defaults()
+        }
 
-            this.children.forEach((child: Promise<Child>) => {
-                child.then(
-                    (value: Child) => value.connection.sendNotification(SettingsNotification, this.globalSettings)
-                )
-            })
+        for (const [uri, childPromise] of this.children.entries()) {
+            const child = await childPromise
+            const settings = await this.getSettings(uri)
+
+            child.connection.sendNotification(SettingsNotification, settings)
         }
     }
 
@@ -264,5 +266,34 @@ export class ProcessManager {
 
         // Clear diagnostic information.
         this.connection.sendDiagnostics({ uri, diagnostics: [] })
+    }
+
+    private getSettings(uri: string): Thenable<TsplangSettings> {
+        if (!this.localWorkspaceSettings) {
+            return Promise.resolve(this.globalSettings)
+        }
+
+        let settings = this.settingsCache.get(uri)
+
+        if (settings === undefined) {
+            settings = this.connection.workspace.getConfiguration({
+                scopeUri: uri,
+                section: 'tsplang'
+            })
+
+            this.settingsCache.set(uri, settings)
+        }
+
+        return settings
+    }
+
+    private workspaceFolders = (event: WorkspaceFoldersChangeEvent): void => {
+        event.added.forEach((value: WorkspaceFolder) => {
+            console.log(`added workspace folder ${value.name} @ ${value.uri}`)
+        })
+
+        event.removed.forEach((value: WorkspaceFolder) => {
+            console.log(`removed workspace folder ${value.name} @ ${value.uri}`)
+        })
     }
 }
