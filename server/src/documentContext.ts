@@ -281,6 +281,17 @@ export class DocumentContext extends TspFastListener {
                                 getTerminals(functionCall)
                             )
                         }
+
+                        const tableConstructor: TspFastParser.TableConstructorContext = getChildRecursively(
+                            child as ParserRuleContext,
+                            0,
+                            TspFastParser.TableConstructorContext,
+                            [TspFastParser.StatementContext]
+                        )
+
+                        if (tableConstructor !== null) {
+                            this.handleTableConstructors(tableConstructor)
+                        }
                     }
 
                     this.symbolTable.statementDepth--
@@ -682,5 +693,25 @@ export class DocumentContext extends TspFastListener {
         }
 
         this.symbolTable.cacheSymbol(local)
+    }
+
+    handleTableConstructors(context: TspFastParser.TableConstructorContext): void {
+        // TODO: handle fieldLists
+
+        const table = new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(context.start),
+            context.start.tokenIndex
+        )
+
+        table.kind = SymbolKind.Object
+        table.end = TokenUtil.getPosition(context.stop, context.stop.text.length)
+
+        table.name = `(${table.range.start.line + 1},${table.range.start.character + 1})`
+        table.name += `->(${table.range.end.line + 1},${table.range.end.character + 1})`
+
+        table.detail = 'table'
+
+        this.symbolTable.cacheSymbol(table)
     }
 }
