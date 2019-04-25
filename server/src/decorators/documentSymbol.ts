@@ -22,6 +22,7 @@ import { Ambiguity, StatementType } from '../language-comprehension'
 // tslint:disable-next-line:no-import-side-effect
 import './antlr4'
 
+// tslint:disable: no-magic-numbers
 /**
  * In the following tables A and B represent the parameters to
  * some comparison function such that
@@ -55,8 +56,7 @@ import './antlr4'
  * |    0 |   +1 |   +1 |   +1 |  +3 |
  * |   +1 |   +1 |   +1 |   +1 |  +4 |
  */
-// tslint:disable: no-magic-numbers
-const compareResult = new Map<number, number | undefined>([
+const compareRanges = new Map<number, number | undefined>([
     [ -4, -1        ],
     [ -3, -1        ],
     [ -2, undefined ], // overlapping
@@ -67,6 +67,38 @@ const compareResult = new Map<number, number | undefined>([
     [ +2, undefined ], // overlapping
     [ +3, +1        ],
     [ +4, +1        ],
+])
+
+/**
+ * Similar logic follows from above. However, since Bs and Be are
+ * equal, we can skip the AsBe and AeBe comparisons.
+ *
+ * Each quadrant of the following 2-D table was added together
+ * to get a unique key:
+ *
+ * |             | A_start | A_end |
+ * | -----------:|:-------:|:-----:|
+ * | **B_start** |  AsBs   | AeBs  |
+ *
+ * All valid results are shown in the following 1-D table, where
+ * each column is a quadrant:
+ *
+ * | AsBs | AeBs | Sum |
+ * | ----:| ----:| ---:|
+ * |   -1 |   -1 |  -2 |
+ * |   -1 |    0 |  -1 |
+ * |   -1 |   +1 |   0 |
+ * |    0 |    0 |   0 |
+ * |    0 |   +1 |  +1 |
+ * |   +1 |   +1 |  +2 |
+ */
+const compareRangePosition = new Map<number, number | undefined>([
+    [ -2, -1        ],
+    [ -1,  0        ],
+    [  0,  0        ],
+    [  0,  0        ],
+    [ +1,  0        ],
+    [ +2, +1        ],
 ])
 // tslint:enable: no-magic-numbers
 
@@ -153,13 +185,33 @@ export class DocumentSymbol implements IDocumentSymbol {
 
         // tslint:disable: variable-name
         // Rule disabled for name clarity.
-        const AsBs = DocumentSymbol.comparePosition(this.range.start, value.start)
-        const AsBe = DocumentSymbol.comparePosition(this.range.end, value.start)
-        const AeBs = DocumentSymbol.comparePosition(this.range.start, value.end)
-        const AeBe = DocumentSymbol.comparePosition(this.range.end, value.end)
+        let AsBs: number
+        let AsBe: number
+        let AeBs: number
+        let AeBe: number
         // tslint:enable: variable-name
 
-        return compareResult.get(AsBs + AsBe + AeBs + AeBe)
+        if (DocumentSymbol.comparePosition(value.start, value.end) === 0) {
+            AsBs = DocumentSymbol.comparePosition(this.range.start, value.start)
+            AeBs = DocumentSymbol.comparePosition(this.range.end, value.start)
+
+            return compareRangePosition.get(AsBs + AeBs)
+        }
+
+        // Similar logic duplicated for clarity.
+        if (DocumentSymbol.comparePosition(this.range.start, this.range.end) === 0) {
+            AsBs = DocumentSymbol.comparePosition(this.range.start, value.start)
+            AsBe = DocumentSymbol.comparePosition(this.range.start, value.end)
+
+            return compareRangePosition.get(AsBs + AsBe)
+        }
+
+        AsBs = DocumentSymbol.comparePosition(this.range.start, value.start)
+        AsBe = DocumentSymbol.comparePosition(this.range.start, value.end)
+        AeBs = DocumentSymbol.comparePosition(this.range.end, value.start)
+        AeBe = DocumentSymbol.comparePosition(this.range.end, value.end)
+
+        return compareRanges.get(AsBs + AsBe + AeBs + AeBe)
     }
 
     link(from: vsls.Range): vsls.LocationLink {
