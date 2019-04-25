@@ -258,13 +258,17 @@ export class DocumentContext extends TspFastListener {
          * Create symbols as lazily as possible.
          */
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
+            const variableChildren = new Array<ParserRuleContext | TerminalNode>()
+            const tables = new Map<number, DocumentSymbol>()
+            let foundExpressions = 0
             // Indices will be zero-based from the starting Token (which is index 0).
+            this.symbolTable.statementDepth++
             for (const child of pseudoContext.children) {
                 if (child instanceof ParserRuleContext) {
-                    this.symbolTable.statementDepth++
 
                     if (child instanceof TspFastParser.VariableContext) {
                         this.handleGlobalVariables(child as TspFastParser.VariableContext)
+                        variableChildren.push(child)
                     }
                     else if (child instanceof TspFastParser.ExpressionContext) {
                         const functionCall: TspFastParser.FunctionCallContext = getChildRecursively(
@@ -290,20 +294,59 @@ export class DocumentContext extends TspFastListener {
                         )
 
                         if (tableConstructor !== null) {
-                            this.handleTableConstructors(tableConstructor)
+                            // Store table symbol with the same key as the index
+                            // of its associated variable symbol.
+                            tables.set(foundExpressions, this.handleTableConstructors(tableConstructor))
                         }
-                    }
 
-                    this.symbolTable.statementDepth--
+                        foundExpressions++
+                    }
                 }
                 else {
                     if ((child as TerminalNode).symbol.type === TspFastLexer.NAME) {
-                        this.symbolTable.statementDepth++
                         this.handleLocalVariables(child as TerminalNode)
-                        this.symbolTable.statementDepth--
+                        variableChildren.push(child)
                     }
                 }
             }
+
+            // NOTE: If there are more variables than expressions, then the appropriate
+            //       variable symbol will be lazily modified by the symbol linker.
+            if (tables.size > 0 && variableChildren.length === foundExpressions) {
+                const tableIndices = new Array<number>(...tables.keys())
+                // Merge any table into its variable.
+                const variables =
+                    this.symbolTable.symbolCache
+                    .get(this.symbolTable.statementDepth)
+                    .filter((value: DocumentSymbol) => {
+                        return value instanceof VariableSymbol
+                            || value instanceof VariableLocalSymbol
+                    })
+                    .map((value: DocumentSymbol, index: number) => {
+                        if (tableIndices.some((v: number) => index === v)) {
+                            const table = tables.get(index)
+
+                            if (table === undefined) {
+                                return value
+                            }
+
+                            value.kind = table.kind
+
+                            if (variableChildren[index] instanceof ParserRuleContext) {
+                                // TODO: Break into namespaces.
+                                //       Perform progressive child lookups of each
+                                //          namespace domain on `value`.
+                                //          If child found: modify with `table`
+                                //          Else: create child with namespace label
+                            }
+                            else {
+                                value.children = table.children
+                            }
+                        }
+                    })
+            }
+
+            this.symbolTable.statementDepth--
 
             const lastSymbol = this.symbolTable.lastSymbol()
             lastSymbol.statementType = StatementType.Assignment
@@ -695,7 +738,7 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(local)
     }
 
-    handleTableConstructors(context: TspFastParser.TableConstructorContext): void {
+    handleTableConstructors(context: TspFastParser.TableConstructorContext): DocumentSymbol {
         // TODO: handle fieldLists
 
         const table = new DocumentSymbol(
@@ -712,6 +755,6 @@ export class DocumentContext extends TspFastListener {
 
         table.detail = 'table'
 
-        this.symbolTable.cacheSymbol(table)
+        return table
     }
 }
