@@ -313,7 +313,7 @@ export class DocumentContext extends TspFastListener {
             // NOTE: If there are more variables than expressions, then the appropriate
             //       variable symbol will be lazily modified by the symbol linker.
             if (tables.size > 0 && variableChildren.length === foundExpressions) {
-                const tableIndices = new Array<number>(...tables.keys())
+                const tableIndices: Array<number> = [...tables.keys()]
                 // Merge any table into its variable.
                 const variables =
                     this.symbolTable.symbolCache
@@ -333,17 +333,30 @@ export class DocumentContext extends TspFastListener {
                             value.kind = table.kind
 
                             if (variableChildren[index] instanceof ParserRuleContext) {
-                                // TODO: Break into namespaces.
-                                //       Perform progressive child lookups of each
-                                //          namespace domain on `value`.
-                                //          If child found: modify with `table`
-                                //          Else: create child with namespace label
+                                const child = variableChildren[index] as ParserRuleContext
+                                const childTokens = tokens.slice(
+                                    pseudoContext.start.tokenIndex - child.start.tokenIndex,
+                                    pseudoContext.stop.tokenIndex - child.stop.tokenIndex + 1
+                                )
+
+                                if (childTokens.some((t: IToken) => t.text.localeCompare('.') === 0)) {
+                                    // TODO: Break into namespaces.
+                                    //       Perform progressive child lookups of each
+                                    //          namespace domain on `value`.
+                                    //          If child found: modify with `table`
+                                    //          Else: create child with namespace label
+
+                                    // return new value
+                                }
                             }
-                            else {
-                                value.children = table.children
-                            }
+
+                            value.children = table.children
+
+                            return value
                         }
                     })
+
+                this.symbolTable.symbolCache.set(this.symbolTable.statementDepth, variables)
             }
 
             this.symbolTable.statementDepth--
