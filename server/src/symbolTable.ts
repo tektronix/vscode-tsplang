@@ -77,6 +77,40 @@ export class SymbolTable {
         this.symbolCache.set(this.statementDepth, [symbol])
     }
 
+    findSymbol(name: string): DocumentSymbol | undefined {
+        for (const symbol of this.complete) {
+            if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
+                return symbol
+            }
+
+            if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
+                for (const child of symbol.children) {
+                    if (!!child.name && child.name.localeCompare(name) === 0) {
+                        return child
+                    }
+                }
+            }
+        }
+
+        for (let i = this.statementDepth; i >= 0; i--) {
+            for (const symbol of (this.symbolCache.get(i) || [])) {
+                if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
+                    return symbol
+                }
+
+                if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
+                    for (const child of symbol.children) {
+                        if (!!child.name && child.name.localeCompare(name) === 0) {
+                            return child
+                        }
+                    }
+                }
+            }
+        }
+
+        return
+    }
+
     getChildSymbol(path: Array<number>): DocumentSymbol | undefined {
         // tslint:disable-next-line: no-null-keyword
         let result: DocumentSymbol = null
