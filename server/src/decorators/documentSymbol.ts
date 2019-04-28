@@ -132,6 +132,7 @@ export class DocumentSymbol implements IDocumentSymbol {
     start: vsls.Position
     startTokenIndex: number
     statementType: StatementType | Ambiguity
+    table?: boolean
     uri: string
 
     private _end: vsls.Position
@@ -369,6 +370,155 @@ export class FunctionLocalSymbol extends FunctionSymbol {
         result.references = symbol.references
         result.statementType = StatementType.FunctionLocal
         result.kind = StatementType.toSymbolKind(result.statementType)
+
+        return result
+    }
+}
+
+export class TableSymbol extends DocumentSymbol {
+    table: boolean = true
+
+    protected constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
+        super(uri, start, startTokenIndex)
+    }
+
+    getField(name: string, parents: Array<string> = []): DocumentSymbol | undefined {
+        const localParents = [...parents]
+        const nextParent = localParents.shift()
+
+        for (const child of (this.children || [])) {
+            if (!!child.name) {
+                if (!!nextParent && !!child.table && child.name.localeCompare(nextParent) === 0) {
+                    return (child as TableSymbol).getField(name, localParents)
+                }
+
+                if (child.name.localeCompare(name) === 0) {
+                    return child
+                }
+            }
+        }
+
+        return
+    }
+
+    /**
+     * Set the value of the child symbol at the given table index.
+     *
+     * If the symbol at the last index of the given field array does not exist, then it is
+     * created.
+     *
+     * @param fields An array of strings containing the name of each child symbol that should
+     * be set.
+     * @param value The new value of the symbol residing at the given field array.
+     * @returns A Diagnostic message if any value in the given field array (excluding the
+     * last item) does not exist.
+     */
+    setFields(fields: Array<string>, value: DocumentSymbol): vsls.Diagnostic | undefined {
+        if (fields.length === 0) {
+            return
+        }
+
+        const localFields = [...fields]
+        const setOrCreate = localFields.length === 1
+        const nextName = localFields.shift()
+
+        // Find the next child.
+        const index = (this.children || []).findIndex((child: DocumentSymbol) => {
+            return !!child.name && child.name.localeCompare(nextName) === 0
+        })
+
+        if (setOrCreate) {
+            let terminalChild = (this.children || [])[index]
+
+            if (terminalChild !== undefined) {
+                terminalChild = new DocumentSymbol(value.uri, value.start, value.startTokenIndex)
+                terminalChild.name = nextName
+                terminalChild.end = value.end
+                terminalChild.statementType = value.statementType
+            }
+
+            const inheritKind =
+                value.table
+                || value.statementType === StatementType.Function
+                || value.statementType === StatementType.FunctionCall
+                || value.statementType === StatementType.FunctionLocal
+
+            terminalChild.kind = (inheritKind) ? value.kind : vsls.SymbolKind.Field
+            if (!!terminalChild.children) {
+                terminalChild.children.push(...value.children)
+            }
+            else {
+                terminalChild.children = value.children
+            }
+
+            if (index !== -1) {
+                this.children[index] = terminalChild
+            }
+            else {
+                if (!!this.children) {
+                    this.children.push(terminalChild)
+                }
+                else {
+                    this.children = [terminalChild]
+                }
+            }
+
+            return
+        }
+
+        if (index === -1) {
+            return vsls.Diagnostic.create(
+                value.range,
+                `Cannot index field "${nextName}".`,
+                vsls.DiagnosticSeverity.Warning,
+                'table-index-error',
+                'tsplang'
+            )
+        }
+
+        if (!(this.children[index] instanceof TableSymbol) || !(this.children[index] instanceof TableLocalSymbol)) {
+            let targetChild = this.children[index]
+            targetChild = TableSymbol.from(targetChild as VariableSymbol)
+            this.children[index] = targetChild
+        }
+
+        return (this.children[index] as TableSymbol).setFields(localFields, value)
+    }
+
+    static from(symbol: VariableSymbol): TableSymbol {
+        const result = new TableSymbol(symbol.uri, symbol.start, symbol.startTokenIndex)
+        result.builtin = symbol.builtin
+        result.children = symbol.children
+        result.declaration = symbol.declaration
+        result.detail = 'global'
+        result.name = symbol.name
+        result.references = symbol.references
+        result.selectionRange = symbol.selectionRange
+        result.statementType = symbol.statementType
+        result.kind = vsls.SymbolKind.Object
+        result.end = symbol.end
+
+        return result
+    }
+}
+
+export class TableLocalSymbol extends TableSymbol {
+    local: boolean = true
+    table: boolean = true
+
+    protected constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
+        super(uri, start, startTokenIndex)
+    }
+
+    static from(symbol: VariableLocalSymbol): TableSymbol {
+        const result = new TableSymbol(symbol.uri, symbol.start, symbol.startTokenIndex)
+        result.builtin = symbol.builtin
+        result.children = symbol.children
+        result.declaration = symbol.declaration
+        result.detail = 'local'
+        result.references = symbol.references
+        result.statementType = symbol.statementType
+        result.kind = vsls.SymbolKind.Object
 
         return result
     }
