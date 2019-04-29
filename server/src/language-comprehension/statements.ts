@@ -78,3 +78,29 @@ export namespace StatementType {
         }
     }
 }
+
+export namespace StatementAmbiguity {
+    export const LOCAL: [StatementType, StatementType] = [StatementType.AssignmentLocal, StatementType.FunctionLocal]
+    export const FLOATING_TOKEN: [StatementType, StatementType] = [StatementType.Assignment, StatementType.FunctionCall]
+    export function equal(a: [StatementType, StatementType], b: StatementAmbiguity): boolean {
+        return (a[0] === b[0]) && (a[1] === b[1])
+    }
+    // tslint:disable-next-line:no-any
+    export function is(value: any): boolean {
+        return (value instanceof Array)
+            && (value.length === StatementAmbiguity.LOCAL.length)
+            && (typeof(value[0]) === 'number')
+            && (typeof(value[1]) === 'number')
+    }
+    export function toString(value: [StatementType, StatementType]): string {
+        switch (value) {
+            case StatementAmbiguity.FLOATING_TOKEN:
+                return 'Floating Token Ambiguity'
+            case StatementAmbiguity.LOCAL:
+                return 'Local Ambiguity'
+            default:
+                return '[' + StatementType.toString(value[0]) + ',' + StatementType.toString(value[1]) + ']'
+        }
+    }
+}
+export type StatementAmbiguity = [StatementType, StatementType]

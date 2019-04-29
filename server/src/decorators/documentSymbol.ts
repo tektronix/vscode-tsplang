@@ -17,7 +17,7 @@
 
 import * as vsls from 'vscode-languageserver'
 
-import { Ambiguity, StatementType } from '../language-comprehension'
+import { StatementAmbiguity, StatementType } from '../language-comprehension'
 
 // tslint:disable-next-line:no-import-side-effect
 import './antlr4'
@@ -109,7 +109,7 @@ export interface IDocumentSymbol extends vsls.DocumentSymbol {
     local: boolean
     references?: Array<vsls.Location>
     startTokenIndex: number,
-    statementType: StatementType | Ambiguity
+    statementType: StatementType | StatementAmbiguity
 }
 export class DocumentSymbol implements IDocumentSymbol {
     builtin: boolean = false
@@ -131,7 +131,7 @@ export class DocumentSymbol implements IDocumentSymbol {
     selectionRange: vsls.Range
     start: vsls.Position
     startTokenIndex: number
-    statementType: StatementType | Ambiguity
+    statementType: StatementType | StatementAmbiguity
     table?: boolean
     uri: string
 

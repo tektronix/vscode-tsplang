@@ -38,7 +38,12 @@ import {
     VariableSymbol
 } from './decorators'
 import { CommandSet } from './instrument'
-import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
+import {
+    StatementAmbiguity,
+    statementTokenRecognizer,
+    StatementType,
+    TokenUtil
+} from './language-comprehension'
 import { getChildRecursively } from './language-comprehension/getChildRecursively'
 import { getTerminals } from './language-comprehension/parser-context-handler/getTerminals'
 import { DebugParseTimer, DebugParseTree } from './parse'
@@ -236,12 +241,12 @@ export class DocumentContext extends TspFastListener {
          * **Function or FunctionLocal**: each parameter will need its own
          * DocumentSymbol.
          */
-        let type = statementRecognizer(tokens as Array<Token>)
+        let type = statementTokenRecognizer(tokens as Array<Token>)
 
-        if (Ambiguity.is(type)) {
+        if (StatementAmbiguity.is(type)) {
             // Discard evaluaton of incomplete local statements.
             // (It was ambiguous because the only Token was 'local'.)
-            if (Ambiguity.equal(type as Ambiguity, Ambiguity.LOCAL)) {
+            if (StatementAmbiguity.equal(type as StatementAmbiguity, StatementAmbiguity.LOCAL)) {
                 return
             }
 
@@ -385,7 +390,7 @@ export class DocumentContext extends TspFastListener {
             const lastSymbol = this.symbolTable.lastSymbol()
             lastSymbol.statementType = type
             lastSymbol.detail = (typeof(type) === 'object')
-                ? Ambiguity.toString(type)
+                ? StatementAmbiguity.toString(type)
                 : StatementType.toString(type)
             lastSymbol.kind = SymbolKind.File
 
@@ -510,7 +515,7 @@ export class DocumentContext extends TspFastListener {
                     }
 
                     lastSymbol.detail = 'Identifier expected.'
-                    lastSymbol.statementType = Ambiguity.FLOATING_TOKEN
+                    lastSymbol.statementType = StatementAmbiguity.FLOATING_TOKEN
                 }
             }
             // tslint:disable-next-line: prefer-conditional-expression

@@ -44,7 +44,12 @@ import {
 } from './decorators'
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
-import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from './language-comprehension'
+import {
+    StatementAmbiguity,
+    statementTokenRecognizer,
+    StatementType,
+    TokenUtil
+} from './language-comprehension'
 import { SignatureContext } from './language-comprehension/signature'
 import {
     ChangeNotification,
@@ -195,7 +200,10 @@ connection.onRequest(
 
         let results: Array<CompletionItem>
 
-        const getPartialCompletions = (range: Range, type?: StatementType | Ambiguity): Array<CompletionItem> => {
+        const getPartialCompletions = (
+            range: Range,
+            type?: StatementType | StatementAmbiguity
+        ): Array<CompletionItem> => {
             const text = documentContext.document.getText(range)
             const lexer = new TspFastLexer(new InputStream(text))
 
@@ -228,7 +236,7 @@ connection.onRequest(
                             start,
                             end: params.position
                         },
-                        statementRecognizer([startToken] as Array<Token>)
+                        statementTokenRecognizer([startToken] as Array<Token>)
                     )
                 }
             }

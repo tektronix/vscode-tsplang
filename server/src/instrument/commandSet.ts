@@ -18,8 +18,19 @@
 import { Token } from 'antlr4'
 
 import { TspFastLexer } from '../antlr4-tsplang'
-import { CompletionItem, IToken, MarkupContentCallback, ResolvedNamespace, SignatureInformation } from '../decorators'
-import { Ambiguity, statementRecognizer, StatementType, TokenUtil } from '../language-comprehension'
+import {
+    CompletionItem,
+    IToken,
+    MarkupContentCallback,
+    ResolvedNamespace,
+    SignatureInformation
+} from '../decorators'
+import {
+    StatementAmbiguity,
+    statementTokenRecognizer,
+    StatementType,
+    TokenUtil
+} from '../language-comprehension'
 
 import { InstrumentSpec } from './instrumentSpec'
 
@@ -141,8 +152,8 @@ export class CommandSet implements CommandSetInterface {
     /**
      * NOTE: The end of the last Token is the current location of the cursor.
      */
-    suggestCompletions(tokens: Array<IToken>, type: StatementType | Ambiguity): Array<CompletionItem> {
-        const _type = (type === StatementType.None) ? statementRecognizer(tokens as Array<Token>) : type
+    suggestCompletions(tokens: Array<IToken>, type: StatementType | StatementAmbiguity): Array<CompletionItem> {
+        const _type = (type === StatementType.None) ? statementTokenRecognizer(tokens as Array<Token>) : type
 
         /**
          * No Completion Rules
@@ -171,7 +182,8 @@ export class CommandSet implements CommandSetInterface {
         if (_type === StatementType.Break
             || _type === StatementType.Function
             || _type === StatementType.FunctionLocal
-            || (Ambiguity.is(_type) && Ambiguity.equal(_type as Ambiguity, Ambiguity.LOCAL))) {
+            || (StatementAmbiguity.is(_type)
+                && StatementAmbiguity.equal(_type as StatementAmbiguity, StatementAmbiguity.LOCAL))) {
             return []
         }
 
@@ -217,7 +229,8 @@ export class CommandSet implements CommandSetInterface {
         if (_type === StatementType.Assignment
             || _type === StatementType.AssignmentLocal
             || _type === StatementType.FunctionCall
-            || (Ambiguity.is(_type) && Ambiguity.equal(_type as Ambiguity, Ambiguity.FLOATING_TOKEN))) {
+            || (StatementAmbiguity.is(_type)
+                && StatementAmbiguity.equal(_type as StatementAmbiguity, StatementAmbiguity.FLOATING_TOKEN))) {
             const assignInfo: AssignmentInfo = {
                 left: {
                     commaIndex: 0,
