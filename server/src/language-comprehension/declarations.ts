@@ -15,8 +15,18 @@
  */
 'use strict'
 
-export { Ambiguity } from './ambiguities'
-export { GlobalDeclaration, LocalDeclaration } from './declarations'
-export { statementRecognizer } from './recognizers'
-export { StatementType } from './statements'
-export { TokenUtil } from './tokenUtil'
+import { StatementType } from './statements'
+
+export namespace LocalDeclaration {
+    export function is(type: StatementType): boolean {
+        return (type === StatementType.AssignmentLocal) || (type === StatementType.FunctionLocal)
+    }
+}
+export type LocalDeclaration = StatementType.AssignmentLocal | StatementType.FunctionLocal
+
+export namespace GlobalDeclaration {
+    export function is(type: StatementType): boolean {
+        return (type === StatementType.Assignment) || (type === StatementType.Function)
+    }
+}
+export type GlobalDeclaration = StatementType.Assignment | StatementType.Function
