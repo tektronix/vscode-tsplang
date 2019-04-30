@@ -17,7 +17,7 @@
 
 import * as vsls from 'vscode-languageserver'
 
-import { StatementAmbiguity, StatementType } from '../language-comprehension'
+import { Field, StatementAmbiguity, StatementType, TokenUtil } from '../language-comprehension'
 
 // tslint:disable-next-line:no-import-side-effect
 import './antlr4'
@@ -104,16 +104,24 @@ const compareRangePosition = new Map<number, number | undefined>([
 
 export interface IDocumentSymbol extends vsls.DocumentSymbol {
     builtin: boolean
+    container: boolean
     declaration?: vsls.LocationLink
     exception: boolean
     local: boolean
+    parentInfo?: {
+        assignment: boolean;
+        container: boolean;
+        table: boolean;
+    }
     references?: Array<vsls.Location>
     startTokenIndex: number,
     statementType: StatementType | StatementAmbiguity
+    table: boolean
 }
 export class DocumentSymbol implements IDocumentSymbol {
     builtin: boolean = false
     children?: Array<DocumentSymbol>
+    container: boolean = false
     /**
      * The location where this DocumentSymbol was originally declared or
      * undefined if no previous declaration could be found.
@@ -132,7 +140,7 @@ export class DocumentSymbol implements IDocumentSymbol {
     start: vsls.Position
     startTokenIndex: number
     statementType: StatementType | StatementAmbiguity
-    table?: boolean
+    table: boolean = false
     uri: string
 
     private _end: vsls.Position
@@ -243,10 +251,14 @@ export class DocumentSymbol implements IDocumentSymbol {
     /**
      * Remove children that cause the given predicate to return true.
      */
-    prune(predicate: (value: DocumentSymbol) => boolean): IDocumentSymbol {
+    prune(
+        predicate: (value: DocumentSymbol) => boolean,
+        adopt: (value: IDocumentSymbol) => boolean
+    ): IDocumentSymbol {
         const clone: IDocumentSymbol = {
             builtin: this.builtin,
             children: new Array(),
+            container: this.container,
             declaration: this.declaration,
             deprecated: this.deprecated,
             detail: this.detail,
@@ -258,20 +270,30 @@ export class DocumentSymbol implements IDocumentSymbol {
             references: this.references,
             selectionRange: this.selectionRange,
             startTokenIndex: this.startTokenIndex,
-            statementType: this.statementType
+            statementType: this.statementType,
+            table: this.table
         }
 
         for (let i = 0; i < (this.children || []).length; i++) {
-            const child = this.children[i].prune(predicate)
+            const child = this.children[i].prune(predicate, adopt)
+            child.parentInfo = {
+                assignment: this.statementType === StatementType.Assignment,
+                container: this.container,
+                table: this.table
+            }
+            child.children = (child.children || []).map((value: IDocumentSymbol) => {
+                value.parentInfo = {
+                    assignment: child.statementType === StatementType.Assignment,
+                    container: child.container,
+                    table: child.table
+                }
+
+                return value
+            })
 
             if (predicate(child as DocumentSymbol)) {
-                // Extract pruned grandchildren that aren't local declarations
-                // or local declarations residing within assignment containers.
-                const orphans = (child.children || []).filter(
-                    (v: IDocumentSymbol) => {
-                        return !v.local || (v.local && child.statementType === StatementType.Assignment)
-                    }
-                )
+                // Extract all grandchildren that can be kept after pruning this child.
+                const orphans = (child.children || []).filter(adopt)
                 clone.children.push(...orphans)
             }
             else {
@@ -338,6 +360,8 @@ export class DocumentSymbol implements IDocumentSymbol {
 }
 
 export class FunctionSymbol extends DocumentSymbol {
+    container: boolean = true
+
     constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
         super(uri, start, startTokenIndex)
     }
@@ -356,6 +380,7 @@ export class FunctionSymbol extends DocumentSymbol {
 }
 
 export class FunctionLocalSymbol extends FunctionSymbol {
+    container: boolean = true
     local: boolean = true
 
     constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
@@ -376,23 +401,32 @@ export class FunctionLocalSymbol extends FunctionSymbol {
 }
 
 export class TableSymbol extends DocumentSymbol {
+    container: boolean = true
     table: boolean = true
 
     protected constructor(uri: string, start: vsls.Position, startTokenIndex: number) {
         super(uri, start, startTokenIndex)
     }
 
-    getField(name: string, parents: Array<string> = []): DocumentSymbol | undefined {
-        const localParents = [...parents]
-        const nextParent = localParents.shift()
+    getField(fields: Array<Field>): DocumentSymbol | undefined {
+        if (fields.length === 0) {
+            return
+        }
+
+        const localFields = [...fields]
+        const field = localFields.shift()
+
+        if (field === undefined) {
+            return
+        }
 
         for (const child of (this.children || [])) {
             if (!!child.name) {
-                if (!!nextParent && !!child.table && child.name.localeCompare(nextParent) === 0) {
-                    return (child as TableSymbol).getField(name, localParents)
+                if (!!child.table && child.name.localeCompare(field.name) === 0) {
+                    return (child as TableSymbol).getField(localFields)
                 }
 
-                if (child.name.localeCompare(name) === 0) {
+                if (child.name.localeCompare(field.name) === 0) {
                     return child
                 }
             }
@@ -413,26 +447,30 @@ export class TableSymbol extends DocumentSymbol {
      * @returns A Diagnostic message if any value in the given field array (excluding the
      * last item) does not exist.
      */
-    setFields(fields: Array<string>, value: DocumentSymbol): vsls.Diagnostic | undefined {
+    setField(fields: Array<Field>, value: DocumentSymbol): vsls.Diagnostic | undefined {
         if (fields.length === 0) {
             return
         }
 
         const localFields = [...fields]
         const setOrCreate = localFields.length === 1
-        const nextName = localFields.shift()
+        const field = localFields.shift()
+
+        if (field === undefined) {
+            return
+        }
 
         // Find the next child.
         const index = (this.children || []).findIndex((child: DocumentSymbol) => {
-            return !!child.name && child.name.localeCompare(nextName) === 0
+            return !!child.name && child.name.localeCompare(field.name) === 0
         })
 
         if (setOrCreate) {
             let terminalChild = (this.children || [])[index]
 
-            if (terminalChild !== undefined) {
+            if (terminalChild === undefined) {
                 terminalChild = new DocumentSymbol(value.uri, value.start, value.startTokenIndex)
-                terminalChild.name = nextName
+                terminalChild.name = field.name
                 terminalChild.end = value.end
                 terminalChild.statementType = value.statementType
             }
@@ -468,8 +506,11 @@ export class TableSymbol extends DocumentSymbol {
 
         if (index === -1) {
             return vsls.Diagnostic.create(
-                value.range,
-                `Cannot index field "${nextName}".`,
+                TokenUtil.getRange(
+                    field.tokens.start,
+                    localFields.pop().tokens.stop
+                ),
+                `Cannot index field "${field.name}".`,
                 vsls.DiagnosticSeverity.Warning,
                 'table-index-error',
                 'tsplang'
@@ -482,7 +523,7 @@ export class TableSymbol extends DocumentSymbol {
             this.children[index] = targetChild
         }
 
-        return (this.children[index] as TableSymbol).setFields(localFields, value)
+        return (this.children[index] as TableSymbol).setField(localFields, value)
     }
 
     static from(symbol: VariableSymbol): TableSymbol {
@@ -503,6 +544,7 @@ export class TableSymbol extends DocumentSymbol {
 }
 
 export class TableLocalSymbol extends TableSymbol {
+    container: boolean = true
     local: boolean = true
     table: boolean = true
 

@@ -24,8 +24,6 @@ import {
 
 import { ProcessManager } from './processManager'
 
-console.log(`process.execPath=${process.execPath}`)
-
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
     new IPCMessageReader(process),

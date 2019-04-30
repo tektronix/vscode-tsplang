@@ -15,6 +15,8 @@
  */
 'use strict'
 
+import { SymbolKind } from 'vscode-languageserver'
+
 import { IToken } from '../decorators'
 
 /**
@@ -45,6 +47,23 @@ export enum FieldType {
     Function,
     Index,
     Table
+}
+export namespace FieldType {
+    export function toSymbolKind(type: FieldType): SymbolKind | undefined {
+        switch (type) {
+            case FieldType.Field:
+                return SymbolKind.Field
+            case FieldType.Function:
+                return SymbolKind.Function
+            case FieldType.Table:
+                return SymbolKind.Object
+            case FieldType.Index:
+            case FieldType.Unknown:
+                return SymbolKind.File
+            default:
+                return
+        }
+    }
 }
 
 export interface Field {

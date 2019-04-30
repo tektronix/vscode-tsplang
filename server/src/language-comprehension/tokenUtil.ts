@@ -17,6 +17,7 @@
 
 import { Token } from 'antlr4'
 import { Position, Range } from 'vscode-languageserver'
+import { IToken } from '../decorators';
 
 export namespace TokenUtil {
     /**
@@ -247,24 +248,21 @@ export namespace TokenUtil {
      * Token will produce that Token's ending Position.
      * @returns The Position of the given Token.
      */
-    export function getPosition(token: Token, offset: number = 0): Position {
+    export function getPosition(token: Token | IToken, offset: number = 0): Position {
         return {
             character: token.column + offset,
             line: token.line - 1
         }
     }
 
-    export function getRange(start: Token, stop: Token): Range {
+    export function getRange(start: Token | IToken, stop: Token | IToken): Range {
         if (start.line === stop.line) {
             return {
                 end: {
                     character: start.column + ((stop.stop + 1) - start.start),
                     line: stop.line - 1
                 },
-                start: {
-                    character: start.column,
-                    line: start.line - 1
-                }
+                start: getPosition(start)
             }
         }
         else {

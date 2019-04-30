@@ -15,12 +15,18 @@
  */
 'use strict'
 
-import { Diagnostic, LocationLink, Position, Range, SymbolKind } from 'vscode-languageserver'
+import { Diagnostic, LocationLink, Position, Range } from 'vscode-languageserver'
 
-import { DocumentSymbol, VariableLocalSymbol, VariableSymbol } from './decorators'
-import { StatementType } from './language-comprehension'
+import {
+    DocumentSymbol,
+    TableLocalSymbol,
+    TableSymbol,
+    VariableLocalSymbol,
+    VariableSymbol
+} from './decorators'
+import { Field, StatementType } from './language-comprehension'
 
-interface BinarySearchResult {
+interface SearchResult {
     index: number
     symbol: DocumentSymbol
 }
@@ -31,6 +37,8 @@ export interface LookupResult {
 }
 
 export class SymbolTable {
+    static MAX_SEARCH_PATH: number = 1000
+
     complete: Array<DocumentSymbol>
     statementDepth: number
     symbolCache: Map<number, Array<DocumentSymbol>>
@@ -77,39 +85,59 @@ export class SymbolTable {
         this.symbolCache.set(this.statementDepth, [symbol])
     }
 
-    findSymbol(name: string): DocumentSymbol | undefined {
-        for (const symbol of this.complete) {
-            if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
-                return symbol
-            }
+    // namedLookup(name: string): LookupResult | undefined {
+    //     const dive = (symbol: DocumentSymbol): boolean => !!symbol && symbol.container && !symbol.table
 
-            if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
-                for (const child of symbol.children) {
-                    if (!!child.name && child.name.localeCompare(name) === 0) {
-                        return child
-                    }
-                }
-            }
-        }
+    //     const result: LookupResult = {
+    //         path: new Array(),
+    //         symbol: undefined
+    //     }
 
-        for (let i = this.statementDepth; i >= 0; i--) {
-            for (const symbol of (this.symbolCache.get(i) || [])) {
-                if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
-                    return symbol
-                }
+    //     const buildResult = (symbols: Array<DocumentSymbol>): void => {
+    //         if (symbols.length === 0) {
+    //             return
+    //         }
 
-                if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
-                    for (const child of symbol.children) {
-                        if (!!child.name && child.name.localeCompare(name) === 0) {
-                            return child
-                        }
-                    }
-                }
-            }
-        }
+    //         for (let i = 0; i < symbols.length; i++) {
+    //             if (dive(symbols[i])) {
+    //                 buildResult(symbols[i].children || [])
+    //             }
 
-        return
-    }
+    //         }
+    //     }
+
+    //     for (const symbol of this.complete) {
+    //         if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
+    //             return symbol
+    //         }
+
+    //         if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
+    //             for (const child of symbol.children) {
+    //                 if (!!child.name && child.name.localeCompare(name) === 0) {
+    //                     return child
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     for (let i = this.statementDepth; i >= 0; i--) {
+    //         for (const symbol of (this.symbolCache.get(i) || [])) {
+    //             if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
+    //                 return symbol
+    //             }
+
+    //             if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
+    //                 for (const child of symbol.children) {
+    //                     if (!!child.name && child.name.localeCompare(name) === 0) {
+    //                         return child
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     return
+    // }
 
     getChildSymbol(path: Array<number>): DocumentSymbol | undefined {
         // tslint:disable-next-line: no-null-keyword
@@ -152,14 +180,13 @@ export class SymbolTable {
     }
 
     link(name: string, range: Range): LocationLink | undefined {
-        const linkAssignment = (symbol: DocumentSymbol): LocationLink | undefined => {
+        const linkContainer = (symbol: DocumentSymbol): LocationLink | undefined => {
             for (const child of (symbol.children || [])) {
                 if (child.name === undefined) {
                     continue
                 }
 
-                if (child.name.localeCompare(name) === 0
-                    && child.kind === SymbolKind.Variable) {
+                if (child.name.localeCompare(name) === 0) {
                     return symbol.link(range)
                 }
             }
@@ -170,8 +197,8 @@ export class SymbolTable {
                 continue
             }
 
-            if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
-                const result = linkAssignment(symbol)
+            if (symbol.container && !!symbol.children) {
+                const result = linkContainer(symbol)
 
                 if (result !== undefined) {
                     return result
@@ -189,8 +216,8 @@ export class SymbolTable {
                     continue
                 }
 
-                if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
-                    const result = linkAssignment(symbol)
+                if (symbol.container && !!symbol.children) {
+                    const result = linkContainer(symbol)
 
                     if (result !== undefined) {
                         return result
@@ -207,7 +234,6 @@ export class SymbolTable {
     }
 
     lookup(target: Range | Position): LookupResult | undefined {
-        // TODO look inside Assignment Containers.
         const range = (Position.is(target)) ? { end: target, start: target } : target
 
         let search = this.lookupBinarySearch(range, this.complete)
@@ -216,30 +242,111 @@ export class SymbolTable {
             path: new Array(),
             symbol: undefined
         }
-        while (search !== undefined) {
+        const lookupCondition = (): boolean => {
+            return search !== undefined
+                && result.path.length <= SymbolTable.MAX_SEARCH_PATH
+        }
+        while (lookupCondition()) {
             result.symbol = search.symbol
             result.path.push(search.index)
-            if ((result.symbol.detail || '').localeCompare('Assignment Container') === 0) {
-                // Search assignment containers linearly and in reverse.
-                for (let i = (result.symbol.children || []).length - 1; i >= 0; i--) {
-                    const comparison = result.symbol.children[i].compare(range)
-
-                    if (comparison === 0) {
-                        search.symbol = result.symbol.children[i]
-
-                        break
-                    }
-                }
-            }
-            else {
-                search = this.lookupBinarySearch(range, result.symbol.children || [])
-            }
+            search = (result.symbol.container)
+                ? this.lookupReverseSearch(range, result.symbol.children || [])
+                : search = this.lookupBinarySearch(range, result.symbol.children || [])
         }
 
-        return (result.symbol !== undefined) ? result : undefined
+        return (lookupCondition()) ? result : undefined
     }
 
-    private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): BinarySearchResult | undefined => {
+    // updateTable(fields: Array<Field>, value: DocumentSymbol): Diagnostic | undefined {
+    //     if (fields.length === 0) {
+    //         return
+    //     }
+
+    //     const localFields = [...fields]
+    //     const rootField = localFields.shift()
+
+    //     if (rootField === undefined || localFields.length === 0) {
+    //         return
+    //     }
+
+    //     const findCallback = (symbol: DocumentSymbol): boolean => {
+    //         if (symbol.container && !symbol.table) {
+    //             return (symbol.children || []).findIndex(findIndexCallback) !== -1
+    //         }
+    //     }
+
+    //     let index = this.complete.findIndex((symbol: DocumentSymbol) => {
+    //         return symbol.name.localeCompare(rootField.name) === 0
+    //     })
+
+    //     if (index !== -1) {
+    //         const table: TableSymbol | TableLocalSymbol = (this.complete[index].local)
+    //             ? TableLocalSymbol.from(this.complete[index] as VariableLocalSymbol)
+    //             : TableSymbol.from(this.complete[index] as VariableSymbol)
+
+    //         const result = table.setField(localFields, value)
+
+    //         if (result === undefined) {
+    //             this.complete[index] = table
+    //         }
+
+    //         return result
+    //     }
+
+    //     for (let i = this.statementDepth; i >= 0; i--) {
+    //         const symbols = (this.symbolCache.get(i) || [])
+    //         index = symbols.findIndex((symbol: DocumentSymbol) => {
+    //             return !!symbol.name && symbol.name.localeCompare(rootField.name) === 0
+    //         })
+
+    //         if (index !== -1) {
+    //             const table: TableSymbol | TableLocalSymbol = (symbols[index].local)
+    //                 ? TableLocalSymbol.from(symbols[index] as VariableLocalSymbol)
+    //                 : TableSymbol.from(symbols[index] as VariableSymbol)
+
+    //             const result = table.setField(localFields, value)
+
+    //             if (result === undefined) {
+    //                 symbols[index] = table
+    //                 this.symbolCache.set(i, symbols)
+    //             }
+
+    //             return result
+    //         }
+    //     }
+    // }
+
+    updateSymbol(path: Array<number>, value: DocumentSymbol): void {
+        const lastIndex = path.pop()
+
+        // tslint:disable-next-line: no-null-keyword
+        let symbol: DocumentSymbol = null
+
+        for (const index of path) {
+            if (symbol === null) {
+                symbol = this.complete[index]
+
+                continue
+            }
+
+            if (symbol === undefined || symbol.children === undefined) {
+                break
+            }
+
+            symbol = symbol.children[index]
+        }
+
+        if (symbol !== null && symbol !== undefined) {
+            if (symbol.children === undefined) {
+                symbol.children = [value]
+            }
+            else {
+                symbol.children[lastIndex] = value
+            }
+        }
+    }
+
+    private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): SearchResult | undefined => {
         let start = 0
         let stop = symbols.length - 1
 
@@ -259,6 +366,18 @@ export class SymbolTable {
             }
             // If our index is just right.
             else {
+                return { index, symbol: symbols[index] }
+            }
+        }
+
+        return
+    }
+
+    private lookupReverseSearch = (target: Range, symbols: Array<DocumentSymbol>): SearchResult | undefined => {
+        for (let index = (symbols.length - 1); index >= 0; index--) {
+            const comparison = symbols[index].compare(target)
+
+            if (comparison === 0) {
                 return { index, symbol: symbols[index] }
             }
         }

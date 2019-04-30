@@ -98,21 +98,24 @@ export function variableContextRecognizer(context: TspFastParser.VariableContext
                 return
             }
 
-            const value: TspFastParser.ValueContext = expression.getChild(0, TspFastParser.ValueContext)
+            let childExpr: TspFastParser.ExpressionContext
+            do {
+                const valueContext: TspFastParser.ValueContext =
+                    (childExpr || expression).getChild(0, TspFastParser.ValueContext)
 
-            if (value !== null) {
-                const stringContext: TspFastParser.StringContext = expression.getChild(0, TspFastParser.StringContext)
+                if (valueContext === null) {
+                    return
+                }
+
+                const stringContext: TspFastParser.StringContext =
+                    valueContext.getChild(0, TspFastParser.StringContext)
 
                 if (stringContext !== null) {
                     return stringContext.getText()
                 }
 
-                const childExpr: TspFastParser.ExpressionContext = index.getChild(0, TspFastParser.ExpressionContext)
-
-                if (childExpr !== null) {
-                    return extractParenWrappedString(childExpr)
-                }
-            }
+                childExpr = valueContext.getChild(0, TspFastParser.ExpressionContext)
+            } while (childExpr !== null)
 
             return
         }

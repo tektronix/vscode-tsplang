@@ -23,6 +23,8 @@ export {
     IDocumentSymbol,
     FunctionLocalSymbol,
     FunctionSymbol,
+    TableLocalSymbol,
+    TableSymbol,
     VariableLocalSymbol,
     VariableSymbol
 } from './documentSymbol'

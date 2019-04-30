@@ -34,6 +34,8 @@ import {
     FunctionLocalSymbol,
     FunctionSymbol,
     IToken,
+    TableLocalSymbol,
+    TableSymbol,
     VariableLocalSymbol,
     VariableSymbol
 } from './decorators'
@@ -42,7 +44,8 @@ import {
     StatementAmbiguity,
     statementTokenRecognizer,
     StatementType,
-    TokenUtil
+    TokenUtil,
+    variableContextRecognizer
 } from './language-comprehension'
 import { getChildRecursively } from './language-comprehension/getChildRecursively'
 import { getTerminals } from './language-comprehension/parser-context-handler/getTerminals'
@@ -264,7 +267,7 @@ export class DocumentContext extends TspFastListener {
          */
         if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
             const variableChildren = new Array<ParserRuleContext | TerminalNode>()
-            const tables = new Map<number, DocumentSymbol>()
+            const tables = new Map<number, TableSymbol>()
             let foundExpressions = 0
             // Indices will be zero-based from the starting Token (which is index 0).
             this.symbolTable.statementDepth++
@@ -335,31 +338,56 @@ export class DocumentContext extends TspFastListener {
                                 return value
                             }
 
+                            value.container = table.container
                             value.kind = table.kind
+                            value.table = table.table
 
-                            if (variableChildren[index] instanceof ParserRuleContext) {
-                                const child = variableChildren[index] as ParserRuleContext
-                                const childTokens = tokens.slice(
-                                    pseudoContext.start.tokenIndex - child.start.tokenIndex,
-                                    pseudoContext.stop.tokenIndex - child.stop.tokenIndex + 1
-                                )
+                            // NOTE: the commented out code will ideally connect a
+                            //          table.field = {}
+                            //       type instantiation to a symbol "table" that
+                            //       has already been completed.
 
-                                if (childTokens.some((t: IToken) => t.text.localeCompare('.') === 0)) {
-                                    // TODO: Break into namespaces.
-                                    //       Perform progressive child lookups of each
-                                    //          namespace domain on `value`.
-                                    //          If child found: modify with `table`
-                                    //          Else: create child with namespace label
+                            // if (variableChildren[index] instanceof ParserRuleContext) {
+                            //     const child = variableChildren[index] as TspFastParser.VariableContext
+                            //     const fields = variableContextRecognizer(child)
 
-                                    // return new value
-                                }
-                            }
+                            //     if (fields.length <= 1) {
+                            //         return value
+                            //     }
+
+                            //     const rootField = fields.shift()
+
+                            //     value.declaration = this.symbolTable.link(rootField.name, value.range)
+
+                            //     if (value.declaration !== undefined) {
+                            //         const search = this.symbolTable.lookup(value.declaration.targetSelectionRange)
+
+                            //         if (search !== undefined) {
+                            //             const updatedSymbol = (search.symbol.local)
+                            //                 ? TableLocalSymbol.from(search.symbol as VariableLocalSymbol)
+                            //                 : TableSymbol.from(search.symbol as VariableSymbol)
+
+                            //             const error = updatedSymbol.setField(fields, table)
+
+                            //             if (error !== undefined) {
+                            //                 this.errors.push(error)
+
+                            //                 return value
+                            //             }
+
+                            //             this.symbolTable.updateSymbol(search.path, updatedSymbol)
+                            //         }
+                            //     }
+                            // }
 
                             value.children = table.children
 
                             return value
                         }
                     })
+
+                // TODO: back out a depth and check if the remaining variables are instantiating
+                //       fields in a table we found during this parse session.
 
                 this.symbolTable.symbolCache.set(this.symbolTable.statementDepth, variables)
             }
@@ -369,6 +397,7 @@ export class DocumentContext extends TspFastListener {
             const lastSymbol = this.symbolTable.lastSymbol()
             lastSymbol.statementType = StatementType.Assignment
             lastSymbol.detail = 'Assignment Container'
+            lastSymbol.container = true
             lastSymbol.kind = SymbolKind.File
 
             const lastToken = tokens[tokens.length - 1]
@@ -756,16 +785,15 @@ export class DocumentContext extends TspFastListener {
         this.symbolTable.cacheSymbol(local)
     }
 
-    handleTableConstructors(context: TspFastParser.TableConstructorContext): DocumentSymbol {
+    handleTableConstructors(context: TspFastParser.TableConstructorContext): TableSymbol {
         // TODO: handle fieldLists
 
-        const table = new DocumentSymbol(
+        const table = TableSymbol.from(new DocumentSymbol(
             this.document.uri,
             TokenUtil.getPosition(context.start),
             context.start.tokenIndex
-        )
+        ) as VariableSymbol)
 
-        table.kind = SymbolKind.Object
         table.end = TokenUtil.getPosition(context.stop, context.stop.text.length)
 
         table.name = `(${table.range.start.line + 1},${table.range.start.character + 1})`

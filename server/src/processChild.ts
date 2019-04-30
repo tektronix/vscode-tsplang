@@ -38,6 +38,7 @@ import { TspFastLexer } from './antlr4-tsplang'
 import {
     CompletionItem,
     DocumentSymbol,
+    IDocumentSymbol,
     IToken,
     ResolvedNamespace,
     SignatureInformation
@@ -85,6 +86,23 @@ const prunePredicate = (value: DocumentSymbol): boolean => {
         || (value.declaration !== undefined && value.references === undefined)
         || value.builtin
 }
+/**
+ * IDocumentSymbols that evaluate to true will be kept after their parent
+ * has been marked for pruning.
+ */
+// tslint:disable: no-invalid-this
+const orphanPredicate = (value: IDocumentSymbol): boolean => {
+    return !value.local
+        || (value.local
+            && (!!value.parentInfo
+                && value.parentInfo.container
+                && value.parentInfo.assignment))
+        || (value.local
+            && (!!value.parentInfo
+                && value.parentInfo.container
+                && value.parentInfo.table))
+}
+// tslint:enable: no-invalid-this
 // tslint:disable-next-line:no-magic-numbers
 const uri: string = process.argv[2]
 
@@ -394,18 +412,16 @@ connection.onRequest(SymbolRequest, async (): Promise<Array<DocumentSymbol>> => 
         const prunedSymbols = new Array<DocumentSymbol>()
         for (const symbol of documentContext.symbolTable.complete) {
             if (prunePredicate(symbol)) {
-                // Extract pruned grandchildren that aren't local declarations
-                // or local declarations residing within assignment containers.
-                const orphans = (symbol.prune(prunePredicate).children as Array<DocumentSymbol>)
-                    .filter(
-                        (value: DocumentSymbol) => {
-                            return !value.local || (value.local && symbol.statementType === StatementType.Assignment)
-                        }
-                    )
-                prunedSymbols.push(...orphans)
+                // Extract all grandchildren that can be kept after pruning this symbol.
+                const orphans =
+                    symbol
+                    .prune(prunePredicate, orphanPredicate)
+                        .children
+                        .filter(orphanPredicate)
+                prunedSymbols.push(...(orphans as Array<DocumentSymbol>))
             }
             else {
-                prunedSymbols.push(symbol.prune(prunePredicate) as DocumentSymbol)
+                prunedSymbols.push(symbol.prune(prunePredicate, orphanPredicate) as DocumentSymbol)
             }
         }
 
