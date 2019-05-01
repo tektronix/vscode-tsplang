@@ -1029,6 +1029,10 @@ namespace Smu {
     export const smu: ApiSpec = {
         children: [
             { label: 'smu.reset' },
+            {
+                assignmentExclusives: smuEnumTerminals,
+                label: 'smu.terminals'
+            },
         ],
         enums: [
             ...smuEnumAudible,
