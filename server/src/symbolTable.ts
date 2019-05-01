@@ -242,11 +242,7 @@ export class SymbolTable {
             path: new Array(),
             symbol: undefined
         }
-        const lookupCondition = (): boolean => {
-            return search !== undefined
-                && result.path.length <= SymbolTable.MAX_SEARCH_PATH
-        }
-        while (lookupCondition()) {
+        while (search !== undefined && result.path.length <= SymbolTable.MAX_SEARCH_PATH) {
             result.symbol = search.symbol
             result.path.push(search.index)
             search = (result.symbol.container)
@@ -254,7 +250,9 @@ export class SymbolTable {
                 : search = this.lookupBinarySearch(range, result.symbol.children || [])
         }
 
-        return (lookupCondition()) ? result : undefined
+        return (result.symbol !== undefined && result.path.length <= SymbolTable.MAX_SEARCH_PATH)
+            ? result
+            : undefined
     }
 
     // updateTable(fields: Array<Field>, value: DocumentSymbol): Diagnostic | undefined {
