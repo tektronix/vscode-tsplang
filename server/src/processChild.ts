@@ -22,6 +22,7 @@ import {
     CompletionParams,
     CompletionTriggerKind,
     Diagnostic,
+    Hover,
     Location,
     LocationLink,
     Position,
@@ -58,6 +59,7 @@ import {
     CompletionResolveRequest,
     DefinitionRequest,
     ErrorNotification,
+    HoverRequest,
     ReferencesRequest,
     SettingsNotification,
     SignatureRequest,
@@ -308,6 +310,47 @@ connection.onRequest(DefinitionRequest, async (position: Position): Promise<Loca
     }
 
     return here.symbol.declaration
+})
+
+connection.onRequest(HoverRequest, async (position: Position): Promise<Hover | undefined> => {
+    const documentContext = await documentContextPromise
+
+    const here = documentContext.symbolTable.lookup({ end: position, start: position })
+
+    if (here === undefined) {
+        return
+    }
+
+    const text = documentContext.document.getText(here.symbol.selectionRange)
+
+    console.log(`servicing hover request for "${text}"`)
+
+    const targetNamespace = ResolvedNamespace.create(text)
+
+    const matches = documentContext.commandSet.completions.filter((value: CompletionItem) => {
+        return CompletionItem.resolveNamespace(value).localeCompare(targetNamespace) === 0
+    })
+
+    const item = matches.shift()
+
+    if (item !== undefined) {
+        if (item.documentation === undefined) {
+            const makeDocs = documentContext.commandSet.completionDocs.get(targetNamespace)
+
+            if (makeDocs === undefined) {
+                return
+            }
+
+            item.documentation = makeDocs(documentContext.commandSet.specification)
+        }
+
+        return {
+            contents: item.documentation,
+            range: here.symbol.selectionRange
+        }
+    }
+
+    return
 })
 
 connection.onRequest(ReferencesRequest, async (position: Position): Promise<Array<Location>> => {

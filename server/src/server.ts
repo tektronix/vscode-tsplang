@@ -56,6 +56,8 @@ connection.onDidChangeConfiguration(manager.settingsChange.bind(manager))
 
 connection.onDocumentSymbol(manager.symbol.bind(manager))
 
+connection.onHover(manager.hover.bind(manager))
+
 connection.onReferences(manager.references.bind(manager))
 
 connection.onSignatureHelp(manager.signature.bind(manager))

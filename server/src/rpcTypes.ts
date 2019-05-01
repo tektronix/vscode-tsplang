@@ -20,6 +20,7 @@ import {
     CompletionList,
     CompletionParams,
     DocumentSymbol,
+    Hover,
     Location,
     LocationLink,
     Position,
@@ -44,6 +45,8 @@ export const CompletionRequest = new RequestType<CompletionParams, CompletionLis
 export const CompletionResolveRequest = new RequestType<CompletionItem, CompletionItem, void, void>('CompletionResolveRequest')
 
 export const DefinitionRequest = new RequestType<Position, LocationLink | undefined, void, void>('DefinitionRequest')
+
+export const HoverRequest = new RequestType<Position, Hover | undefined, void, void>('HoverRequest')
 
 export const ReferencesRequest = new RequestType<Position, Array<Location>, void, void>('ReferencesRequest')
 

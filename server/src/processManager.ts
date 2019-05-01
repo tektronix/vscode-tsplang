@@ -29,6 +29,7 @@ import {
     Disposable,
     DocumentSymbol,
     DocumentSymbolParams,
+    Hover,
     IConnection,
     InitializeParams,
     InitializeResult,
@@ -51,6 +52,7 @@ import {
     CompletionResolveRequest,
     DefinitionRequest,
     ErrorNotification,
+    HoverRequest,
     ReferencesRequest,
     SettingsNotification,
     SignatureRequest,
@@ -172,6 +174,12 @@ export class ProcessManager {
         )
     }
 
+    async hover(params: TextDocumentPositionParams): Promise<Hover | undefined> {
+        const child = await this.children.get(params.textDocument.uri)
+
+        return child.connection.sendRequest(HoverRequest, params.position)
+    }
+
     initialize(params: InitializeParams): InitializeResult {
         console.log('tsplang connection initialized')
 
@@ -186,6 +194,7 @@ export class ProcessManager {
                 },
                 definitionProvider: true,
                 documentSymbolProvider: true,
+                hoverProvider: true,
                 referencesProvider: true,
                 // display information about the function/method that is being called
                 signatureHelpProvider: {
