@@ -190,7 +190,7 @@ export class SymbolTable {
             result.path.push(search.index)
             search = (result.symbol.container)
                 ? this.lookupReverseSearch(range, result.symbol.children || [])
-                : search = this.lookupBinarySearch(range, result.symbol.children || [])
+                : this.lookupBinarySearch(range, result.symbol.children || [])
         }
 
         return (result.symbol !== undefined && result.path.length <= SymbolTable.MAX_SEARCH_PATH)
