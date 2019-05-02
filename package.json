@@ -144,7 +144,7 @@
         "license-compatibility-checker": "^0.3.3",
         "mocha": "^5.2.0",
         "mocha-typescript": "^1.1.17",
-        "nyc": "^13.3.0",
+        "nyc": "^14.1.0",
         "source-map-support": "^0.5.9",
         "ts-node": "^7.0.0",
         "tslint": "^5.12.0",
