@@ -16,8 +16,8 @@ coverage:
         branches:
           - master
       dev:
-        target: 85%
-        threshold: 5%
+        target: 75%
+        threshold: 10%
         branches:
           - dev
     patch:
@@ -26,7 +26,7 @@ coverage:
         branches:
           - master
       dev:
-        target: 85%
+        target: 80%
         branches:
           - dev
     changes: no
