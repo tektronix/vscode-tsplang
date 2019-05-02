@@ -112,7 +112,7 @@
         // "no-void-expression": [true, "ignore-arrow-function-shorthand"],
         "prefer-conditional-expression": [true, "check-else-if"],
         "prefer-object-spread": true,
-        "radix": true,
+        "radix": false,
         // "restrict-plus-operands": true,
         // "strict-boolean-expressions": true,
         // "strict-type-predicates": true,

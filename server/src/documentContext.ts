@@ -15,499 +15,790 @@
  */
 'use strict'
 
-import { CommonTokenStream, InputStream, ParserRuleContext, Token } from 'antlr4'
+import { CommonTokenStream, InputStream, Interval, ParserRuleContext, Token } from 'antlr4'
 // tslint:disable:no-submodule-imports
 import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
-import { RecognitionException } from 'antlr4/error/Errors'
-import { ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
+import { InputMismatchException, NoViableAltException, RecognitionException } from 'antlr4/error/Errors'
+import { ErrorNodeImpl, ParseTreeWalker, TerminalNode } from 'antlr4/tree/Tree'
 // tslint:enable:no-submodule-imports
-import { CompletionItemKind, Diagnostic, Position, SignatureHelp, TextDocument } from 'vscode-languageserver'
+import {
+    Diagnostic,
+    SymbolKind,
+    TextDocument,
+    TextDocumentItem
+} from 'vscode-languageserver'
 
-import { TspLexer, TspListener, TspParser } from './antlr4-tsplang'
-import { CompletionItem, ResolvedNamespace, SignatureInformation } from './decorators'
+import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tsplang'
+import {
+    DocumentSymbol,
+    FunctionLocalSymbol,
+    FunctionSymbol,
+    IToken,
+    TableSymbol,
+    VariableLocalSymbol,
+    VariableSymbol
+} from './decorators'
 import { CommandSet } from './instrument'
-import { TokenUtil } from './language-comprehension'
-import { ExclusiveContext, FuzzyOffsetMap } from './language-comprehension/exclusive-completion'
-import { AssignmentResults, getAssignmentCompletions } from './language-comprehension/parser-context-handler'
-import { ParameterContext, SignatureContext } from './language-comprehension/signature'
-import { SuggestionSortKind, TsplangSettings } from './settings'
+import {
+    getChildRecursively,
+    getTerminals,
+    StatementAmbiguity,
+    statementTokenRecognizer,
+    StatementType,
+    TokenUtil
+} from './language-comprehension'
+import { DebugParseTimer, DebugParseTree } from './parse'
+import { TsplangSettings } from './settings'
+import { SymbolTable } from './symbolTable'
 
-// tslint:disable-next-line:no-empty
-ConsoleErrorListener.prototype.syntaxError = (): void => {}
+ConsoleErrorListener.prototype.syntaxError = (): void => { return }
 
-declare class CorrectRecogException extends RecognitionException {
-    startToken?: Token
-}
-
-export class DocumentContext extends TspListener {
+// tslint:disable: member-ordering
+export class DocumentContext extends TspFastListener {
     readonly commandSet: CommandSet
-    readonly document: TextDocument
+    document: TextDocument
     errors: Array<Diagnostic>
-    private _settings: TsplangSettings
-    private _sortMap: Map<CompletionItemKind, SuggestionSortKind>
-    private enteredStatementException: boolean
-    /**
-     * A Map keyed to the ending offset of an assignment operator (`=`) or
-     * expression list separator (`,`). The associated key-value is an
-     * ExclusiveContext.
-     */
-    private exclusives: Map<number, ExclusiveContext>
-    private fuzzyOffsets: FuzzyOffsetMap
-    private fuzzySignatureOffsets: FuzzyOffsetMap
-    private inputStream: InputStream
-    private lexer: TspLexer
-    private parser: TspParser
-    private parseTree: ParserRuleContext
-    /**
-     * A Map keyed to the ending offset of a function call's open parenthesis.
-     * The associated key-value is a SignatureContext.
-     */
-    private signatures: Map<number, SignatureContext>
-    private readonly tableIndexRegexp: RegExp
-    private tokenStream: CommonTokenStream
+    exceptionTokenIndex?: number
+    inputStream: InputStream
+    lexer: TspFastLexer
+    parser: TspFastParser
+    settings: TsplangSettings
+    symbolTable: SymbolTable
+    tokens: Array<IToken>
+    tokenStream: CommonTokenStream
 
-    constructor(commandSet: CommandSet, document: TextDocument, settings: TsplangSettings) {
+    constructor(item: TextDocumentItem, commandSet: CommandSet, settings: TsplangSettings) {
         super()
 
+        this.document = TextDocument.create(item.uri, item.languageId, item.version, item.text)
         this.commandSet = commandSet
-        this.document = document
         this.settings = settings
-
-        this.tableIndexRegexp = new RegExp(/\[[0-9]\]/g)
-
-        this.update()
-    }
-
-    get settings(): TsplangSettings {
-        return this._settings
-    }
-
-    set settings(value: TsplangSettings) {
-        this._settings = value
-        this._sortMap = TsplangSettings.sortMap(this._settings)
-    }
-
-    exitFunctionCall(context: TspParser.FunctionCallContext): void {
-        // There's no exception handling in this function.
-        if (context.exception !== null) {
-            return
-        }
-
-        // Context decompositions.
-        const objectCall = context.objectCall()
-        const args = objectCall.args()
-
-        // Uninteresting context states
-        if (objectCall.NAME() !== null) {
-            //  functionCall  --{1}-->  objectCall  --{1}-->  ':' NAME
-            return
-        }
-
-        if (args.tableConstructor() !== null) {
-            //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  tableConstructor
-            return
-        }
-
-        if (args.string() !== null) {
-            //  functionCall  --{1}-->  objectCall  --{1}-->  args  --{1}-->  string
-            return
-        }
-
-        // Context TerminalNode filters.
-        const openParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
-            return value instanceof TerminalNode && value.symbol.text.localeCompare('(') === 0
-        })
-        const closeParenthesis = args.children.find((value: ParserRuleContext | TerminalNode) => {
-            return value instanceof TerminalNode && value.symbol.text.localeCompare(')') === 0
-        })
-
-        // We need both TerminalNodes in order to proceed.
-        if (!(openParenthesis instanceof TerminalNode)) {
-            return
-        }
-
-        if (!(closeParenthesis instanceof TerminalNode)) {
-            return
-        }
-
-        // Filter all matching signatures from the CommandSet
-        const signatureLabel = SignatureInformation.resolveNamespace({
-            label: context.getText().replace(this.tableIndexRegexp, '')
-        })
-        const matchingSignatures = this.commandSet.signatures.filter((signature: SignatureInformation) => {
-            return SignatureInformation.resolveNamespace(signature).localeCompare(signatureLabel) === 0
-        })
-
-        // If we have matching signatures, then create an associated SignatureContext.
-        if (matchingSignatures.length > 0) {
-            const tokens = this.tokenStream.tokens.slice(
-                openParenthesis.symbol.tokenIndex + 1,
-                closeParenthesis.symbol.tokenIndex
-            )
-
-            const signatureContext = SignatureContext.create(
-                openParenthesis.symbol,
-                tokens,
-                closeParenthesis.symbol,
-                matchingSignatures,
-                this.document.positionAt.bind(this.document)
-            )
-
-            // Register this SignatureContext
-            this.registerSignatureContext(openParenthesis.symbol.stop + 1, signatureContext)
-        }
-    }
-
-    exitStatement(context: TspParser.StatementContext): void {
-        let startIndex: number
-
-        // Use the parse tree if no exceptions occurred within the StatementContext.
-        if (context.exception === null) {
-            // Reset our exception status if necessary.
-            if (this.enteredStatementException) {
-                this.enteredStatementException = false
-            }
-
-            // Context decompositions.
-            const variableList = context.variableList()
-            const expressionList = context.expressionList()
-
-            // Context TerminalNode filters.
-            const assignmentTerminal = context.children.find((value: ParserRuleContext | TerminalNode) => {
-                return value instanceof TerminalNode && value.symbol.text.localeCompare('=') === 0
-            })
-
-            let assignmentResults: AssignmentResults
-            //  statement  --{1}-->  variableList
-            //             --{1}-->  '='
-            //             --{1}-->  expressionList
-            if (variableList !== null && assignmentTerminal instanceof TerminalNode && expressionList !== null) {
-                assignmentResults = getAssignmentCompletions(
-                    variableList,
-                    assignmentTerminal,
-                    expressionList,
-                    this.commandSet,
-                    this.document
-                )
-            }
-
-            if (assignmentResults !== undefined) {
-                if (assignmentResults.errors.length > 0) {
-                    this.errors.push(...assignmentResults.errors)
-                }
-
-                if (assignmentResults.assignments !== undefined) {
-                    this.registerExclusiveEntries([...assignmentResults.assignments.entries()])
-
-                    return
-                }
-            }
-
-            startIndex = context.start.tokenIndex
-        }
-        else {
-            // Exceptions tend to cluster, so only parse them once.
-            // Reset on the next StatementContext without an exception.
-            if (this.enteredStatementException) {
-                return
-            }
-
-            const exception: CorrectRecogException = context.exception
-
-            // Get the index of a starting Token.
-            startIndex = (exception.startToken === undefined)
-                ? context.start.tokenIndex
-                : exception.startToken.tokenIndex
-
-            this.enteredStatementException = true
-        }
-
-        // Get all Tokens starting at the exception index.
-        const remainingTokens = this.tokenStream.tokens.slice(startIndex)
-
-        // Cache Tokens if they form a valid namespace.
-        // (NAME types, full-stop accessors, and array indexers only)
-        let namespaceTokens = new Array<Token>()
-
-        for (let index = 0; index < remainingTokens.length; index++) {
-            const token = remainingTokens[index]
-
-            if (token.type === TspLexer.NAME || token.type === TspLexer.EOF) {
-                let resolvedNamespace: ResolvedNamespace
-                let depth: number
-
-                // If the current Token is the EOF, then register and return
-                if (token.type === TspLexer.EOF) {
-                    this.registerCompletionTokens(namespaceTokens)
-
-                    return
-                }
-
-                namespaceTokens.push(token)
-
-                this.registerCompletionTokens(namespaceTokens)
-
-                // Look ahead to see if the next Token is an open parenthesis.
-                const nextToken = remainingTokens[index + 1]
-
-                if (nextToken !== undefined && nextToken.text.localeCompare('(') === 0) {
-                    resolvedNamespace = ResolvedNamespace.create(namespaceTokens)
-                    depth = ResolvedNamespace.depth(resolvedNamespace)
-
-                    // Filter on any available signatures at our current namespace depth.
-                    const signatures = (this.commandSet.signatureDepthMap.get(depth) || []).filter(
-                        (value: SignatureInformation) => {
-                            return ResolvedNamespace.equal(
-                                SignatureInformation.resolveNamespace(value),
-                                resolvedNamespace
-                            )
-                        }
-                    )
-
-                    if (signatures.length > 0) {
-                        const nextIndex = index + 1
-
-                        // Try to reach the pairing close parenthesis.
-                        const closingIndex = SignatureContext.consumePair(nextIndex, remainingTokens)
-
-                        // If we found a close parenthesis.
-                        if (closingIndex !== nextIndex) {
-                            const closeParenthesis = remainingTokens[closingIndex]
-
-                            // Get all Tokens between the parentheses.
-                            const midTokens = remainingTokens.slice(nextIndex + 1, closingIndex)
-
-                            // Advance to the Token after the close parenthesis.
-                            index = closingIndex + 1
-
-                            // Register this signature context.
-                            this.registerSignatureContext(
-                                nextToken.stop + 1,
-                                SignatureContext.create(
-                                    nextToken,
-                                    midTokens,
-                                    closeParenthesis,
-                                    signatures,
-                                    this.document.positionAt.bind(this.document)
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-            else if (token.text.localeCompare('.') === 0) {
-                namespaceTokens.push(token)
-
-                this.registerCompletionTokens(namespaceTokens)
-            }
-            // Consume everything inside the array indexer.
-            else if (token.text.localeCompare('[') === 0) {
-                const startingIndex = index
-
-                index = SignatureContext.consumePair(index, remainingTokens)
-
-                // If we successfully consumed the array indexer.
-                if (index !== startingIndex) {
-                    // Add the array indexer to the namespace tokens.
-                    namespaceTokens.push(...remainingTokens.slice(startingIndex, index + 1))
-                }
-            }
-            // If this Token is an invalid namespace component.
-            else {
-                // Clear the cache.
-                namespaceTokens = new Array<Token>()
-            }
-        }
-    }
-
-    getCompletionItems(cursor: Position): Array<CompletionItem> | undefined {
-        let offset = this.document.offsetAt(cursor)
-
-        if (!this.exclusives.has(offset)) {
-            offset = this.fuzzyOffsets.get(offset) || offset
-        }
-
-        // Get available exclusive completion items.
-        const exclusiveContext = this.exclusives.get(offset)
-
-        if (exclusiveContext !== undefined) {
-            const exclusiveResult = new Array<CompletionItem>()
-
-            if (exclusiveContext.text !== undefined) {
-                // Only show those completions which partially match the text.
-                for (const completion of exclusiveContext.completions) {
-                    if (CompletionItem.namespaceMatch(ResolvedNamespace.create(exclusiveContext.text), completion)) {
-                        exclusiveResult.push(completion)
-                    }
-                }
-            }
-            else {
-                // Only add root completions from this exclusive context if no
-                // text is available to filter on.
-                exclusiveResult.push(...exclusiveContext.completions.filter((value: CompletionItem) => {
-                    return value.data === undefined
-                }))
-            }
-
-            if (exclusiveResult.length > 0) {
-                return CompletionItem.addSortText(this._sortMap, ...exclusiveResult)
-            }
-        }
-
-        const rootCompletions = this.commandSet.completionDepthMap.get(0)
-
-        if (rootCompletions === undefined || rootCompletions.length === 0) {
-            return
-        }
-
-        return CompletionItem.addSortText(this._sortMap, ...rootCompletions)
-    }
-
-    getSignatureHelp(cursor: Position): SignatureHelp | undefined {
-        const offset = this.document.offsetAt(cursor)
-
-        let signatureOffset = offset
-        if (!this.signatures.has(offset)) {
-            signatureOffset = this.fuzzySignatureOffsets.get(signatureOffset) || offset
-        }
-
-        const context = this.signatures.get(signatureOffset)
-
-        if (context === undefined) {
-            return
-        }
-
-        // Get the active parameter.
-        let activeParameter = 0
-        for (const parameter of context.parameters.values()) {
-            const startOffset = this.document.offsetAt(parameter.range.start)
-            const endOffset = this.document.offsetAt(parameter.range.end)
-
-            // If the cursor position falls within the parameter range.
-            if (offset >= startOffset && offset <= endOffset) {
-                activeParameter = parameter.index
-                break
-            }
-        }
-
-        return {
-            activeParameter,
-            activeSignature: 0,
-            signatures: context.signatures
-        }
-    }
-
-    registerCompletionTokens(tokens: Array<Token>): void {
-        if (tokens.length === 0) {
-            return
-        }
-
-        const resolvedTokens = ResolvedNamespace.create(tokens)
-        const depth = ResolvedNamespace.depth(resolvedTokens)
-
-        // Filter on any available completions at our current namespace depth.
-        const completions = (this.commandSet.completionDepthMap.get(depth) || []).filter(
-            (value: CompletionItem) => CompletionItem.namespaceMatch(resolvedTokens, value)
-        )
-
-        // Register any matching completions.
-        if (completions.length > 0) {
-            const stopOffset = tokens[tokens.length - 1].stop + 1
-
-            // If someone else hasn't already registered at this offset.
-            if (!this.exclusives.has(stopOffset)) {
-                this.registerExclusiveContext(stopOffset, {
-                    completions,
-                    text: TokenUtil.getString(...tokens)
-                })
-            }
-        }
-    }
-
-    registerExclusiveContext(offset: number, context: ExclusiveContext): void {
-        // Fuzz the exclusive offset range.
-        this.fuzzyOffsets.fuzz(this.document.getText(), offset)
-
-        // Add this new exclusive context.
-        this.exclusives.set(offset, context)
-    }
-
-    registerExclusiveEntries(entries: Array<[number, ExclusiveContext]>): void {
-        entries.forEach(([offset, context]: [number, ExclusiveContext]) => {
-            this.registerExclusiveContext(offset, context)
-        })
-    }
-
-    registerSignatureContext(offset: number, context: SignatureContext): void {
-        // Fuzz the signature offset range.
-        this.fuzzySignatureOffsets.fuzzRange(this.document, context.range)
-
-        // Add this new signature context starting at the stop offset of the open
-        // parenthesis.
-        this.signatures.set(offset, context)
-
-        // Fuzz parameters if they have completions and add them to the ExclusiveMap.
-        const allContent = this.document.getText()
-        context.parameters.forEach((value: ParameterContext, key: number) => {
-            // Continue if we don't have any completions
-            if (value.completions.length === 0) {
-                return
-            }
-
-            let text: string | undefined = this.document.getText(value.range).trim()
-            if (text.length === 0) {
-                text = undefined
-            }
-
-            this.fuzzyOffsets.fuzz(allContent, key)
-            this.exclusives.set(key, {
-                text,
-                completions: value.completions
-            })
-        })
-    }
-
-    resolveCompletion(item: CompletionItem): CompletionItem {
-        // We cannot provide completion documentation if none exist
-        if (this.commandSet.completionDocs.size === 0) {
-            return item
-        }
-
-        // Only service a given item if its "documentation" property is undefined.
-        if (item.documentation === undefined) {
-            const docCallback = this.commandSet.completionDocs.get(CompletionItem.resolveNamespace(item))
-
-            // Nothing to do if no command documentation exists for this label.
-            if (docCallback === undefined) {
-                return item
-            }
-
-            item.documentation = docCallback(this.commandSet.specification)
-        }
-
-        return item
-    }
-
-    update(): void {
-        this.enteredStatementException = false
         this.errors = new Array()
-        this.exclusives = new Map()
-        this.fuzzyOffsets = new FuzzyOffsetMap()
-        this.fuzzySignatureOffsets = new FuzzyOffsetMap()
-        this.signatures = new Map()
+        this.tokens = new Array()
+        this.symbolTable = new SymbolTable()
+    }
+
+    initialParse(): DocumentContext {
+        this.inputStream = new InputStream(this.document.getText())
+        this.lexer = new TspFastLexer(this.inputStream)
+        this.tokenStream = new CommonTokenStream(this.lexer)
+        this.tokenStream.fill()
+        this.tokens = this.tokenStream.tokens.map((value: Token) => IToken.create(value))
+        this.tokenStream.reset()
+        this.parser = new TspFastParser(this.tokenStream)
+        this.parser.buildParseTrees = true
+        this.parser.addParseListener(new DebugParseTimer(this.settings.debug.print.rootStatementParseTime))
+        if (this.settings.debug.print.rootStatementParseTree) {
+            this.parser.addParseListener(new DebugParseTree())
+        }
+        const root = this.parser.chunk()
+        ParseTreeWalker.DEFAULT.walk(this, root)
+
+        this.parser.removeParseListeners()
+
+        return this
+    }
+
+    reParse(from: number): void {
+        let start = from
+        if (from === -1) {
+            for (let i = this.tokens.length - 1; i >= 0; i--) {
+                if (this.tokens[i].channel === 0 && this.tokens[i].type !== TspFastLexer.EOF) {
+                    start = i + 1
+                    break
+                }
+            }
+        }
 
         this.inputStream = new InputStream(this.document.getText())
-        this.lexer = new TspLexer(this.inputStream)
-        this.tokenStream = new CommonTokenStream(this.lexer)
-        this.parser = new TspParser(this.tokenStream)
+        this.lexer = new TspFastLexer(this.inputStream)
+        this.tokenStream.setTokenSource(this.lexer)
+        this.tokenStream.fill()
+        this.tokens = this.tokenStream.tokens.map((value: Token) => IToken.create(value))
+        this.tokenStream.seek(start)
+        this.parser = new TspFastParser(this.tokenStream)
         this.parser.buildParseTrees = true
+        this.parser.addParseListener(new DebugParseTimer(this.settings.debug.print.rootStatementParseTime))
+        if (this.settings.debug.print.rootStatementParseTree) {
+            this.parser.addParseListener(new DebugParseTree())
+        }
+        const root = this.parser.chunk()
+        ParseTreeWalker.DEFAULT.walk(this, root)
 
-        this.parseTree = this.parser.chunk()
+        this.parser.removeParseListeners()
     }
 
-    walk(): Array<Diagnostic> {
-        ParseTreeWalker.DEFAULT.walk(this, this.parseTree)
+    exitChunk(): void {
+        // Mark all cached root symbols as completed.
+        this.symbolTable.complete.push(...(this.symbolTable.symbolCache.get(0) || []))
+        // Flush all symbols from the cache.
+        this.symbolTable.symbolCache = new Map()
+    }
 
-        return this.errors
+    enterStatement(context: TspFastParser.StatementContext): void {
+        this.symbolTable.cacheSymbol(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(context.start),
+            context.start.tokenIndex
+        ))
+        this.symbolTable.statementDepth++
+    }
+
+    exitStatement(context: TspFastParser.StatementContext): void {
+        this.symbolTable.statementDepth--
+
+        const pseudoContext = {
+            children: context.children,
+            exception: context.exception,
+            start: context.start,
+            stop: context.stop
+        }
+
+        const hasErrorNode = (value: ParserRuleContext | TerminalNode): boolean => value instanceof ErrorNodeImpl
+
+        if (pseudoContext.exception !== null) {
+            if (pseudoContext.children === null) {
+                this.symbolTable.lastSymbol()
+
+                return
+            }
+
+            this.handleExceptions(pseudoContext.exception, pseudoContext.start, pseudoContext.stop)
+
+            return
+        }
+        else if (pseudoContext.children !== null
+            && pseudoContext.children.some(hasErrorNode)) {
+
+            // This should always resolve to a number due to "some" evaluating true.
+            let lastChildrenErrorIndex: number
+            let interval: Interval
+            let i = 0
+            for (; i < pseudoContext.children.length; i++) {
+                if (pseudoContext.children[i] instanceof ErrorNodeImpl) {
+                    if (interval === undefined) {
+                        lastChildrenErrorIndex = i
+                        continue
+                    }
+
+                    // Generate a new exception symbol.
+                    const symbol = new DocumentSymbol(
+                        this.document.uri,
+                        TokenUtil.getPosition(this.tokens[interval.start] as Token),
+                        interval.start
+                    )
+                    symbol.exception = true
+                    symbol.statementType = StatementType.None
+                    symbol.kind = SymbolKind.File
+                    symbol.detail = pseudoContext.children[i].getText()
+                    symbol.end = TokenUtil.getPosition(
+                        this.tokens[interval.stop] as Token,
+                        this.tokens[interval.stop].text.length
+                    )
+                    symbol.name = `EXCEPT (${symbol.range.start.line + 1},${symbol.range.start.character + 1})`
+                    symbol.name += `->(${symbol.range.end.line + 1},${symbol.range.end.character + 1})`
+
+                    // Insert the exception symbol before the last symbol at this cache depth.
+                    this.symbolTable.symbolCache.get(this.symbolTable.statementDepth).splice(
+                        this.symbolTable.symbolCache.get(this.symbolTable.statementDepth).length - 1,
+                        0,
+                        symbol
+                    )
+
+                    interval = undefined
+                    lastChildrenErrorIndex = i
+                }
+                else {
+                    const childInterval = pseudoContext.children[i].getSourceInterval()
+                    if (interval === undefined) {
+                        interval = childInterval
+                    }
+                    else if (interval.stop < childInterval.stop) {
+                        interval = new Interval(interval.start, childInterval.stop)
+                    }
+                }
+            }
+
+            // If all children were ErrorNodes or children ended with an ErrorNode.
+            if (interval === undefined) {
+                return
+            }
+
+            // Update the context to exclude all children before the last ErrorNode.
+            pseudoContext.children = pseudoContext.children.slice(lastChildrenErrorIndex + 1)
+            pseudoContext.start = this.tokens[interval.start] as Token
+        }
+
+        // Get all relevant ITokens.
+        const tokens = this.tokens.slice(pseudoContext.start.tokenIndex, pseudoContext.stop.tokenIndex + 1)
+
+        /**
+         * We're interested in determining whether this is an Assignment,
+         * AssignmentLocal, Function, or FunctionLocal.
+         *
+         * **Assignment or AssignmentLocal**: will need to be split into
+         * multiple DocumentSymbols if multiple variables are declared.
+         *
+         * **Function or FunctionLocal**: each parameter will need its own
+         * DocumentSymbol.
+         */
+        let type = statementTokenRecognizer(tokens as Array<Token>)
+
+        if (StatementAmbiguity.is(type)) {
+            // Discard evaluaton of incomplete local statements.
+            // (It was ambiguous because the only Token was 'local'.)
+            if (StatementAmbiguity.equal(type as StatementAmbiguity, StatementAmbiguity.LOCAL)) {
+                return
+            }
+
+            // Check the children of the current context for an assignment operator (=) type TerminalNode.
+            type = (pseudoContext.children.some((value: ParserRuleContext | TerminalNode) => {
+                return (value instanceof TerminalNode) && (value.symbol.text.localeCompare('=') === 0)
+            }))
+            // Resolve the statement ambiguity based on whether we were able to find an assignment operator.
+            ? StatementType.Assignment
+            : StatementType.FunctionCall
+        }
+
+        /**
+         * Create symbols as lazily as possible.
+         */
+        if (type === StatementType.Assignment || type === StatementType.AssignmentLocal) {
+            const variableChildren = new Array<ParserRuleContext | TerminalNode>()
+            const tables = new Map<number, TableSymbol>()
+            let foundExpressions = 0
+            // Indices will be zero-based from the starting Token (which is index 0).
+            this.symbolTable.statementDepth++
+            for (const child of pseudoContext.children) {
+                if (child instanceof ParserRuleContext) {
+
+                    if (child instanceof TspFastParser.VariableContext) {
+                        this.handleGlobalVariables(child as TspFastParser.VariableContext)
+                        variableChildren.push(child)
+                    }
+                    else if (child instanceof TspFastParser.ExpressionContext) {
+                        const functionCall: TspFastParser.FunctionCallContext = getChildRecursively(
+                            child as ParserRuleContext,
+                            0,
+                            TspFastParser.FunctionCallContext,
+                            [TspFastParser.StatementContext]
+                        )
+
+                        if (functionCall !== null) {
+                            this.handleFunctionCalls(
+                                functionCall.start,
+                                functionCall.stop,
+                                getTerminals(functionCall)
+                            )
+                        }
+
+                        const tableConstructor: TspFastParser.TableConstructorContext = getChildRecursively(
+                            child as ParserRuleContext,
+                            0,
+                            TspFastParser.TableConstructorContext,
+                            [TspFastParser.StatementContext]
+                        )
+
+                        if (tableConstructor !== null) {
+                            // Store table symbol with the same key as the index
+                            // of its associated variable symbol.
+                            tables.set(foundExpressions, this.handleTableConstructors(tableConstructor))
+                        }
+
+                        foundExpressions++
+                    }
+                }
+                else {
+                    if ((child as TerminalNode).symbol.type === TspFastLexer.NAME) {
+                        this.handleLocalVariables(child as TerminalNode)
+                        variableChildren.push(child)
+                    }
+                }
+            }
+
+            // NOTE: If there are more variables than expressions, then the appropriate
+            //       variable symbol will be lazily modified by the symbol linker.
+            if (tables.size > 0 && variableChildren.length === foundExpressions) {
+                const tableIndices: Array<number> = [...tables.keys()]
+                // Merge any table into its variable.
+                const variables =
+                    this.symbolTable.symbolCache
+                    .get(this.symbolTable.statementDepth)
+                    .filter((value: DocumentSymbol) => {
+                        return value instanceof VariableSymbol
+                            || value instanceof VariableLocalSymbol
+                    })
+                    .map((value: DocumentSymbol, index: number) => {
+                        if (tableIndices.some((v: number) => index === v)) {
+                            const table = tables.get(index)
+
+                            if (table === undefined) {
+                                return value
+                            }
+
+                            value.container = table.container
+                            value.kind = table.kind
+                            value.table = table.table
+
+                            // NOTE: the commented out code will ideally connect a
+                            //          table.field = {}
+                            //       type instantiation to a symbol "table" that
+                            //       has already been completed.
+
+                            // if (variableChildren[index] instanceof ParserRuleContext) {
+                            //     const child = variableChildren[index] as TspFastParser.VariableContext
+                            //     const fields = variableContextRecognizer(child)
+
+                            //     if (fields.length <= 1) {
+                            //         return value
+                            //     }
+
+                            //     const rootField = fields.shift()
+
+                            //     value.declaration = this.symbolTable.link(rootField.name, value.range)
+
+                            //     if (value.declaration !== undefined) {
+                            //         const search = this.symbolTable.lookup(value.declaration.targetSelectionRange)
+
+                            //         if (search !== undefined) {
+                            //             const updatedSymbol = (search.symbol.local)
+                            //                 ? TableLocalSymbol.from(search.symbol as VariableLocalSymbol)
+                            //                 : TableSymbol.from(search.symbol as VariableSymbol)
+
+                            //             const error = updatedSymbol.setField(fields, table)
+
+                            //             if (error !== undefined) {
+                            //                 this.errors.push(error)
+
+                            //                 return value
+                            //             }
+
+                            //             this.symbolTable.updateSymbol(search.path, updatedSymbol)
+                            //         }
+                            //     }
+                            // }
+
+                            value.children = table.children
+
+                            return value
+                        }
+                    })
+
+                // TODO: back out a depth and check if the remaining variables are instantiating
+                //       fields in a table we found during this parse session.
+
+                this.symbolTable.symbolCache.set(this.symbolTable.statementDepth, variables)
+            }
+
+            this.symbolTable.statementDepth--
+
+            const lastSymbol = this.symbolTable.lastSymbol()
+            lastSymbol.statementType = StatementType.Assignment
+            lastSymbol.detail = 'Assignment Container'
+            lastSymbol.container = true
+            lastSymbol.kind = SymbolKind.File
+
+            const lastToken = tokens[tokens.length - 1]
+            lastSymbol.end = TokenUtil.getPosition(lastToken as Token, lastToken.text.length)
+
+            lastSymbol.name = `(${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
+            lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
+
+            this.symbolTable.cacheSymbol(lastSymbol)
+        }
+        else if (type === StatementType.Function || type === StatementType.FunctionLocal) {
+            this.handleFunctionDeclarations(tokens, type)
+        }
+        else {
+            if (type === StatementType.For && context.children !== null) {
+                this.handleForLoops(context.children)
+            }
+
+            const lastSymbol = this.symbolTable.lastSymbol()
+            lastSymbol.statementType = type
+            lastSymbol.detail = (typeof(type) === 'object')
+                ? StatementAmbiguity.toString(type)
+                : StatementType.toString(type)
+            lastSymbol.kind = SymbolKind.File
+
+            const lastToken = tokens[tokens.length - 1]
+            lastSymbol.end = TokenUtil.getPosition(lastToken as Token, lastToken.text.length)
+
+            lastSymbol.name = `(${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
+            lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
+
+            if (type === StatementType.FunctionCall && context.children !== null) {
+                const functionCallContext = context.getChild(0, TspFastParser.FunctionCallContext)
+
+                if (functionCallContext !== null) {
+                    this.handleFunctionCalls(
+                        functionCallContext.start,
+                        functionCallContext.stop,
+                        getTerminals(functionCallContext),
+                        lastSymbol
+                    )
+                }
+
+                return
+            }
+
+            this.symbolTable.cacheSymbol(lastSymbol)
+        }
+    }
+
+    exitExpression(context: TspFastParser.ExpressionContext): void {
+        const pseudoContext = {
+            children: context.children,
+            exception: context.exception,
+            start: context.start,
+            stop: context.stop
+        }
+
+        if (pseudoContext.exception !== null) {
+            this.symbolTable.cacheSymbol(new DocumentSymbol(
+                this.document.uri,
+                TokenUtil.getPosition(context.start),
+                context.start.tokenIndex
+            ))
+
+            this.handleExceptions(pseudoContext.exception, pseudoContext.start, pseudoContext.stop)
+        }
+    }
+
+    handleExceptions(exception: Error, start: Token, stop: Token): void {
+        // NOTE: Later calls to retrieve the last symbol do not have no worry about
+        // mis-associated child symbols because they will be removed and attached
+        // during this call.
+        const lastSymbol = this.symbolTable.lastSymbol()
+
+        lastSymbol.exception = true
+        lastSymbol.statementType = StatementType.None
+        lastSymbol.kind = SymbolKind.File
+
+        if (exception instanceof InputMismatchException) {
+            lastSymbol.detail = `Unexpected "${exception.offendingToken.text}".`
+            lastSymbol.start = TokenUtil.getPosition(start)
+            lastSymbol.end = TokenUtil.getPosition(
+                stop,
+                stop.text.length
+            )
+        }
+        else {
+            const lastTokenIndex = (stop.tokenIndex < start.tokenIndex)
+                ? start.tokenIndex
+                : stop.tokenIndex
+
+            lastSymbol.end = TokenUtil.getPosition(
+                this.tokens[lastTokenIndex] as Token,
+                this.tokens[lastTokenIndex].text.length
+            )
+
+            if (exception instanceof NoViableAltException) {
+                lastSymbol.detail = 'Invalid statement.'
+
+                const lastTokenText = this.tokens[lastTokenIndex].text
+                const lastTokenType = this.tokens[lastTokenIndex].type
+                if (lastTokenText.localeCompare('.') === 0
+                    || lastTokenText.localeCompare(':') === 0
+                    || lastTokenType === TspFastLexer.NAME) {
+
+                    const preceedingIndex = start.tokenIndex - 1
+                    if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(',') === 0
+                        || (this.tokens[preceedingIndex] || { text: '' }).text.localeCompare('=') === 0) {
+                        // Modify the symbol before last to be an exception.
+                        const symbolBeforeLastSymbol = this.symbolTable.lastSymbol()
+
+                        if (symbolBeforeLastSymbol !== undefined) {
+                            symbolBeforeLastSymbol.exception = true
+                            symbolBeforeLastSymbol.end = lastSymbol.end
+                            symbolBeforeLastSymbol.detail = 'Identifier expected.'
+
+                            this.symbolTable.cacheSymbol(symbolBeforeLastSymbol)
+
+                            return
+                        }
+                    }
+
+                    if ((this.tokens[preceedingIndex] || { text: '' }).text.localeCompare('.') === 0
+                        || (this.tokens[preceedingIndex] || { text: '' }).text.localeCompare(':') === 0) {
+                        const symbolBeforeLastSymbol = this.symbolTable.lastSymbol()
+
+                        // Extend the symbol before last if it was also an exception.
+                        if (symbolBeforeLastSymbol !== undefined && symbolBeforeLastSymbol.exception) {
+                            symbolBeforeLastSymbol.end = lastSymbol.end
+
+                            if (symbolBeforeLastSymbol.name.startsWith('EXCEPT')) {
+                                symbolBeforeLastSymbol.name = 'EXCEPT '
+                                symbolBeforeLastSymbol.name += `(${symbolBeforeLastSymbol.range.start.line + 1},`
+                                symbolBeforeLastSymbol.name += `${symbolBeforeLastSymbol.range.start.character + 1})`
+                                symbolBeforeLastSymbol.name += `->(${symbolBeforeLastSymbol.range.end.line + 1},`
+                                symbolBeforeLastSymbol.name += `,${symbolBeforeLastSymbol.range.end.character + 1})`
+                            }
+
+                            this.symbolTable.cacheSymbol(symbolBeforeLastSymbol)
+
+                            return
+                        }
+                    }
+
+                    lastSymbol.detail = 'Identifier expected.'
+                    lastSymbol.statementType = StatementAmbiguity.FLOATING_TOKEN
+                }
+            }
+            // tslint:disable-next-line: prefer-conditional-expression
+            else if (exception instanceof RecognitionException) {
+                lastSymbol.detail = 'TSPLang has no prettification support for ANTLR4 RecognitionExceptions.'
+            }
+            else {
+                lastSymbol.detail = 'ANTLR4 threw an unrecognized exception type.'
+            }
+        }
+
+        lastSymbol.name = `EXCEPT (${lastSymbol.range.start.line + 1},${lastSymbol.range.start.character + 1})`
+        lastSymbol.name += `->(${lastSymbol.range.end.line + 1},${lastSymbol.range.end.character + 1})`
+
+        this.symbolTable.cacheSymbol(lastSymbol)
+    }
+
+    handleForLoops(children: Array<ParserRuleContext | TerminalNode>): void {
+        for (const child of children) {
+            if (child instanceof TerminalNode) {
+                if (child.symbol.text.localeCompare('in') === 0 || child.symbol.text.localeCompare(',') === 0) {
+                    break
+                }
+                else if (child.symbol.type === TspFastLexer.NAME) {
+                    this.symbolTable.statementDepth++
+                    this.handleLocalVariables(child)
+                    this.symbolTable.statementDepth--
+                }
+            }
+        }
+    }
+
+    handleFunctionCalls(
+        start: Token,
+        stop: Token,
+        terminals: Array<TerminalNode>,
+        symbol?: DocumentSymbol
+    ): void {
+        const functionCall = (symbol !== undefined)
+            ? symbol
+            : new DocumentSymbol(this.document.uri, TokenUtil.getPosition(start), start.tokenIndex)
+
+        functionCall.statementType = functionCall.statementType || StatementType.FunctionCall
+        functionCall.kind = functionCall.kind || SymbolKind.File
+        functionCall.detail = functionCall.detail || StatementType.toString(StatementType.FunctionCall)
+
+        if (functionCall.name === undefined) {
+            functionCall.name = ''
+        }
+
+        if (functionCall.selectionRange === undefined) {
+            functionCall.selectionRange = {
+                end: undefined,
+                start: undefined
+            }
+        }
+
+        for (const terminal of terminals) {
+            if (terminal.symbol.type === TspFastLexer.NAME
+                || terminal.symbol.text.localeCompare('.') === 0) {
+
+                if (symbol === undefined) {
+                    functionCall.name += terminal.symbol.text
+                }
+
+                if (functionCall.selectionRange.start === undefined) {
+                    functionCall.selectionRange.start = TokenUtil.getPosition(terminal.symbol)
+                }
+
+                functionCall.selectionRange.end = TokenUtil.getPosition(
+                    terminal.symbol,
+                    terminal.symbol.text.length
+                )
+
+                continue
+            }
+
+            break
+        }
+
+        functionCall.end = TokenUtil.getPosition(stop, stop.text.length)
+
+        functionCall.builtin = this.commandSet.isCompletion(terminals[0].symbol)
+
+        if (functionCall.builtin) {
+            functionCall.detail = '\u2302 ' + functionCall.detail
+        }
+        else {
+            functionCall.declaration = this.symbolTable.link(functionCall.name, functionCall.selectionRange)
+        }
+
+        this.symbolTable.cacheSymbol(functionCall)
+    }
+
+    handleFunctionDeclarations(tokens: Array<IToken>, type: StatementType): void {
+        // tslint:disable-next-line: no-magic-numbers
+        const startIndex = (type === StatementType.Function) ? 1 : 2
+        const startSelectionToken = tokens[startIndex]
+        let endSelectionToken: IToken
+        const paramTokens = new Array<IToken>()
+        for (let i = startIndex; i < tokens.length; i++) {
+            // Lookhead for the opening parenthesis if we have yet to find it and a lookahead is possible.
+            if (endSelectionToken === undefined && i + 1 < tokens.length) {
+                if (tokens[i + 1].text.localeCompare('(') === 0) {
+                    let endSelectionIndex = tokens[i].tokenIndex
+                    endSelectionIndex -= tokens[0].tokenIndex
+                    endSelectionToken = tokens[endSelectionIndex]
+                }
+
+                continue
+            }
+
+            if (tokens[i].text.localeCompare(')') === 0) {
+                break
+            }
+
+            const child = tokens[i]
+            if (child.type === TspFastParser.NAME || child.type === TspFastParser.VARARG) {
+                const paramIndex = child.tokenIndex - tokens[0].tokenIndex
+                paramTokens.push(tokens[paramIndex])
+            }
+        }
+
+        const lastSymbol = this.symbolTable.lastSymbol()
+
+        const functionSymbol = (type === StatementType.Function)
+            ? FunctionSymbol.from(lastSymbol)
+            : FunctionLocalSymbol.from(lastSymbol)
+        if (functionSymbol.children === undefined && paramTokens.length > 0) {
+            functionSymbol.children = new Array()
+        }
+        functionSymbol.selectionRange = {
+            end: TokenUtil.getPosition(endSelectionToken as Token, endSelectionToken.text.length),
+            start: TokenUtil.getPosition(startSelectionToken as Token)
+        }
+        functionSymbol.name = this.document.getText(functionSymbol.selectionRange)
+        functionSymbol.end = TokenUtil.getPosition(
+            tokens[tokens.length - 1] as Token,
+            tokens[tokens.length - 1].text.length
+        )
+
+        for (const token of paramTokens) {
+            const symbol = new VariableLocalSymbol(
+                functionSymbol.uri,
+                TokenUtil.getPosition(token as Token),
+                tokens[0].tokenIndex
+            )
+            symbol.detail = 'local'
+            symbol.end = TokenUtil.getPosition(token as Token, token.text.length)
+
+            if (token.type === TspFastParser.NAME) {
+                symbol.statementType = StatementType.AssignmentLocal
+                symbol.kind = StatementType.toSymbolKind(symbol.statementType)
+                symbol.name = token.text
+            }
+            else { // token type is VARARG
+                // Variadic functions create a table called "arg" containing all variable arguments.
+                symbol.children = new Array()
+                symbol.statementType = StatementType.AssignmentLocal
+                symbol.kind = SymbolKind.Object
+                symbol.name = 'arg'
+
+                // The "arg" table contains a length attribute "n"
+                const argLength = new VariableLocalSymbol(functionSymbol.uri, symbol.start, symbol.startTokenIndex)
+                argLength.detail = 'length'
+                argLength.end = symbol.end
+                argLength.statementType = StatementType.AssignmentLocal
+                argLength.kind = SymbolKind.Property
+                argLength.name = 'n'
+
+                symbol.children.push(argLength)
+            }
+
+            functionSymbol.updateReferences(symbol)
+
+            functionSymbol.children.push(symbol)
+        }
+
+        this.symbolTable.cacheSymbol(functionSymbol)
+    }
+
+    handleGlobalVariables(context: TspFastParser.VariableContext): void {
+        const variable = VariableSymbol.from(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(context.start),
+            context.start.tokenIndex
+        ))
+
+        variable.selectionRange = {
+            end: TokenUtil.getPosition(context.stop, context.stop.text.length),
+            start: TokenUtil.getPosition(context.start)
+        }
+        variable.name = this.document.getText(variable.selectionRange)
+        variable.end = (context.parentCtx instanceof TspFastParser.StatementContext)
+            ? TokenUtil.getPosition(context.parentCtx.stop, context.parentCtx.stop.text.length)
+            : variable.selectionRange.end
+
+        variable.declaration = this.symbolTable.link(variable.name, variable.range)
+        if (variable.declaration !== undefined) {
+            variable.detail = 'reference'
+        }
+
+        const index = this.tokens.slice(context.start.tokenIndex, context.stop.tokenIndex + 1).findIndex(
+            (value: IToken) => value.type === TspFastLexer.NAME
+        )
+        if (index > -1) {
+            variable.builtin = this.commandSet.isCompletion(this.tokens[context.start.tokenIndex + index])
+        }
+
+        if (variable.builtin) {
+            variable.detail = '\u2302 ' + variable.detail
+        }
+
+        this.symbolTable.cacheSymbol(variable)
+    }
+
+    handleLocalVariables(terminal: TerminalNode): void {
+        const local = VariableLocalSymbol.from(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(terminal.symbol),
+            terminal.symbol.tokenIndex
+        ))
+
+        local.selectionRange = {
+            end: TokenUtil.getPosition(terminal.symbol, terminal.symbol.text.length),
+            start: TokenUtil.getPosition(terminal.symbol)
+        }
+        local.name = this.document.getText(local.selectionRange)
+        local.end = (terminal.parentCtx instanceof TspFastParser.StatementContext)
+            ? TokenUtil.getPosition(terminal.parentCtx.stop, terminal.parentCtx.stop.text.length)
+            : local.selectionRange.end
+
+        local.declaration = this.symbolTable.link(local.name, local.range)
+        if (local.declaration !== undefined) {
+            local.detail = 'reference'
+        }
+
+        this.symbolTable.cacheSymbol(local)
+    }
+
+    handleTableConstructors(context: TspFastParser.TableConstructorContext): TableSymbol {
+        // TODO: handle fieldLists
+
+        const table = TableSymbol.from(new DocumentSymbol(
+            this.document.uri,
+            TokenUtil.getPosition(context.start),
+            context.start.tokenIndex
+        ) as VariableSymbol)
+
+        table.end = TokenUtil.getPosition(context.stop, context.stop.text.length)
+
+        table.name = `(${table.range.start.line + 1},${table.range.start.character + 1})`
+        table.name += `->(${table.range.end.line + 1},${table.range.end.character + 1})`
+
+        table.detail = 'table'
+
+        return table
     }
 }

@@ -13,20 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { TspManager } from '../../tspManager'
-import { TspPool } from '../../tspPool'
+// import { TspManager } from '../../tspManager'
+// import { TspPool } from '../../tspPool'
 
-declare module '../../tspManager' {
-    export interface TspManager {
-        count(): number
-        getPool(): TspPool
-    }
-}
-TspManager.prototype.count = function(): number {
-    // tslint:disable-next-line:no-invalid-this
-    return this.dict.size
-}
-TspManager.prototype.getPool = function(): TspPool {
-    // tslint:disable-next-line:no-invalid-this
-    return this.pool
-}
+// declare module '../../tspManager' {
+//     export interface TspManager {
+//         count(): number
+//         getPool(): TspPool
+//     }
+// }
+// TspManager.prototype.count = function(): number {
+//     // tslint:disable-next-line:no-invalid-this
+//     return this.dict.size
+// }
+// TspManager.prototype.getPool = function(): TspPool {
+//     // tslint:disable-next-line:no-invalid-this
+//     return this.pool
+// }

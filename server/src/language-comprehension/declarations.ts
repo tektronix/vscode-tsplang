@@ -15,11 +15,18 @@
  */
 'use strict'
 
-export { GlobalDeclaration, LocalDeclaration } from './declarations'
-export { getChildRecursively } from './getChildRecursively'
-export { getTerminals } from './getTerminals'
-export { statementTokenRecognizer, variableContextRecognizer } from './recognizers'
-export { SignatureContext } from './signatureContext'
-export { StatementAmbiguity, StatementType } from './statements'
-export { Field, FieldType } from './tables'
-export { TokenUtil } from './tokenUtil'
+import { StatementType } from './statements'
+
+export namespace LocalDeclaration {
+    export function is(type: StatementType): boolean {
+        return (type === StatementType.AssignmentLocal) || (type === StatementType.FunctionLocal)
+    }
+}
+export type LocalDeclaration = StatementType.AssignmentLocal | StatementType.FunctionLocal
+
+export namespace GlobalDeclaration {
+    export function is(type: StatementType): boolean {
+        return (type === StatementType.Assignment) || (type === StatementType.Function)
+    }
+}
+export type GlobalDeclaration = StatementType.Assignment | StatementType.Function

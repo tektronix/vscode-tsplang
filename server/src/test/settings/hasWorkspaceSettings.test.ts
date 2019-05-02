@@ -18,18 +18,18 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { hasWorkspaceSettings } from '../../settings'
-import '../fixtures/vscode-languageserver.fixture'
+// import { hasWorkspaceSettings } from '../../settings'
+// import '../fixtures/vscode-languageserver.fixture'
 
-describe('Settings', () => {
-    describe('hasWorkspaceSettings()', () => {
-        it('returns false if ClientCapabilities.workspace is undefined', () => {
-            expect(hasWorkspaceSettings({})).to.be.false
-        })
+// describe('Settings', () => {
+//     describe('hasWorkspaceSettings()', () => {
+//         it('returns false if ClientCapabilities.workspace is undefined', () => {
+//             expect(hasWorkspaceSettings({})).to.be.false
+//         })
 
-        it('returns the value of ClientCapabilities.workspace.configuration', () => {
-            expect(hasWorkspaceSettings({ workspace: { configuration: true } })).to.be.true
-            expect(hasWorkspaceSettings({ workspace: { configuration: false } })).to.be.false
-        })
-    })
-})
+//         it('returns the value of ClientCapabilities.workspace.configuration', () => {
+//             expect(hasWorkspaceSettings({ workspace: { configuration: true } })).to.be.true
+//             expect(hasWorkspaceSettings({ workspace: { configuration: false } })).to.be.false
+//         })
+//     })
+// })

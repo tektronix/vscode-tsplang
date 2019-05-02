@@ -22,7 +22,7 @@ import 'mocha'
 
 import { ResolvedNamespace } from '../../decorators'
 // tslint:disable-next-line:no-import-side-effect
-import '../fixtures/antlr4.fixture'
+import '../../decorators/antlr4'
 
 describe('Decorators', () => {
     describe('ResolvedNamespace', () => {

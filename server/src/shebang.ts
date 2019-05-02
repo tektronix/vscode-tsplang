@@ -19,15 +19,18 @@ import { Diagnostic, DiagnosticSeverity, Range } from 'vscode-languageserver'
 
 import { Model } from './model'
 
+interface Assignment {
+    model: Model
+    range: Range
+}
+
 /**
  * Valid shebang example:
  *
  * --#!2450;node[1]=2636;node[11]=2461
  */
-export interface Shebang {
-    master: Model
-    nodes?: Map<number, Model>
-    text: string
+export interface Shebang extends Assignment {
+    nodes?: Map<number, Assignment>
 }
 export namespace Shebang {
     export const PREFIX = '--#!'
@@ -44,7 +47,7 @@ export namespace Shebang {
 
         return {
             end: {
-                character: start + item.length,
+                character: start + item.trim().length,
                 line: 0
             },
             start: {
@@ -54,21 +57,26 @@ export namespace Shebang {
         }
     }
 
+    export function has(text: string): boolean {
+        return shebangRegExp.test(text)
+    }
+
     export function tokenize(line: string): [Shebang, Array<Diagnostic>] {
         // Test that the line begins with a shebang prefix.
         if (!shebangRegExp.test(line)) {
             // Resolve to Lua completions should no shebang line exist.
-            return [{ master: Model.LUA, text: line}, []]
+            return [{ model: Model.LUA, range: Range.create(0, 0, 0, 0)}, []]
         }
 
         // Remove the prefix and split on the separator.
         const rawBangArray = line.replace(PREFIX, '').split(SEPARATOR)
 
-        const result: Shebang = { master : undefined, text: line }
+        const result: Shebang = { model: undefined, range: Range.create(0, 0, 0, Number.MAX_VALUE) }
 
         const errors: Array<Diagnostic> = new Array()
 
-        let encounteredCharacters = 0
+        let encounteredCharacters = line.indexOf(PREFIX)
+        encounteredCharacters = (encounteredCharacters === -1) ? 0 : encounteredCharacters
         rawBangArray.forEach((item: string, index: number) => {
             if (item.length === 0) {
                 return
@@ -81,20 +89,22 @@ export namespace Shebang {
             }
 
             // Check for the required master model.
-            if (result.master === undefined) {
+            if (!nodeRegExp.test(niceItem) && result.model === undefined) {
                 const supportedModel = Model.fromString(niceItem)
+
+                result.range = itemRange(item, index, encounteredCharacters)
 
                 if (supportedModel === undefined) {
                     errors.push(Diagnostic.create(
-                        itemRange(item, index, encounteredCharacters),
-                        `Model "${item.trim()}" is an invalid or unsupported model.`,
+                        result.range,
+                        `Model "${item.trim()}" is invalid or unsupported.`,
                         DiagnosticSeverity.Error,
                         'shebang-model',
                         'tsplang'
                     ))
                 }
                 else {
-                    result.master = supportedModel
+                    result.model = supportedModel
                 }
             }
             else if (nodeRegExp.test(niceItem)) {
@@ -141,10 +151,10 @@ export namespace Shebang {
                     error = true
                 }
 
-                const supportedNodeModel = Model.fromString(nodeModel)
+                const model = Model.fromString(nodeModel)
 
                 // If the specified model is invalid.
-                if (supportedNodeModel === undefined) {
+                if (model === undefined) {
                     // If we have made it this far, we can be assured that we have an assignment operator.
                     // But if not, the whole node assignment will be placed in the error message. (Because
                     // lastIndexOf returns -1 on not found and string.slice(0) returns the original string.)
@@ -167,7 +177,7 @@ export namespace Shebang {
                 }
 
                 if (!error) {
-                    result.nodes.set(nodeNumber, supportedNodeModel)
+                    result.nodes.set(nodeNumber, { model, range: itemRange(item, index, encounteredCharacters) })
                 }
             }
             else {
@@ -184,8 +194,8 @@ export namespace Shebang {
         })
 
         // Fall back on Lua suggestions if we failed to tokenize a master model.
-        if (result.master === undefined) {
-            return [{ master: Model.LUA, text: line}, errors]
+        if (result.model === undefined) {
+            return [{ model: Model.LUA, range: result.range}, errors]
         }
 
         return [result, errors]

@@ -400,7 +400,7 @@ describe('Instrument Provider', () => {
             let signatureLength: number
 
             beforeEach('Generate', () => {
-                commandSet = generateCommandSet(test.given.api, emptySpec)
+                commandSet = generateCommandSet(test.given.api, emptySpec, true)
                 completionDocLength = test.expected.filter((value: ExpectedCompletion) => !!value.formattable).length
                 signatureLength = 0
                 test.expected.forEach((value: ExpectedCompletion) => {
@@ -582,6 +582,9 @@ describe('Instrument Provider', () => {
                 })
 
                 it('Contains no additional #completions', () => {
+                    if (commandSet.completions.length !== completionLength) {
+                        console.log(`found extra completions: ${JSON.stringify(commandSet.completions)}`)
+                    }
                     expect(commandSet.completions.length).to.equal(completionLength)
                 })
 
@@ -702,7 +705,7 @@ describe('Instrument Provider', () => {
                 it(errorTest.name, () => {
                     expect(
                         () => {
-                            generateCommandSet(errorTest.given.api, errorTest.given.spec)
+                            generateCommandSet(errorTest.given.api, errorTest.given.spec, false)
                         }
                     ).to.throw(errorTest.expected)
                 })

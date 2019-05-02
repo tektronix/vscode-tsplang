@@ -15,11 +15,20 @@
  */
 'use strict'
 
-export { GlobalDeclaration, LocalDeclaration } from './declarations'
-export { getChildRecursively } from './getChildRecursively'
-export { getTerminals } from './getTerminals'
-export { statementTokenRecognizer, variableContextRecognizer } from './recognizers'
-export { SignatureContext } from './signatureContext'
-export { StatementAmbiguity, StatementType } from './statements'
-export { Field, FieldType } from './tables'
-export { TokenUtil } from './tokenUtil'
+import { ClientCapabilities } from 'vscode-languageserver'
+
+export function localWorkspaceSettings(clientCapabilities: ClientCapabilities): boolean {
+    if (clientCapabilities.workspace === undefined) {
+        return false
+    }
+
+    return clientCapabilities.workspace.configuration
+}
+
+export function multiWorkspaceSettings(clientCapabilities: ClientCapabilities): boolean {
+    if (clientCapabilities.workspace === undefined) {
+        return false
+    }
+
+    return clientCapabilities.workspace.workspaceFolders
+}

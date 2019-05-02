@@ -13,13 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-'use strict'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-export { GlobalDeclaration, LocalDeclaration } from './declarations'
-export { getChildRecursively } from './getChildRecursively'
-export { getTerminals } from './getTerminals'
-export { statementTokenRecognizer, variableContextRecognizer } from './recognizers'
-export { SignatureContext } from './signatureContext'
-export { StatementAmbiguity, StatementType } from './statements'
-export { Field, FieldType } from './tables'
-export { TokenUtil } from './tokenUtil'
+import { SignatureContext } from '../../language-comprehension'
+
+describe('Language Comprehension', () => {
+    describe('signature', () => {
+        describe('SignatureContext', () => {
+            it.skip('needs test coverage')
+        })
+    })
+})

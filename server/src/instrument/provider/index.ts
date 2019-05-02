@@ -15,8 +15,18 @@
  */
 'use strict'
 
-import { ApiSpec, BaseApiSpec, ChildApiSpec, CommandSet, CommandSetInterface, ExclusiveCompletionApiSpec, InstrumentSpec, SignatureDataApiSpec } from '..'
+import {
+    ApiSpec,
+    BaseApiSpec,
+    ChildApiSpec,
+    CommandSet,
+    CommandSetInterface,
+    ExclusiveCompletionApiSpec,
+    InstrumentSpec,
+    SignatureDataApiSpec
+} from '..'
 import { CompletionItem, MarkupContentCallback, ParameterInformation, SignatureInformation } from '../../decorators'
+import { TsplangSettings } from '../../settings'
 
 /**
  * Convert a root namespace label to the module name which stores it. For example, *buffer.write* becomes
@@ -284,14 +294,6 @@ function addSignatureExclusives(
     return modifiedSignatures
 }
 
-function dropExclusiveCompletions(
-    completions: Array<CompletionItem>
-): Array<CompletionItem> {
-    return completions.filter((completion: CompletionItem) => {
-        return ! completion.exclusive
-    })
-}
-
 function formatSignatures(
     spec: InstrumentSpec,
     signatures: Array<SignatureInformation>
@@ -321,7 +323,11 @@ function formatSignatures(
     return result
 }
 
-export function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpec): CommandSet {
+export function generateCommandSet(
+    apiSpecs: Array<ApiSpec>,
+    spec: InstrumentSpec,
+    hideInputEnums: boolean
+): CommandSet {
     // Load all enumeration completions first to allow cross-namespace enumeration
     // requests in the ApiSpec.
     const enumerations = new Array<CompletionItem>()
@@ -353,8 +359,12 @@ export function generateCommandSet(apiSpecs: Array<ApiSpec>, spec: InstrumentSpe
         result.add(cmdModule)
     })
 
-    // Add non-exclusive enumeration completions to the final command set.
-    result.add({ completions: dropExclusiveCompletions(enumerations) })
+    // Add enumeration completions to the final command set.
+    result.add({
+        completions: (hideInputEnums)
+            ? TsplangSettings.hideInputEnumerations(enumerations)
+            : enumerations
+    })
 
     return result
 }

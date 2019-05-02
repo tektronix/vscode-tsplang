@@ -2,6 +2,8 @@
 out
 node_modules
 client/server
+*.interp
+*.tokens
 *.vsix
 server/src/instrument/raw-tsb-help/*/
 npm-debug.log

@@ -15,12 +15,35 @@
  */
 'use strict'
 
-import { CompletionItemKind } from 'vscode-languageserver'
+import { CompletionItemKind, TextDocumentContentChangeEvent } from 'vscode-languageserver'
+
+import { CompletionItem } from '../decorators'
 
 import { SuggestionSortKind } from './suggestionSortKind'
 
+export interface DebugOpenSettings {
+    documentInitializationDelay: null | number
+}
+
+export interface DebugPrintSettings {
+    documentChangeEvents: boolean
+    rootStatementParseTime: boolean
+    rootStatementParseTree: boolean
+}
+
 export interface TsplangSettings {
-    enumerationSuggestions: SuggestionSortKind
+    debug: {
+        open: DebugOpenSettings;
+        outline: boolean;
+        print: DebugPrintSettings;
+    }
+    outline: {
+        showInstrumentSettings: boolean;
+    }
+    suggestions: {
+        enumerationOrder: SuggestionSortKind;
+        hideInputEnumerations: boolean;
+    }
 }
 export namespace TsplangSettings {
     /**
@@ -29,8 +52,55 @@ export namespace TsplangSettings {
      */
     export function defaults(): TsplangSettings {
         return {
-            enumerationSuggestions: SuggestionSortKind.INLINE
+            debug: {
+                open: {
+                    // tslint:disable-next-line: no-null-keyword
+                    documentInitializationDelay: null
+                },
+                outline: false,
+                print: {
+                    documentChangeEvents: false,
+                    rootStatementParseTime: false,
+                    rootStatementParseTree: false
+                }
+            },
+            outline: {
+                showInstrumentSettings: false
+            },
+            suggestions: {
+                enumerationOrder: SuggestionSortKind.INLINE,
+                hideInputEnumerations: false
+            }
         }
+    }
+
+    /**
+     * Returns a formatted string representing the contents of the given event.
+     * @param event The event whose contents should be formatted.
+     * @returns A formatted string.
+     */
+    export function formatDocumentChangeEvent(event: TextDocumentContentChangeEvent): string {
+        return [
+            '{',
+            '  range: {',
+            `    start: ${JSON.stringify(event.range.start)}`,
+            `      end: ${JSON.stringify(event.range.end)}`,
+            '  },',
+            `  rangeLength: ${event.rangeLength}`,
+            `  text: "${event.text}"`,
+            '}'
+        ].join('\n')
+    }
+
+    /**
+     * Removes all input-only enumeration completions from the given completion array.
+     * @param completions An array of CompletionItem.
+     * @returns A filtered array of CompletionItem.
+     */
+    export function hideInputEnumerations(completions: Array<CompletionItem>): Array<CompletionItem> {
+        return completions.filter((value: CompletionItem) => {
+            return value.kind === CompletionItemKind.EnumMember && !value.exclusive
+        })
     }
 
     /**
@@ -40,7 +110,7 @@ export namespace TsplangSettings {
      */
     export function sortMap(settings: TsplangSettings): Map<CompletionItemKind, SuggestionSortKind> {
         return new Map([
-            [CompletionItemKind.EnumMember, settings.enumerationSuggestions]
+            [CompletionItemKind.EnumMember, settings.suggestions.enumerationOrder]
         ])
     }
 }

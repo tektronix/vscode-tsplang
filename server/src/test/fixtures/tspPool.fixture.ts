@@ -13,25 +13,25 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Model } from '../../model'
-import { PoolEntry, TspPool } from '../../tspPool'
+// import { Model } from '../../model'
+// import { PoolEntry, TspPool } from '../../tspPool'
 
-declare module '../../tspPool' {
-    export interface TspPool {
-        _get(model: Model): PoolEntry
-        _load(model: Model): PoolEntry
-        delete(model: Model): boolean
-    }
-}
-TspPool.prototype._get = function(model: Model): PoolEntry {
-    // tslint:disable-next-line:no-invalid-this
-    return this.get(model)
-}
-TspPool.prototype._load = function(model: Model): PoolEntry {
-    // tslint:disable-next-line:no-invalid-this
-    return this.load(model)
-}
-TspPool.prototype.delete = function(model: Model): boolean {
-    // tslint:disable-next-line:no-invalid-this
-    return this.pool.delete(model)
-}
+// declare module '../../tspPool' {
+//     export interface TspPool {
+//         _get(model: Model): PoolEntry
+//         _load(model: Model): PoolEntry
+//         delete(model: Model): boolean
+//     }
+// }
+// TspPool.prototype._get = function(model: Model): PoolEntry {
+//     // tslint:disable-next-line:no-invalid-this
+//     return this.get(model)
+// }
+// TspPool.prototype._load = function(model: Model): PoolEntry {
+//     // tslint:disable-next-line:no-invalid-this
+//     return this.load(model)
+// }
+// TspPool.prototype.delete = function(model: Model): boolean {
+//     // tslint:disable-next-line:no-invalid-this
+//     return this.pool.delete(model)
+// }

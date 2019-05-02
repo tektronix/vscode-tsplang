@@ -15,10 +15,14 @@
  */
 'use strict'
 
-import { CompletionItem, createConnection, DidChangeConfigurationParams, Disposable, IConnection, InitializeParams, InitializeResult, IPCMessageReader, IPCMessageWriter, SignatureHelp, TextDocumentChangeEvent, TextDocumentPositionParams, TextDocuments } from 'vscode-languageserver'
+import {
+    createConnection,
+    IConnection,
+    IPCMessageReader,
+    IPCMessageWriter
+} from 'vscode-languageserver'
 
-import { ServerContext } from './serverContext'
-import { TspManager } from './tspManager'
+import { ProcessManager } from './processManager'
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -26,64 +30,40 @@ const connection: IConnection = createConnection(
     new IPCMessageWriter(process)
 )
 
-// Create a simple text document manager. The text document manager supports full document sync
-// only
-const documents: TextDocuments = new TextDocuments()
-
-// Create a TSP Manager to provide command set completions.
-const manager: TspManager = new TspManager(documents)
-
-const context = new ServerContext()
+const manager = new ProcessManager(connection)
 
 // After the server has started the client sends an initialize request. The server receives in the
 // passed params the rootPath of the workspace plus the client capabilities.
-connection.onInitialize((params: InitializeParams): InitializeResult => {
-    return context.onInitialize(params, connection, documents)
-})
+connection.onInitialize(manager.initialize.bind(manager))
 
-connection.onInitialized(() => {
-    context.onInitialized(connection)
-})
+connection.onInitialized(manager.initialized.bind(manager))
 
-// The content of a text document has changed. This event is emitted when the text document first
-// opened or when its content has changed.
-documents.onDidChangeContent((change: TextDocumentChangeEvent) => {
-    context.onDidChangeContent(change, connection, manager)
-})
+connection.onDidOpenTextDocument(manager.documentOpen.bind(manager))
 
-documents.onDidClose((params: TextDocumentChangeEvent) => {
-    context.onDidClose(params, connection, manager)
-})
+connection.onDidChangeTextDocument(manager.documentChange.bind(manager))
+
+connection.onDidCloseTextDocument(manager.documentClose.bind(manager))
 
 // This handler provides the initial list of completion items.
-connection.onCompletion((params: TextDocumentPositionParams): Array<CompletionItem> | undefined => {
-    return context.onCompletion(params, manager)
-})
+connection.onCompletion(manager.completion.bind(manager))
 
 // This handler resolves additional information for the item selected in the completion list.
-connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
-    return context.onCompletionResolve(item, manager)
-})
+connection.onCompletionResolve(manager.completionResolve.bind(manager))
 
-connection.onDidChangeConfiguration((params: DidChangeConfigurationParams) => {
-    context.onDidChangeConfiguration(params, connection, documents, manager)
-})
+connection.onDefinition(manager.definition.bind(manager))
 
-connection.onSignatureHelp((params: TextDocumentPositionParams): SignatureHelp | undefined => {
-    return context.onSignatureHelp(params, manager)
-})
+connection.onDidChangeConfiguration(manager.settingsChange.bind(manager))
 
-// Shared dispose method.
-const dispose = (): void => {
-    if (context.disposable) {
-        context.disposable.then((value: Disposable) => value.dispose())
-    }
-}
-connection.onShutdown(dispose)
-connection.onExit(dispose)
+connection.onDocumentSymbol(manager.symbol.bind(manager))
 
-// Make the text document manager listen on the connection for open, change and close text
-// document events
-documents.listen(connection)
+connection.onHover(manager.hover.bind(manager))
+
+connection.onReferences(manager.references.bind(manager))
+
+connection.onSignatureHelp(manager.signature.bind(manager))
+
+connection.onShutdown(manager.dispose.bind(manager))
+connection.onExit(manager.dispose.bind(manager))
+
 // Listen on the connection
 connection.listen()

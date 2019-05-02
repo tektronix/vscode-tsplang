@@ -1,16 +1,17 @@
 {
-    "name": "tsplang",
+    "name": "vscode-tsplang",
     "displayName": "TSPLang",
     "description": "Keithley Instruments TSP® language extension for Visual Studio Code",
-    "version": "0.5.0",
-    "publisher": "Keithley",
+    "version": "0.6.0",
+    "preview": true,
+    "publisher": "tektronix",
     "license": "Apache-2.0",
     "engines": {
         "vscode": "^1.30.0"
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/tektronix/vscode-tsplang"
+        "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
     },
     "dependencies": {
         "vscode": "^1.1.26",

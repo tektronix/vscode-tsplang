@@ -25,10 +25,28 @@ import { SuggestionSortKind, TsplangSettings } from '../../settings'
 describe('Settings', () => {
     describe('TsplangSettings', () => {
         const defaultSettings: TsplangSettings = {
-            enumerationSuggestions: SuggestionSortKind.INLINE
+            debug: {
+                open: {
+                    // tslint:disable-next-line: no-null-keyword
+                    documentInitializationDelay: null
+                },
+                outline: false,
+                print: {
+                    documentChangeEvents: false,
+                    rootStatementParseTime: false,
+                    rootStatementParseTree: false
+                }
+            },
+            outline: {
+                showInstrumentSettings: false
+            },
+            suggestions: {
+                enumerationOrder: SuggestionSortKind.INLINE,
+                hideInputEnumerations: false
+            }
         }
         const defaultSortMap = new Map<CompletionItemKind, SuggestionSortKind>([
-            [CompletionItemKind.EnumMember, defaultSettings.enumerationSuggestions]
+            [CompletionItemKind.EnumMember, defaultSettings.suggestions.enumerationOrder]
         ])
 
         describe('.defaults()', () => {
@@ -41,7 +59,25 @@ describe('Settings', () => {
             const testCases: Array<[TsplangSettings, Map<CompletionItemKind, SuggestionSortKind>]> = [
                 [
                     {
-                        enumerationSuggestions: SuggestionSortKind.BOTTOM
+                        debug: {
+                            open: {
+                                // tslint:disable-next-line: no-null-keyword
+                                documentInitializationDelay: null
+                            },
+                            outline: false,
+                            print: {
+                                documentChangeEvents: false,
+                                rootStatementParseTime: false,
+                                rootStatementParseTree: false
+                            }
+                        },
+                        outline: {
+                            showInstrumentSettings: false
+                        },
+                        suggestions: {
+                            enumerationOrder: SuggestionSortKind.BOTTOM,
+                            hideInputEnumerations: false
+                        }
                     },
                     new Map<CompletionItemKind, SuggestionSortKind>([
                         [CompletionItemKind.EnumMember, SuggestionSortKind.BOTTOM]

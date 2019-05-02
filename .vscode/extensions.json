@@ -3,7 +3,10 @@
     // for the documentation about the extensions.json format
     "recommendations": [
         // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
-        "eg2.tslint",
-        "maty.vscode-mocha-sidebar"
+        "maty.vscode-mocha-sidebar",
+        "ms-vscode.vscode-typescript-tslint-plugin"
+    ],
+    "unwantedRecommendations": [
+        "eg2.tslint"
     ]
 }
