@@ -34,21 +34,19 @@ import {
     FunctionLocalSymbol,
     FunctionSymbol,
     IToken,
-    TableLocalSymbol,
     TableSymbol,
     VariableLocalSymbol,
     VariableSymbol
 } from './decorators'
 import { CommandSet } from './instrument'
 import {
+    getChildRecursively,
+    getTerminals,
     StatementAmbiguity,
     statementTokenRecognizer,
     StatementType,
-    TokenUtil,
-    variableContextRecognizer
+    TokenUtil
 } from './language-comprehension'
-import { getChildRecursively } from './language-comprehension/getChildRecursively'
-import { getTerminals } from './language-comprehension/parser-context-handler/getTerminals'
 import { DebugParseTimer, DebugParseTree } from './parse'
 import { TsplangSettings } from './settings'
 import { SymbolTable } from './symbolTable'

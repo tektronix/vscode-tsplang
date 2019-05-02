@@ -15,18 +15,8 @@
  */
 'use strict'
 
-import { CommonTokenStream, InputStream, ParserRuleContext } from 'antlr4'
-// tslint:disable:no-submodule-imports
-import { ConsoleErrorListener } from 'antlr4/error/ErrorListener'
-import { ParseTreeWalker } from 'antlr4/tree/Tree'
-// tslint:enable:no-submodule-imports
-import * as vsls from 'vscode-languageserver'
-
-import { TspFastLexer, TspFastListener, TspFastParser } from './antlr4-tsplang'
+import { TspFastListener, TspFastParser } from './antlr4-tsplang'
 import { DebugTimer } from './debugTimer'
-import { DebugPrintSettings } from './settings'
-
-// ConsoleErrorListener.prototype.syntaxError = (): void => { return }
 
 export class DebugParseTimer extends TspFastListener {
     readonly printStatementTimes: boolean
@@ -139,53 +129,5 @@ export class DebugParseTree extends TspFastListener {
         }
 
         return result
-    }
-}
-
-export interface Parse {
-    inputStream: InputStream
-    lexer: TspFastLexer
-    parser: TspFastParser
-    root: ParserRuleContext
-    tokenStream: CommonTokenStream
-}
-export namespace Parse {
-    export function chunk(text: string, printSettings: DebugPrintSettings): Parse {
-        const result = create(text, printSettings)
-        result.root = result.parser.chunk()
-
-        return result
-    }
-
-    export function create(text: string, printSettings: DebugPrintSettings): Parse {
-        const result = {
-            inputStream: undefined,
-            lexer: undefined,
-            parser: undefined,
-            root: undefined,
-            tokenStream: undefined
-        }
-        result.inputStream = new InputStream(text)
-        result.lexer = new TspFastLexer(result.inputStream)
-        result.tokenStream = new CommonTokenStream(result.lexer)
-        result.parser = new TspFastParser(result.tokenStream)
-        result.parser.buildParseTree = true
-        result.parser.addParseListener(new DebugParseTimer(printSettings.rootStatementParseTime))
-        if (printSettings.rootStatementParseTree) {
-            result.parser.addParseListener(new DebugParseTree())
-        }
-
-        return result
-    }
-
-    export function statement(text: string, printSettings: DebugPrintSettings): Parse {
-        const result = create(text, printSettings)
-        result.root = result.parser.statement()
-
-        return result
-    }
-
-    export function walk(listener: TspFastListener, root: ParserRuleContext): void {
-        ParseTreeWalker.DEFAULT.walk(listener, root)
     }
 }

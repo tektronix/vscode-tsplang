@@ -19,12 +19,9 @@ import { Diagnostic, LocationLink, Position, Range } from 'vscode-languageserver
 
 import {
     DocumentSymbol,
-    TableLocalSymbol,
-    TableSymbol,
     VariableLocalSymbol,
     VariableSymbol
 } from './decorators'
-import { Field, StatementType } from './language-comprehension'
 
 interface SearchResult {
     index: number
@@ -84,60 +81,6 @@ export class SymbolTable {
 
         this.symbolCache.set(this.statementDepth, [symbol])
     }
-
-    // namedLookup(name: string): LookupResult | undefined {
-    //     const dive = (symbol: DocumentSymbol): boolean => !!symbol && symbol.container && !symbol.table
-
-    //     const result: LookupResult = {
-    //         path: new Array(),
-    //         symbol: undefined
-    //     }
-
-    //     const buildResult = (symbols: Array<DocumentSymbol>): void => {
-    //         if (symbols.length === 0) {
-    //             return
-    //         }
-
-    //         for (let i = 0; i < symbols.length; i++) {
-    //             if (dive(symbols[i])) {
-    //                 buildResult(symbols[i].children || [])
-    //             }
-
-    //         }
-    //     }
-
-    //     for (const symbol of this.complete) {
-    //         if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
-    //             return symbol
-    //         }
-
-    //         if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
-    //             for (const child of symbol.children) {
-    //                 if (!!child.name && child.name.localeCompare(name) === 0) {
-    //                     return child
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     for (let i = this.statementDepth; i >= 0; i--) {
-    //         for (const symbol of (this.symbolCache.get(i) || [])) {
-    //             if (!!symbol.name && symbol.name.localeCompare(name) === 0) {
-    //                 return symbol
-    //             }
-
-    //             if (symbol.statementType === StatementType.Assignment && !!symbol.children) {
-    //                 for (const child of symbol.children) {
-    //                     if (!!child.name && child.name.localeCompare(name) === 0) {
-    //                         return child
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-
-    //     return
-    // }
 
     getChildSymbol(path: Array<number>): DocumentSymbol | undefined {
         // tslint:disable-next-line: no-null-keyword
@@ -253,95 +196,6 @@ export class SymbolTable {
         return (result.symbol !== undefined && result.path.length <= SymbolTable.MAX_SEARCH_PATH)
             ? result
             : undefined
-    }
-
-    // updateTable(fields: Array<Field>, value: DocumentSymbol): Diagnostic | undefined {
-    //     if (fields.length === 0) {
-    //         return
-    //     }
-
-    //     const localFields = [...fields]
-    //     const rootField = localFields.shift()
-
-    //     if (rootField === undefined || localFields.length === 0) {
-    //         return
-    //     }
-
-    //     const findCallback = (symbol: DocumentSymbol): boolean => {
-    //         if (symbol.container && !symbol.table) {
-    //             return (symbol.children || []).findIndex(findIndexCallback) !== -1
-    //         }
-    //     }
-
-    //     let index = this.complete.findIndex((symbol: DocumentSymbol) => {
-    //         return symbol.name.localeCompare(rootField.name) === 0
-    //     })
-
-    //     if (index !== -1) {
-    //         const table: TableSymbol | TableLocalSymbol = (this.complete[index].local)
-    //             ? TableLocalSymbol.from(this.complete[index] as VariableLocalSymbol)
-    //             : TableSymbol.from(this.complete[index] as VariableSymbol)
-
-    //         const result = table.setField(localFields, value)
-
-    //         if (result === undefined) {
-    //             this.complete[index] = table
-    //         }
-
-    //         return result
-    //     }
-
-    //     for (let i = this.statementDepth; i >= 0; i--) {
-    //         const symbols = (this.symbolCache.get(i) || [])
-    //         index = symbols.findIndex((symbol: DocumentSymbol) => {
-    //             return !!symbol.name && symbol.name.localeCompare(rootField.name) === 0
-    //         })
-
-    //         if (index !== -1) {
-    //             const table: TableSymbol | TableLocalSymbol = (symbols[index].local)
-    //                 ? TableLocalSymbol.from(symbols[index] as VariableLocalSymbol)
-    //                 : TableSymbol.from(symbols[index] as VariableSymbol)
-
-    //             const result = table.setField(localFields, value)
-
-    //             if (result === undefined) {
-    //                 symbols[index] = table
-    //                 this.symbolCache.set(i, symbols)
-    //             }
-
-    //             return result
-    //         }
-    //     }
-    // }
-
-    updateSymbol(path: Array<number>, value: DocumentSymbol): void {
-        const lastIndex = path.pop()
-
-        // tslint:disable-next-line: no-null-keyword
-        let symbol: DocumentSymbol = null
-
-        for (const index of path) {
-            if (symbol === null) {
-                symbol = this.complete[index]
-
-                continue
-            }
-
-            if (symbol === undefined || symbol.children === undefined) {
-                break
-            }
-
-            symbol = symbol.children[index]
-        }
-
-        if (symbol !== null && symbol !== undefined) {
-            if (symbol.children === undefined) {
-                symbol.children = [value]
-            }
-            else {
-                symbol.children[lastIndex] = value
-            }
-        }
     }
 
     private lookupBinarySearch = (target: Range, symbols: Array<DocumentSymbol>): SearchResult | undefined => {

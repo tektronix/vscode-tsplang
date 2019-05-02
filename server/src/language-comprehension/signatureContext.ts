@@ -18,9 +18,10 @@
 import { InputStream, Token } from 'antlr4'
 import { Position } from 'vscode-languageserver'
 
-import { TspFastLexer } from '../../antlr4-tsplang'
-import { IToken } from '../../decorators'
-import { TokenUtil } from '../tokenUtil'
+import { TspFastLexer } from '../antlr4-tsplang'
+import { IToken } from '../decorators'
+
+import { TokenUtil } from './tokenUtil'
 
 interface IntermediateContext {
     parentheses: {

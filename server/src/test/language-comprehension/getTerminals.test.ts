@@ -13,7 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-'use strict'
+// tslint:disable:no-implicit-dependencies no-unused-expression
+import { expect } from 'chai'
+// tslint:disable-next-line:no-import-side-effect
+import 'mocha'
+// tslint:enable:no-implicit-dependencies
 
-export { ExclusiveContext } from './exclusiveContext'
-export { FuzzyOffsetMap } from './fuzzyOffsetMap'
+import { getTerminals } from '../../language-comprehension'
+
+describe('Language Comprehension', () => {
+    describe('parser-context-handler', () => {
+        describe('getTerminals()', () => {
+            it.skip('needs test coverage')
+        })
+    })
+})

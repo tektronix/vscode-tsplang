@@ -19,11 +19,11 @@ import { expect } from 'chai'
 import 'mocha'
 // tslint:enable:no-implicit-dependencies
 
-import { getTerminals } from '../../../language-comprehension/parser-context-handler/getTerminals'
+import { SignatureContext } from '../../language-comprehension'
 
 describe('Language Comprehension', () => {
-    describe('parser-context-handler', () => {
-        describe('getTerminals()', () => {
+    describe('signature', () => {
+        describe('SignatureContext', () => {
             it.skip('needs test coverage')
         })
     })

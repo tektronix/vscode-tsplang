@@ -17,7 +17,8 @@
 
 import { Token } from 'antlr4'
 import { Position, Range } from 'vscode-languageserver'
-import { IToken } from '../decorators';
+
+import { IToken } from '../decorators'
 
 export namespace TokenUtil {
     /**

@@ -20,7 +20,6 @@ import * as rpc from 'vscode-jsonrpc'
 import {
     CompletionList,
     CompletionParams,
-    CompletionTriggerKind,
     Diagnostic,
     Hover,
     Location,
@@ -47,12 +46,12 @@ import {
 import { DocumentContext } from './documentContext'
 import { Instrument, load } from './instrument'
 import {
+    SignatureContext,
     StatementAmbiguity,
     statementTokenRecognizer,
     StatementType,
     TokenUtil
 } from './language-comprehension'
-import { SignatureContext } from './language-comprehension/signature'
 import {
     ChangeNotification,
     CompletionRequest,
