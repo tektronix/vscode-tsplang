@@ -1,14 +1,14 @@
 {
-    "name": "tsplang",
+    "name": "vscode-tsplang",
     "displayName": "TSPLang",
     "description": "Keithley Instruments TSP® language extension for Visual Studio Code",
-    "version": "0.5.0",
+    "version": "0.6.0-beta",
     "preview": true,
-    "publisher": "Keithley",
+    "publisher": "tektronix",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/tektronix/vscode-tsplang"
+        "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
     },
     "bugs": {
         "url": "https://github.com/tektronix/vscode-tsplang/issues"
@@ -16,24 +16,14 @@
     "qna": "https://github.com/tektronix/vscode-tsplang/issues",
     "badges": [
         {
-            "url": "https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=master",
+            "url": "https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=dev",
             "href": "https://travis-ci.com/tektronix/vscode-tsplang",
             "description": "Continuous Integration (Travis-CI)"
         },
         {
-            "url": "https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg",
+            "url": "https://codecov.io/gh/tektronix/vscode-tsplang/branch/dev/graph/badge.svg",
             "href": "https://codecov.io/gh/tektronix/vscode-tsplang",
             "description": "Test Coverage (Codecov)"
-        },
-        {
-            "url": "https://img.shields.io/lgtm/grade/javascript/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18",
-            "href": "https://lgtm.com/projects/g/tektronix/vscode-tsplang/context:javascript",
-            "description": "Code Quality: JavaScript (LGTM)"
-        },
-        {
-            "url": "https://img.shields.io/lgtm/alerts/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18",
-            "href": "https://lgtm.com/projects/g/tektronix/vscode-tsplang/alerts",
-            "description": "Total Alerts (LGTM)"
         }
     ],
     "engines": {
