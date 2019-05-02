@@ -75,7 +75,7 @@ describe('Settings', () => {
                             showInstrumentSettings: false
                         },
                         suggestions: {
-                            enumerationOrder: SuggestionSortKind.INLINE,
+                            enumerationOrder: SuggestionSortKind.BOTTOM,
                             hideInputEnumerations: false
                         }
                     },

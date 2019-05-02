@@ -47,7 +47,7 @@ export namespace Shebang {
 
         return {
             end: {
-                character: start + item.length,
+                character: start + item.trim().length,
                 line: 0
             },
             start: {
@@ -75,7 +75,8 @@ export namespace Shebang {
 
         const errors: Array<Diagnostic> = new Array()
 
-        let encounteredCharacters = 0
+        let encounteredCharacters = line.indexOf(PREFIX)
+        encounteredCharacters = (encounteredCharacters === -1) ? 0 : encounteredCharacters
         rawBangArray.forEach((item: string, index: number) => {
             if (item.length === 0) {
                 return
@@ -91,9 +92,11 @@ export namespace Shebang {
             if (!nodeRegExp.test(niceItem) && result.model === undefined) {
                 const supportedModel = Model.fromString(niceItem)
 
+                result.range = itemRange(item, index, encounteredCharacters)
+
                 if (supportedModel === undefined) {
                     errors.push(Diagnostic.create(
-                        itemRange(item, index, encounteredCharacters),
+                        result.range,
                         `Model "${item.trim()}" is invalid or unsupported.`,
                         DiagnosticSeverity.Error,
                         'shebang-model',
@@ -102,7 +105,6 @@ export namespace Shebang {
                 }
                 else {
                     result.model = supportedModel
-                    result.range = itemRange(item, index, encounteredCharacters)
                 }
             }
             else if (nodeRegExp.test(niceItem)) {

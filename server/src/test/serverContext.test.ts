@@ -27,7 +27,7 @@ import { TspItem } from '../tspItem'
 // import { TspManager } from '../tspManager'
 
 import './fixtures/tspManager.fixture'
-import './fixtures/vscode-languageserver.fixture'
+// import './fixtures/vscode-languageserver.fixture'
 
 class TextDocuments extends vsls.TextDocuments {
     private _docs: Map<string, vsls.TextDocument>
