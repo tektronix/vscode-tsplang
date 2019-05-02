@@ -1,9 +1,7 @@
 # TSPLang
 
-[![build](https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=master)](https://travis-ci.com/tektronix/vscode-tsplang)
-[![codecov](https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg)](https://codecov.io/gh/tektronix/vscode-tsplang)
-[![Code Quality: Javascript](https://img.shields.io/lgtm/grade/javascript/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tektronix/vscode-tsplang/context:javascript)
-[![Total Alerts](https://img.shields.io/lgtm/alerts/g/tektronix/vscode-tsplang.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/tektronix/vscode-tsplang/alerts)
+[![build](https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=dev)](https://travis-ci.com/tektronix/vscode-tsplang)
+[![codecov](https://codecov.io/gh/tektronix/vscode-tsplang/branch/dev/graph/badge.svg)](https://codecov.io/gh/tektronix/vscode-tsplang)
 
 The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supported-instruments) TSP-enabled Keithley Instruments.
 
@@ -19,8 +17,10 @@ After installation, if you have not restarted VSCode, you may have to manually s
 
 ## Supported Instruments
 
-Release builds are available as VSIX files in the [Releases](https://github.com/tektronix/vscode-tsplang/releases) section. Currently supported instrument models include:
+Currently supported instrument models include:
 * 2450
+* 2460
+* 2461
 
 ## Contribute
 
