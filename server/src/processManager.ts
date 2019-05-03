@@ -64,7 +64,7 @@ import { localWorkspaceSettings, multiWorkspaceSettings, TsplangSettings } from 
 
 interface Child {
     connection: rpc.MessageConnection
-    proc: ChildProcess,
+    proc: ChildProcess
     uri: string
 }
 
