@@ -162,7 +162,12 @@ connection.onNotification(ChangeNotification, async (changes: Array<TextDocument
     }
 
     documentContext = await documentContextPromise
-    documentContext.document = textDocument
+    documentContext.document = TextDocument.create(
+        textDocumentItem.uri,
+        textDocumentItem.languageId,
+        textDocumentItem.version,
+        textDocumentItem.text
+    )
 
     // Get the symbol table index of the symbol containing the smallest Position.
     const symbolIndex = documentContext.symbolTable.complete.findIndex((value: DocumentSymbol) => {
