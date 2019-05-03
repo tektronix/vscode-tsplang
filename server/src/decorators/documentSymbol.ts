@@ -18,6 +18,7 @@
 import * as vsls from 'vscode-languageserver'
 
 import { Field, StatementAmbiguity, StatementType, TokenUtil } from '../language-comprehension'
+import { TsplangSettings } from '../settings'
 
 // tslint:disable-next-line:no-import-side-effect
 import './antlr4'
@@ -252,8 +253,9 @@ export class DocumentSymbol implements IDocumentSymbol {
      * Remove children that cause the given predicate to return true.
      */
     prune(
-        predicate: (value: DocumentSymbol) => boolean,
-        adopt: (value: IDocumentSymbol) => boolean
+        predicate: (value: DocumentSymbol, settings: TsplangSettings) => boolean,
+        adopt: (value: IDocumentSymbol) => boolean,
+        settings: TsplangSettings
     ): IDocumentSymbol {
         const clone: IDocumentSymbol = {
             builtin: this.builtin,
@@ -275,7 +277,7 @@ export class DocumentSymbol implements IDocumentSymbol {
         }
 
         for (let i = 0; i < (this.children || []).length; i++) {
-            const child = this.children[i].prune(predicate, adopt)
+            const child = this.children[i].prune(predicate, adopt, settings)
             child.parentInfo = {
                 assignment: this.statementType === StatementType.Assignment,
                 container: this.container,
@@ -291,7 +293,7 @@ export class DocumentSymbol implements IDocumentSymbol {
                 return value
             })
 
-            if (predicate(child as DocumentSymbol)) {
+            if (predicate(child as DocumentSymbol, settings)) {
                 // Extract all grandchildren that can be kept after pruning this child.
                 const orphans = (child.children || []).filter(adopt)
                 clone.children.push(...orphans)

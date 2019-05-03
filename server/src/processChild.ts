@@ -82,10 +82,10 @@ const firstlineRegExp = new RegExp(/^[^\n\r]*/)
  * DocumentSymbols that evaluate to true will be pruned from the reported
  * array.
  */
-const prunePredicate = (value: DocumentSymbol): boolean => {
+const prunePredicate = (value: DocumentSymbol, settings: TsplangSettings): boolean => {
     return value.kind === SymbolKind.File
         || (value.declaration !== undefined && value.references === undefined)
-        || value.builtin
+        || (value.builtin && !settings.outline.showInstrumentSettings)
 }
 /**
  * IDocumentSymbols that evaluate to true will be kept after their parent
@@ -458,17 +458,17 @@ connection.onRequest(SymbolRequest, async (): Promise<Array<DocumentSymbol>> => 
     else {
         const prunedSymbols = new Array<DocumentSymbol>()
         for (const symbol of documentContext.symbolTable.complete) {
-            if (prunePredicate(symbol)) {
+            if (prunePredicate(symbol, settings)) {
                 // Extract all grandchildren that can be kept after pruning this symbol.
                 const orphans =
                     symbol
-                    .prune(prunePredicate, orphanPredicate)
+                    .prune(prunePredicate, orphanPredicate, settings)
                         .children
                         .filter(orphanPredicate)
                 prunedSymbols.push(...(orphans as Array<DocumentSymbol>))
             }
             else {
-                prunedSymbols.push(symbol.prune(prunePredicate, orphanPredicate) as DocumentSymbol)
+                prunedSymbols.push(symbol.prune(prunePredicate, orphanPredicate, settings) as DocumentSymbol)
             }
         }
 
