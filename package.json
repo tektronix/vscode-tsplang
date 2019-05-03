@@ -60,7 +60,7 @@
         ]
     },
     "dependencies": {
-        "vscode": "^1.1.21",
+        "vscode": "^1.1.33",
         "vscode-languageclient": "^4.4.2"
     },
     "devDependencies": {
@@ -71,7 +71,7 @@
         "istanbul": "^0.4.5",
         "license-compatibility-checker": "^0.3.3",
         "mocha-typescript": "^1.1.17",
-        "nyc": "^12.0.2",
+        "nyc": "^14.1.0",
         "source-map-support": "^0.5.9",
         "ts-node": "^7.0.0",
         "tslint": "^5.11.0",
