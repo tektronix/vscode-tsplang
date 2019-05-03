@@ -70,6 +70,7 @@
         "chai": "^4.1.2",
         "istanbul": "^0.4.5",
         "license-compatibility-checker": "^0.3.3",
+        "lodash.isequal": "^4.5.0",
         "mocha-typescript": "^1.1.17",
         "nyc": "^14.1.0",
         "source-map-support": "^0.5.9",
