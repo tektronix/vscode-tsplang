@@ -44,7 +44,7 @@
  * to the following post:
  *      http://lua-users.org/lists/lua-l/2010-12/msg00699.html
  */
-grammar TspFast;
+grammar Tsp;
 
 chunk
     : (statement ';'?)* EOF
@@ -274,17 +274,19 @@ HexDigit
     ;
 
 LONGCOMMENT
-    : '--[' NestedString ']'
-    -> channel(HIDDEN)
+    : '--[' NestedString ']' -> channel(HIDDEN)
     ;
 
 LINE_COMMENT
-    : '--' .*? ('\r\n'|'\r'|'\n'|EOF)
-    -> channel(HIDDEN)
+    : '--' .*? ('\r\n'|'\r'|'\n'|EOF) -> channel(HIDDEN)
     ;
 
-WS
-    : [ \t\u000C\r\n]+ -> skip
+HORIZONTAL_WS
+    : [ \t\u000C]+ -> channel(HIDDEN)
+    ;
+
+VERTICAL_WS
+    : ('\r\n'|'\r'|'\n') -> channel(HIDDEN)
     ;
 
 SHEBANG

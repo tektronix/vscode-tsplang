@@ -1,11 +1,11 @@
-// Generated from C:\Source\vscode-tsplang\server\grammar\TspFast.g4 by ANTLR 4.7.1
+// Generated from C:\Source\vscode-tsplang\server\grammar\Tsp.g4 by ANTLR 4.7.1
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
-var TspFastListener = require('./TspFastListener').TspFastListener;
-var grammarFileName = "TspFast.g4";
+var TspListener = require('./TspListener').TspListener;
+var grammarFileName = "Tsp.g4";
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
-    "\u0003@\u01fa\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
+    "\u0003A\u01fa\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
     "\u0004\u0004\u0005\t\u0005\u0004\u0006\t\u0006\u0004\u0007\t\u0007\u0004",
     "\b\t\b\u0004\t\t\t\u0004\n\t\n\u0004\u000b\t\u000b\u0004\f\t\f\u0004",
     "\r\t\r\u0004\u000e\t\u000e\u0004\u000f\t\u000f\u0004\u0010\t\u0010\u0004",
@@ -396,7 +396,7 @@ var symbolicNames = [ null, null, null, null, null, null, null, null, null,
                       null, null, null, "NIL", "BOOLEAN", "LOCAL", "VARARG", 
                       "NAME", "NORMALSTRING", "CHARSTRING", "LONGSTRING", 
                       "INT", "HEX", "FLOAT", "LONGCOMMENT", "LINE_COMMENT", 
-                      "WS", "SHEBANG" ];
+                      "HORIZONTAL_WS", "VERTICAL_WS", "SHEBANG" ];
 
 var ruleNames =  [ "chunk", "statement", "value", "expression", "prefix", 
                    "suffix", "index", "variable", "functionCall", "args", 
@@ -406,7 +406,7 @@ var ruleNames =  [ "chunk", "statement", "value", "expression", "prefix",
                    "operatorBitwiseOr", "operatorBitwiseXor", "operatorBitwiseShift", 
                    "operatorUnary", "operatorPower", "number", "string" ];
 
-function TspFastParser (input) {
+function TspParser (input) {
 	antlr4.Parser.call(this, input);
     this._interp = new antlr4.atn.ParserATNSimulator(this, atn, decisionsToDFA, sharedContextCache);
     this.ruleNames = ruleNames;
@@ -415,106 +415,107 @@ function TspFastParser (input) {
     return this;
 }
 
-TspFastParser.prototype = Object.create(antlr4.Parser.prototype);
-TspFastParser.prototype.constructor = TspFastParser;
+TspParser.prototype = Object.create(antlr4.Parser.prototype);
+TspParser.prototype.constructor = TspParser;
 
-Object.defineProperty(TspFastParser.prototype, "atn", {
+Object.defineProperty(TspParser.prototype, "atn", {
 	get : function() {
 		return atn;
 	}
 });
 
-TspFastParser.EOF = antlr4.Token.EOF;
-TspFastParser.T__0 = 1;
-TspFastParser.T__1 = 2;
-TspFastParser.T__2 = 3;
-TspFastParser.T__3 = 4;
-TspFastParser.T__4 = 5;
-TspFastParser.T__5 = 6;
-TspFastParser.T__6 = 7;
-TspFastParser.T__7 = 8;
-TspFastParser.T__8 = 9;
-TspFastParser.T__9 = 10;
-TspFastParser.T__10 = 11;
-TspFastParser.T__11 = 12;
-TspFastParser.T__12 = 13;
-TspFastParser.T__13 = 14;
-TspFastParser.T__14 = 15;
-TspFastParser.T__15 = 16;
-TspFastParser.T__16 = 17;
-TspFastParser.T__17 = 18;
-TspFastParser.T__18 = 19;
-TspFastParser.T__19 = 20;
-TspFastParser.T__20 = 21;
-TspFastParser.T__21 = 22;
-TspFastParser.T__22 = 23;
-TspFastParser.T__23 = 24;
-TspFastParser.T__24 = 25;
-TspFastParser.T__25 = 26;
-TspFastParser.T__26 = 27;
-TspFastParser.T__27 = 28;
-TspFastParser.T__28 = 29;
-TspFastParser.T__29 = 30;
-TspFastParser.T__30 = 31;
-TspFastParser.T__31 = 32;
-TspFastParser.T__32 = 33;
-TspFastParser.T__33 = 34;
-TspFastParser.T__34 = 35;
-TspFastParser.T__35 = 36;
-TspFastParser.T__36 = 37;
-TspFastParser.T__37 = 38;
-TspFastParser.T__38 = 39;
-TspFastParser.T__39 = 40;
-TspFastParser.T__40 = 41;
-TspFastParser.T__41 = 42;
-TspFastParser.T__42 = 43;
-TspFastParser.T__43 = 44;
-TspFastParser.T__44 = 45;
-TspFastParser.T__45 = 46;
-TspFastParser.T__46 = 47;
-TspFastParser.NIL = 48;
-TspFastParser.BOOLEAN = 49;
-TspFastParser.LOCAL = 50;
-TspFastParser.VARARG = 51;
-TspFastParser.NAME = 52;
-TspFastParser.NORMALSTRING = 53;
-TspFastParser.CHARSTRING = 54;
-TspFastParser.LONGSTRING = 55;
-TspFastParser.INT = 56;
-TspFastParser.HEX = 57;
-TspFastParser.FLOAT = 58;
-TspFastParser.LONGCOMMENT = 59;
-TspFastParser.LINE_COMMENT = 60;
-TspFastParser.WS = 61;
-TspFastParser.SHEBANG = 62;
+TspParser.EOF = antlr4.Token.EOF;
+TspParser.T__0 = 1;
+TspParser.T__1 = 2;
+TspParser.T__2 = 3;
+TspParser.T__3 = 4;
+TspParser.T__4 = 5;
+TspParser.T__5 = 6;
+TspParser.T__6 = 7;
+TspParser.T__7 = 8;
+TspParser.T__8 = 9;
+TspParser.T__9 = 10;
+TspParser.T__10 = 11;
+TspParser.T__11 = 12;
+TspParser.T__12 = 13;
+TspParser.T__13 = 14;
+TspParser.T__14 = 15;
+TspParser.T__15 = 16;
+TspParser.T__16 = 17;
+TspParser.T__17 = 18;
+TspParser.T__18 = 19;
+TspParser.T__19 = 20;
+TspParser.T__20 = 21;
+TspParser.T__21 = 22;
+TspParser.T__22 = 23;
+TspParser.T__23 = 24;
+TspParser.T__24 = 25;
+TspParser.T__25 = 26;
+TspParser.T__26 = 27;
+TspParser.T__27 = 28;
+TspParser.T__28 = 29;
+TspParser.T__29 = 30;
+TspParser.T__30 = 31;
+TspParser.T__31 = 32;
+TspParser.T__32 = 33;
+TspParser.T__33 = 34;
+TspParser.T__34 = 35;
+TspParser.T__35 = 36;
+TspParser.T__36 = 37;
+TspParser.T__37 = 38;
+TspParser.T__38 = 39;
+TspParser.T__39 = 40;
+TspParser.T__40 = 41;
+TspParser.T__41 = 42;
+TspParser.T__42 = 43;
+TspParser.T__43 = 44;
+TspParser.T__44 = 45;
+TspParser.T__45 = 46;
+TspParser.T__46 = 47;
+TspParser.NIL = 48;
+TspParser.BOOLEAN = 49;
+TspParser.LOCAL = 50;
+TspParser.VARARG = 51;
+TspParser.NAME = 52;
+TspParser.NORMALSTRING = 53;
+TspParser.CHARSTRING = 54;
+TspParser.LONGSTRING = 55;
+TspParser.INT = 56;
+TspParser.HEX = 57;
+TspParser.FLOAT = 58;
+TspParser.LONGCOMMENT = 59;
+TspParser.LINE_COMMENT = 60;
+TspParser.HORIZONTAL_WS = 61;
+TspParser.VERTICAL_WS = 62;
+TspParser.SHEBANG = 63;
 
-TspFastParser.RULE_chunk = 0;
-TspFastParser.RULE_statement = 1;
-TspFastParser.RULE_value = 2;
-TspFastParser.RULE_expression = 3;
-TspFastParser.RULE_prefix = 4;
-TspFastParser.RULE_suffix = 5;
-TspFastParser.RULE_index = 6;
-TspFastParser.RULE_variable = 7;
-TspFastParser.RULE_functionCall = 8;
-TspFastParser.RULE_args = 9;
-TspFastParser.RULE_tableConstructor = 10;
-TspFastParser.RULE_fieldList = 11;
-TspFastParser.RULE_field = 12;
-TspFastParser.RULE_operatorOr = 13;
-TspFastParser.RULE_operatorAnd = 14;
-TspFastParser.RULE_operatorComparison = 15;
-TspFastParser.RULE_operatorStrcat = 16;
-TspFastParser.RULE_operatorAddSub = 17;
-TspFastParser.RULE_operatorMulDiv = 18;
-TspFastParser.RULE_operatorBitwiseAnd = 19;
-TspFastParser.RULE_operatorBitwiseOr = 20;
-TspFastParser.RULE_operatorBitwiseXor = 21;
-TspFastParser.RULE_operatorBitwiseShift = 22;
-TspFastParser.RULE_operatorUnary = 23;
-TspFastParser.RULE_operatorPower = 24;
-TspFastParser.RULE_number = 25;
-TspFastParser.RULE_string = 26;
+TspParser.RULE_chunk = 0;
+TspParser.RULE_statement = 1;
+TspParser.RULE_value = 2;
+TspParser.RULE_expression = 3;
+TspParser.RULE_prefix = 4;
+TspParser.RULE_suffix = 5;
+TspParser.RULE_index = 6;
+TspParser.RULE_variable = 7;
+TspParser.RULE_functionCall = 8;
+TspParser.RULE_args = 9;
+TspParser.RULE_tableConstructor = 10;
+TspParser.RULE_fieldList = 11;
+TspParser.RULE_field = 12;
+TspParser.RULE_operatorOr = 13;
+TspParser.RULE_operatorAnd = 14;
+TspParser.RULE_operatorComparison = 15;
+TspParser.RULE_operatorStrcat = 16;
+TspParser.RULE_operatorAddSub = 17;
+TspParser.RULE_operatorMulDiv = 18;
+TspParser.RULE_operatorBitwiseAnd = 19;
+TspParser.RULE_operatorBitwiseOr = 20;
+TspParser.RULE_operatorBitwiseXor = 21;
+TspParser.RULE_operatorBitwiseShift = 22;
+TspParser.RULE_operatorUnary = 23;
+TspParser.RULE_operatorPower = 24;
+TspParser.RULE_number = 25;
+TspParser.RULE_string = 26;
 
 function ChunkContext(parser, parent, invokingState) {
 	if(parent===undefined) {
@@ -525,7 +526,7 @@ function ChunkContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_chunk;
+    this.ruleIndex = TspParser.RULE_chunk;
     return this;
 }
 
@@ -533,7 +534,7 @@ ChunkContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 ChunkContext.prototype.constructor = ChunkContext;
 
 ChunkContext.prototype.EOF = function() {
-    return this.getToken(TspFastParser.EOF, 0);
+    return this.getToken(TspParser.EOF, 0);
 };
 
 ChunkContext.prototype.statement = function(i) {
@@ -548,13 +549,13 @@ ChunkContext.prototype.statement = function(i) {
 };
 
 ChunkContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterChunk(this);
 	}
 };
 
 ChunkContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitChunk(this);
 	}
 };
@@ -562,27 +563,27 @@ ChunkContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.ChunkContext = ChunkContext;
+TspParser.ChunkContext = ChunkContext;
 
-TspFastParser.prototype.chunk = function() {
+TspParser.prototype.chunk = function() {
 
     var localctx = new ChunkContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 0, TspFastParser.RULE_chunk);
+    this.enterRule(localctx, 0, TspParser.RULE_chunk);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 60;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+        while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
             this.state = 54;
             this.statement();
             this.state = 56;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if(_la===TspFastParser.T__0) {
+            if(_la===TspParser.T__0) {
                 this.state = 55;
-                this.match(TspFastParser.T__0);
+                this.match(TspParser.T__0);
             }
 
             this.state = 62;
@@ -590,7 +591,7 @@ TspFastParser.prototype.chunk = function() {
             _la = this._input.LA(1);
         }
         this.state = 63;
-        this.match(TspFastParser.EOF);
+        this.match(TspParser.EOF);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -614,7 +615,7 @@ function StatementContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_statement;
+    this.ruleIndex = TspParser.RULE_statement;
     return this;
 }
 
@@ -663,29 +664,29 @@ StatementContext.prototype.NAME = function(i) {
 		i = null;
 	}
     if(i===null) {
-        return this.getTokens(TspFastParser.NAME);
+        return this.getTokens(TspParser.NAME);
     } else {
-        return this.getToken(TspFastParser.NAME, i);
+        return this.getToken(TspParser.NAME, i);
     }
 };
 
 
 StatementContext.prototype.VARARG = function() {
-    return this.getToken(TspFastParser.VARARG, 0);
+    return this.getToken(TspParser.VARARG, 0);
 };
 
 StatementContext.prototype.LOCAL = function() {
-    return this.getToken(TspFastParser.LOCAL, 0);
+    return this.getToken(TspParser.LOCAL, 0);
 };
 
 StatementContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterStatement(this);
 	}
 };
 
 StatementContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitStatement(this);
 	}
 };
@@ -693,12 +694,12 @@ StatementContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.StatementContext = StatementContext;
+TspParser.StatementContext = StatementContext;
 
-TspFastParser.prototype.statement = function() {
+TspParser.prototype.statement = function() {
 
     var localctx = new StatementContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 2, TspFastParser.RULE_statement);
+    this.enterRule(localctx, 2, TspParser.RULE_statement);
     var _la = 0; // Token type
     try {
         this.state = 317;
@@ -712,9 +713,9 @@ TspFastParser.prototype.statement = function() {
             this.state = 70;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__1) {
+            while(_la===TspParser.T__1) {
                 this.state = 66;
-                this.match(TspFastParser.T__1);
+                this.match(TspParser.T__1);
                 this.state = 67;
                 this.variable();
                 this.state = 72;
@@ -722,15 +723,15 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 73;
-            this.match(TspFastParser.T__2);
+            this.match(TspParser.T__2);
             this.state = 74;
             this.expression();
             this.state = 79;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__1) {
+            while(_la===TspParser.T__1) {
                 this.state = 75;
-                this.match(TspFastParser.T__1);
+                this.match(TspParser.T__1);
                 this.state = 76;
                 this.expression();
                 this.state = 81;
@@ -748,19 +749,19 @@ TspFastParser.prototype.statement = function() {
         case 3:
             this.enterOuterAlt(localctx, 3);
             this.state = 83;
-            this.match(TspFastParser.T__3);
+            this.match(TspParser.T__3);
             this.state = 90;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 84;
                 this.statement();
                 this.state = 86;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 85;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 92;
@@ -768,29 +769,29 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 93;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 4:
             this.enterOuterAlt(localctx, 4);
             this.state = 94;
-            this.match(TspFastParser.T__5);
+            this.match(TspParser.T__5);
             this.state = 95;
             this.expression();
             this.state = 96;
-            this.match(TspFastParser.T__3);
+            this.match(TspParser.T__3);
             this.state = 103;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 97;
                 this.statement();
                 this.state = 99;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 98;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 105;
@@ -798,25 +799,25 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 106;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 5:
             this.enterOuterAlt(localctx, 5);
             this.state = 108;
-            this.match(TspFastParser.T__6);
+            this.match(TspParser.T__6);
             this.state = 115;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 109;
                 this.statement();
                 this.state = 111;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 110;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 117;
@@ -824,7 +825,7 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 118;
-            this.match(TspFastParser.T__7);
+            this.match(TspParser.T__7);
             this.state = 119;
             this.expression();
             break;
@@ -832,23 +833,23 @@ TspFastParser.prototype.statement = function() {
         case 6:
             this.enterOuterAlt(localctx, 6);
             this.state = 120;
-            this.match(TspFastParser.T__8);
+            this.match(TspParser.T__8);
             this.state = 121;
             this.expression();
             this.state = 122;
-            this.match(TspFastParser.T__9);
+            this.match(TspParser.T__9);
             this.state = 129;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 123;
                 this.statement();
                 this.state = 125;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 124;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 131;
@@ -858,25 +859,25 @@ TspFastParser.prototype.statement = function() {
             this.state = 146;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__10) {
+            while(_la===TspParser.T__10) {
                 this.state = 132;
-                this.match(TspFastParser.T__10);
+                this.match(TspParser.T__10);
                 this.state = 133;
                 this.expression();
                 this.state = 134;
-                this.match(TspFastParser.T__9);
+                this.match(TspParser.T__9);
                 this.state = 141;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+                while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                     this.state = 135;
                     this.statement();
                     this.state = 137;
                     this._errHandler.sync(this);
                     _la = this._input.LA(1);
-                    if(_la===TspFastParser.T__0) {
+                    if(_la===TspParser.T__0) {
                         this.state = 136;
-                        this.match(TspFastParser.T__0);
+                        this.match(TspParser.T__0);
                     }
 
                     this.state = 143;
@@ -890,21 +891,21 @@ TspFastParser.prototype.statement = function() {
             this.state = 159;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if(_la===TspFastParser.T__11) {
+            if(_la===TspParser.T__11) {
                 this.state = 149;
-                this.match(TspFastParser.T__11);
+                this.match(TspParser.T__11);
                 this.state = 156;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+                while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                     this.state = 150;
                     this.statement();
                     this.state = 152;
                     this._errHandler.sync(this);
                     _la = this._input.LA(1);
-                    if(_la===TspFastParser.T__0) {
+                    if(_la===TspParser.T__0) {
                         this.state = 151;
-                        this.match(TspFastParser.T__0);
+                        this.match(TspParser.T__0);
                     }
 
                     this.state = 158;
@@ -914,13 +915,13 @@ TspFastParser.prototype.statement = function() {
             }
 
             this.state = 161;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 7:
             this.enterOuterAlt(localctx, 7);
             this.state = 163;
-            this.match(TspFastParser.T__12);
+            this.match(TspParser.T__12);
             this.state = 172;
             this._errHandler.sync(this);
             var la_ = this._interp.adaptivePredict(this._input,19,this._ctx);
@@ -930,9 +931,9 @@ TspFastParser.prototype.statement = function() {
                 this.state = 169;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                while(_la===TspFastParser.T__1) {
+                while(_la===TspParser.T__1) {
                     this.state = 165;
-                    this.match(TspFastParser.T__1);
+                    this.match(TspParser.T__1);
                     this.state = 166;
                     this.expression();
                     this.state = 171;
@@ -946,47 +947,47 @@ TspFastParser.prototype.statement = function() {
         case 8:
             this.enterOuterAlt(localctx, 8);
             this.state = 174;
-            this.match(TspFastParser.T__13);
+            this.match(TspParser.T__13);
             break;
 
         case 9:
             this.enterOuterAlt(localctx, 9);
             this.state = 175;
-            this.match(TspFastParser.T__14);
+            this.match(TspParser.T__14);
             this.state = 176;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             this.state = 177;
-            this.match(TspFastParser.T__2);
+            this.match(TspParser.T__2);
             this.state = 178;
             this.expression();
             this.state = 179;
-            this.match(TspFastParser.T__1);
+            this.match(TspParser.T__1);
             this.state = 180;
             this.expression();
             this.state = 183;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if(_la===TspFastParser.T__1) {
+            if(_la===TspParser.T__1) {
                 this.state = 181;
-                this.match(TspFastParser.T__1);
+                this.match(TspParser.T__1);
                 this.state = 182;
                 this.expression();
             }
 
             this.state = 185;
-            this.match(TspFastParser.T__3);
+            this.match(TspParser.T__3);
             this.state = 192;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 186;
                 this.statement();
                 this.state = 188;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 187;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 194;
@@ -994,37 +995,37 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 195;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 10:
             this.enterOuterAlt(localctx, 10);
             this.state = 197;
-            this.match(TspFastParser.T__14);
+            this.match(TspParser.T__14);
             this.state = 198;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             this.state = 203;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__1) {
+            while(_la===TspParser.T__1) {
                 this.state = 199;
-                this.match(TspFastParser.T__1);
+                this.match(TspParser.T__1);
                 this.state = 200;
-                this.match(TspFastParser.NAME);
+                this.match(TspParser.NAME);
                 this.state = 205;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
             }
             this.state = 206;
-            this.match(TspFastParser.T__15);
+            this.match(TspParser.T__15);
             this.state = 207;
             this.expression();
             this.state = 212;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__1) {
+            while(_la===TspParser.T__1) {
                 this.state = 208;
-                this.match(TspFastParser.T__1);
+                this.match(TspParser.T__1);
                 this.state = 209;
                 this.expression();
                 this.state = 214;
@@ -1032,19 +1033,19 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 215;
-            this.match(TspFastParser.T__3);
+            this.match(TspParser.T__3);
             this.state = 222;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 216;
                 this.statement();
                 this.state = 218;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 217;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 224;
@@ -1052,23 +1053,23 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 225;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 11:
             this.enterOuterAlt(localctx, 11);
             this.state = 227;
-            this.match(TspFastParser.T__16);
+            this.match(TspParser.T__16);
             this.state = 228;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             this.state = 233;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__17) {
+            while(_la===TspParser.T__17) {
                 this.state = 229;
-                this.match(TspFastParser.T__17);
+                this.match(TspParser.T__17);
                 this.state = 230;
-                this.match(TspFastParser.NAME);
+                this.match(TspParser.NAME);
                 this.state = 235;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
@@ -1076,30 +1077,30 @@ TspFastParser.prototype.statement = function() {
             this.state = 238;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if(_la===TspFastParser.T__18) {
+            if(_la===TspParser.T__18) {
                 this.state = 236;
-                this.match(TspFastParser.T__18);
+                this.match(TspParser.T__18);
                 this.state = 237;
-                this.match(TspFastParser.NAME);
+                this.match(TspParser.NAME);
             }
 
             this.state = 240;
-            this.match(TspFastParser.T__19);
+            this.match(TspParser.T__19);
             this.state = 254;
             this._errHandler.sync(this);
             switch (this._input.LA(1)) {
-            case TspFastParser.NAME:
+            case TspParser.NAME:
             	this.state = 241;
-            	this.match(TspFastParser.NAME);
+            	this.match(TspParser.NAME);
             	this.state = 246;
             	this._errHandler.sync(this);
             	var _alt = this._interp.adaptivePredict(this._input,29,this._ctx)
             	while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             	    if(_alt===1) {
             	        this.state = 242;
-            	        this.match(TspFastParser.T__1);
+            	        this.match(TspParser.T__1);
             	        this.state = 243;
-            	        this.match(TspFastParser.NAME); 
+            	        this.match(TspParser.NAME); 
             	    }
             	    this.state = 248;
             	    this._errHandler.sync(this);
@@ -1109,37 +1110,37 @@ TspFastParser.prototype.statement = function() {
             	this.state = 251;
             	this._errHandler.sync(this);
             	_la = this._input.LA(1);
-            	if(_la===TspFastParser.T__1) {
+            	if(_la===TspParser.T__1) {
             	    this.state = 249;
-            	    this.match(TspFastParser.T__1);
+            	    this.match(TspParser.T__1);
             	    this.state = 250;
-            	    this.match(TspFastParser.VARARG);
+            	    this.match(TspParser.VARARG);
             	}
 
             	break;
-            case TspFastParser.VARARG:
+            case TspParser.VARARG:
             	this.state = 253;
-            	this.match(TspFastParser.VARARG);
+            	this.match(TspParser.VARARG);
             	break;
-            case TspFastParser.T__20:
+            case TspParser.T__20:
             	break;
             default:
             	break;
             }
             this.state = 256;
-            this.match(TspFastParser.T__20);
+            this.match(TspParser.T__20);
             this.state = 263;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 257;
                 this.statement();
                 this.state = 259;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 258;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 265;
@@ -1147,34 +1148,34 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 266;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 12:
             this.enterOuterAlt(localctx, 12);
             this.state = 267;
-            this.match(TspFastParser.LOCAL);
+            this.match(TspParser.LOCAL);
             this.state = 268;
-            this.match(TspFastParser.T__16);
+            this.match(TspParser.T__16);
             this.state = 269;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             this.state = 270;
-            this.match(TspFastParser.T__19);
+            this.match(TspParser.T__19);
             this.state = 284;
             this._errHandler.sync(this);
             switch (this._input.LA(1)) {
-            case TspFastParser.NAME:
+            case TspParser.NAME:
             	this.state = 271;
-            	this.match(TspFastParser.NAME);
+            	this.match(TspParser.NAME);
             	this.state = 276;
             	this._errHandler.sync(this);
             	var _alt = this._interp.adaptivePredict(this._input,34,this._ctx)
             	while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             	    if(_alt===1) {
             	        this.state = 272;
-            	        this.match(TspFastParser.T__1);
+            	        this.match(TspParser.T__1);
             	        this.state = 273;
-            	        this.match(TspFastParser.NAME); 
+            	        this.match(TspParser.NAME); 
             	    }
             	    this.state = 278;
             	    this._errHandler.sync(this);
@@ -1184,37 +1185,37 @@ TspFastParser.prototype.statement = function() {
             	this.state = 281;
             	this._errHandler.sync(this);
             	_la = this._input.LA(1);
-            	if(_la===TspFastParser.T__1) {
+            	if(_la===TspParser.T__1) {
             	    this.state = 279;
-            	    this.match(TspFastParser.T__1);
+            	    this.match(TspParser.T__1);
             	    this.state = 280;
-            	    this.match(TspFastParser.VARARG);
+            	    this.match(TspParser.VARARG);
             	}
 
             	break;
-            case TspFastParser.VARARG:
+            case TspParser.VARARG:
             	this.state = 283;
-            	this.match(TspFastParser.VARARG);
+            	this.match(TspParser.VARARG);
             	break;
-            case TspFastParser.T__20:
+            case TspParser.T__20:
             	break;
             default:
             	break;
             }
             this.state = 286;
-            this.match(TspFastParser.T__20);
+            this.match(TspParser.T__20);
             this.state = 293;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 287;
                 this.statement();
                 this.state = 289;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 288;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 295;
@@ -1222,23 +1223,23 @@ TspFastParser.prototype.statement = function() {
                 _la = this._input.LA(1);
             }
             this.state = 296;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 13:
             this.enterOuterAlt(localctx, 13);
             this.state = 297;
-            this.match(TspFastParser.LOCAL);
+            this.match(TspParser.LOCAL);
             this.state = 298;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             this.state = 303;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while(_la===TspFastParser.T__1) {
+            while(_la===TspParser.T__1) {
                 this.state = 299;
-                this.match(TspFastParser.T__1);
+                this.match(TspParser.T__1);
                 this.state = 300;
-                this.match(TspFastParser.NAME);
+                this.match(TspParser.NAME);
                 this.state = 305;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
@@ -1246,17 +1247,17 @@ TspFastParser.prototype.statement = function() {
             this.state = 315;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if(_la===TspFastParser.T__2) {
+            if(_la===TspParser.T__2) {
                 this.state = 306;
-                this.match(TspFastParser.T__2);
+                this.match(TspParser.T__2);
                 this.state = 307;
                 this.expression();
                 this.state = 312;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                while(_la===TspFastParser.T__1) {
+                while(_la===TspParser.T__1) {
                     this.state = 308;
-                    this.match(TspFastParser.T__1);
+                    this.match(TspParser.T__1);
                     this.state = 309;
                     this.expression();
                     this.state = 314;
@@ -1291,7 +1292,7 @@ function ValueContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_value;
+    this.ruleIndex = TspParser.RULE_value;
     return this;
 }
 
@@ -1299,11 +1300,11 @@ ValueContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 ValueContext.prototype.constructor = ValueContext;
 
 ValueContext.prototype.NIL = function() {
-    return this.getToken(TspFastParser.NIL, 0);
+    return this.getToken(TspParser.NIL, 0);
 };
 
 ValueContext.prototype.BOOLEAN = function() {
-    return this.getToken(TspFastParser.BOOLEAN, 0);
+    return this.getToken(TspParser.BOOLEAN, 0);
 };
 
 ValueContext.prototype.number = function() {
@@ -1331,13 +1332,13 @@ ValueContext.prototype.expression = function() {
 };
 
 ValueContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterValue(this);
 	}
 };
 
 ValueContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitValue(this);
 	}
 };
@@ -1345,12 +1346,12 @@ ValueContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.ValueContext = ValueContext;
+TspParser.ValueContext = ValueContext;
 
-TspFastParser.prototype.value = function() {
+TspParser.prototype.value = function() {
 
     var localctx = new ValueContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 4, TspFastParser.RULE_value);
+    this.enterRule(localctx, 4, TspParser.RULE_value);
     try {
         this.state = 330;
         this._errHandler.sync(this);
@@ -1359,13 +1360,13 @@ TspFastParser.prototype.value = function() {
         case 1:
             this.enterOuterAlt(localctx, 1);
             this.state = 319;
-            this.match(TspFastParser.NIL);
+            this.match(TspParser.NIL);
             break;
 
         case 2:
             this.enterOuterAlt(localctx, 2);
             this.state = 320;
-            this.match(TspFastParser.BOOLEAN);
+            this.match(TspParser.BOOLEAN);
             break;
 
         case 3:
@@ -1401,11 +1402,11 @@ TspFastParser.prototype.value = function() {
         case 8:
             this.enterOuterAlt(localctx, 8);
             this.state = 326;
-            this.match(TspFastParser.T__19);
+            this.match(TspParser.T__19);
             this.state = 327;
             this.expression();
             this.state = 328;
-            this.match(TspFastParser.T__20);
+            this.match(TspParser.T__20);
             break;
 
         }
@@ -1432,7 +1433,7 @@ function ExpressionContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_expression;
+    this.ruleIndex = TspParser.RULE_expression;
     return this;
 }
 
@@ -1448,15 +1449,15 @@ ExpressionContext.prototype.NAME = function(i) {
 		i = null;
 	}
     if(i===null) {
-        return this.getTokens(TspFastParser.NAME);
+        return this.getTokens(TspParser.NAME);
     } else {
-        return this.getToken(TspFastParser.NAME, i);
+        return this.getToken(TspParser.NAME, i);
     }
 };
 
 
 ExpressionContext.prototype.VARARG = function() {
-    return this.getToken(TspFastParser.VARARG, 0);
+    return this.getToken(TspParser.VARARG, 0);
 };
 
 ExpressionContext.prototype.statement = function(i) {
@@ -1523,13 +1524,13 @@ ExpressionContext.prototype.operatorUnary = function() {
 };
 
 ExpressionContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterExpression(this);
 	}
 };
 
 ExpressionContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitExpression(this);
 	}
 };
@@ -1537,12 +1538,12 @@ ExpressionContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.ExpressionContext = ExpressionContext;
+TspParser.ExpressionContext = ExpressionContext;
 
-TspFastParser.prototype.expression = function() {
+TspParser.prototype.expression = function() {
 
     var localctx = new ExpressionContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 6, TspFastParser.RULE_expression);
+    this.enterRule(localctx, 6, TspParser.RULE_expression);
     var _la = 0; // Token type
     try {
         this.state = 380;
@@ -1558,24 +1559,24 @@ TspFastParser.prototype.expression = function() {
         case 2:
             this.enterOuterAlt(localctx, 2);
             this.state = 333;
-            this.match(TspFastParser.T__16);
+            this.match(TspParser.T__16);
             this.state = 334;
-            this.match(TspFastParser.T__19);
+            this.match(TspParser.T__19);
             this.state = 348;
             this._errHandler.sync(this);
             switch (this._input.LA(1)) {
-            case TspFastParser.NAME:
+            case TspParser.NAME:
             	this.state = 335;
-            	this.match(TspFastParser.NAME);
+            	this.match(TspParser.NAME);
             	this.state = 340;
             	this._errHandler.sync(this);
             	var _alt = this._interp.adaptivePredict(this._input,44,this._ctx)
             	while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             	    if(_alt===1) {
             	        this.state = 336;
-            	        this.match(TspFastParser.T__1);
+            	        this.match(TspParser.T__1);
             	        this.state = 337;
-            	        this.match(TspFastParser.NAME); 
+            	        this.match(TspParser.NAME); 
             	    }
             	    this.state = 342;
             	    this._errHandler.sync(this);
@@ -1585,37 +1586,37 @@ TspFastParser.prototype.expression = function() {
             	this.state = 345;
             	this._errHandler.sync(this);
             	_la = this._input.LA(1);
-            	if(_la===TspFastParser.T__1) {
+            	if(_la===TspParser.T__1) {
             	    this.state = 343;
-            	    this.match(TspFastParser.T__1);
+            	    this.match(TspParser.T__1);
             	    this.state = 344;
-            	    this.match(TspFastParser.VARARG);
+            	    this.match(TspParser.VARARG);
             	}
 
             	break;
-            case TspFastParser.VARARG:
+            case TspParser.VARARG:
             	this.state = 347;
-            	this.match(TspFastParser.VARARG);
+            	this.match(TspParser.VARARG);
             	break;
-            case TspFastParser.T__20:
+            case TspParser.T__20:
             	break;
             default:
             	break;
             }
             this.state = 350;
-            this.match(TspFastParser.T__20);
+            this.match(TspParser.T__20);
             this.state = 357;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__3) | (1 << TspFastParser.T__5) | (1 << TspFastParser.T__6) | (1 << TspFastParser.T__8) | (1 << TspFastParser.T__12) | (1 << TspFastParser.T__13) | (1 << TspFastParser.T__14) | (1 << TspFastParser.T__16) | (1 << TspFastParser.T__19))) !== 0) || _la===TspFastParser.LOCAL || _la===TspFastParser.NAME) {
+            while((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__3) | (1 << TspParser.T__5) | (1 << TspParser.T__6) | (1 << TspParser.T__8) | (1 << TspParser.T__12) | (1 << TspParser.T__13) | (1 << TspParser.T__14) | (1 << TspParser.T__16) | (1 << TspParser.T__19))) !== 0) || _la===TspParser.LOCAL || _la===TspParser.NAME) {
                 this.state = 351;
                 this.statement();
                 this.state = 353;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                if(_la===TspFastParser.T__0) {
+                if(_la===TspParser.T__0) {
                     this.state = 352;
-                    this.match(TspFastParser.T__0);
+                    this.match(TspParser.T__0);
                 }
 
                 this.state = 359;
@@ -1623,7 +1624,7 @@ TspFastParser.prototype.expression = function() {
                 _la = this._input.LA(1);
             }
             this.state = 360;
-            this.match(TspFastParser.T__4);
+            this.match(TspParser.T__4);
             break;
 
         case 3:
@@ -1633,56 +1634,56 @@ TspFastParser.prototype.expression = function() {
             this.state = 373;
             this._errHandler.sync(this);
             switch(this._input.LA(1)) {
-            case TspFastParser.T__25:
+            case TspParser.T__25:
                 this.state = 362;
                 this.operatorOr();
                 break;
-            case TspFastParser.T__26:
+            case TspParser.T__26:
                 this.state = 363;
                 this.operatorAnd();
                 break;
-            case TspFastParser.T__27:
-            case TspFastParser.T__28:
-            case TspFastParser.T__29:
-            case TspFastParser.T__30:
-            case TspFastParser.T__31:
-            case TspFastParser.T__32:
-            case TspFastParser.T__33:
+            case TspParser.T__27:
+            case TspParser.T__28:
+            case TspParser.T__29:
+            case TspParser.T__30:
+            case TspParser.T__31:
+            case TspParser.T__32:
+            case TspParser.T__33:
                 this.state = 364;
                 this.operatorComparison();
                 break;
-            case TspFastParser.T__40:
+            case TspParser.T__40:
                 this.state = 365;
                 this.operatorBitwiseOr();
                 break;
-            case TspFastParser.T__41:
+            case TspParser.T__41:
                 this.state = 366;
                 this.operatorBitwiseXor();
                 break;
-            case TspFastParser.T__39:
+            case TspParser.T__39:
                 this.state = 367;
                 this.operatorBitwiseAnd();
                 break;
-            case TspFastParser.T__42:
-            case TspFastParser.T__43:
+            case TspParser.T__42:
+            case TspParser.T__43:
                 this.state = 368;
                 this.operatorBitwiseShift();
                 break;
-            case TspFastParser.T__34:
+            case TspParser.T__34:
                 this.state = 369;
                 this.operatorStrcat();
                 break;
-            case TspFastParser.T__35:
-            case TspFastParser.T__36:
+            case TspParser.T__35:
+            case TspParser.T__36:
                 this.state = 370;
                 this.operatorAddSub();
                 break;
-            case TspFastParser.T__37:
-            case TspFastParser.T__38:
+            case TspParser.T__37:
+            case TspParser.T__38:
                 this.state = 371;
                 this.operatorMulDiv();
                 break;
-            case TspFastParser.T__46:
+            case TspParser.T__46:
                 this.state = 372;
                 this.operatorPower();
                 break;
@@ -1725,7 +1726,7 @@ function PrefixContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_prefix;
+    this.ruleIndex = TspParser.RULE_prefix;
     return this;
 }
 
@@ -1737,17 +1738,17 @@ PrefixContext.prototype.expression = function() {
 };
 
 PrefixContext.prototype.NAME = function() {
-    return this.getToken(TspFastParser.NAME, 0);
+    return this.getToken(TspParser.NAME, 0);
 };
 
 PrefixContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterPrefix(this);
 	}
 };
 
 PrefixContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitPrefix(this);
 	}
 };
@@ -1755,29 +1756,29 @@ PrefixContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.PrefixContext = PrefixContext;
+TspParser.PrefixContext = PrefixContext;
 
-TspFastParser.prototype.prefix = function() {
+TspParser.prototype.prefix = function() {
 
     var localctx = new PrefixContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 8, TspFastParser.RULE_prefix);
+    this.enterRule(localctx, 8, TspParser.RULE_prefix);
     try {
         this.state = 387;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspFastParser.T__19:
+        case TspParser.T__19:
             this.enterOuterAlt(localctx, 1);
             this.state = 382;
-            this.match(TspFastParser.T__19);
+            this.match(TspParser.T__19);
             this.state = 383;
             this.expression();
             this.state = 384;
-            this.match(TspFastParser.T__20);
+            this.match(TspParser.T__20);
             break;
-        case TspFastParser.NAME:
+        case TspParser.NAME:
             this.enterOuterAlt(localctx, 2);
             this.state = 386;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             break;
         default:
             throw new antlr4.error.NoViableAltException(this);
@@ -1805,7 +1806,7 @@ function SuffixContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_suffix;
+    this.ruleIndex = TspParser.RULE_suffix;
     return this;
 }
 
@@ -1817,7 +1818,7 @@ SuffixContext.prototype.args = function() {
 };
 
 SuffixContext.prototype.NAME = function() {
-    return this.getToken(TspFastParser.NAME, 0);
+    return this.getToken(TspParser.NAME, 0);
 };
 
 SuffixContext.prototype.index = function() {
@@ -1825,13 +1826,13 @@ SuffixContext.prototype.index = function() {
 };
 
 SuffixContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterSuffix(this);
 	}
 };
 
 SuffixContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitSuffix(this);
 	}
 };
@@ -1839,39 +1840,39 @@ SuffixContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.SuffixContext = SuffixContext;
+TspParser.SuffixContext = SuffixContext;
 
-TspFastParser.prototype.suffix = function() {
+TspParser.prototype.suffix = function() {
 
     var localctx = new SuffixContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 10, TspFastParser.RULE_suffix);
+    this.enterRule(localctx, 10, TspParser.RULE_suffix);
     var _la = 0; // Token type
     try {
         this.state = 395;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspFastParser.T__18:
-        case TspFastParser.T__19:
-        case TspFastParser.T__23:
-        case TspFastParser.NORMALSTRING:
-        case TspFastParser.CHARSTRING:
-        case TspFastParser.LONGSTRING:
+        case TspParser.T__18:
+        case TspParser.T__19:
+        case TspParser.T__23:
+        case TspParser.NORMALSTRING:
+        case TspParser.CHARSTRING:
+        case TspParser.LONGSTRING:
             this.enterOuterAlt(localctx, 1);
             this.state = 391;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if(_la===TspFastParser.T__18) {
+            if(_la===TspParser.T__18) {
                 this.state = 389;
-                this.match(TspFastParser.T__18);
+                this.match(TspParser.T__18);
                 this.state = 390;
-                this.match(TspFastParser.NAME);
+                this.match(TspParser.NAME);
             }
 
             this.state = 393;
             this.args();
             break;
-        case TspFastParser.T__17:
-        case TspFastParser.T__21:
+        case TspParser.T__17:
+        case TspParser.T__21:
             this.enterOuterAlt(localctx, 2);
             this.state = 394;
             this.index();
@@ -1902,7 +1903,7 @@ function IndexContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_index;
+    this.ruleIndex = TspParser.RULE_index;
     return this;
 }
 
@@ -1914,17 +1915,17 @@ IndexContext.prototype.expression = function() {
 };
 
 IndexContext.prototype.NAME = function() {
-    return this.getToken(TspFastParser.NAME, 0);
+    return this.getToken(TspParser.NAME, 0);
 };
 
 IndexContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterIndex(this);
 	}
 };
 
 IndexContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitIndex(this);
 	}
 };
@@ -1932,31 +1933,31 @@ IndexContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.IndexContext = IndexContext;
+TspParser.IndexContext = IndexContext;
 
-TspFastParser.prototype.index = function() {
+TspParser.prototype.index = function() {
 
     var localctx = new IndexContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 12, TspFastParser.RULE_index);
+    this.enterRule(localctx, 12, TspParser.RULE_index);
     try {
         this.state = 403;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspFastParser.T__21:
+        case TspParser.T__21:
             this.enterOuterAlt(localctx, 1);
             this.state = 397;
-            this.match(TspFastParser.T__21);
+            this.match(TspParser.T__21);
             this.state = 398;
             this.expression();
             this.state = 399;
-            this.match(TspFastParser.T__22);
+            this.match(TspParser.T__22);
             break;
-        case TspFastParser.T__17:
+        case TspParser.T__17:
             this.enterOuterAlt(localctx, 2);
             this.state = 401;
-            this.match(TspFastParser.T__17);
+            this.match(TspParser.T__17);
             this.state = 402;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             break;
         default:
             throw new antlr4.error.NoViableAltException(this);
@@ -1984,7 +1985,7 @@ function VariableContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_variable;
+    this.ruleIndex = TspParser.RULE_variable;
     return this;
 }
 
@@ -2011,17 +2012,17 @@ VariableContext.prototype.suffix = function(i) {
 };
 
 VariableContext.prototype.NAME = function() {
-    return this.getToken(TspFastParser.NAME, 0);
+    return this.getToken(TspParser.NAME, 0);
 };
 
 VariableContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterVariable(this);
 	}
 };
 
 VariableContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitVariable(this);
 	}
 };
@@ -2029,12 +2030,12 @@ VariableContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.VariableContext = VariableContext;
+TspParser.VariableContext = VariableContext;
 
-TspFastParser.prototype.variable = function() {
+TspParser.prototype.variable = function() {
 
     var localctx = new VariableContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 14, TspFastParser.RULE_variable);
+    this.enterRule(localctx, 14, TspParser.RULE_variable);
     try {
         this.state = 415;
         this._errHandler.sync(this);
@@ -2064,7 +2065,7 @@ TspFastParser.prototype.variable = function() {
         case 2:
             this.enterOuterAlt(localctx, 2);
             this.state = 414;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             break;
 
         }
@@ -2091,7 +2092,7 @@ function FunctionCallContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_functionCall;
+    this.ruleIndex = TspParser.RULE_functionCall;
     return this;
 }
 
@@ -2118,17 +2119,17 @@ FunctionCallContext.prototype.suffix = function(i) {
 };
 
 FunctionCallContext.prototype.NAME = function() {
-    return this.getToken(TspFastParser.NAME, 0);
+    return this.getToken(TspParser.NAME, 0);
 };
 
 FunctionCallContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterFunctionCall(this);
 	}
 };
 
 FunctionCallContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitFunctionCall(this);
 	}
 };
@@ -2136,12 +2137,12 @@ FunctionCallContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.FunctionCallContext = FunctionCallContext;
+TspParser.FunctionCallContext = FunctionCallContext;
 
-TspFastParser.prototype.functionCall = function() {
+TspParser.prototype.functionCall = function() {
 
     var localctx = new FunctionCallContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 16, TspFastParser.RULE_functionCall);
+    this.enterRule(localctx, 16, TspParser.RULE_functionCall);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
@@ -2163,11 +2164,11 @@ TspFastParser.prototype.functionCall = function() {
         this.state = 426;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if(_la===TspFastParser.T__18) {
+        if(_la===TspParser.T__18) {
             this.state = 424;
-            this.match(TspFastParser.T__18);
+            this.match(TspParser.T__18);
             this.state = 425;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
         }
 
         this.state = 428;
@@ -2195,7 +2196,7 @@ function ArgsContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_args;
+    this.ruleIndex = TspParser.RULE_args;
     return this;
 }
 
@@ -2222,13 +2223,13 @@ ArgsContext.prototype.string = function() {
 };
 
 ArgsContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterArgs(this);
 	}
 };
 
 ArgsContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitArgs(this);
 	}
 };
@@ -2236,33 +2237,33 @@ ArgsContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.ArgsContext = ArgsContext;
+TspParser.ArgsContext = ArgsContext;
 
-TspFastParser.prototype.args = function() {
+TspParser.prototype.args = function() {
 
     var localctx = new ArgsContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 18, TspFastParser.RULE_args);
+    this.enterRule(localctx, 18, TspParser.RULE_args);
     var _la = 0; // Token type
     try {
         this.state = 444;
         this._errHandler.sync(this);
         switch(this._input.LA(1)) {
-        case TspFastParser.T__19:
+        case TspParser.T__19:
             this.enterOuterAlt(localctx, 1);
             this.state = 430;
-            this.match(TspFastParser.T__19);
+            this.match(TspParser.T__19);
             this.state = 439;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__16) | (1 << TspFastParser.T__19) | (1 << TspFastParser.T__23))) !== 0) || ((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspFastParser.T__36 - 37)) | (1 << (TspFastParser.T__44 - 37)) | (1 << (TspFastParser.T__45 - 37)) | (1 << (TspFastParser.NIL - 37)) | (1 << (TspFastParser.BOOLEAN - 37)) | (1 << (TspFastParser.NAME - 37)) | (1 << (TspFastParser.NORMALSTRING - 37)) | (1 << (TspFastParser.CHARSTRING - 37)) | (1 << (TspFastParser.LONGSTRING - 37)) | (1 << (TspFastParser.INT - 37)) | (1 << (TspFastParser.HEX - 37)) | (1 << (TspFastParser.FLOAT - 37)))) !== 0)) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__23))) !== 0) || ((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspParser.T__36 - 37)) | (1 << (TspParser.T__44 - 37)) | (1 << (TspParser.T__45 - 37)) | (1 << (TspParser.NIL - 37)) | (1 << (TspParser.BOOLEAN - 37)) | (1 << (TspParser.NAME - 37)) | (1 << (TspParser.NORMALSTRING - 37)) | (1 << (TspParser.CHARSTRING - 37)) | (1 << (TspParser.LONGSTRING - 37)) | (1 << (TspParser.INT - 37)) | (1 << (TspParser.HEX - 37)) | (1 << (TspParser.FLOAT - 37)))) !== 0)) {
                 this.state = 431;
                 this.expression();
                 this.state = 436;
                 this._errHandler.sync(this);
                 _la = this._input.LA(1);
-                while(_la===TspFastParser.T__1) {
+                while(_la===TspParser.T__1) {
                     this.state = 432;
-                    this.match(TspFastParser.T__1);
+                    this.match(TspParser.T__1);
                     this.state = 433;
                     this.expression();
                     this.state = 438;
@@ -2272,16 +2273,16 @@ TspFastParser.prototype.args = function() {
             }
 
             this.state = 441;
-            this.match(TspFastParser.T__20);
+            this.match(TspParser.T__20);
             break;
-        case TspFastParser.T__23:
+        case TspParser.T__23:
             this.enterOuterAlt(localctx, 2);
             this.state = 442;
             this.tableConstructor();
             break;
-        case TspFastParser.NORMALSTRING:
-        case TspFastParser.CHARSTRING:
-        case TspFastParser.LONGSTRING:
+        case TspParser.NORMALSTRING:
+        case TspParser.CHARSTRING:
+        case TspParser.LONGSTRING:
             this.enterOuterAlt(localctx, 3);
             this.state = 443;
             this.string();
@@ -2312,7 +2313,7 @@ function TableConstructorContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_tableConstructor;
+    this.ruleIndex = TspParser.RULE_tableConstructor;
     return this;
 }
 
@@ -2324,13 +2325,13 @@ TableConstructorContext.prototype.fieldList = function() {
 };
 
 TableConstructorContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterTableConstructor(this);
 	}
 };
 
 TableConstructorContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitTableConstructor(this);
 	}
 };
@@ -2338,27 +2339,27 @@ TableConstructorContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.TableConstructorContext = TableConstructorContext;
+TspParser.TableConstructorContext = TableConstructorContext;
 
-TspFastParser.prototype.tableConstructor = function() {
+TspParser.prototype.tableConstructor = function() {
 
     var localctx = new TableConstructorContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 20, TspFastParser.RULE_tableConstructor);
+    this.enterRule(localctx, 20, TspParser.RULE_tableConstructor);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 446;
-        this.match(TspFastParser.T__23);
+        this.match(TspParser.T__23);
         this.state = 448;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspFastParser.T__16) | (1 << TspFastParser.T__19) | (1 << TspFastParser.T__21) | (1 << TspFastParser.T__23))) !== 0) || ((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspFastParser.T__36 - 37)) | (1 << (TspFastParser.T__44 - 37)) | (1 << (TspFastParser.T__45 - 37)) | (1 << (TspFastParser.NIL - 37)) | (1 << (TspFastParser.BOOLEAN - 37)) | (1 << (TspFastParser.NAME - 37)) | (1 << (TspFastParser.NORMALSTRING - 37)) | (1 << (TspFastParser.CHARSTRING - 37)) | (1 << (TspFastParser.LONGSTRING - 37)) | (1 << (TspFastParser.INT - 37)) | (1 << (TspFastParser.HEX - 37)) | (1 << (TspFastParser.FLOAT - 37)))) !== 0)) {
+        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__21) | (1 << TspParser.T__23))) !== 0) || ((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspParser.T__36 - 37)) | (1 << (TspParser.T__44 - 37)) | (1 << (TspParser.T__45 - 37)) | (1 << (TspParser.NIL - 37)) | (1 << (TspParser.BOOLEAN - 37)) | (1 << (TspParser.NAME - 37)) | (1 << (TspParser.NORMALSTRING - 37)) | (1 << (TspParser.CHARSTRING - 37)) | (1 << (TspParser.LONGSTRING - 37)) | (1 << (TspParser.INT - 37)) | (1 << (TspParser.HEX - 37)) | (1 << (TspParser.FLOAT - 37)))) !== 0)) {
             this.state = 447;
             this.fieldList();
         }
 
         this.state = 450;
-        this.match(TspFastParser.T__24);
+        this.match(TspParser.T__24);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2382,7 +2383,7 @@ function FieldListContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_fieldList;
+    this.ruleIndex = TspParser.RULE_fieldList;
     return this;
 }
 
@@ -2401,13 +2402,13 @@ FieldListContext.prototype.field = function(i) {
 };
 
 FieldListContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterFieldList(this);
 	}
 };
 
 FieldListContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitFieldList(this);
 	}
 };
@@ -2415,12 +2416,12 @@ FieldListContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.FieldListContext = FieldListContext;
+TspParser.FieldListContext = FieldListContext;
 
-TspFastParser.prototype.fieldList = function() {
+TspParser.prototype.fieldList = function() {
 
     var localctx = new FieldListContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 22, TspFastParser.RULE_fieldList);
+    this.enterRule(localctx, 22, TspParser.RULE_fieldList);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
@@ -2433,7 +2434,7 @@ TspFastParser.prototype.fieldList = function() {
             if(_alt===1) {
                 this.state = 453;
                 _la = this._input.LA(1);
-                if(!(_la===TspFastParser.T__0 || _la===TspFastParser.T__1)) {
+                if(!(_la===TspParser.T__0 || _la===TspParser.T__1)) {
                 this._errHandler.recoverInline(this);
                 }
                 else {
@@ -2451,10 +2452,10 @@ TspFastParser.prototype.fieldList = function() {
         this.state = 461;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if(_la===TspFastParser.T__0 || _la===TspFastParser.T__1) {
+        if(_la===TspParser.T__0 || _la===TspParser.T__1) {
             this.state = 460;
             _la = this._input.LA(1);
-            if(!(_la===TspFastParser.T__0 || _la===TspFastParser.T__1)) {
+            if(!(_la===TspParser.T__0 || _la===TspParser.T__1)) {
             this._errHandler.recoverInline(this);
             }
             else {
@@ -2486,7 +2487,7 @@ function FieldContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_field;
+    this.ruleIndex = TspParser.RULE_field;
     return this;
 }
 
@@ -2505,17 +2506,17 @@ FieldContext.prototype.expression = function(i) {
 };
 
 FieldContext.prototype.NAME = function() {
-    return this.getToken(TspFastParser.NAME, 0);
+    return this.getToken(TspParser.NAME, 0);
 };
 
 FieldContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterField(this);
 	}
 };
 
 FieldContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitField(this);
 	}
 };
@@ -2523,12 +2524,12 @@ FieldContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.FieldContext = FieldContext;
+TspParser.FieldContext = FieldContext;
 
-TspFastParser.prototype.field = function() {
+TspParser.prototype.field = function() {
 
     var localctx = new FieldContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 24, TspFastParser.RULE_field);
+    this.enterRule(localctx, 24, TspParser.RULE_field);
     try {
         this.state = 473;
         this._errHandler.sync(this);
@@ -2537,13 +2538,13 @@ TspFastParser.prototype.field = function() {
         case 1:
             this.enterOuterAlt(localctx, 1);
             this.state = 463;
-            this.match(TspFastParser.T__21);
+            this.match(TspParser.T__21);
             this.state = 464;
             this.expression();
             this.state = 465;
-            this.match(TspFastParser.T__22);
+            this.match(TspParser.T__22);
             this.state = 466;
-            this.match(TspFastParser.T__2);
+            this.match(TspParser.T__2);
             this.state = 467;
             this.expression();
             break;
@@ -2551,9 +2552,9 @@ TspFastParser.prototype.field = function() {
         case 2:
             this.enterOuterAlt(localctx, 2);
             this.state = 469;
-            this.match(TspFastParser.NAME);
+            this.match(TspParser.NAME);
             this.state = 470;
-            this.match(TspFastParser.T__2);
+            this.match(TspParser.T__2);
             this.state = 471;
             this.expression();
             break;
@@ -2588,7 +2589,7 @@ function OperatorOrContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorOr;
+    this.ruleIndex = TspParser.RULE_operatorOr;
     return this;
 }
 
@@ -2597,13 +2598,13 @@ OperatorOrContext.prototype.constructor = OperatorOrContext;
 
 
 OperatorOrContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorOr(this);
 	}
 };
 
 OperatorOrContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorOr(this);
 	}
 };
@@ -2611,16 +2612,16 @@ OperatorOrContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorOrContext = OperatorOrContext;
+TspParser.OperatorOrContext = OperatorOrContext;
 
-TspFastParser.prototype.operatorOr = function() {
+TspParser.prototype.operatorOr = function() {
 
     var localctx = new OperatorOrContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 26, TspFastParser.RULE_operatorOr);
+    this.enterRule(localctx, 26, TspParser.RULE_operatorOr);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 475;
-        this.match(TspFastParser.T__25);
+        this.match(TspParser.T__25);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2644,7 +2645,7 @@ function OperatorAndContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorAnd;
+    this.ruleIndex = TspParser.RULE_operatorAnd;
     return this;
 }
 
@@ -2653,13 +2654,13 @@ OperatorAndContext.prototype.constructor = OperatorAndContext;
 
 
 OperatorAndContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorAnd(this);
 	}
 };
 
 OperatorAndContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorAnd(this);
 	}
 };
@@ -2667,16 +2668,16 @@ OperatorAndContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorAndContext = OperatorAndContext;
+TspParser.OperatorAndContext = OperatorAndContext;
 
-TspFastParser.prototype.operatorAnd = function() {
+TspParser.prototype.operatorAnd = function() {
 
     var localctx = new OperatorAndContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 28, TspFastParser.RULE_operatorAnd);
+    this.enterRule(localctx, 28, TspParser.RULE_operatorAnd);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 477;
-        this.match(TspFastParser.T__26);
+        this.match(TspParser.T__26);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2700,7 +2701,7 @@ function OperatorComparisonContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorComparison;
+    this.ruleIndex = TspParser.RULE_operatorComparison;
     return this;
 }
 
@@ -2709,13 +2710,13 @@ OperatorComparisonContext.prototype.constructor = OperatorComparisonContext;
 
 
 OperatorComparisonContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorComparison(this);
 	}
 };
 
 OperatorComparisonContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorComparison(this);
 	}
 };
@@ -2723,18 +2724,18 @@ OperatorComparisonContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorComparisonContext = OperatorComparisonContext;
+TspParser.OperatorComparisonContext = OperatorComparisonContext;
 
-TspFastParser.prototype.operatorComparison = function() {
+TspParser.prototype.operatorComparison = function() {
 
     var localctx = new OperatorComparisonContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 30, TspFastParser.RULE_operatorComparison);
+    this.enterRule(localctx, 30, TspParser.RULE_operatorComparison);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 479;
         _la = this._input.LA(1);
-        if(!(((((_la - 28)) & ~0x1f) == 0 && ((1 << (_la - 28)) & ((1 << (TspFastParser.T__27 - 28)) | (1 << (TspFastParser.T__28 - 28)) | (1 << (TspFastParser.T__29 - 28)) | (1 << (TspFastParser.T__30 - 28)) | (1 << (TspFastParser.T__31 - 28)) | (1 << (TspFastParser.T__32 - 28)) | (1 << (TspFastParser.T__33 - 28)))) !== 0))) {
+        if(!(((((_la - 28)) & ~0x1f) == 0 && ((1 << (_la - 28)) & ((1 << (TspParser.T__27 - 28)) | (1 << (TspParser.T__28 - 28)) | (1 << (TspParser.T__29 - 28)) | (1 << (TspParser.T__30 - 28)) | (1 << (TspParser.T__31 - 28)) | (1 << (TspParser.T__32 - 28)) | (1 << (TspParser.T__33 - 28)))) !== 0))) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -2764,7 +2765,7 @@ function OperatorStrcatContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorStrcat;
+    this.ruleIndex = TspParser.RULE_operatorStrcat;
     return this;
 }
 
@@ -2773,13 +2774,13 @@ OperatorStrcatContext.prototype.constructor = OperatorStrcatContext;
 
 
 OperatorStrcatContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorStrcat(this);
 	}
 };
 
 OperatorStrcatContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorStrcat(this);
 	}
 };
@@ -2787,16 +2788,16 @@ OperatorStrcatContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorStrcatContext = OperatorStrcatContext;
+TspParser.OperatorStrcatContext = OperatorStrcatContext;
 
-TspFastParser.prototype.operatorStrcat = function() {
+TspParser.prototype.operatorStrcat = function() {
 
     var localctx = new OperatorStrcatContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 32, TspFastParser.RULE_operatorStrcat);
+    this.enterRule(localctx, 32, TspParser.RULE_operatorStrcat);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 481;
-        this.match(TspFastParser.T__34);
+        this.match(TspParser.T__34);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -2820,7 +2821,7 @@ function OperatorAddSubContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorAddSub;
+    this.ruleIndex = TspParser.RULE_operatorAddSub;
     return this;
 }
 
@@ -2829,13 +2830,13 @@ OperatorAddSubContext.prototype.constructor = OperatorAddSubContext;
 
 
 OperatorAddSubContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorAddSub(this);
 	}
 };
 
 OperatorAddSubContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorAddSub(this);
 	}
 };
@@ -2843,18 +2844,18 @@ OperatorAddSubContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorAddSubContext = OperatorAddSubContext;
+TspParser.OperatorAddSubContext = OperatorAddSubContext;
 
-TspFastParser.prototype.operatorAddSub = function() {
+TspParser.prototype.operatorAddSub = function() {
 
     var localctx = new OperatorAddSubContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 34, TspFastParser.RULE_operatorAddSub);
+    this.enterRule(localctx, 34, TspParser.RULE_operatorAddSub);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 483;
         _la = this._input.LA(1);
-        if(!(_la===TspFastParser.T__35 || _la===TspFastParser.T__36)) {
+        if(!(_la===TspParser.T__35 || _la===TspParser.T__36)) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -2884,7 +2885,7 @@ function OperatorMulDivContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorMulDiv;
+    this.ruleIndex = TspParser.RULE_operatorMulDiv;
     return this;
 }
 
@@ -2893,13 +2894,13 @@ OperatorMulDivContext.prototype.constructor = OperatorMulDivContext;
 
 
 OperatorMulDivContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorMulDiv(this);
 	}
 };
 
 OperatorMulDivContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorMulDiv(this);
 	}
 };
@@ -2907,18 +2908,18 @@ OperatorMulDivContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorMulDivContext = OperatorMulDivContext;
+TspParser.OperatorMulDivContext = OperatorMulDivContext;
 
-TspFastParser.prototype.operatorMulDiv = function() {
+TspParser.prototype.operatorMulDiv = function() {
 
     var localctx = new OperatorMulDivContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 36, TspFastParser.RULE_operatorMulDiv);
+    this.enterRule(localctx, 36, TspParser.RULE_operatorMulDiv);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 485;
         _la = this._input.LA(1);
-        if(!(_la===TspFastParser.T__37 || _la===TspFastParser.T__38)) {
+        if(!(_la===TspParser.T__37 || _la===TspParser.T__38)) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -2948,7 +2949,7 @@ function OperatorBitwiseAndContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorBitwiseAnd;
+    this.ruleIndex = TspParser.RULE_operatorBitwiseAnd;
     return this;
 }
 
@@ -2957,13 +2958,13 @@ OperatorBitwiseAndContext.prototype.constructor = OperatorBitwiseAndContext;
 
 
 OperatorBitwiseAndContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorBitwiseAnd(this);
 	}
 };
 
 OperatorBitwiseAndContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorBitwiseAnd(this);
 	}
 };
@@ -2971,16 +2972,16 @@ OperatorBitwiseAndContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorBitwiseAndContext = OperatorBitwiseAndContext;
+TspParser.OperatorBitwiseAndContext = OperatorBitwiseAndContext;
 
-TspFastParser.prototype.operatorBitwiseAnd = function() {
+TspParser.prototype.operatorBitwiseAnd = function() {
 
     var localctx = new OperatorBitwiseAndContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 38, TspFastParser.RULE_operatorBitwiseAnd);
+    this.enterRule(localctx, 38, TspParser.RULE_operatorBitwiseAnd);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 487;
-        this.match(TspFastParser.T__39);
+        this.match(TspParser.T__39);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3004,7 +3005,7 @@ function OperatorBitwiseOrContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorBitwiseOr;
+    this.ruleIndex = TspParser.RULE_operatorBitwiseOr;
     return this;
 }
 
@@ -3013,13 +3014,13 @@ OperatorBitwiseOrContext.prototype.constructor = OperatorBitwiseOrContext;
 
 
 OperatorBitwiseOrContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorBitwiseOr(this);
 	}
 };
 
 OperatorBitwiseOrContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorBitwiseOr(this);
 	}
 };
@@ -3027,16 +3028,16 @@ OperatorBitwiseOrContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorBitwiseOrContext = OperatorBitwiseOrContext;
+TspParser.OperatorBitwiseOrContext = OperatorBitwiseOrContext;
 
-TspFastParser.prototype.operatorBitwiseOr = function() {
+TspParser.prototype.operatorBitwiseOr = function() {
 
     var localctx = new OperatorBitwiseOrContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 40, TspFastParser.RULE_operatorBitwiseOr);
+    this.enterRule(localctx, 40, TspParser.RULE_operatorBitwiseOr);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 489;
-        this.match(TspFastParser.T__40);
+        this.match(TspParser.T__40);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3060,7 +3061,7 @@ function OperatorBitwiseXorContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorBitwiseXor;
+    this.ruleIndex = TspParser.RULE_operatorBitwiseXor;
     return this;
 }
 
@@ -3069,13 +3070,13 @@ OperatorBitwiseXorContext.prototype.constructor = OperatorBitwiseXorContext;
 
 
 OperatorBitwiseXorContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorBitwiseXor(this);
 	}
 };
 
 OperatorBitwiseXorContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorBitwiseXor(this);
 	}
 };
@@ -3083,16 +3084,16 @@ OperatorBitwiseXorContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorBitwiseXorContext = OperatorBitwiseXorContext;
+TspParser.OperatorBitwiseXorContext = OperatorBitwiseXorContext;
 
-TspFastParser.prototype.operatorBitwiseXor = function() {
+TspParser.prototype.operatorBitwiseXor = function() {
 
     var localctx = new OperatorBitwiseXorContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 42, TspFastParser.RULE_operatorBitwiseXor);
+    this.enterRule(localctx, 42, TspParser.RULE_operatorBitwiseXor);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 491;
-        this.match(TspFastParser.T__41);
+        this.match(TspParser.T__41);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3116,7 +3117,7 @@ function OperatorBitwiseShiftContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorBitwiseShift;
+    this.ruleIndex = TspParser.RULE_operatorBitwiseShift;
     return this;
 }
 
@@ -3125,13 +3126,13 @@ OperatorBitwiseShiftContext.prototype.constructor = OperatorBitwiseShiftContext;
 
 
 OperatorBitwiseShiftContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorBitwiseShift(this);
 	}
 };
 
 OperatorBitwiseShiftContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorBitwiseShift(this);
 	}
 };
@@ -3139,18 +3140,18 @@ OperatorBitwiseShiftContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorBitwiseShiftContext = OperatorBitwiseShiftContext;
+TspParser.OperatorBitwiseShiftContext = OperatorBitwiseShiftContext;
 
-TspFastParser.prototype.operatorBitwiseShift = function() {
+TspParser.prototype.operatorBitwiseShift = function() {
 
     var localctx = new OperatorBitwiseShiftContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 44, TspFastParser.RULE_operatorBitwiseShift);
+    this.enterRule(localctx, 44, TspParser.RULE_operatorBitwiseShift);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 493;
         _la = this._input.LA(1);
-        if(!(_la===TspFastParser.T__42 || _la===TspFastParser.T__43)) {
+        if(!(_la===TspParser.T__42 || _la===TspParser.T__43)) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3180,7 +3181,7 @@ function OperatorUnaryContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorUnary;
+    this.ruleIndex = TspParser.RULE_operatorUnary;
     return this;
 }
 
@@ -3189,13 +3190,13 @@ OperatorUnaryContext.prototype.constructor = OperatorUnaryContext;
 
 
 OperatorUnaryContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorUnary(this);
 	}
 };
 
 OperatorUnaryContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorUnary(this);
 	}
 };
@@ -3203,18 +3204,18 @@ OperatorUnaryContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorUnaryContext = OperatorUnaryContext;
+TspParser.OperatorUnaryContext = OperatorUnaryContext;
 
-TspFastParser.prototype.operatorUnary = function() {
+TspParser.prototype.operatorUnary = function() {
 
     var localctx = new OperatorUnaryContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 46, TspFastParser.RULE_operatorUnary);
+    this.enterRule(localctx, 46, TspParser.RULE_operatorUnary);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 495;
         _la = this._input.LA(1);
-        if(!(((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspFastParser.T__36 - 37)) | (1 << (TspFastParser.T__44 - 37)) | (1 << (TspFastParser.T__45 - 37)))) !== 0))) {
+        if(!(((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspParser.T__36 - 37)) | (1 << (TspParser.T__44 - 37)) | (1 << (TspParser.T__45 - 37)))) !== 0))) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3244,7 +3245,7 @@ function OperatorPowerContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_operatorPower;
+    this.ruleIndex = TspParser.RULE_operatorPower;
     return this;
 }
 
@@ -3253,13 +3254,13 @@ OperatorPowerContext.prototype.constructor = OperatorPowerContext;
 
 
 OperatorPowerContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterOperatorPower(this);
 	}
 };
 
 OperatorPowerContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitOperatorPower(this);
 	}
 };
@@ -3267,16 +3268,16 @@ OperatorPowerContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.OperatorPowerContext = OperatorPowerContext;
+TspParser.OperatorPowerContext = OperatorPowerContext;
 
-TspFastParser.prototype.operatorPower = function() {
+TspParser.prototype.operatorPower = function() {
 
     var localctx = new OperatorPowerContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 48, TspFastParser.RULE_operatorPower);
+    this.enterRule(localctx, 48, TspParser.RULE_operatorPower);
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 497;
-        this.match(TspFastParser.T__46);
+        this.match(TspParser.T__46);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3300,7 +3301,7 @@ function NumberContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_number;
+    this.ruleIndex = TspParser.RULE_number;
     return this;
 }
 
@@ -3308,25 +3309,25 @@ NumberContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 NumberContext.prototype.constructor = NumberContext;
 
 NumberContext.prototype.INT = function() {
-    return this.getToken(TspFastParser.INT, 0);
+    return this.getToken(TspParser.INT, 0);
 };
 
 NumberContext.prototype.HEX = function() {
-    return this.getToken(TspFastParser.HEX, 0);
+    return this.getToken(TspParser.HEX, 0);
 };
 
 NumberContext.prototype.FLOAT = function() {
-    return this.getToken(TspFastParser.FLOAT, 0);
+    return this.getToken(TspParser.FLOAT, 0);
 };
 
 NumberContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterNumber(this);
 	}
 };
 
 NumberContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitNumber(this);
 	}
 };
@@ -3334,18 +3335,18 @@ NumberContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.NumberContext = NumberContext;
+TspParser.NumberContext = NumberContext;
 
-TspFastParser.prototype.number = function() {
+TspParser.prototype.number = function() {
 
     var localctx = new NumberContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 50, TspFastParser.RULE_number);
+    this.enterRule(localctx, 50, TspParser.RULE_number);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 499;
         _la = this._input.LA(1);
-        if(!(((((_la - 56)) & ~0x1f) == 0 && ((1 << (_la - 56)) & ((1 << (TspFastParser.INT - 56)) | (1 << (TspFastParser.HEX - 56)) | (1 << (TspFastParser.FLOAT - 56)))) !== 0))) {
+        if(!(((((_la - 56)) & ~0x1f) == 0 && ((1 << (_la - 56)) & ((1 << (TspParser.INT - 56)) | (1 << (TspParser.HEX - 56)) | (1 << (TspParser.FLOAT - 56)))) !== 0))) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3375,7 +3376,7 @@ function StringContext(parser, parent, invokingState) {
 	}
 	antlr4.ParserRuleContext.call(this, parent, invokingState);
     this.parser = parser;
-    this.ruleIndex = TspFastParser.RULE_string;
+    this.ruleIndex = TspParser.RULE_string;
     return this;
 }
 
@@ -3383,25 +3384,25 @@ StringContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
 StringContext.prototype.constructor = StringContext;
 
 StringContext.prototype.NORMALSTRING = function() {
-    return this.getToken(TspFastParser.NORMALSTRING, 0);
+    return this.getToken(TspParser.NORMALSTRING, 0);
 };
 
 StringContext.prototype.CHARSTRING = function() {
-    return this.getToken(TspFastParser.CHARSTRING, 0);
+    return this.getToken(TspParser.CHARSTRING, 0);
 };
 
 StringContext.prototype.LONGSTRING = function() {
-    return this.getToken(TspFastParser.LONGSTRING, 0);
+    return this.getToken(TspParser.LONGSTRING, 0);
 };
 
 StringContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.enterString(this);
 	}
 };
 
 StringContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspFastListener ) {
+    if(listener instanceof TspListener ) {
         listener.exitString(this);
 	}
 };
@@ -3409,18 +3410,18 @@ StringContext.prototype.exitRule = function(listener) {
 
 
 
-TspFastParser.StringContext = StringContext;
+TspParser.StringContext = StringContext;
 
-TspFastParser.prototype.string = function() {
+TspParser.prototype.string = function() {
 
     var localctx = new StringContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 52, TspFastParser.RULE_string);
+    this.enterRule(localctx, 52, TspParser.RULE_string);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
         this.state = 501;
         _la = this._input.LA(1);
-        if(!(((((_la - 53)) & ~0x1f) == 0 && ((1 << (_la - 53)) & ((1 << (TspFastParser.NORMALSTRING - 53)) | (1 << (TspFastParser.CHARSTRING - 53)) | (1 << (TspFastParser.LONGSTRING - 53)))) !== 0))) {
+        if(!(((((_la - 53)) & ~0x1f) == 0 && ((1 << (_la - 53)) & ((1 << (TspParser.NORMALSTRING - 53)) | (1 << (TspParser.CHARSTRING - 53)) | (1 << (TspParser.LONGSTRING - 53)))) !== 0))) {
         this._errHandler.recoverInline(this);
         }
         else {
@@ -3442,4 +3443,4 @@ TspFastParser.prototype.string = function() {
 };
 
 
-exports.TspFastParser = TspFastParser;
+exports.TspParser = TspParser;

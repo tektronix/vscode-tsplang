@@ -15,7 +15,7 @@
  */
 import { Token, Lexer, InputStream } from 'antlr4'
 
-export declare class TspFastLexer extends Lexer {
+export declare class TspLexer extends Lexer {
     static EOF: number
     static T__0: number
     static T__1: number

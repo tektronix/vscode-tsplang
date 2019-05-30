@@ -16,7 +16,7 @@
 import { CommonTokenStream, Parser, ParserRuleContext } from 'antlr4'
 import { ParseTreeListener, TerminalNode } from 'antlr4/tree/Tree'
 
-export declare class TspFastParser extends Parser {
+export declare class TspParser extends Parser {
     static EOF: number
     static T__0: number
     static T__1: number
@@ -128,14 +128,14 @@ export declare class TspFastParser extends Parser {
 
     constructor(input: CommonTokenStream)
 
-    chunk(): TspFastParser.ChunkContext
-    statement(): TspFastParser.StatementContext
+    chunk(): TspParser.ChunkContext
+    statement(): TspParser.StatementContext
 }
 
-export namespace TspFastParser {
+export namespace TspParser {
     class BaseContext extends ParserRuleContext {
         children: Array<ParserRuleContext | TerminalNode>
-        parser: TspFastParser
+        parser: TspParser
         ruleIndex: number
         enterRule(listener: ParseTreeListener)
         exitRule(listener: ParseTreeListener)

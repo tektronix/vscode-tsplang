@@ -16,9 +16,9 @@
 import { ParserRuleContext } from 'antlr4'
 import { ParseTreeListener, TerminalNode, ErrorNode } from 'antlr4/tree/Tree'
 
-import { TspFastParser } from './TspFastParser'
+import { TspParser } from './TspParser'
 
-export declare class TspFastListener implements ParseTreeListener {
+export declare class TspListener implements ParseTreeListener {
     constructor()
 
     enterEveryRule(node: ParserRuleContext): void
@@ -26,9 +26,9 @@ export declare class TspFastListener implements ParseTreeListener {
     visitErrorNode(node: ErrorNode): void
     visitTerminal(node: TerminalNode): void
 
-    enterChunk(context: TspFastParser.ChunkContext): void
-    exitChunk(context: TspFastParser.ChunkContext): void
+    enterChunk(context: TspParser.ChunkContext): void
+    exitChunk(context: TspParser.ChunkContext): void
 
-    enterStatement(context: TspFastParser.StatementContext): void
-    exitStatement(context: TspFastParser.StatementContext): void
+    enterStatement(context: TspParser.StatementContext): void
+    exitStatement(context: TspParser.StatementContext): void
 }
