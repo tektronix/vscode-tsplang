@@ -106,14 +106,13 @@
         "exclude": [
             "**/*.d.ts",
             "**/*.test.ts",
-            "./coverage/**",
-            "./out/**",
-            "./client/**",
-            "./src/extension.ts",
-            "./server/src/instrument/2460/*",
-            "./server/src/instrument/2461/*",
-            "./server/src/instrument/6500/*",
-            "./server/src/instrument/raw-tsb-help/*"
+            "coverage/**",
+            "out/**",
+            "client/**",
+            "src/extension.ts",
+            "server/src/instrument/2461",
+            "server/src/instrument/6500",
+            "server/src/instrument/raw-tsb-help"
         ],
         "reporter": [
             "json",
