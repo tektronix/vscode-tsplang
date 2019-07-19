@@ -60,7 +60,7 @@
         ]
     },
     "dependencies": {
-        "vscode": "^1.1.33",
+        "@types/vscode": "^1.26.0",
         "vscode-languageclient": "^4.4.2"
     },
     "devDependencies": {
@@ -85,7 +85,7 @@
         "lint": "node ./node_modules/tslint/bin/tslint --project .",
         "prepackage": "npm run compile && npm run lint && npm run test",
         "package": "vsce package",
-        "postinstall": "cd server && npm install && cd .. && npm run update-vscode",
+        "postinstall": "cd server && npm install",
         "test": "npm run lint -s & mocha",
         "test:coverage": "nyc mocha",
         "update-vscode": "node ./node_modules/vscode/bin/install",
