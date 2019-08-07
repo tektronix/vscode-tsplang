@@ -1,7 +1,7 @@
 # TSPLang
 
 [![build](https://travis-ci.com/tektronix/vscode-tsplang.svg?branch=master)](https://travis-ci.com/tektronix/vscode-tsplang)
-[![codecov](https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg)](https://codecov.io/gh/tektronix/vscode-tsplang)[![Keithley](https://tektronix.github.io/media/Keithley-opensource_badge-flat.svg)](https://github.com/tektronix)
+[![codecov](https://codecov.io/gh/tektronix/vscode-tsplang/branch/master/graph/badge.svg)](https://codecov.io/gh/tektronix/vscode-tsplang) [![Keithley](https://tektronix.github.io/media/Keithley-opensource_badge-flat.svg)](https://github.com/tektronix)
 
 The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supported-instruments) TSP-enabled Keithley Instruments.
 
