@@ -51,7 +51,7 @@ chunk
     ;
 
 statement
-    : variable (',' variable)* '=' expression (',' expression)*
+    : assignment
     | functionCall
     | 'do' (statement ';'?)* 'end'
     | 'while' expression 'do' (statement ';'?)* 'end'
@@ -64,6 +64,10 @@ statement
     | 'function' NAME ('.' NAME)* (':' NAME)? '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end'
     | LOCAL 'function' NAME '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end'
     | LOCAL NAME (',' NAME)* ('=' expression (',' expression)*)?
+    ;
+
+assignment
+    : variable (',' variable)* '=' expression (',' expression)*
     ;
 
 value
