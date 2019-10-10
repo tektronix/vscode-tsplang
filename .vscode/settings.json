@@ -8,7 +8,9 @@
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results
     },
-    "typescript.format.enable": true,
+    "javascript.preferences.quoteStyle": "double",
+    "typescript.format.enable": false,
+    "typescript.tsdk": "node_modules/typescript/lib",
     "[json]": {
         "editor.insertSpaces": true,
         "editor.tabSize": 4
@@ -16,10 +18,20 @@
     "[typescript]": {
         "editor.insertSpaces": true,
         "editor.rulers": [
-            119
+            88
         ],
         "editor.tabSize": 4
     },
+    "eslint.validate": [
+        {
+            "language": "javascript",
+            "autoFix": false
+        },
+        {
+            "language": "typescript",
+            "autoFix": false
+        }
+    ],
     "mocha.files.glob": "server/src/test/**/*.test.ts",
     "mocha.options": {
         "recursive": true

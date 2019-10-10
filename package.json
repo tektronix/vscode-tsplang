@@ -27,7 +27,7 @@
         }
     ],
     "engines": {
-        "vscode": "^1.34.0"
+        "vscode": "^1.38.0"
     },
     "categories": [
         "Programming Languages"
@@ -126,22 +126,34 @@
         ]
     },
     "devDependencies": {
-        "@types/chai": "^4.1.7",
-        "@types/mocha": "^2.2.48",
-        "@types/node": "^7.10.6",
-        "chai": "^4.2.0",
-        "istanbul": "^0.4.5",
-        "mocha": "^5.2.0",
-        "mocha-typescript": "^1.1.17",
-        "nyc": "^14.1.1",
-        "source-map-support": "^0.5.12",
+        "@types/chai": "latest",
+        "@types/mocha": "latest",
+        "@types/node": "^7.10.7",
+        "@typescript-eslint/eslint-plugin": "^2.3.3",
+        "@typescript-eslint/parser": "^2.3.3",
+        "chai": "latest",
+        "eslint": "^6.5.1",
+        "eslint-config-prettier": "^6.4.0",
+        "eslint-plugin-import": "^2.18.2",
+        "eslint-plugin-jsdoc": "^15.10.0",
+        "eslint-plugin-prettier": "^3.1.1",
+        "mocha": "latest",
+        "mocha-typescript": "latest",
+        "nyc": "latest",
+        "prettier": "1.18.2",
+        "source-map-support": "latest",
         "ts-node": "^7.0.1",
-        "tslint": "^5.17.0",
-        "typescript": "^3.5.1"
+        "typescript": "^3.6.4"
     },
     "scripts": {
         "compile": "tsc -b",
-        "lint": "tslint -p ./client/tsconfig.json && tslint -p ./server/tsconfig.json",
+        "eslint-check": "eslint --ext .ts --print-config client/src/extension.ts | eslint-config-prettier-check",
+        "format": "npm run format:client && npm run format:server",
+        "format:client": "eslint --ext .js,.ts --fix client",
+        "format:server": "eslint --ext .js,.ts --fix server",
+        "lint": "npm run lint:client && npm run lint:server",
+        "lint:client": "eslint --ext .js,.ts client",
+        "lint:server": "eslint --ext .js,.ts server",
         "prepackage": "npm run compile && npm run test",
         "package": "vsce package",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
