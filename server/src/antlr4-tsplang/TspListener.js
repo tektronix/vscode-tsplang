@@ -29,6 +29,15 @@ TspListener.prototype.exitStatement = function(ctx) {
 };
 
 
+// Enter a parse tree produced by TspParser#assignment.
+TspListener.prototype.enterAssignment = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#assignment.
+TspListener.prototype.exitAssignment = function(ctx) {
+};
+
+
 // Enter a parse tree produced by TspParser#value.
 TspListener.prototype.enterValue = function(ctx) {
 };
