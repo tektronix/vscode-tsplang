@@ -41,7 +41,8 @@
         "@typescript-eslint/semi": "off",
 
         "sort-imports": ["warn", {
-            "ignoreCase": true
+            "ignoreCase": true,
+            "ignoreDeclarationSort": true
         }],
 
         // eslint-plugin-import
