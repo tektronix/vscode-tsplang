@@ -15,10 +15,10 @@
  */
 "use strict"
 
+import * as jsonrpc from "vscode-jsonrpc"
 import { CommonTokenStream, InputStream, Token } from "antlr4"
 import {
     createConnection,
-    DidCloseTextDocumentParams,
     DidOpenTextDocumentParams,
     IConnection,
     InitializeResult,
@@ -34,6 +34,14 @@ import { TspLexer } from "./antlr4-tsplang"
 const connection: IConnection = createConnection(
     new IPCMessageReader(process),
     new IPCMessageWriter(process)
+)
+
+interface TokenSpans {
+    fullSpan: Range
+    span: Range
+}
+const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
+    "DocAreaNotification"
 )
 
 connection.onInitialize(
@@ -61,26 +69,19 @@ interface State {
     tokens?: Array<TokenPlus>
     tokenStream?: CommonTokenStream
 }
-const uriStateMap = new Map<string, State>()
 connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
-    if (uriStateMap.has(params.textDocument.uri)) {
-        return
-    }
-
     const state: State = {}
     state.inputStream = new InputStream(params.textDocument.text)
     state.lexer = new TspLexer(state.inputStream)
-    const hiddenTokenStream = new CommonTokenStream(state.lexer, TspLexer.HIDDEN)
-    hiddenTokenStream.fill()
-    const hiddenTokens = hiddenTokenStream.tokens
-    state.lexer.reset()
-    state.tokenStream = new CommonTokenStream(
-        state.lexer,
-        TspLexer.DEFAULT_TOKEN_CHANNEL
-    )
+    state.tokenStream = new CommonTokenStream(state.lexer)
     state.tokenStream.fill()
-    state.tokens = state.tokenStream.tokens.map(
-        (value: Token, index: number, array: Array<Token>): TokenPlus => {
+    const hiddenTokens = state.tokenStream.tokens.filter(
+        t => t.channel === Token.HIDDEN_CHANNEL
+    )
+    state.tokenStream.tokens
+        .filter(t => t.channel === 0)
+        .forEach((value: Token, index: number, array: Token[]) => {
+            // Initialize tokenplus object
             const plus = value as TokenPlus
             plus.leadingTrivia = []
             plus.trailingTrivia = []
@@ -94,20 +95,39 @@ connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
                     line: value.line - 1,
                 },
             }
-            plus.fullSpan = plus.span
+            plus.fullSpan = {
+                end: {
+                    character: plus.span.end.character,
+                    line: plus.span.end.line,
+                },
+                start: {
+                    character: plus.span.start.character,
+                    line: plus.span.start.line,
+                },
+            }
 
+            // Collect leading trivia.
             while (
                 hiddenTokens.length > 0 &&
                 hiddenTokens[0].tokenIndex < value.tokenIndex
             ) {
-                plus.leadingTrivia.push(hiddenTokens.pop())
+                plus.leadingTrivia.push(hiddenTokens.shift())
             }
+            // Get the token index of the next Token on the Default channel.
+            let nextTokenIndex = Number.MAX_SAFE_INTEGER
+            if (array[index + 1] !== undefined) {
+                nextTokenIndex = array[index + 1].tokenIndex
+            }
+            // Collect trailing trivia.
             while (
                 hiddenTokens.length > 0 &&
                 hiddenTokens[0].tokenIndex > value.tokenIndex &&
-                (hiddenTokens[0].line === value.line || index === array.length - 1)
+                hiddenTokens[0].tokenIndex < nextTokenIndex &&
+                (hiddenTokens[0].line === value.line ||
+                    // Collect all trivia before the EOF.
+                    index === array.length - 1)
             ) {
-                plus.trailingTrivia.push(hiddenTokens.pop())
+                plus.trailingTrivia.push(hiddenTokens.shift())
             }
 
             if (plus.leadingTrivia.length > 0) {
@@ -118,24 +138,20 @@ connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
             }
 
             if (plus.trailingTrivia.length > 0) {
+                const lastIndex = plus.trailingTrivia.length - 1
                 plus.fullSpan.end = {
                     character:
-                        plus.trailingTrivia[0].column +
-                        plus.trailingTrivia[0].text.length,
-                    line: plus.trailingTrivia[0].line - 1,
+                        plus.trailingTrivia[lastIndex].column +
+                        plus.trailingTrivia[lastIndex].text.length,
+                    line: plus.trailingTrivia[lastIndex].line - 1,
                 }
             }
 
-            return plus
-        }
-    )
-
-    uriStateMap[params.textDocument.uri] = state
-})
-connection.onDidCloseTextDocument((params: DidCloseTextDocumentParams) => {
-    if (uriStateMap.has(params.textDocument.uri)) {
-        uriStateMap.delete(params.textDocument.uri)
-    }
+            connection.sendNotification(DocumentAreaNotification, {
+                fullSpan: plus.fullSpan,
+                span: plus.span,
+            })
+        })
 })
 
 // Listen on the connection

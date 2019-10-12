@@ -16,13 +16,60 @@
 "use strict"
 
 import * as path from "path"
-import { ExtensionContext, languages, workspace } from "vscode"
+import * as jsonrpc from "vscode-jsonrpc"
+import { ExtensionContext, languages, Range, window, workspace } from "vscode"
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
     TransportKind,
 } from "vscode-languageclient"
+
+interface TokenSpans {
+    fullSpan: Range
+    span: Range
+}
+const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
+    "DocAreaNotification"
+)
+
+interface ColorPair {
+    color: string
+    tint: string
+}
+const decorations: Array<ColorPair> = [
+    {
+        // red
+        color: "#F44336F8",
+        tint: "#EF9A9AF0",
+    },
+    {
+        // violet
+        color: "#9C27B0F8",
+        tint: "#CE93D8F0",
+    },
+    {
+        // orange
+        color: "#FF9800F8",
+        tint: "#FFCC80F0",
+    },
+    {
+        // blue
+        color: "#03A9F4F8",
+        tint: "#81D4FAF0",
+    },
+    {
+        // yellow
+        color: "#FFEB3BF8",
+        tint: "#FFF59DF0",
+    },
+    {
+        // green
+        color: "#4CAF50F8",
+        tint: "#A5D6A7F0",
+    },
+]
+let decorationIndex = 0
 
 export function activate(context: ExtensionContext): void {
     // The server is implemented in node
@@ -54,16 +101,42 @@ export function activate(context: ExtensionContext): void {
 
     const diagnosticsCollection = languages.createDiagnosticCollection("TSP")
 
-    // Create the language client and start the client.
-    const disposable = new LanguageClient(
+    const langclient = new LanguageClient(
         "tsplang",
         "TSPLang",
         serverOptions,
         clientOptions,
         true
-    ).start()
+    )
+    langclient.onReady().then(() => {
+        langclient.onNotification(DocumentAreaNotification, tokenSpans => {
+            if (!tokenSpans) {
+                return
+            }
+            if (!window.activeTextEditor) {
+                return
+            }
+            window.activeTextEditor.setDecorations(
+                window.createTextEditorDecorationType({
+                    backgroundColor: decorations[decorationIndex].tint,
+                }),
+                [tokenSpans.fullSpan]
+            )
+            window.activeTextEditor.setDecorations(
+                window.createTextEditorDecorationType({
+                    backgroundColor: decorations[decorationIndex].color,
+                }),
+                [tokenSpans.span]
+            )
+            if (decorationIndex + 1 < decorations.length) {
+                decorationIndex++
+            } else {
+                decorationIndex = 0
+            }
+        })
+    })
 
     // Push the disposable to the context's subscriptions so that the client can be
     // deactivated on extension deactivation
-    context.subscriptions.push(disposable, diagnosticsCollection)
+    context.subscriptions.push(langclient.start(), diagnosticsCollection)
 }
