@@ -24,6 +24,7 @@ import {
     InitializeResult,
     IPCMessageReader,
     IPCMessageWriter,
+    Position,
     Range,
     TextDocumentSyncKind,
 } from "vscode-languageserver"
@@ -75,83 +76,82 @@ connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
     state.lexer = new TspLexer(state.inputStream)
     state.tokenStream = new CommonTokenStream(state.lexer)
     state.tokenStream.fill()
-    const hiddenTokens = state.tokenStream.tokens.filter(
-        t => t.channel === Token.HIDDEN_CHANNEL
-    )
-    state.tokenStream.tokens
-        .filter(t => t.channel === 0)
-        .forEach((value: Token, index: number, array: Token[]) => {
-            // Initialize tokenplus object
-            const plus = value as TokenPlus
+    let leadingTriviaCache: Token[] = []
+    let skipNextN = 0
+    state.tokenStream.tokens.forEach((value: Token, index: number, array: Token[]) => {
+        // Skip N items.
+        if (skipNextN > 0) {
+            skipNextN--
+            return
+        }
+
+        // Consume leading trivia.
+        if (value.channel === Token.HIDDEN_CHANNEL) {
+            leadingTriviaCache.push(value)
+            return
+        }
+
+        // Initialize TokenPlus object.
+        const plus = value as TokenPlus
+        plus.trailingTrivia = []
+        plus.span = {
+            end: {
+                character: value.column + value.text.length,
+                line: value.line - 1,
+            },
+            start: {
+                character: value.column,
+                line: value.line - 1,
+            },
+        }
+        plus.fullSpan = {
+            end: {
+                character: plus.span.end.character,
+                line: plus.span.end.line,
+            },
+            start: {} as Position,
+        }
+        if (leadingTriviaCache.length > 0) {
+            plus.leadingTrivia = [...leadingTriviaCache]
+            leadingTriviaCache = []
+            plus.fullSpan.start = {
+                character: plus.leadingTrivia[0].column,
+                line: plus.leadingTrivia[0].line - 1,
+            }
+        } else {
             plus.leadingTrivia = []
-            plus.trailingTrivia = []
-            plus.span = {
-                end: {
-                    character: value.column + value.text.length,
-                    line: value.line - 1,
-                },
-                start: {
-                    character: value.column,
-                    line: value.line - 1,
-                },
+            plus.fullSpan.start = {
+                character: plus.span.start.character,
+                line: plus.span.start.line,
             }
-            plus.fullSpan = {
-                end: {
-                    character: plus.span.end.character,
-                    line: plus.span.end.line,
-                },
-                start: {
-                    character: plus.span.start.character,
-                    line: plus.span.start.line,
-                },
-            }
+        }
 
-            // Collect leading trivia.
-            while (
-                hiddenTokens.length > 0 &&
-                hiddenTokens[0].tokenIndex < value.tokenIndex
-            ) {
-                plus.leadingTrivia.push(hiddenTokens.shift())
-            }
-            // Get the token index of the next Token on the Default channel.
-            let nextTokenIndex = Number.MAX_SAFE_INTEGER
-            if (array[index + 1] !== undefined) {
-                nextTokenIndex = array[index + 1].tokenIndex
-            }
-            // Collect trailing trivia.
-            while (
-                hiddenTokens.length > 0 &&
-                hiddenTokens[0].tokenIndex > value.tokenIndex &&
-                hiddenTokens[0].tokenIndex < nextTokenIndex &&
-                (hiddenTokens[0].line === value.line ||
-                    // Collect all trivia before the EOF.
-                    index === array.length - 1)
-            ) {
-                plus.trailingTrivia.push(hiddenTokens.shift())
-            }
+        // Consume trailing trivia.
+        while (
+            array[index + skipNextN + 1] !== undefined &&
+            array[index + skipNextN + 1].channel === Token.HIDDEN_CHANNEL &&
+            array[index + skipNextN + 1].line === value.line
+        ) {
+            plus.trailingTrivia.push(array[index + skipNextN + 1])
+            skipNextN++
+        }
 
-            if (plus.leadingTrivia.length > 0) {
-                plus.fullSpan.start = {
-                    character: plus.leadingTrivia[0].column,
-                    line: plus.leadingTrivia[0].line - 1,
-                }
+        // Adjust fullSpan if trailing trivia exists.
+        if (plus.trailingTrivia.length > 0) {
+            const lastIndex = plus.trailingTrivia.length - 1
+            plus.fullSpan.end = {
+                character:
+                    plus.trailingTrivia[lastIndex].column +
+                    plus.trailingTrivia[lastIndex].text.length,
+                line: plus.trailingTrivia[lastIndex].line - 1,
             }
+        }
 
-            if (plus.trailingTrivia.length > 0) {
-                const lastIndex = plus.trailingTrivia.length - 1
-                plus.fullSpan.end = {
-                    character:
-                        plus.trailingTrivia[lastIndex].column +
-                        plus.trailingTrivia[lastIndex].text.length,
-                    line: plus.trailingTrivia[lastIndex].line - 1,
-                }
-            }
-
-            connection.sendNotification(DocumentAreaNotification, {
-                fullSpan: plus.fullSpan,
-                span: plus.span,
-            })
+        connection.sendNotification(DocumentAreaNotification, {
+            fullSpan: plus.fullSpan,
+            span: plus.span,
         })
+    })
 })
 
 // Listen on the connection
