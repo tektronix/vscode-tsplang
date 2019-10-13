@@ -36,37 +36,44 @@ const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
 interface ColorPair {
     color: string
     tint: string
+    blackText: boolean
 }
 const decorations: Array<ColorPair> = [
     {
         // red
         color: "#F44336F8",
         tint: "#EF9A9AF0",
+        blackText: true,
     },
     {
         // violet
         color: "#9C27B0F8",
         tint: "#CE93D8F0",
+        blackText: false,
     },
     {
         // orange
         color: "#FF9800F8",
         tint: "#FFCC80F0",
+        blackText: true,
     },
     {
         // blue
         color: "#03A9F4F8",
         tint: "#81D4FAF0",
+        blackText: true,
     },
     {
         // yellow
         color: "#FFEB3BF8",
         tint: "#FFF59DF0",
+        blackText: true,
     },
     {
         // green
         color: "#4CAF50F8",
         tint: "#A5D6A7F0",
+        blackText: true,
     },
 ]
 let decorationIndex = 0
@@ -116,15 +123,20 @@ export function activate(context: ExtensionContext): void {
             if (!window.activeTextEditor) {
                 return
             }
+            const color = decorations[decorationIndex].blackText
+                ? "#000000FF"
+                : "#FFFFFFFF"
             window.activeTextEditor.setDecorations(
                 window.createTextEditorDecorationType({
                     backgroundColor: decorations[decorationIndex].tint,
+                    color,
                 }),
                 [tokenSpans.fullSpan]
             )
             window.activeTextEditor.setDecorations(
                 window.createTextEditorDecorationType({
                     backgroundColor: decorations[decorationIndex].color,
+                    color,
                 }),
                 [tokenSpans.span]
             )
