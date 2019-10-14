@@ -24,11 +24,13 @@ declare module "./TspLexer" {
         nextTokenPlus(): TokenPlus
     }
 }
+// eslint-disable-next-line @typescript-eslint/unbound-method
 TspLexer.prototype.nextTokenPlus = function(): TokenPlus {
+    const hidden = (this.channelNames as string[]).indexOf("HIDDEN")
     let triviaCache: Token[] = []
     // Collect any leading trivia.
     let t: Token = this.nextToken()
-    while (t.channel === Token.HIDDEN_CHANNEL) {
+    while (t.channel === hidden) {
         triviaCache.push(t)
         t = this.nextToken()
     }
@@ -39,18 +41,24 @@ TspLexer.prototype.nextTokenPlus = function(): TokenPlus {
     // Collect any trailing trivia.
     let lastCharIndex: number = this._tokenStartCharIndex
     t = this.nextToken()
-    while (t.channel === Token.HIDDEN_CHANNEL && t.line === result.line) {
+    while (t.channel === hidden && t.line === result.line) {
         triviaCache.push(t)
         lastCharIndex = this._tokenStartCharIndex
         t = this.nextToken()
     }
     result.trailingTrivia = [...triviaCache]
     // Reset to the start of the last Token.
-    ;(this._input as InputStream).seek(lastCharIndex)
-    this._token =
-        result.trailingTrivia.length > 0
-            ? result.trailingTrivia[result.trailingTrivia.length - 1]
-            : (result as Token)
+    this.adjustSeekIndex(
+        triviaCache.length > 0
+            ? triviaCache[triviaCache.length - 1].tokenIndex
+            : result.tokenIndex
+    )
+    // ;(this._input as InputStream).seek(lastCharIndex)
+    // this.index = this.index--
+    // this._token =
+    //     result.trailingTrivia.length > 0
+    //         ? result.trailingTrivia[result.trailingTrivia.length - 1]
+    //         : (result as Token)
     // Finalize the TokenPlus object.
     result.span = {
         end: {
