@@ -15,17 +15,16 @@
  */
 "use strict"
 
-import { CommonTokenPlusStream, InputStream, TokenPlus, TspLexer } from "antlr4-tsplang"
+import { CommonTokenPlusStream, InputStream, TspLexer } from "antlr4-tsplang"
 import * as jsonrpc from "vscode-jsonrpc"
 import {
     createConnection,
-    DidOpenTextDocumentParams,
     IConnection,
     InitializeResult,
     IPCMessageReader,
     IPCMessageWriter,
-    Position,
     Range,
+    TextDocumentItem,
     TextDocumentSyncKind,
 } from "vscode-languageserver"
 
@@ -41,6 +40,9 @@ interface TokenSpans {
 }
 const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
     "DocAreaNotification"
+)
+const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem, void>(
+    "ParseDocNotification"
 )
 
 connection.onInitialize(
@@ -62,12 +64,12 @@ connection.onInitialize(
 //     tokens?: Array<TokenPlus>
 //     tokenStream?: CommonTokenPlusStream
 // }
-connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
-    const inputStream = new InputStream(params.textDocument.text)
+connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) => {
+    const inputStream = new InputStream(param.text)
     const lexer = new TspLexer(inputStream)
     const tokenStream = new CommonTokenPlusStream(lexer)
     tokenStream.fill()
-    console.log(`Done with ${params.textDocument.uri}`)
+    console.log(`Done with ${param.uri}`)
     // const state: State = {}
     // state.inputStream = new InputStream(params.textDocument.text)
     // state.lexer = new TspLexer(state.inputStream)

@@ -37,6 +37,12 @@
     ],
     "main": "./client/out/extension",
     "contributes": {
+        "commands": [
+            {
+                "command": "tsplang.parse",
+                "title": "Parse Document"
+            }
+        ],
         "configuration": {
             "title": "TSPLang",
             "properties": {

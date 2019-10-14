@@ -17,11 +17,20 @@
 
 import * as path from "path"
 import * as jsonrpc from "vscode-jsonrpc"
-import { ExtensionContext, languages, Range, window, workspace } from "vscode"
+import {
+    commands,
+    ExtensionContext,
+    languages,
+    Range,
+    TextEditor,
+    window,
+    workspace,
+} from "vscode"
 import {
     LanguageClient,
     LanguageClientOptions,
     ServerOptions,
+    TextDocumentItem,
     TransportKind,
 } from "vscode-languageclient"
 
@@ -31,6 +40,9 @@ interface TokenSpans {
 }
 const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
     "DocAreaNotification"
+)
+const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem, void>(
+    "ParseDocNotification"
 )
 
 interface ColorPair {
@@ -150,5 +162,19 @@ export function activate(context: ExtensionContext): void {
 
     // Push the disposable to the context's subscriptions so that the client can be
     // deactivated on extension deactivation
-    context.subscriptions.push(langclient.start(), diagnosticsCollection)
+    context.subscriptions.push(
+        diagnosticsCollection,
+        commands.registerTextEditorCommand("tsplang.parse", (editor: TextEditor) => {
+            langclient.sendNotification(
+                ParseDocumentNotification,
+                TextDocumentItem.create(
+                    editor.document.uri.toString(),
+                    editor.document.languageId,
+                    editor.document.version,
+                    editor.document.getText()
+                )
+            )
+        }),
+        langclient.start()
+    )
 }
