@@ -4,5 +4,10 @@
     "description": "ANTLR4 generated files for the TSP language.",
     "main": "index.js",
     "license": "Apache-2.0",
-    "scripts": {}
+    "scripts": {},
+    "dependencies": {
+        "@types/antlr4": "^4.7.0",
+        "antlr4": "^4.7.2",
+        "vscode-languageserver": "^5.2.1"
+    }
 }

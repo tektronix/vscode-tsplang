@@ -77,7 +77,8 @@ export declare class TspLexer extends Lexer {
     static FLOAT: number
     static LONGCOMMENT: number
     static LINE_COMMENT: number
-    static WS: number
+    static HORIZONTAL_WS: number
+    static VERTICAL_WS: number
     static SHEBANG: number
 
     readonly channelNames: Array<string>

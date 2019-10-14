@@ -13,7 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-exports.TokenPlus = require('./tokenPlus').TokenPlus;
-exports.TspLexer = require('./TspLexer').TspLexer;
-exports.TspListener = require('./TspListener').TspListener;
-exports.TspParser = require('./TspParser').TspParser;
+import { Token } from "antlr4"
+import { Range } from "vscode-languageserver"
+
+export interface TokenPlus extends Token {
+    fullSpan: Range
+    leadingTrivia: Array<Token>
+    span: Range
+    trailingTrivia: Array<Token>
+}

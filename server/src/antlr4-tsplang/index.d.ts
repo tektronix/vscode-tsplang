@@ -13,6 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+export { TokenPlus } from './tokenPlus'
 export { TspLexer } from './TspLexer'
 export { TspListener } from './TspListener'
 export { TspParser } from './TspParser'

@@ -14,8 +14,6 @@
         "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
     },
     "dependencies": {
-        "@types/antlr4": "^4.7.0",
-        "antlr4": "^4.7.2",
         "vscode-jsonrpc": "^4.0.0",
         "vscode-languageserver": "^5.2.1"
     },

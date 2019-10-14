@@ -30,6 +30,7 @@ import {
 } from "vscode-languageserver"
 
 import { TspLexer } from "./antlr4-tsplang"
+import { TokenPlus } from "./tokenPlus"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -58,12 +59,6 @@ connection.onInitialize(
     }
 )
 
-interface TokenPlus extends Token {
-    fullSpan: Range
-    leadingTrivia: Array<Token>
-    span: Range
-    trailingTrivia: Array<Token>
-}
 interface State {
     inputStream?: InputStream
     lexer?: TspLexer
