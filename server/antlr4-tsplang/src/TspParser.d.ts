@@ -13,8 +13,8 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CommonTokenStream, Parser, ParserRuleContext } from 'antlr4'
-import { ParseTreeListener, TerminalNode } from 'antlr4/tree/Tree'
+import { CommonTokenStream, Parser, ParserRuleContext } from "antlr4"
+import { ParseTreeListener, TerminalNode } from "antlr4/tree/Tree"
 
 export declare class TspParser extends Parser {
     static EOF: number

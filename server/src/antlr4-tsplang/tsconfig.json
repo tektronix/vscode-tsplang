@@ -1,9 +1,0 @@
-{
-    "compilerOptions": {
-        "allowJs": true,
-        "rootDir": ".",
-        "outDir": "../../out/antlr4-tsplang",
-        "sourceMap": true
-    },
-    "exclude": []
-}

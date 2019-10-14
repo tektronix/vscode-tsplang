@@ -9,7 +9,7 @@
         "project": [
             "./tsconfig.json",
             "./client/tsconfig.json",
-            // "./server/src/antlr4-tsplang/tsconfig.json",
+            "./server/antlr4-tsplang/tsconfig.json",
             "./server/tsconfig.json"
         ],
         "sourceType": "module"
@@ -31,21 +31,21 @@
         "prettier/@typescript-eslint"
     ],
     "rules": {
+        // typescript
         "quotes": "off",
         "@typescript-eslint/quotes": ["error", "double", {
                 "avoidEscape": true,
                 "allowTemplateLiterals": true
         }],
-
         "semi": "off",
         "@typescript-eslint/semi": "off",
+        "@typescript-eslint/unified-signatures": "warn",
 
+        // eslint-plugin-import
         "sort-imports": ["warn", {
             "ignoreCase": true,
             "ignoreDeclarationSort": true
         }],
-
-        // eslint-plugin-import
         "import/order": "error",
 
         // eslint-plugin-jsdoc
@@ -54,8 +54,6 @@
         // eslint-plugin-pretter
         "prettier/prettier": ["error", {}, {
                 "usePrettierrc": true
-        }],
-
-        "@typescript-eslint/unified-signatures": "warn"
+        }]
     }
 }

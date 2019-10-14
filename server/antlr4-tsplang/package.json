@@ -1,9 +1,14 @@
 {
     "name": "antlr4-tsplang",
     "version": "1.0.0",
-    "description": "ANTLR4 generated files for the TSP language.",
-    "main": "index.js",
+    "description": "ANTLR4 facilities for TSP.",
+    "main": "./out/index.js",
+    "types": "./src/index.d.ts",
     "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
+    },
     "scripts": {},
     "dependencies": {
         "@types/antlr4": "^4.7.0",

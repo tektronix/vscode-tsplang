@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Token, Lexer, InputStream } from 'antlr4'
+import { InputStream, Lexer } from "antlr4"
 
 export declare class TspLexer extends Lexer {
     static EOF: number

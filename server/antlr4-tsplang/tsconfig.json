@@ -1,6 +1,7 @@
 {
     "compilerOptions": {
         "target": "es6",
+        "allowJs": true,
         "module": "commonjs",
         "moduleResolution": "node",
         "sourceMap": true,
@@ -8,9 +9,8 @@
         "rootDir": "src",
         "lib": [ "es6" ]
     },
-    "include": [ "src" ],
-    "exclude": [
-        "node_modules",
-        ".vscode-test"
-    ]
+    "include": [
+        "./src/**/*"
+    ],
+    "exclude": []
 }

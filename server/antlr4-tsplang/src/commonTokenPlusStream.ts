@@ -13,10 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CommonTokenStream, Token } from 'antlr4'
+import { CommonTokenStream, Token } from "antlr4"
 
-import { TokenPlus } from './tokenPlus'
-import { TspLexer } from './TspLexer'
+import { TokenPlus } from "./tokenPlus"
+import { TspLexer } from "./TspLexer"
+import "./TspLexerFunctions"
 
 export class CommonTokenPlusStream extends CommonTokenStream {
     tokens: TokenPlus[]
@@ -31,7 +32,7 @@ export class CommonTokenPlusStream extends CommonTokenStream {
             return 0
         }
         for (let i = 0; i < n; i++) {
-            let t = (this.tokenSource as TspLexer).nextTokenPlus()
+            const t = (this.tokenSource as TspLexer).nextTokenPlus()
             t.tokenIndex = this.tokens.length
             this.tokens.push(t)
             if (t.type === Token.EOF) {

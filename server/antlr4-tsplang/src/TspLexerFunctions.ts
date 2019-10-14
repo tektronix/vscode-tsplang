@@ -13,13 +13,13 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Token, InputStream } from 'antlr4'
-import { Position } from 'vscode-languageserver'
+import { InputStream, Token } from "antlr4"
+import { Position } from "vscode-languageserver"
 
-import { TokenPlus } from './tokenPlus'
-import { TspLexer } from './TspLexer'
+import { TokenPlus } from "./tokenPlus"
+import { TspLexer } from "./TspLexer"
 
-declare module './TspLexer' {
+declare module "./TspLexer" {
     interface TspLexer {
         nextTokenPlus(): TokenPlus
     }
@@ -44,12 +44,13 @@ TspLexer.prototype.nextTokenPlus = function(): TokenPlus {
         lastCharIndex = this._tokenStartCharIndex
         t = this.nextToken()
     }
-    result.trailingTrivia = [...triviaCache];
+    result.trailingTrivia = [...triviaCache]
     // Reset to the start of the last Token.
-    (this._input as InputStream).seek(lastCharIndex)
-    this._token = result.trailingTrivia.length > 0
-        ? result.trailingTrivia[result.trailingTrivia.length - 1]
-        : result as Token
+    ;(this._input as InputStream).seek(lastCharIndex)
+    this._token =
+        result.trailingTrivia.length > 0
+            ? result.trailingTrivia[result.trailingTrivia.length - 1]
+            : (result as Token)
     // Finalize the TokenPlus object.
     result.span = {
         end: {
@@ -84,7 +85,7 @@ TspLexer.prototype.nextTokenPlus = function(): TokenPlus {
             character:
                 result.trailingTrivia[lastIndex].column +
                 result.trailingTrivia[lastIndex].text.length,
-            line: result.trailingTrivia[lastIndex].line - 1
+            line: result.trailingTrivia[lastIndex].line - 1,
         }
     } else {
         result.fullSpan.end = {

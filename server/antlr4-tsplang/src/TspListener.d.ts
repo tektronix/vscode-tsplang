@@ -13,10 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ParserRuleContext } from 'antlr4'
-import { ParseTreeListener, TerminalNode, ErrorNode } from 'antlr4/tree/Tree'
+import { ParserRuleContext } from "antlr4"
+import { ErrorNode, ParseTreeListener, TerminalNode } from "antlr4/tree/Tree"
 
-import { TspParser } from './TspParser'
+import { TspParser } from "./TspParser"
 
 export declare class TspListener implements ParseTreeListener {
     constructor()

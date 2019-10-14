@@ -13,7 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-export { TokenPlus } from './tokenPlus'
-export { TspLexer } from './TspLexer'
-export { TspListener } from './TspListener'
-export { TspParser } from './TspParser'
+/// <reference types="antlr4"/>
+
+import { TspLexer } from "./TspLexer"
+import "./TspLexerFunctions"
+
+export { InputStream } from "antlr4"
+export { CommonTokenPlusStream } from "./commonTokenPlusStream"
+export { TokenPlus } from "./tokenPlus"
+export { TspLexer }
+export { TspListener } from "./TspListener"
+export { TspParser } from "./TspParser"

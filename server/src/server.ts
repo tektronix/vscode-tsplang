@@ -15,8 +15,8 @@
  */
 "use strict"
 
+import { CommonTokenPlusStream, InputStream, TokenPlus, TspLexer } from "antlr4-tsplang"
 import * as jsonrpc from "vscode-jsonrpc"
-import { CommonTokenStream, InputStream, Token } from "antlr4"
 import {
     createConnection,
     DidOpenTextDocumentParams,
@@ -28,9 +28,6 @@ import {
     Range,
     TextDocumentSyncKind,
 } from "vscode-languageserver"
-
-import { TspLexer } from "./antlr4-tsplang"
-import { TokenPlus } from "./tokenPlus"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -59,94 +56,99 @@ connection.onInitialize(
     }
 )
 
-interface State {
-    inputStream?: InputStream
-    lexer?: TspLexer
-    tokens?: Array<TokenPlus>
-    tokenStream?: CommonTokenStream
-}
+// interface State {
+//     inputStream?: InputStream
+//     lexer?: TspLexer
+//     tokens?: Array<TokenPlus>
+//     tokenStream?: CommonTokenPlusStream
+// }
 connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams) => {
-    const state: State = {}
-    state.inputStream = new InputStream(params.textDocument.text)
-    state.lexer = new TspLexer(state.inputStream)
-    state.tokenStream = new CommonTokenStream(state.lexer)
-    state.tokenStream.fill()
-    let leadingTriviaCache: Token[] = []
-    let skipNextN = 0
-    state.tokenStream.tokens.forEach((value: Token, index: number, array: Token[]) => {
-        // Skip N items.
-        if (skipNextN > 0) {
-            skipNextN--
-            return
-        }
-
-        // Consume leading trivia.
-        if (value.channel === Token.HIDDEN_CHANNEL) {
-            leadingTriviaCache.push(value)
-            return
-        }
-
-        // Initialize TokenPlus object.
-        const plus = value as TokenPlus
-        plus.trailingTrivia = []
-        plus.span = {
-            end: {
-                character: value.column + value.text.length,
-                line: value.line - 1,
-            },
-            start: {
-                character: value.column,
-                line: value.line - 1,
-            },
-        }
-        plus.fullSpan = {
-            end: {
-                character: plus.span.end.character,
-                line: plus.span.end.line,
-            },
-            start: {} as Position,
-        }
-        if (leadingTriviaCache.length > 0) {
-            plus.leadingTrivia = [...leadingTriviaCache]
-            leadingTriviaCache = []
-            plus.fullSpan.start = {
-                character: plus.leadingTrivia[0].column,
-                line: plus.leadingTrivia[0].line - 1,
-            }
-        } else {
-            plus.leadingTrivia = []
-            plus.fullSpan.start = {
-                character: plus.span.start.character,
-                line: plus.span.start.line,
-            }
-        }
-
-        // Consume trailing trivia.
-        while (
-            array[index + skipNextN + 1] !== undefined &&
-            array[index + skipNextN + 1].channel === Token.HIDDEN_CHANNEL &&
-            array[index + skipNextN + 1].line === value.line
-        ) {
-            plus.trailingTrivia.push(array[index + skipNextN + 1])
-            skipNextN++
-        }
-
-        // Adjust fullSpan if trailing trivia exists.
-        if (plus.trailingTrivia.length > 0) {
-            const lastIndex = plus.trailingTrivia.length - 1
-            plus.fullSpan.end = {
-                character:
-                    plus.trailingTrivia[lastIndex].column +
-                    plus.trailingTrivia[lastIndex].text.length,
-                line: plus.trailingTrivia[lastIndex].line - 1,
-            }
-        }
-
-        connection.sendNotification(DocumentAreaNotification, {
-            fullSpan: plus.fullSpan,
-            span: plus.span,
-        })
-    })
+    const inputStream = new InputStream(params.textDocument.text)
+    const lexer = new TspLexer(inputStream)
+    const tokenStream = new CommonTokenPlusStream(lexer)
+    tokenStream.fill()
+    console.log(`Done with ${params.textDocument.uri}`)
+    // const state: State = {}
+    // state.inputStream = new InputStream(params.textDocument.text)
+    // state.lexer = new TspLexer(state.inputStream)
+    // state.tokenStream = new CommonTokenStream(state.lexer)
+    // state.tokenStream.fill()
+    // let leadingTriviaCache: Token[] = []
+    // let skipNextN = 0
+    // state.tokenStream.tokens.forEach((value: Token, index: number, array: Token[]) => {
+    //     // Skip N items.
+    //     if (skipNextN > 0) {
+    //         skipNextN--
+    //         return
+    //     }
+    //
+    //     // Consume leading trivia.
+    //     if (value.channel === Token.HIDDEN_CHANNEL) {
+    //         leadingTriviaCache.push(value)
+    //         return
+    //     }
+    //
+    //     // Initialize TokenPlus object.
+    //     const plus = value as TokenPlus
+    //     plus.trailingTrivia = []
+    //     plus.span = {
+    //         end: {
+    //             character: value.column + value.text.length,
+    //             line: value.line - 1,
+    //         },
+    //         start: {
+    //             character: value.column,
+    //             line: value.line - 1,
+    //         },
+    //     }
+    //     plus.fullSpan = {
+    //         end: {
+    //             character: plus.span.end.character,
+    //             line: plus.span.end.line,
+    //         },
+    //         start: {} as Position,
+    //     }
+    //     if (leadingTriviaCache.length > 0) {
+    //         plus.leadingTrivia = [...leadingTriviaCache]
+    //         leadingTriviaCache = []
+    //         plus.fullSpan.start = {
+    //             character: plus.leadingTrivia[0].column,
+    //             line: plus.leadingTrivia[0].line - 1,
+    //         }
+    //     } else {
+    //         plus.leadingTrivia = []
+    //         plus.fullSpan.start = {
+    //             character: plus.span.start.character,
+    //             line: plus.span.start.line,
+    //         }
+    //     }
+    //
+    //     // Consume trailing trivia.
+    //     while (
+    //         array[index + skipNextN + 1] !== undefined &&
+    //         array[index + skipNextN + 1].channel === Token.HIDDEN_CHANNEL &&
+    //         array[index + skipNextN + 1].line === value.line
+    //     ) {
+    //         plus.trailingTrivia.push(array[index + skipNextN + 1])
+    //         skipNextN++
+    //     }
+    //
+    //     // Adjust fullSpan if trailing trivia exists.
+    //     if (plus.trailingTrivia.length > 0) {
+    //         const lastIndex = plus.trailingTrivia.length - 1
+    //         plus.fullSpan.end = {
+    //             character:
+    //                 plus.trailingTrivia[lastIndex].column +
+    //                 plus.trailingTrivia[lastIndex].text.length,
+    //             line: plus.trailingTrivia[lastIndex].line - 1,
+    //         }
+    //     }
+    //
+    //     connection.sendNotification(DocumentAreaNotification, {
+    //         fullSpan: plus.fullSpan,
+    //         span: plus.span,
+    //     })
+    // })
 })
 
 // Listen on the connection
