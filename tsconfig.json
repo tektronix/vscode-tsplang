@@ -2,21 +2,15 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es6",
-        "outDir": "out",
-        "rootDir": "src",
         "lib": [ "es6" ],
-        "sourceMap": true
+        "sourceMap": true,
     },
-    "include": [
-        "src"
-    ],
     "exclude": [
         "node_modules",
-        ".vscode-test"
     ],
     "references": [
         { "path": "./client" },
         { "path": "./server/antlr4-tsplang" },
-        { "path": "./server" }
-    ]
+        { "path": "./server" },
+    ],
 }
