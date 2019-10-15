@@ -1,27 +1,20 @@
 // Place your settings in this file to overwrite default and user settings.
 {
-    "files.eol": "\n",
+    // VSCode
     "files.exclude": {
         "out": false // set this to true to hide the "out" folder with the compiled JS files
     },
-    "json.format.enable": true,
     "search.exclude": {
         "out": true // set this to false to include "out" folder in search results
     },
+
+    // Languages
     "javascript.preferences.quoteStyle": "double",
+    "json.format.enable": true,
     "typescript.format.enable": false,
     "typescript.tsdk": "node_modules/typescript/lib",
-    "[json]": {
-        "editor.insertSpaces": true,
-        "editor.tabSize": 4
-    },
-    "[typescript]": {
-        "editor.insertSpaces": true,
-        "editor.rulers": [
-            88
-        ],
-        "editor.tabSize": 4
-    },
+
+    // Recommended Plugins
     "eslint.validate": [
         {
             "language": "javascript",
@@ -32,13 +25,4 @@
             "autoFix": false
         }
     ],
-    "mocha.files.glob": "server/src/test/**/*.test.ts",
-    "mocha.options": {
-        "recursive": true
-    },
-    "mocha.requires": [
-        "ts-node/register",
-        "source-map-support/register"
-    ],
-    "mocha.parallelTests": 10,
 }
