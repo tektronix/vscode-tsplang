@@ -19,9 +19,26 @@ import { Position } from "vscode-languageserver"
 import { TokenPlus } from "./tokenPlus"
 import { TspLexer } from "./TspLexer"
 
+interface ATNState {
+    column: number
+    line: number
+    mode: number
+    startIndex: number
+}
+
 declare module "./TspLexer" {
     interface TspLexer {
         nextTokenPlus(): TokenPlus
+        saveATNState(): ATNState
+    }
+}
+// eslint-disable-next-line @typescript-eslint/unbound-method
+TspLexer.prototype.saveATNState = function(): ATNState {
+    return {
+        column: this._interp.column,
+        line: this._interp.line,
+        mode: this._interp.mode,
+        startIndex: this._interp.startIndex,
     }
 }
 // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -40,25 +57,26 @@ TspLexer.prototype.nextTokenPlus = function(): TokenPlus {
     triviaCache = []
     // Collect any trailing trivia.
     let lastCharIndex: number = this._tokenStartCharIndex
+    let lastATNState: ATNState = this.saveATNState()
     t = this.nextToken()
     while (t.channel === hidden && t.line === result.line) {
         triviaCache.push(t)
         lastCharIndex = this._tokenStartCharIndex
+        lastATNState = this.saveATNState()
         t = this.nextToken()
     }
     result.trailingTrivia = [...triviaCache]
     // Reset to the start of the last Token.
-    this.adjustSeekIndex(
-        triviaCache.length > 0
-            ? triviaCache[triviaCache.length - 1].tokenIndex
-            : result.tokenIndex
-    )
-    // ;(this._input as InputStream).seek(lastCharIndex)
-    // this.index = this.index--
-    // this._token =
-    //     result.trailingTrivia.length > 0
-    //         ? result.trailingTrivia[result.trailingTrivia.length - 1]
-    //         : (result as Token)
+    ;(this._input as InputStream).seek(lastCharIndex)
+    this._token =
+        result.trailingTrivia.length > 0
+            ? result.trailingTrivia[result.trailingTrivia.length - 1]
+            : (result as Token)
+    this._tokenStartCharIndex = lastCharIndex
+    this._interp.copyState(lastATNState)
+    this._tokenStartColumn = this._interp.column
+    this._tokenStartLine = this._interp.line
+    this._text = null
     // Finalize the TokenPlus object.
     result.span = {
         end: {
