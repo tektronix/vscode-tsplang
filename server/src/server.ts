@@ -38,9 +38,10 @@ interface TokenSpans {
     fullSpan: Range
     span: Range
 }
-const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
-    "DocAreaNotification"
-)
+const DocumentAreaNotification = new jsonrpc.NotificationType<
+    { arr: TokenSpans[] },
+    void
+>("DocAreaNotification")
 const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem, void>(
     "ParseDocNotification"
 )
@@ -58,99 +59,42 @@ connection.onInitialize(
     }
 )
 
-// interface State {
-//     inputStream?: InputStream
-//     lexer?: TspLexer
-//     tokens?: Array<TokenPlus>
-//     tokenStream?: CommonTokenPlusStream
-// }
+declare type HRTime = [number, number]
+let count = 0
 connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) => {
     const inputStream = new InputStream(param.text)
     const lexer = new TspLexer(inputStream)
     const tokenStream = new CommonTokenPlusStream(lexer)
+    const time: HRTime = process.hrtime()
     tokenStream.fill()
-    console.log(`Done with ${param.uri}`)
-    // const state: State = {}
-    // state.inputStream = new InputStream(params.textDocument.text)
-    // state.lexer = new TspLexer(state.inputStream)
-    // state.tokenStream = new CommonTokenStream(state.lexer)
-    // state.tokenStream.fill()
-    // let leadingTriviaCache: Token[] = []
-    // let skipNextN = 0
-    // state.tokenStream.tokens.forEach((value: Token, index: number, array: Token[]) => {
-    //     // Skip N items.
-    //     if (skipNextN > 0) {
-    //         skipNextN--
-    //         return
-    //     }
-    //
-    //     // Consume leading trivia.
-    //     if (value.channel === Token.HIDDEN_CHANNEL) {
-    //         leadingTriviaCache.push(value)
-    //         return
-    //     }
-    //
-    //     // Initialize TokenPlus object.
-    //     const plus = value as TokenPlus
-    //     plus.trailingTrivia = []
-    //     plus.span = {
-    //         end: {
-    //             character: value.column + value.text.length,
-    //             line: value.line - 1,
-    //         },
-    //         start: {
-    //             character: value.column,
-    //             line: value.line - 1,
-    //         },
-    //     }
-    //     plus.fullSpan = {
-    //         end: {
-    //             character: plus.span.end.character,
-    //             line: plus.span.end.line,
-    //         },
-    //         start: {} as Position,
-    //     }
-    //     if (leadingTriviaCache.length > 0) {
-    //         plus.leadingTrivia = [...leadingTriviaCache]
-    //         leadingTriviaCache = []
-    //         plus.fullSpan.start = {
-    //             character: plus.leadingTrivia[0].column,
-    //             line: plus.leadingTrivia[0].line - 1,
-    //         }
-    //     } else {
-    //         plus.leadingTrivia = []
-    //         plus.fullSpan.start = {
-    //             character: plus.span.start.character,
-    //             line: plus.span.start.line,
-    //         }
-    //     }
-    //
-    //     // Consume trailing trivia.
-    //     while (
-    //         array[index + skipNextN + 1] !== undefined &&
-    //         array[index + skipNextN + 1].channel === Token.HIDDEN_CHANNEL &&
-    //         array[index + skipNextN + 1].line === value.line
-    //     ) {
-    //         plus.trailingTrivia.push(array[index + skipNextN + 1])
-    //         skipNextN++
-    //     }
-    //
-    //     // Adjust fullSpan if trailing trivia exists.
-    //     if (plus.trailingTrivia.length > 0) {
-    //         const lastIndex = plus.trailingTrivia.length - 1
-    //         plus.fullSpan.end = {
-    //             character:
-    //                 plus.trailingTrivia[lastIndex].column +
-    //                 plus.trailingTrivia[lastIndex].text.length,
-    //             line: plus.trailingTrivia[lastIndex].line - 1,
-    //         }
-    //     }
-    //
-    //     connection.sendNotification(DocumentAreaNotification, {
-    //         fullSpan: plus.fullSpan,
-    //         span: plus.span,
-    //     })
-    // })
+    const done: HRTime = process.hrtime(time)
+    console.log(`${count}> parsed ${param.uri}`)
+
+    // Format and print elapsed time.
+    let seconds = done[0].toString()
+    while (seconds.length < 3) {
+        seconds = " " + seconds
+    }
+    let milli = (done[1] / 1000000).toString()
+    while (milli.indexOf(".") < 3) {
+        milli = " " + milli
+    }
+    while (milli.length < 9) {
+        milli = milli.concat("0")
+    }
+    console.log(`${count}> elapsed time: ${seconds}s ${milli}ms`)
+
+    // Notify client of all Token ranges.
+    connection.sendNotification(DocumentAreaNotification, {
+        arr: tokenStream.tokens.map(t => {
+            return {
+                fullSpan: t.fullSpan,
+                span: t.span,
+            }
+        }),
+    })
+
+    count++
 })
 
 // Listen on the connection

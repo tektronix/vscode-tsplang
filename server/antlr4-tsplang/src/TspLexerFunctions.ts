@@ -56,27 +56,25 @@ TspLexer.prototype.nextTokenPlus = function(): TokenPlus {
     result.leadingTrivia = [...triviaCache]
     triviaCache = []
     // Collect any trailing trivia.
-    let lastCharIndex: number = this._tokenStartCharIndex
     let lastATNState: ATNState = this.saveATNState()
     t = this.nextToken()
     while (t.channel === hidden && t.line === result.line) {
         triviaCache.push(t)
-        lastCharIndex = this._tokenStartCharIndex
         lastATNState = this.saveATNState()
         t = this.nextToken()
     }
     result.trailingTrivia = [...triviaCache]
     // Reset to the start of the last Token.
-    ;(this._input as InputStream).seek(lastCharIndex)
-    this._token =
-        result.trailingTrivia.length > 0
-            ? result.trailingTrivia[result.trailingTrivia.length - 1]
-            : (result as Token)
-    this._tokenStartCharIndex = lastCharIndex
+    ;(this._input as InputStream).seek(t.start)
+    // this._token =
+    //     result.trailingTrivia.length > 0
+    //         ? result.trailingTrivia[result.trailingTrivia.length - 1]
+    //         : (result as Token)
+    // this._tokenStartCharIndex = lastCharIndex
     this._interp.copyState(lastATNState)
-    this._tokenStartColumn = this._interp.column
-    this._tokenStartLine = this._interp.line
-    this._text = null
+    // this._tokenStartColumn = this._interp.column
+    // this._tokenStartLine = this._interp.line
+    // this._text = null
     // Finalize the TokenPlus object.
     result.span = {
         end: {

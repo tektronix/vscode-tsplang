@@ -38,9 +38,10 @@ interface TokenSpans {
     fullSpan: Range
     span: Range
 }
-const DocumentAreaNotification = new jsonrpc.NotificationType<TokenSpans, void>(
-    "DocAreaNotification"
-)
+const DocumentAreaNotification = new jsonrpc.NotificationType<
+    { arr: TokenSpans[] },
+    void
+>("DocAreaNotification")
 const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem, void>(
     "ParseDocNotification"
 )
@@ -48,44 +49,37 @@ const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem,
 interface ColorPair {
     color: string
     tint: string
-    blackText: boolean
 }
 const decorations: Array<ColorPair> = [
     {
         // red
-        color: "#F44336F8",
-        tint: "#EF9A9AF0",
-        blackText: true,
+        color: "#F44336FF",
+        tint: "#EF9A9AFF",
     },
     {
         // violet
-        color: "#9C27B0F8",
-        tint: "#CE93D8F0",
-        blackText: false,
+        color: "#BB69C9FF",
+        tint: "#CE93D8FF",
     },
     {
         // orange
-        color: "#FF9800F8",
-        tint: "#FFCC80F0",
-        blackText: true,
+        color: "#FF9800FF",
+        tint: "#FFCC80FF",
     },
     {
         // blue
-        color: "#03A9F4F8",
-        tint: "#81D4FAF0",
-        blackText: true,
+        color: "#03A9F4FF",
+        tint: "#81D4FAFF",
     },
     {
         // yellow
-        color: "#FFEB3BF8",
-        tint: "#FFF59DF0",
-        blackText: true,
+        color: "#FDD835FF",
+        tint: "#FFF59DFF",
     },
     {
         // green
-        color: "#4CAF50F8",
-        tint: "#A5D6A7F0",
-        blackText: true,
+        color: "#4CAF50FF",
+        tint: "#A5D6A7FF",
     },
 ]
 let decorationIndex = 0
@@ -128,35 +122,34 @@ export function activate(context: ExtensionContext): void {
         true
     )
     langclient.onReady().then(() => {
-        langclient.onNotification(DocumentAreaNotification, tokenSpans => {
-            if (!tokenSpans) {
-                return
-            }
-            if (!window.activeTextEditor) {
-                return
-            }
-            const color = decorations[decorationIndex].blackText
-                ? "#000000FF"
-                : "#FFFFFFFF"
-            window.activeTextEditor.setDecorations(
-                window.createTextEditorDecorationType({
-                    backgroundColor: decorations[decorationIndex].tint,
-                    color,
-                }),
-                [tokenSpans.fullSpan]
-            )
-            window.activeTextEditor.setDecorations(
-                window.createTextEditorDecorationType({
-                    backgroundColor: decorations[decorationIndex].color,
-                    color,
-                }),
-                [tokenSpans.span]
-            )
-            if (decorationIndex + 1 < decorations.length) {
-                decorationIndex++
-            } else {
-                decorationIndex = 0
-            }
+        langclient.onNotification(DocumentAreaNotification, result => {
+            result.arr.forEach(tokenSpans => {
+                if (!tokenSpans) {
+                    return
+                }
+                if (!window.activeTextEditor) {
+                    return
+                }
+                window.activeTextEditor.setDecorations(
+                    window.createTextEditorDecorationType({
+                        backgroundColor: decorations[decorationIndex].tint,
+                        color: "#000000FF",
+                    }),
+                    [tokenSpans.fullSpan]
+                )
+                window.activeTextEditor.setDecorations(
+                    window.createTextEditorDecorationType({
+                        backgroundColor: decorations[decorationIndex].color,
+                        color: "#000000FF",
+                    }),
+                    [tokenSpans.span]
+                )
+                if (decorationIndex + 1 < decorations.length) {
+                    decorationIndex++
+                } else {
+                    decorationIndex = 0
+                }
+            })
         })
     })
 
