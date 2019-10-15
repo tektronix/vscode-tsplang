@@ -18,5 +18,7 @@
         "vscode-jsonrpc": "^4.0.0",
         "vscode-languageserver": "^5.2.1"
     },
-    "scripts": {}
+    "scripts": {
+        "postinstall": "cd antlr4-tsplang && npm install && cd .."
+    }
 }
