@@ -4,6 +4,6 @@
         "ts-node/register",
         "source-map-support/register"
     ],
-    "spec": "server/src/test/**/*.test.ts",
+    "spec": "./src/test/**/*.test.ts",
     "ui": "tdd"
 }

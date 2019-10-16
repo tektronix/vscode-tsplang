@@ -1,4 +1,4 @@
-// Generated from C:\Source\vscode-tsplang\server\grammar\Tsp.g4 by ANTLR 4.7.1
+// Generated from C:\Source\vscode-tsplang\server\antlr4-tsplang\scripts\..\Tsp.g4 by ANTLR 4.7.1
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 var TspListener = require('./TspListener').TspListener;
@@ -381,31 +381,31 @@ var decisionsToDFA = atn.decisionToState.map( function(ds, index) { return new a
 
 var sharedContextCache = new antlr4.PredictionContextCache();
 
-var literalNames = [ null, "';'", "'do'", "'end'", "'while'", "'repeat'", 
-                     "'until'", "'if'", "'then'", "'elseif'", "'else'", 
-                     "'return'", "','", "'break'", "'for'", "'='", "'in'", 
-                     "'function'", "'.'", "':'", "'('", "')'", "'['", "']'", 
-                     "'{'", "'}'", "'or'", "'and'", "'<'", "'>'", "'<='", 
-                     "'>='", "'~='", "'!='", "'=='", "'..'", "'+'", "'-'", 
-                     "'*'", "'/'", "'&'", "'|'", "'^^'", "'<<'", "'>>'", 
+var literalNames = [ null, "';'", "'do'", "'end'", "'while'", "'repeat'",
+                     "'until'", "'if'", "'then'", "'elseif'", "'else'",
+                     "'return'", "','", "'break'", "'for'", "'='", "'in'",
+                     "'function'", "'.'", "':'", "'('", "')'", "'['", "']'",
+                     "'{'", "'}'", "'or'", "'and'", "'<'", "'>'", "'<='",
+                     "'>='", "'~='", "'!='", "'=='", "'..'", "'+'", "'-'",
+                     "'*'", "'/'", "'&'", "'|'", "'^^'", "'<<'", "'>>'",
                      "'not'", "'!'", "'^'", "'nil'", null, "'local'", "'...'" ];
 
-var symbolicNames = [ null, null, null, null, null, null, null, null, null, 
-                      null, null, null, null, null, null, null, null, null, 
-                      null, null, null, null, null, null, null, null, null, 
-                      null, null, null, null, null, null, null, null, null, 
-                      null, null, null, null, null, null, null, null, null, 
-                      null, null, null, "NIL", "BOOLEAN", "LOCAL", "VARARG", 
-                      "NAME", "NORMALSTRING", "CHARSTRING", "LONGSTRING", 
-                      "INT", "HEX", "FLOAT", "LONGCOMMENT", "LINE_COMMENT", 
+var symbolicNames = [ null, null, null, null, null, null, null, null, null,
+                      null, null, null, null, null, null, null, null, null,
+                      null, null, null, null, null, null, null, null, null,
+                      null, null, null, null, null, null, null, null, null,
+                      null, null, null, null, null, null, null, null, null,
+                      null, null, null, "NIL", "BOOLEAN", "LOCAL", "VARARG",
+                      "NAME", "NORMALSTRING", "CHARSTRING", "LONGSTRING",
+                      "INT", "HEX", "FLOAT", "LONGCOMMENT", "LINE_COMMENT",
                       "HORIZONTAL_WS", "VERTICAL_WS", "SHEBANG" ];
 
-var ruleNames =  [ "chunk", "statement", "assignment", "value", "expression", 
-                   "prefix", "suffix", "index", "variable", "functionCall", 
-                   "args", "tableConstructor", "fieldList", "field", "operatorOr", 
-                   "operatorAnd", "operatorComparison", "operatorStrcat", 
-                   "operatorAddSub", "operatorMulDiv", "operatorBitwiseAnd", 
-                   "operatorBitwiseOr", "operatorBitwiseXor", "operatorBitwiseShift", 
+var ruleNames =  [ "chunk", "statement", "assignment", "value", "expression",
+                   "prefix", "suffix", "index", "variable", "functionCall",
+                   "args", "tableConstructor", "fieldList", "field", "operatorOr",
+                   "operatorAnd", "operatorComparison", "operatorStrcat",
+                   "operatorAddSub", "operatorMulDiv", "operatorBitwiseAnd",
+                   "operatorBitwiseOr", "operatorBitwiseXor", "operatorBitwiseShift",
                    "operatorUnary", "operatorPower", "number", "string" ];
 
 function TspParser (input) {
@@ -1068,7 +1068,7 @@ TspParser.prototype.statement = function() {
             	        this.state = 228;
             	        this.match(TspParser.T__11);
             	        this.state = 229;
-            	        this.match(TspParser.NAME); 
+            	        this.match(TspParser.NAME);
             	    }
             	    this.state = 234;
             	    this._errHandler.sync(this);
@@ -1143,7 +1143,7 @@ TspParser.prototype.statement = function() {
             	        this.state = 258;
             	        this.match(TspParser.T__11);
             	        this.state = 259;
-            	        this.match(TspParser.NAME); 
+            	        this.match(TspParser.NAME);
             	    }
             	    this.state = 264;
             	    this._errHandler.sync(this);
@@ -1650,7 +1650,7 @@ TspParser.prototype.expression = function() {
             	        this.state = 339;
             	        this.match(TspParser.T__11);
             	        this.state = 340;
-            	        this.match(TspParser.NAME); 
+            	        this.match(TspParser.NAME);
             	    }
             	    this.state = 345;
             	    this._errHandler.sync(this);
@@ -2125,7 +2125,7 @@ TspParser.prototype.variable = function() {
             while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
                 if(_alt===1) {
                     this.state = 409;
-                    this.suffix(); 
+                    this.suffix();
                 }
                 this.state = 414;
                 this._errHandler.sync(this);
@@ -2228,7 +2228,7 @@ TspParser.prototype.functionCall = function() {
         while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             if(_alt===1) {
                 this.state = 421;
-                this.suffix(); 
+                this.suffix();
             }
             this.state = 426;
             this._errHandler.sync(this);
@@ -2516,7 +2516,7 @@ TspParser.prototype.fieldList = function() {
                     this.consume();
                 }
                 this.state = 457;
-                this.field(); 
+                this.field();
             }
             this.state = 462;
             this._errHandler.sync(this);

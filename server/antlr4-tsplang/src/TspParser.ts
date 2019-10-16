@@ -13,9 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-exports.InputStream = require("antlr4").InputStream
-exports.CommonTokenPlusStream = require("./commonTokenPlusStream").CommonTokenPlusStream
-exports.TokenPlus = require("./tokenPlus").TokenPlus
-exports.TspLexer = require("./TspLexer").TspLexer
-exports.TspListener = require("./TspListener").TspListener
-exports.TspParser = require("./TspParser").TspParser
+import { CommonTokenStream } from "antlr4"
+
+import { TspParser as GeneratedParser } from "./TspParser.generated"
+
+export class TspParser extends GeneratedParser {
+    constructor(input: CommonTokenStream) {
+        super(input)
+    }
+}

@@ -15,7 +15,7 @@
  */
 "use strict"
 
-import { CommonTokenPlusStream, InputStream, TspLexer } from "antlr4-tsplang"
+import { CommonTokenStream, InputStream, TspLexer } from "antlr4-tsplang"
 import * as jsonrpc from "vscode-jsonrpc"
 import {
     createConnection,
@@ -27,6 +27,11 @@ import {
     TextDocumentItem,
     TextDocumentSyncKind,
 } from "vscode-languageserver"
+
+const DEFAULT_RANGE: Range = {
+    end: { character: 0, line: 0 },
+    start: { character: 0, line: 0 },
+}
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -64,7 +69,7 @@ let count = 0
 connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) => {
     const inputStream = new InputStream(param.text)
     const lexer = new TspLexer(inputStream)
-    const tokenStream = new CommonTokenPlusStream(lexer)
+    const tokenStream = new CommonTokenStream(lexer)
     const time: HRTime = process.hrtime()
     tokenStream.fill()
     const done: HRTime = process.hrtime(time)
@@ -88,8 +93,8 @@ connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) =
     connection.sendNotification(DocumentAreaNotification, {
         arr: tokenStream.tokens.map(t => {
             return {
-                fullSpan: t.fullSpan,
-                span: t.span,
+                fullSpan: t.fullSpan || DEFAULT_RANGE,
+                span: t.span || DEFAULT_RANGE,
             }
         }),
     })

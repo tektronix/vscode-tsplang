@@ -13,14 +13,20 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-/// <reference types="antlr4"/>
+import { Token as AntlrToken } from "antlr4"
+import { Range } from "vscode-languageserver"
 
-import { TspLexer } from "./TspLexer"
-import "./TspLexerFunctions"
+export class Token extends AntlrToken {
+    fullSpan?: Range
+    leadingTrivia: Array<Token>
+    span?: Range
+    trailingTrivia: Array<Token>
 
-export { InputStream } from "antlr4"
-export { CommonTokenPlusStream } from "./commonTokenPlusStream"
-export { TokenPlus } from "./tokenPlus"
-export { TspLexer }
-export { TspListener } from "./TspListener"
-export { TspParser } from "./TspParser"
+    constructor() {
+        super()
+        this.fullSpan = undefined
+        this.leadingTrivia = []
+        this.span = undefined
+        this.trailingTrivia = []
+    }
+}

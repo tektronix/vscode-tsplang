@@ -1,5 +1,3 @@
 node_modules/
 out/
-server/antlr4-tsplang/src/TspLexer.js
-server/antlr4-tsplang/src/TspListener.js
-server/antlr4-tsplang/src/TspParser.js
+server/antlr4-tsplang/src/*.generated.js

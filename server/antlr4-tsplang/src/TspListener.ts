@@ -13,12 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Token } from "antlr4"
-import { Range } from "vscode-languageserver"
+import { TspListener as GeneratedListener } from "./TspListener.generated"
 
-export interface TokenPlus extends Token {
-    fullSpan: Range
-    leadingTrivia: Array<Token>
-    span: Range
-    trailingTrivia: Array<Token>
+export class TspListener extends GeneratedListener {
+    constructor() {
+        super()
+    }
 }

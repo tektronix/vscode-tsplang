@@ -14,6 +14,7 @@
  *  limitations under the License.
  */
 import { InputStream, Lexer } from "antlr4"
+import { ATN, LexerATNSimulator } from "antlr4/atn"
 
 export declare class TspLexer extends Lexer {
     static EOF: number
@@ -81,12 +82,15 @@ export declare class TspLexer extends Lexer {
     static VERTICAL_WS: number
     static SHEBANG: number
 
+    constructor(input: InputStream)
+
+    protected _interp: LexerATNSimulator
+
+    readonly atn: ATN
     readonly channelNames: Array<string>
     readonly grammarFileName: string
     readonly literalNames: Array<string | null>
     readonly modeNames: Array<string>
     readonly ruleNames: Array<string>
     readonly symbolicNames: Array<string | null>
-
-    constructor(input: InputStream)
 }

@@ -16,7 +16,7 @@
 import { ParserRuleContext } from "antlr4"
 import { ErrorNode, ParseTreeListener, TerminalNode } from "antlr4/tree/Tree"
 
-import { TspParser } from "./TspParser"
+import { TspParser } from "./TspParser.generated"
 
 export declare class TspListener implements ParseTreeListener {
     constructor()

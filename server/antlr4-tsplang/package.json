@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "ANTLR4 facilities for TSP.",
     "main": "./out/index.js",
-    "types": "./src/index.d.ts",
+    "types": "./out/index.d.ts",
     "license": "Apache-2.0",
     "repository": {
         "type": "git",
