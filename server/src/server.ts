@@ -15,7 +15,7 @@
  */
 "use strict"
 
-import { CommonTokenStream, InputStream, TspLexer } from "antlr4-tsplang"
+import { CommonTokenStream, InputStream, TspLexer, TspParser } from "antlr4-tsplang"
 import * as jsonrpc from "vscode-jsonrpc"
 import {
     createConnection,
@@ -70,8 +70,10 @@ connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) =
     const inputStream = new InputStream(param.text)
     const lexer = new TspLexer(inputStream)
     const tokenStream = new CommonTokenStream(lexer)
+    const parser = new TspParser(tokenStream)
+    parser.buildParseTrees = true
     const time: HRTime = process.hrtime()
-    tokenStream.fill()
+    parser.chunk()
     const done: HRTime = process.hrtime(time)
     console.log(`${count}> parsed ${param.uri}`)
 

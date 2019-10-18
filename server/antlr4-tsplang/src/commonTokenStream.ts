@@ -13,15 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CommonTokenStream as AntlrTokenStream } from "antlr4"
+import { CommonTokenStream, Token } from "antlr4"
 
-import { Token } from "./token"
-import { TspLexer } from "./TspLexer"
+import "./token"
+import { ExtendedLexer } from "./TspLexer"
 
-export class CommonTokenStream extends AntlrTokenStream {
-    tokens: Token[]
+export class ExtendedTokenStream extends CommonTokenStream {
+    tokens: Array<Token>
 
-    constructor(lexer: TspLexer) {
+    constructor(lexer: ExtendedLexer) {
         // @ts-ignore
         super(lexer)
         this.tokens = []
@@ -32,7 +32,7 @@ export class CommonTokenStream extends AntlrTokenStream {
             return 0
         }
         for (let i = 0; i < n; i++) {
-            const t = (this.tokenSource as TspLexer).nextToken()
+            const t = this.tokenSource.nextToken()
             t.tokenIndex = this.tokens.length
             this.tokens.push(t)
             if (t.type === Token.EOF) {

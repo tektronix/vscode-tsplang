@@ -32,6 +32,7 @@
     ],
     "rules": {
         // typescript
+        "@typescript-eslint/no-namespace": "off",
         "quotes": "off",
         "@typescript-eslint/quotes": ["error", "double", {
                 "avoidEscape": true,

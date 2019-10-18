@@ -1,0 +1,7 @@
+{
+    "extends": "../../.eslintrc.json",
+    "rules": {
+        // typescript
+        "@typescript-eslint/ban-ts-ignore": "off"
+    }
+}

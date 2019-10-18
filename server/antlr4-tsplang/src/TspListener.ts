@@ -13,103 +13,106 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ParseTreeListener } from "antlr4/tree"
+import { TspListener } from "./TspListener.generated"
+import { ExtendedParser } from "./TspParser"
 
-import { TspListener as GeneratedListener } from "./TspListener.generated"
-import { TspParser } from "./TspParser.generated"
-
-declare module "./TspListener.generated" {
-    class TspListener extends ParseTreeListener {
-        constructor()
-
-        enterChunk(ctx: TspParser.ChunkContext): void
-        exitChunk(ctx: TspParser.ChunkContext): void
-
-        enterStatement(ctx: TspParser.StatementContext): void
-        exitStatement(ctx: TspParser.StatementContext): void
-
-        enterAssignment(ctx: TspParser.AssignmentContext): void
-        exitAssignment(ctx: TspParser.AssignmentContext): void
-
-        enterValue(ctx: TspParser.ValueContext): void
-        exitValue(ctx: TspParser.ValueContext): void
-
-        enterExpression(ctx: TspParser.ExpressionContext): void
-        exitExpression(ctx: TspParser.ExpressionContext): void
-
-        enterPrefix(ctx: TspParser.PrefixContext): void
-        exitPrefix(ctx: TspParser.PrefixContext): void
-
-        enterSuffix(ctx: TspParser.SuffixContext): void
-        exitSuffix(ctx: TspParser.SuffixContext): void
-
-        enterIndex(ctx: TspParser.IndexContext): void
-        exitIndex(ctx: TspParser.IndexContext): void
-
-        enterVariable(ctx: TspParser.VariableContext): void
-        exitVariable(ctx: TspParser.VariableContext): void
-
-        enterFunctionCall(ctx: TspParser.FunctionCallContext): void
-        exitFunctionCall(ctx: TspParser.FunctionCallContext): void
-
-        enterArgs(ctx: TspParser.ArgsContext): void
-        exitArgs(ctx: TspParser.ArgsContext): void
-
-        enterTableConstructor(ctx: TspParser.TableConstructorContext): void
-        exitTableConstructor(ctx: TspParser.TableConstructorContext): void
-
-        enterFieldList(ctx: TspParser.FieldListContext): void
-        exitFieldList(ctx: TspParser.FieldListContext): void
-
-        enterField(ctx: TspParser.FieldContext): void
-        exitField(ctx: TspParser.FieldContext): void
-
-        enterOperatorOr(ctx: TspParser.OperatorOrContext): void
-        exitOperatorOr(ctx: TspParser.OperatorOrContext): void
-
-        enterOperatorAnd(ctx: TspParser.OperatorAndContext): void
-        exitOperatorAnd(ctx: TspParser.OperatorAndContext): void
-
-        enterOperatorComparison(ctx: TspParser.OperatorComparisonContext): void
-        exitOperatorComparison(ctx: TspParser.OperatorComparisonContext): void
-
-        enterOperatorBitwiseOr(ctx: TspParser.OperatorBitwiseOrContext): void
-        exitOperatorBitwiseOr(ctx: TspParser.OperatorBitwiseOrContext): void
-
-        enterOperatorBitwiseXor(ctx: TspParser.OperatorBitwiseXorContext): void
-        exitOperatorBitwiseXor(ctx: TspParser.OperatorBitwiseXorContext): void
-
-        enterOperatorBitwiseAnd(ctx: TspParser.OperatorBitwiseAndContext): void
-        exitOperatorBitwiseAnd(ctx: TspParser.OperatorBitwiseAndContext): void
-
-        enterOperatorBitwiseShift(ctx: TspParser.OperatorBitwiseShiftContext): void
-        exitOperatorBitwiseShift(ctx: TspParser.OperatorBitwiseShiftContext): void
-
-        enterOperatorStrcat(ctx: TspParser.OperatorStrcatContext): void
-        exitOperatorStrcat(ctx: TspParser.OperatorStrcatContext): void
-
-        enterOperatorAddSub(ctx: TspParser.OperatorAddSubContext): void
-        exitOperatorAddSub(ctx: TspParser.OperatorAddSubContext): void
-
-        enterOperatorMulDiv(ctx: TspParser.OperatorMulDivContext): void
-        exitOperatorMulDiv(ctx: TspParser.OperatorMulDivContext): void
-
-        enterOperatorPower(ctx: TspParser.OperatorPowerContext): void
-        exitOperatorPower(ctx: TspParser.OperatorPowerContext): void
-
-        enterOperatorUnary(ctx: TspParser.OperatorUnaryContext): void
-        exitOperatorUnary(ctx: TspParser.OperatorUnaryContext): void
-
-        enterNumber(ctx: TspParser.NumberContext): void
-        exitNumber(ctx: TspParser.NumberContext): void
-
-        enterString(ctx: TspParser.StringContext): void
-        exitString(ctx: TspParser.StringContext): void
-    }
-}
-
-export class TspListener extends GeneratedListener {
+// @ts-ignore
+export abstract class ExtendedListener extends TspListener {
     constructor() {
         super()
     }
+
+    abstract enterChunk(ctx: ExtendedParser.ChunkContext): void
+    abstract exitChunk(ctx: ExtendedParser.ChunkContext): void
+
+    abstract enterStatement(ctx: ExtendedParser.StatementContext): void
+    abstract exitStatement(ctx: ExtendedParser.StatementContext): void
+
+    abstract enterAssignment(ctx: ExtendedParser.AssignmentContext): void
+    abstract exitAssignment(ctx: ExtendedParser.AssignmentContext): void
+
+    abstract enterValue(ctx: ExtendedParser.ValueContext): void
+    abstract exitValue(ctx: ExtendedParser.ValueContext): void
+
+    abstract enterExpression(ctx: ExtendedParser.ExpressionContext): void
+    abstract exitExpression(ctx: ExtendedParser.ExpressionContext): void
+
+    abstract enterPrefix(ctx: ExtendedParser.PrefixContext): void
+    abstract exitPrefix(ctx: ExtendedParser.PrefixContext): void
+
+    abstract enterSuffix(ctx: ExtendedParser.SuffixContext): void
+    abstract exitSuffix(ctx: ExtendedParser.SuffixContext): void
+
+    abstract enterIndex(ctx: ExtendedParser.IndexContext): void
+    abstract exitIndex(ctx: ExtendedParser.IndexContext): void
+
+    abstract enterVariable(ctx: ExtendedParser.VariableContext): void
+    abstract exitVariable(ctx: ExtendedParser.VariableContext): void
+
+    abstract enterFunctionCall(ctx: ExtendedParser.FunctionCallContext): void
+    abstract exitFunctionCall(ctx: ExtendedParser.FunctionCallContext): void
+
+    abstract enterArgs(ctx: ExtendedParser.ArgsContext): void
+    abstract exitArgs(ctx: ExtendedParser.ArgsContext): void
+
+    abstract enterTableConstructor(ctx: ExtendedParser.TableConstructorContext): void
+    abstract exitTableConstructor(ctx: ExtendedParser.TableConstructorContext): void
+
+    abstract enterFieldList(ctx: ExtendedParser.FieldListContext): void
+    abstract exitFieldList(ctx: ExtendedParser.FieldListContext): void
+
+    abstract enterField(ctx: ExtendedParser.FieldContext): void
+    abstract exitField(ctx: ExtendedParser.FieldContext): void
+
+    abstract enterOperatorOr(ctx: ExtendedParser.OperatorOrContext): void
+    abstract exitOperatorOr(ctx: ExtendedParser.OperatorOrContext): void
+
+    abstract enterOperatorAnd(ctx: ExtendedParser.OperatorAndContext): void
+    abstract exitOperatorAnd(ctx: ExtendedParser.OperatorAndContext): void
+
+    abstract enterOperatorComparison(
+        ctx: ExtendedParser.OperatorComparisonContext
+    ): void
+    abstract exitOperatorComparison(ctx: ExtendedParser.OperatorComparisonContext): void
+
+    abstract enterOperatorBitwiseOr(ctx: ExtendedParser.OperatorBitwiseOrContext): void
+    abstract exitOperatorBitwiseOr(ctx: ExtendedParser.OperatorBitwiseOrContext): void
+
+    abstract enterOperatorBitwiseXor(
+        ctx: ExtendedParser.OperatorBitwiseXorContext
+    ): void
+    abstract exitOperatorBitwiseXor(ctx: ExtendedParser.OperatorBitwiseXorContext): void
+
+    abstract enterOperatorBitwiseAnd(
+        ctx: ExtendedParser.OperatorBitwiseAndContext
+    ): void
+    abstract exitOperatorBitwiseAnd(ctx: ExtendedParser.OperatorBitwiseAndContext): void
+
+    abstract enterOperatorBitwiseShift(
+        ctx: ExtendedParser.OperatorBitwiseShiftContext
+    ): void
+    abstract exitOperatorBitwiseShift(
+        ctx: ExtendedParser.OperatorBitwiseShiftContext
+    ): void
+
+    abstract enterOperatorStrcat(ctx: ExtendedParser.OperatorStrcatContext): void
+    abstract exitOperatorStrcat(ctx: ExtendedParser.OperatorStrcatContext): void
+
+    abstract enterOperatorAddSub(ctx: ExtendedParser.OperatorAddSubContext): void
+    abstract exitOperatorAddSub(ctx: ExtendedParser.OperatorAddSubContext): void
+
+    abstract enterOperatorMulDiv(ctx: ExtendedParser.OperatorMulDivContext): void
+    abstract exitOperatorMulDiv(ctx: ExtendedParser.OperatorMulDivContext): void
+
+    abstract enterOperatorPower(ctx: ExtendedParser.OperatorPowerContext): void
+    abstract exitOperatorPower(ctx: ExtendedParser.OperatorPowerContext): void
+
+    abstract enterOperatorUnary(ctx: ExtendedParser.OperatorUnaryContext): void
+    abstract exitOperatorUnary(ctx: ExtendedParser.OperatorUnaryContext): void
+
+    abstract enterNumber(ctx: ExtendedParser.NumberContext): void
+    abstract exitNumber(ctx: ExtendedParser.NumberContext): void
+
+    abstract enterString(ctx: ExtendedParser.StringContext): void
+    abstract exitString(ctx: ExtendedParser.StringContext): void
 }
