@@ -91,10 +91,10 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0003\u001c\u0003\u001d\u0003\u001d\u0003\u001d\u0002\u0002\u001e\u0002",
     "\u0004\u0006\b\n\f\u000e\u0010\u0012\u0014\u0016\u0018\u001a\u001c\u001e",
     " \"$&(*,.02468\u0002\n\u0004\u0002\u0003\u0003\u000e\u000e\u0003\u0002",
-    "\u001e$\u0003\u0002&\'\u0003\u0002()\u0003\u0002-.\u0004\u0002\'\'/",
-    "0\u0003\u0002:<\u0003\u000279\u0002\u0243\u0002@\u0003\u0002\u0002\u0002",
-    "\u0004\u0131\u0003\u0002\u0002\u0002\u0006\u0133\u0003\u0002\u0002\u0002",
-    "\b\u014f\u0003\u0002\u0002\u0002\n\u0181\u0003\u0002\u0002\u0002\f\u0188",
+    "\u001e$\u0003\u0002()\u0003\u0002+,\u0003\u0002-.\u0004\u0002,,01\u0003",
+    "\u0002:<\u0003\u000279\u0002\u0243\u0002@\u0003\u0002\u0002\u0002\u0004",
+    "\u0131\u0003\u0002\u0002\u0002\u0006\u0133\u0003\u0002\u0002\u0002\b",
+    "\u014f\u0003\u0002\u0002\u0002\n\u0181\u0003\u0002\u0002\u0002\f\u0188",
     "\u0003\u0002\u0002\u0002\u000e\u0190\u0003\u0002\u0002\u0002\u0010\u0198",
     "\u0003\u0002\u0002\u0002\u0012\u01a4\u0003\u0002\u0002\u0002\u0014\u01a6",
     "\u0003\u0002\u0002\u0002\u0016\u01c1\u0003\u0002\u0002\u0002\u0018\u01c3",
@@ -285,10 +285,10 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u016b\u016d\u0003\u0002\u0002\u0002\u016c\u016a\u0003\u0002\u0002\u0002",
     "\u016d\u0182\u0007\u0005\u0002\u0002\u016e\u017a\u0005\b\u0005\u0002",
     "\u016f\u017b\u0005\u001e\u0010\u0002\u0170\u017b\u0005 \u0011\u0002",
-    "\u0171\u017b\u0005\"\u0012\u0002\u0172\u017b\u0005,\u0017\u0002\u0173",
-    "\u017b\u0005.\u0018\u0002\u0174\u017b\u0005*\u0016\u0002\u0175\u017b",
-    "\u00050\u0019\u0002\u0176\u017b\u0005$\u0013\u0002\u0177\u017b\u0005",
-    "&\u0014\u0002\u0178\u017b\u0005(\u0015\u0002\u0179\u017b\u00054\u001b",
+    "\u0171\u017b\u0005\"\u0012\u0002\u0172\u017b\u0005$\u0013\u0002\u0173",
+    "\u017b\u0005&\u0014\u0002\u0174\u017b\u0005(\u0015\u0002\u0175\u017b",
+    "\u0005*\u0016\u0002\u0176\u017b\u0005,\u0017\u0002\u0177\u017b\u0005",
+    ".\u0018\u0002\u0178\u017b\u00050\u0019\u0002\u0179\u017b\u00052\u001a",
     "\u0002\u017a\u016f\u0003\u0002\u0002\u0002\u017a\u0170\u0003\u0002\u0002",
     "\u0002\u017a\u0171\u0003\u0002\u0002\u0002\u017a\u0172\u0003\u0002\u0002",
     "\u0002\u017a\u0173\u0003\u0002\u0002\u0002\u017a\u0174\u0003\u0002\u0002",
@@ -296,7 +296,7 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0002\u017a\u0177\u0003\u0002\u0002\u0002\u017a\u0178\u0003\u0002\u0002",
     "\u0002\u017a\u0179\u0003\u0002\u0002\u0002\u017b\u017c\u0003\u0002\u0002",
     "\u0002\u017c\u017d\u0005\n\u0006\u0002\u017d\u0182\u0003\u0002\u0002",
-    "\u0002\u017e\u017f\u00052\u001a\u0002\u017f\u0180\u0005\n\u0006\u0002",
+    "\u0002\u017e\u017f\u00054\u001b\u0002\u017f\u0180\u0005\n\u0006\u0002",
     "\u0180\u0182\u0003\u0002\u0002\u0002\u0181\u0151\u0003\u0002\u0002\u0002",
     "\u0181\u0152\u0003\u0002\u0002\u0002\u0181\u016e\u0003\u0002\u0002\u0002",
     "\u0181\u017e\u0003\u0002\u0002\u0002\u0182\u000b\u0003\u0002\u0002\u0002",
@@ -358,14 +358,14 @@ var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0007\u001c\u0002\u0002\u01e1\u001f\u0003\u0002\u0002\u0002\u01e2\u01e3",
     "\u0007\u001d\u0002\u0002\u01e3!\u0003\u0002\u0002\u0002\u01e4\u01e5",
     "\t\u0003\u0002\u0002\u01e5#\u0003\u0002\u0002\u0002\u01e6\u01e7\u0007",
-    "%\u0002\u0002\u01e7%\u0003\u0002\u0002\u0002\u01e8\u01e9\t\u0004\u0002",
-    "\u0002\u01e9\'\u0003\u0002\u0002\u0002\u01ea\u01eb\t\u0005\u0002\u0002",
-    "\u01eb)\u0003\u0002\u0002\u0002\u01ec\u01ed\u0007*\u0002\u0002\u01ed",
-    "+\u0003\u0002\u0002\u0002\u01ee\u01ef\u0007+\u0002\u0002\u01ef-\u0003",
-    "\u0002\u0002\u0002\u01f0\u01f1\u0007,\u0002\u0002\u01f1/\u0003\u0002",
+    "%\u0002\u0002\u01e7%\u0003\u0002\u0002\u0002\u01e8\u01e9\u0007&\u0002",
+    "\u0002\u01e9\'\u0003\u0002\u0002\u0002\u01ea\u01eb\u0007\'\u0002\u0002",
+    "\u01eb)\u0003\u0002\u0002\u0002\u01ec\u01ed\t\u0004\u0002\u0002\u01ed",
+    "+\u0003\u0002\u0002\u0002\u01ee\u01ef\u0007*\u0002\u0002\u01ef-\u0003",
+    "\u0002\u0002\u0002\u01f0\u01f1\t\u0005\u0002\u0002\u01f1/\u0003\u0002",
     "\u0002\u0002\u01f2\u01f3\t\u0006\u0002\u0002\u01f31\u0003\u0002\u0002",
-    "\u0002\u01f4\u01f5\t\u0007\u0002\u0002\u01f53\u0003\u0002\u0002\u0002",
-    "\u01f6\u01f7\u00071\u0002\u0002\u01f75\u0003\u0002\u0002\u0002\u01f8",
+    "\u0002\u01f4\u01f5\u0007/\u0002\u0002\u01f53\u0003\u0002\u0002\u0002",
+    "\u01f6\u01f7\t\u0007\u0002\u0002\u01f75\u0003\u0002\u0002\u0002\u01f8",
     "\u01f9\t\b\u0002\u0002\u01f97\u0003\u0002\u0002\u0002\u01fa\u01fb\t",
     "\t\u0002\u0002\u01fb9\u0003\u0002\u0002\u0002D<@JNW[cgqu}\u0081\u0086",
     "\u008c\u0090\u0093\u009d\u00a0\u00ab\u00b0\u00b4\u00bf\u00c8\u00ce\u00d2",
@@ -381,32 +381,32 @@ var decisionsToDFA = atn.decisionToState.map( function(ds, index) { return new a
 
 var sharedContextCache = new antlr4.PredictionContextCache();
 
-var literalNames = [ null, "';'", "'do'", "'end'", "'while'", "'repeat'",
-                     "'until'", "'if'", "'then'", "'elseif'", "'else'",
-                     "'return'", "','", "'break'", "'for'", "'='", "'in'",
-                     "'function'", "'.'", "':'", "'('", "')'", "'['", "']'",
-                     "'{'", "'}'", "'or'", "'and'", "'<'", "'>'", "'<='",
-                     "'>='", "'~='", "'!='", "'=='", "'..'", "'+'", "'-'",
-                     "'*'", "'/'", "'&'", "'|'", "'^^'", "'<<'", "'>>'",
-                     "'not'", "'!'", "'^'", "'nil'", null, "'local'", "'...'" ];
+var literalNames = [ null, "';'", "'do'", "'end'", "'while'", "'repeat'", 
+                     "'until'", "'if'", "'then'", "'elseif'", "'else'", 
+                     "'return'", "','", "'break'", "'for'", "'='", "'in'", 
+                     "'function'", "'.'", "':'", "'('", "')'", "'['", "']'", 
+                     "'{'", "'}'", "'or'", "'and'", "'<'", "'>'", "'<='", 
+                     "'>='", "'~='", "'!='", "'=='", "'|'", "'^^'", "'&'", 
+                     "'<<'", "'>>'", "'..'", "'+'", "'-'", "'*'", "'/'", 
+                     "'^'", "'not'", "'!'", "'nil'", null, "'local'", "'...'" ];
 
-var symbolicNames = [ null, null, null, null, null, null, null, null, null,
-                      null, null, null, null, null, null, null, null, null,
-                      null, null, null, null, null, null, null, null, null,
-                      null, null, null, null, null, null, null, null, null,
-                      null, null, null, null, null, null, null, null, null,
-                      null, null, null, "NIL", "BOOLEAN", "LOCAL", "VARARG",
-                      "NAME", "NORMALSTRING", "CHARSTRING", "LONGSTRING",
-                      "INT", "HEX", "FLOAT", "LONGCOMMENT", "LINE_COMMENT",
+var symbolicNames = [ null, null, null, null, null, null, null, null, null, 
+                      null, null, null, null, null, null, null, null, null, 
+                      null, null, null, null, null, null, null, null, null, 
+                      null, null, null, null, null, null, null, null, null, 
+                      null, null, null, null, null, null, null, null, null, 
+                      null, null, null, "NIL", "BOOLEAN", "LOCAL", "VARARG", 
+                      "NAME", "NORMALSTRING", "CHARSTRING", "LONGSTRING", 
+                      "INT", "HEX", "FLOAT", "LONGCOMMENT", "LINE_COMMENT", 
                       "HORIZONTAL_WS", "VERTICAL_WS", "SHEBANG" ];
 
-var ruleNames =  [ "chunk", "statement", "assignment", "value", "expression",
-                   "prefix", "suffix", "index", "variable", "functionCall",
-                   "args", "tableConstructor", "fieldList", "field", "operatorOr",
-                   "operatorAnd", "operatorComparison", "operatorStrcat",
-                   "operatorAddSub", "operatorMulDiv", "operatorBitwiseAnd",
-                   "operatorBitwiseOr", "operatorBitwiseXor", "operatorBitwiseShift",
-                   "operatorUnary", "operatorPower", "number", "string" ];
+var ruleNames =  [ "chunk", "statement", "assignment", "value", "expression", 
+                   "prefix", "suffix", "index", "variable", "functionCall", 
+                   "args", "tableConstructor", "fieldList", "field", "operatorOr", 
+                   "operatorAnd", "operatorComparison", "operatorBitwiseOr", 
+                   "operatorBitwiseXor", "operatorBitwiseAnd", "operatorBitwiseShift", 
+                   "operatorStrcat", "operatorAddSub", "operatorMulDiv", 
+                   "operatorPower", "operatorUnary", "number", "string" ];
 
 function TspParser (input) {
 	antlr4.Parser.call(this, input);
@@ -508,19 +508,19 @@ TspParser.RULE_field = 13;
 TspParser.RULE_operatorOr = 14;
 TspParser.RULE_operatorAnd = 15;
 TspParser.RULE_operatorComparison = 16;
-TspParser.RULE_operatorStrcat = 17;
-TspParser.RULE_operatorAddSub = 18;
-TspParser.RULE_operatorMulDiv = 19;
-TspParser.RULE_operatorBitwiseAnd = 20;
-TspParser.RULE_operatorBitwiseOr = 21;
-TspParser.RULE_operatorBitwiseXor = 22;
-TspParser.RULE_operatorBitwiseShift = 23;
-TspParser.RULE_operatorUnary = 24;
-TspParser.RULE_operatorPower = 25;
+TspParser.RULE_operatorBitwiseOr = 17;
+TspParser.RULE_operatorBitwiseXor = 18;
+TspParser.RULE_operatorBitwiseAnd = 19;
+TspParser.RULE_operatorBitwiseShift = 20;
+TspParser.RULE_operatorStrcat = 21;
+TspParser.RULE_operatorAddSub = 22;
+TspParser.RULE_operatorMulDiv = 23;
+TspParser.RULE_operatorPower = 24;
+TspParser.RULE_operatorUnary = 25;
 TspParser.RULE_number = 26;
 TspParser.RULE_string = 27;
 
-function ChunkContext(parser, parent, invokingState) {
+const ChunkContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -566,7 +566,7 @@ ChunkContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.ChunkContext = ChunkContext;
+
 
 TspParser.prototype.chunk = function() {
 
@@ -609,7 +609,7 @@ TspParser.prototype.chunk = function() {
     return localctx;
 };
 
-function StatementContext(parser, parent, invokingState) {
+const StatementContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -690,7 +690,7 @@ StatementContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.StatementContext = StatementContext;
+
 
 TspParser.prototype.statement = function() {
 
@@ -1068,7 +1068,7 @@ TspParser.prototype.statement = function() {
             	        this.state = 228;
             	        this.match(TspParser.T__11);
             	        this.state = 229;
-            	        this.match(TspParser.NAME);
+            	        this.match(TspParser.NAME); 
             	    }
             	    this.state = 234;
             	    this._errHandler.sync(this);
@@ -1143,7 +1143,7 @@ TspParser.prototype.statement = function() {
             	        this.state = 258;
             	        this.match(TspParser.T__11);
             	        this.state = 259;
-            	        this.match(TspParser.NAME);
+            	        this.match(TspParser.NAME); 
             	    }
             	    this.state = 264;
             	    this._errHandler.sync(this);
@@ -1251,7 +1251,7 @@ TspParser.prototype.statement = function() {
     return localctx;
 };
 
-function AssignmentContext(parser, parent, invokingState) {
+const AssignmentContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -1304,7 +1304,7 @@ AssignmentContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.AssignmentContext = AssignmentContext;
+
 
 TspParser.prototype.assignment = function() {
 
@@ -1357,7 +1357,7 @@ TspParser.prototype.assignment = function() {
     return localctx;
 };
 
-function ValueContext(parser, parent, invokingState) {
+const ValueContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -1420,7 +1420,7 @@ ValueContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.ValueContext = ValueContext;
+
 
 TspParser.prototype.value = function() {
 
@@ -1498,7 +1498,7 @@ TspParser.prototype.value = function() {
     return localctx;
 };
 
-function ExpressionContext(parser, parent, invokingState) {
+const ExpressionContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -1612,7 +1612,7 @@ ExpressionContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.ExpressionContext = ExpressionContext;
+
 
 TspParser.prototype.expression = function() {
 
@@ -1650,7 +1650,7 @@ TspParser.prototype.expression = function() {
             	        this.state = 339;
             	        this.match(TspParser.T__11);
             	        this.state = 340;
-            	        this.match(TspParser.NAME);
+            	        this.match(TspParser.NAME); 
             	    }
             	    this.state = 345;
             	    this._errHandler.sync(this);
@@ -1726,38 +1726,38 @@ TspParser.prototype.expression = function() {
                 this.state = 367;
                 this.operatorComparison();
                 break;
-            case TspParser.T__40:
+            case TspParser.T__34:
                 this.state = 368;
                 this.operatorBitwiseOr();
                 break;
-            case TspParser.T__41:
+            case TspParser.T__35:
                 this.state = 369;
                 this.operatorBitwiseXor();
                 break;
-            case TspParser.T__39:
+            case TspParser.T__36:
                 this.state = 370;
                 this.operatorBitwiseAnd();
                 break;
-            case TspParser.T__42:
-            case TspParser.T__43:
+            case TspParser.T__37:
+            case TspParser.T__38:
                 this.state = 371;
                 this.operatorBitwiseShift();
                 break;
-            case TspParser.T__34:
+            case TspParser.T__39:
                 this.state = 372;
                 this.operatorStrcat();
                 break;
-            case TspParser.T__35:
-            case TspParser.T__36:
+            case TspParser.T__40:
+            case TspParser.T__41:
                 this.state = 373;
                 this.operatorAddSub();
                 break;
-            case TspParser.T__37:
-            case TspParser.T__38:
+            case TspParser.T__42:
+            case TspParser.T__43:
                 this.state = 374;
                 this.operatorMulDiv();
                 break;
-            case TspParser.T__46:
+            case TspParser.T__44:
                 this.state = 375;
                 this.operatorPower();
                 break;
@@ -1791,7 +1791,7 @@ TspParser.prototype.expression = function() {
     return localctx;
 };
 
-function PrefixContext(parser, parent, invokingState) {
+const PrefixContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -1830,7 +1830,7 @@ PrefixContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.PrefixContext = PrefixContext;
+
 
 TspParser.prototype.prefix = function() {
 
@@ -1871,7 +1871,7 @@ TspParser.prototype.prefix = function() {
     return localctx;
 };
 
-function SuffixContext(parser, parent, invokingState) {
+const SuffixContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -1914,7 +1914,7 @@ SuffixContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.SuffixContext = SuffixContext;
+
 
 TspParser.prototype.suffix = function() {
 
@@ -1968,7 +1968,7 @@ TspParser.prototype.suffix = function() {
     return localctx;
 };
 
-function IndexContext(parser, parent, invokingState) {
+const IndexContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2007,7 +2007,7 @@ IndexContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.IndexContext = IndexContext;
+
 
 TspParser.prototype.index = function() {
 
@@ -2050,7 +2050,7 @@ TspParser.prototype.index = function() {
     return localctx;
 };
 
-function VariableContext(parser, parent, invokingState) {
+const VariableContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2104,7 +2104,7 @@ VariableContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.VariableContext = VariableContext;
+
 
 TspParser.prototype.variable = function() {
 
@@ -2125,7 +2125,7 @@ TspParser.prototype.variable = function() {
             while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
                 if(_alt===1) {
                     this.state = 409;
-                    this.suffix();
+                    this.suffix(); 
                 }
                 this.state = 414;
                 this._errHandler.sync(this);
@@ -2157,7 +2157,7 @@ TspParser.prototype.variable = function() {
     return localctx;
 };
 
-function FunctionCallContext(parser, parent, invokingState) {
+const FunctionCallContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2211,7 +2211,7 @@ FunctionCallContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.FunctionCallContext = FunctionCallContext;
+
 
 TspParser.prototype.functionCall = function() {
 
@@ -2228,7 +2228,7 @@ TspParser.prototype.functionCall = function() {
         while(_alt!=2 && _alt!=antlr4.atn.ATN.INVALID_ALT_NUMBER) {
             if(_alt===1) {
                 this.state = 421;
-                this.suffix();
+                this.suffix(); 
             }
             this.state = 426;
             this._errHandler.sync(this);
@@ -2261,7 +2261,7 @@ TspParser.prototype.functionCall = function() {
     return localctx;
 };
 
-function ArgsContext(parser, parent, invokingState) {
+const ArgsContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2311,7 +2311,7 @@ ArgsContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.ArgsContext = ArgsContext;
+
 
 TspParser.prototype.args = function() {
 
@@ -2329,7 +2329,7 @@ TspParser.prototype.args = function() {
             this.state = 442;
             this._errHandler.sync(this);
             _la = this._input.LA(1);
-            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__23))) !== 0) || ((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspParser.T__36 - 37)) | (1 << (TspParser.T__44 - 37)) | (1 << (TspParser.T__45 - 37)) | (1 << (TspParser.NIL - 37)) | (1 << (TspParser.BOOLEAN - 37)) | (1 << (TspParser.NAME - 37)) | (1 << (TspParser.NORMALSTRING - 37)) | (1 << (TspParser.CHARSTRING - 37)) | (1 << (TspParser.LONGSTRING - 37)) | (1 << (TspParser.INT - 37)) | (1 << (TspParser.HEX - 37)) | (1 << (TspParser.FLOAT - 37)))) !== 0)) {
+            if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__23))) !== 0) || ((((_la - 42)) & ~0x1f) == 0 && ((1 << (_la - 42)) & ((1 << (TspParser.T__41 - 42)) | (1 << (TspParser.T__45 - 42)) | (1 << (TspParser.T__46 - 42)) | (1 << (TspParser.NIL - 42)) | (1 << (TspParser.BOOLEAN - 42)) | (1 << (TspParser.NAME - 42)) | (1 << (TspParser.NORMALSTRING - 42)) | (1 << (TspParser.CHARSTRING - 42)) | (1 << (TspParser.LONGSTRING - 42)) | (1 << (TspParser.INT - 42)) | (1 << (TspParser.HEX - 42)) | (1 << (TspParser.FLOAT - 42)))) !== 0)) {
                 this.state = 434;
                 this.expression();
                 this.state = 439;
@@ -2378,7 +2378,7 @@ TspParser.prototype.args = function() {
     return localctx;
 };
 
-function TableConstructorContext(parser, parent, invokingState) {
+const TableConstructorContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2413,7 +2413,7 @@ TableConstructorContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.TableConstructorContext = TableConstructorContext;
+
 
 TspParser.prototype.tableConstructor = function() {
 
@@ -2427,7 +2427,7 @@ TspParser.prototype.tableConstructor = function() {
         this.state = 451;
         this._errHandler.sync(this);
         _la = this._input.LA(1);
-        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__21) | (1 << TspParser.T__23))) !== 0) || ((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspParser.T__36 - 37)) | (1 << (TspParser.T__44 - 37)) | (1 << (TspParser.T__45 - 37)) | (1 << (TspParser.NIL - 37)) | (1 << (TspParser.BOOLEAN - 37)) | (1 << (TspParser.NAME - 37)) | (1 << (TspParser.NORMALSTRING - 37)) | (1 << (TspParser.CHARSTRING - 37)) | (1 << (TspParser.LONGSTRING - 37)) | (1 << (TspParser.INT - 37)) | (1 << (TspParser.HEX - 37)) | (1 << (TspParser.FLOAT - 37)))) !== 0)) {
+        if((((_la) & ~0x1f) == 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__21) | (1 << TspParser.T__23))) !== 0) || ((((_la - 42)) & ~0x1f) == 0 && ((1 << (_la - 42)) & ((1 << (TspParser.T__41 - 42)) | (1 << (TspParser.T__45 - 42)) | (1 << (TspParser.T__46 - 42)) | (1 << (TspParser.NIL - 42)) | (1 << (TspParser.BOOLEAN - 42)) | (1 << (TspParser.NAME - 42)) | (1 << (TspParser.NORMALSTRING - 42)) | (1 << (TspParser.CHARSTRING - 42)) | (1 << (TspParser.LONGSTRING - 42)) | (1 << (TspParser.INT - 42)) | (1 << (TspParser.HEX - 42)) | (1 << (TspParser.FLOAT - 42)))) !== 0)) {
             this.state = 450;
             this.fieldList();
         }
@@ -2448,7 +2448,7 @@ TspParser.prototype.tableConstructor = function() {
     return localctx;
 };
 
-function FieldListContext(parser, parent, invokingState) {
+const FieldListContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2490,7 +2490,7 @@ FieldListContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.FieldListContext = FieldListContext;
+
 
 TspParser.prototype.fieldList = function() {
 
@@ -2516,7 +2516,7 @@ TspParser.prototype.fieldList = function() {
                     this.consume();
                 }
                 this.state = 457;
-                this.field();
+                this.field(); 
             }
             this.state = 462;
             this._errHandler.sync(this);
@@ -2552,7 +2552,7 @@ TspParser.prototype.fieldList = function() {
     return localctx;
 };
 
-function FieldContext(parser, parent, invokingState) {
+const FieldContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2598,7 +2598,7 @@ FieldContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.FieldContext = FieldContext;
+
 
 TspParser.prototype.field = function() {
 
@@ -2654,7 +2654,7 @@ TspParser.prototype.field = function() {
     return localctx;
 };
 
-function OperatorOrContext(parser, parent, invokingState) {
+const OperatorOrContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2686,7 +2686,7 @@ OperatorOrContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorOrContext = OperatorOrContext;
+
 
 TspParser.prototype.operatorOr = function() {
 
@@ -2710,7 +2710,7 @@ TspParser.prototype.operatorOr = function() {
     return localctx;
 };
 
-function OperatorAndContext(parser, parent, invokingState) {
+const OperatorAndContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2742,7 +2742,7 @@ OperatorAndContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorAndContext = OperatorAndContext;
+
 
 TspParser.prototype.operatorAnd = function() {
 
@@ -2766,7 +2766,7 @@ TspParser.prototype.operatorAnd = function() {
     return localctx;
 };
 
-function OperatorComparisonContext(parser, parent, invokingState) {
+const OperatorComparisonContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -2798,7 +2798,7 @@ OperatorComparisonContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorComparisonContext = OperatorComparisonContext;
+
 
 TspParser.prototype.operatorComparison = function() {
 
@@ -2830,247 +2830,7 @@ TspParser.prototype.operatorComparison = function() {
     return localctx;
 };
 
-function OperatorStrcatContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = TspParser.RULE_operatorStrcat;
-    return this;
-}
-
-OperatorStrcatContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-OperatorStrcatContext.prototype.constructor = OperatorStrcatContext;
-
-
-OperatorStrcatContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.enterOperatorStrcat(this);
-	}
-};
-
-OperatorStrcatContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.exitOperatorStrcat(this);
-	}
-};
-
-
-
-
-TspParser.OperatorStrcatContext = OperatorStrcatContext;
-
-TspParser.prototype.operatorStrcat = function() {
-
-    var localctx = new OperatorStrcatContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 34, TspParser.RULE_operatorStrcat);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 484;
-        this.match(TspParser.T__34);
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-function OperatorAddSubContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = TspParser.RULE_operatorAddSub;
-    return this;
-}
-
-OperatorAddSubContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-OperatorAddSubContext.prototype.constructor = OperatorAddSubContext;
-
-
-OperatorAddSubContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.enterOperatorAddSub(this);
-	}
-};
-
-OperatorAddSubContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.exitOperatorAddSub(this);
-	}
-};
-
-
-
-
-TspParser.OperatorAddSubContext = OperatorAddSubContext;
-
-TspParser.prototype.operatorAddSub = function() {
-
-    var localctx = new OperatorAddSubContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 36, TspParser.RULE_operatorAddSub);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 486;
-        _la = this._input.LA(1);
-        if(!(_la===TspParser.T__35 || _la===TspParser.T__36)) {
-        this._errHandler.recoverInline(this);
-        }
-        else {
-        	this._errHandler.reportMatch(this);
-            this.consume();
-        }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-function OperatorMulDivContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = TspParser.RULE_operatorMulDiv;
-    return this;
-}
-
-OperatorMulDivContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-OperatorMulDivContext.prototype.constructor = OperatorMulDivContext;
-
-
-OperatorMulDivContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.enterOperatorMulDiv(this);
-	}
-};
-
-OperatorMulDivContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.exitOperatorMulDiv(this);
-	}
-};
-
-
-
-
-TspParser.OperatorMulDivContext = OperatorMulDivContext;
-
-TspParser.prototype.operatorMulDiv = function() {
-
-    var localctx = new OperatorMulDivContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 38, TspParser.RULE_operatorMulDiv);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 488;
-        _la = this._input.LA(1);
-        if(!(_la===TspParser.T__37 || _la===TspParser.T__38)) {
-        this._errHandler.recoverInline(this);
-        }
-        else {
-        	this._errHandler.reportMatch(this);
-            this.consume();
-        }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-function OperatorBitwiseAndContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = TspParser.RULE_operatorBitwiseAnd;
-    return this;
-}
-
-OperatorBitwiseAndContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-OperatorBitwiseAndContext.prototype.constructor = OperatorBitwiseAndContext;
-
-
-OperatorBitwiseAndContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.enterOperatorBitwiseAnd(this);
-	}
-};
-
-OperatorBitwiseAndContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.exitOperatorBitwiseAnd(this);
-	}
-};
-
-
-
-
-TspParser.OperatorBitwiseAndContext = OperatorBitwiseAndContext;
-
-TspParser.prototype.operatorBitwiseAnd = function() {
-
-    var localctx = new OperatorBitwiseAndContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 40, TspParser.RULE_operatorBitwiseAnd);
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 490;
-        this.match(TspParser.T__39);
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-function OperatorBitwiseOrContext(parser, parent, invokingState) {
+const OperatorBitwiseOrContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -3102,16 +2862,16 @@ OperatorBitwiseOrContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorBitwiseOrContext = OperatorBitwiseOrContext;
+
 
 TspParser.prototype.operatorBitwiseOr = function() {
 
     var localctx = new OperatorBitwiseOrContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 42, TspParser.RULE_operatorBitwiseOr);
+    this.enterRule(localctx, 34, TspParser.RULE_operatorBitwiseOr);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 492;
-        this.match(TspParser.T__40);
+        this.state = 484;
+        this.match(TspParser.T__34);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3126,7 +2886,7 @@ TspParser.prototype.operatorBitwiseOr = function() {
     return localctx;
 };
 
-function OperatorBitwiseXorContext(parser, parent, invokingState) {
+const OperatorBitwiseXorContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -3158,16 +2918,16 @@ OperatorBitwiseXorContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorBitwiseXorContext = OperatorBitwiseXorContext;
+
 
 TspParser.prototype.operatorBitwiseXor = function() {
 
     var localctx = new OperatorBitwiseXorContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 44, TspParser.RULE_operatorBitwiseXor);
+    this.enterRule(localctx, 36, TspParser.RULE_operatorBitwiseXor);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 494;
-        this.match(TspParser.T__41);
+        this.state = 486;
+        this.match(TspParser.T__35);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3182,7 +2942,63 @@ TspParser.prototype.operatorBitwiseXor = function() {
     return localctx;
 };
 
-function OperatorBitwiseShiftContext(parser, parent, invokingState) {
+const OperatorBitwiseAndContext = function(parser, parent, invokingState): void {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = TspParser.RULE_operatorBitwiseAnd;
+    return this;
+}
+
+OperatorBitwiseAndContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+OperatorBitwiseAndContext.prototype.constructor = OperatorBitwiseAndContext;
+
+
+OperatorBitwiseAndContext.prototype.enterRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.enterOperatorBitwiseAnd(this);
+	}
+};
+
+OperatorBitwiseAndContext.prototype.exitRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.exitOperatorBitwiseAnd(this);
+	}
+};
+
+
+
+
+
+
+TspParser.prototype.operatorBitwiseAnd = function() {
+
+    var localctx = new OperatorBitwiseAndContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 38, TspParser.RULE_operatorBitwiseAnd);
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 488;
+        this.match(TspParser.T__36);
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+const OperatorBitwiseShiftContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -3214,12 +3030,196 @@ OperatorBitwiseShiftContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorBitwiseShiftContext = OperatorBitwiseShiftContext;
+
 
 TspParser.prototype.operatorBitwiseShift = function() {
 
     var localctx = new OperatorBitwiseShiftContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 46, TspParser.RULE_operatorBitwiseShift);
+    this.enterRule(localctx, 40, TspParser.RULE_operatorBitwiseShift);
+    var _la = 0; // Token type
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 490;
+        _la = this._input.LA(1);
+        if(!(_la===TspParser.T__37 || _la===TspParser.T__38)) {
+        this._errHandler.recoverInline(this);
+        }
+        else {
+        	this._errHandler.reportMatch(this);
+            this.consume();
+        }
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+const OperatorStrcatContext = function(parser, parent, invokingState): void {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = TspParser.RULE_operatorStrcat;
+    return this;
+}
+
+OperatorStrcatContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+OperatorStrcatContext.prototype.constructor = OperatorStrcatContext;
+
+
+OperatorStrcatContext.prototype.enterRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.enterOperatorStrcat(this);
+	}
+};
+
+OperatorStrcatContext.prototype.exitRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.exitOperatorStrcat(this);
+	}
+};
+
+
+
+
+
+
+TspParser.prototype.operatorStrcat = function() {
+
+    var localctx = new OperatorStrcatContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 42, TspParser.RULE_operatorStrcat);
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 492;
+        this.match(TspParser.T__39);
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+const OperatorAddSubContext = function(parser, parent, invokingState): void {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = TspParser.RULE_operatorAddSub;
+    return this;
+}
+
+OperatorAddSubContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+OperatorAddSubContext.prototype.constructor = OperatorAddSubContext;
+
+
+OperatorAddSubContext.prototype.enterRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.enterOperatorAddSub(this);
+	}
+};
+
+OperatorAddSubContext.prototype.exitRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.exitOperatorAddSub(this);
+	}
+};
+
+
+
+
+
+
+TspParser.prototype.operatorAddSub = function() {
+
+    var localctx = new OperatorAddSubContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 44, TspParser.RULE_operatorAddSub);
+    var _la = 0; // Token type
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 494;
+        _la = this._input.LA(1);
+        if(!(_la===TspParser.T__40 || _la===TspParser.T__41)) {
+        this._errHandler.recoverInline(this);
+        }
+        else {
+        	this._errHandler.reportMatch(this);
+            this.consume();
+        }
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+const OperatorMulDivContext = function(parser, parent, invokingState): void {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = TspParser.RULE_operatorMulDiv;
+    return this;
+}
+
+OperatorMulDivContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+OperatorMulDivContext.prototype.constructor = OperatorMulDivContext;
+
+
+OperatorMulDivContext.prototype.enterRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.enterOperatorMulDiv(this);
+	}
+};
+
+OperatorMulDivContext.prototype.exitRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.exitOperatorMulDiv(this);
+	}
+};
+
+
+
+
+
+
+TspParser.prototype.operatorMulDiv = function() {
+
+    var localctx = new OperatorMulDivContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 46, TspParser.RULE_operatorMulDiv);
     var _la = 0; // Token type
     try {
         this.enterOuterAlt(localctx, 1);
@@ -3246,71 +3246,7 @@ TspParser.prototype.operatorBitwiseShift = function() {
     return localctx;
 };
 
-function OperatorUnaryContext(parser, parent, invokingState) {
-	if(parent===undefined) {
-	    parent = null;
-	}
-	if(invokingState===undefined || invokingState===null) {
-		invokingState = -1;
-	}
-	antlr4.ParserRuleContext.call(this, parent, invokingState);
-    this.parser = parser;
-    this.ruleIndex = TspParser.RULE_operatorUnary;
-    return this;
-}
-
-OperatorUnaryContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
-OperatorUnaryContext.prototype.constructor = OperatorUnaryContext;
-
-
-OperatorUnaryContext.prototype.enterRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.enterOperatorUnary(this);
-	}
-};
-
-OperatorUnaryContext.prototype.exitRule = function(listener) {
-    if(listener instanceof TspListener ) {
-        listener.exitOperatorUnary(this);
-	}
-};
-
-
-
-
-TspParser.OperatorUnaryContext = OperatorUnaryContext;
-
-TspParser.prototype.operatorUnary = function() {
-
-    var localctx = new OperatorUnaryContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 48, TspParser.RULE_operatorUnary);
-    var _la = 0; // Token type
-    try {
-        this.enterOuterAlt(localctx, 1);
-        this.state = 498;
-        _la = this._input.LA(1);
-        if(!(((((_la - 37)) & ~0x1f) == 0 && ((1 << (_la - 37)) & ((1 << (TspParser.T__36 - 37)) | (1 << (TspParser.T__44 - 37)) | (1 << (TspParser.T__45 - 37)))) !== 0))) {
-        this._errHandler.recoverInline(this);
-        }
-        else {
-        	this._errHandler.reportMatch(this);
-            this.consume();
-        }
-    } catch (re) {
-    	if(re instanceof antlr4.error.RecognitionException) {
-	        localctx.exception = re;
-	        this._errHandler.reportError(this, re);
-	        this._errHandler.recover(this, re);
-	    } else {
-	    	throw re;
-	    }
-    } finally {
-        this.exitRule();
-    }
-    return localctx;
-};
-
-function OperatorPowerContext(parser, parent, invokingState) {
+const OperatorPowerContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -3342,16 +3278,16 @@ OperatorPowerContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.OperatorPowerContext = OperatorPowerContext;
+
 
 TspParser.prototype.operatorPower = function() {
 
     var localctx = new OperatorPowerContext(this, this._ctx, this.state);
-    this.enterRule(localctx, 50, TspParser.RULE_operatorPower);
+    this.enterRule(localctx, 48, TspParser.RULE_operatorPower);
     try {
         this.enterOuterAlt(localctx, 1);
-        this.state = 500;
-        this.match(TspParser.T__46);
+        this.state = 498;
+        this.match(TspParser.T__44);
     } catch (re) {
     	if(re instanceof antlr4.error.RecognitionException) {
 	        localctx.exception = re;
@@ -3366,7 +3302,71 @@ TspParser.prototype.operatorPower = function() {
     return localctx;
 };
 
-function NumberContext(parser, parent, invokingState) {
+const OperatorUnaryContext = function(parser, parent, invokingState): void {
+	if(parent===undefined) {
+	    parent = null;
+	}
+	if(invokingState===undefined || invokingState===null) {
+		invokingState = -1;
+	}
+	antlr4.ParserRuleContext.call(this, parent, invokingState);
+    this.parser = parser;
+    this.ruleIndex = TspParser.RULE_operatorUnary;
+    return this;
+}
+
+OperatorUnaryContext.prototype = Object.create(antlr4.ParserRuleContext.prototype);
+OperatorUnaryContext.prototype.constructor = OperatorUnaryContext;
+
+
+OperatorUnaryContext.prototype.enterRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.enterOperatorUnary(this);
+	}
+};
+
+OperatorUnaryContext.prototype.exitRule = function(listener) {
+    if(listener instanceof TspListener ) {
+        listener.exitOperatorUnary(this);
+	}
+};
+
+
+
+
+
+
+TspParser.prototype.operatorUnary = function() {
+
+    var localctx = new OperatorUnaryContext(this, this._ctx, this.state);
+    this.enterRule(localctx, 50, TspParser.RULE_operatorUnary);
+    var _la = 0; // Token type
+    try {
+        this.enterOuterAlt(localctx, 1);
+        this.state = 500;
+        _la = this._input.LA(1);
+        if(!(((((_la - 42)) & ~0x1f) == 0 && ((1 << (_la - 42)) & ((1 << (TspParser.T__41 - 42)) | (1 << (TspParser.T__45 - 42)) | (1 << (TspParser.T__46 - 42)))) !== 0))) {
+        this._errHandler.recoverInline(this);
+        }
+        else {
+        	this._errHandler.reportMatch(this);
+            this.consume();
+        }
+    } catch (re) {
+    	if(re instanceof antlr4.error.RecognitionException) {
+	        localctx.exception = re;
+	        this._errHandler.reportError(this, re);
+	        this._errHandler.recover(this, re);
+	    } else {
+	    	throw re;
+	    }
+    } finally {
+        this.exitRule();
+    }
+    return localctx;
+};
+
+const NumberContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -3409,7 +3409,7 @@ NumberContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.NumberContext = NumberContext;
+
 
 TspParser.prototype.number = function() {
 
@@ -3441,7 +3441,7 @@ TspParser.prototype.number = function() {
     return localctx;
 };
 
-function StringContext(parser, parent, invokingState) {
+const StringContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
 	}
@@ -3484,7 +3484,7 @@ StringContext.prototype.exitRule = function(listener) {
 
 
 
-TspParser.StringContext = StringContext;
+
 
 TspParser.prototype.string = function() {
 
@@ -3517,4 +3517,4 @@ TspParser.prototype.string = function() {
 };
 
 
-exports.TspParser = TspParser;
+export { TspParser };

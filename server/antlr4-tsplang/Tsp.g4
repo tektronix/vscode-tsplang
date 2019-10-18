@@ -151,6 +151,18 @@ operatorAnd
 operatorComparison
     : '<' | '>' | '<=' | '>=' | '~=' | '!=' | '==';
 
+operatorBitwiseOr
+    : '|';
+
+operatorBitwiseXor
+    : '^^';
+
+operatorBitwiseAnd
+    : '&';
+
+operatorBitwiseShift
+    : '<<' | '>>';
+
 operatorStrcat
     : '..';
 
@@ -160,23 +172,11 @@ operatorAddSub
 operatorMulDiv
     : '*' | '/';
 
-operatorBitwiseAnd
-    : '&';
-
-operatorBitwiseOr
-    : '|';
-
-operatorBitwiseXor
-    : '^^';
-
-operatorBitwiseShift
-    : '<<' | '>>';
+operatorPower
+    : '^';
 
 operatorUnary
     : 'not' | '-' | '!';
-
-operatorPower
-    : '^';
 
 number
     : INT | HEX | FLOAT

@@ -2,18 +2,18 @@
     "compilerOptions": {
         "module": "commonjs",
         "target": "es6",
+        "lib": [ "es6" ],
+        "tsBuildInfoFile": ".tsbuildinfo",
         "outDir": "out",
         "rootDir": "src",
-        "lib": [ "es6" ],
-        "allowJs": true,
         "composite": true,
-        "declaration": true,
         "sourceMap": true,
     },
     "include": [
-        "src",
+        "src/**/*",
     ],
     "exclude": [
         "node_modules",
+        "scripts",
     ],
 }

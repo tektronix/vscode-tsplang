@@ -22,6 +22,7 @@ export class CommonTokenStream extends AntlrTokenStream {
     tokens: Token[]
 
     constructor(lexer: TspLexer) {
+        // @ts-ignore
         super(lexer)
         this.tokens = []
     }

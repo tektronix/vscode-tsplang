@@ -13,8 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-/// <reference types="antlr4"/>
-
 // ANTLR4 Exports
 export { InputStream } from "antlr4"
 

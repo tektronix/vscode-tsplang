@@ -1,16 +1,11 @@
 {
-    "compilerOptions": {
-        "module": "commonjs",
-        "target": "es6",
-        "lib": [ "es6" ],
-        "sourceMap": true,
-    },
+    "files": [],
+    "include": [],
     "exclude": [
         "node_modules",
     ],
     "references": [
         { "path": "./client" },
-        { "path": "./server/antlr4-tsplang" },
         { "path": "./server" },
     ],
 }

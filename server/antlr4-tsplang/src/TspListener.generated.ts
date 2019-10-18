@@ -164,6 +164,42 @@ TspListener.prototype.exitOperatorComparison = function(ctx) {
 };
 
 
+// Enter a parse tree produced by TspParser#operatorBitwiseOr.
+TspListener.prototype.enterOperatorBitwiseOr = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseOr.
+TspListener.prototype.exitOperatorBitwiseOr = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#operatorBitwiseXor.
+TspListener.prototype.enterOperatorBitwiseXor = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseXor.
+TspListener.prototype.exitOperatorBitwiseXor = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#operatorBitwiseAnd.
+TspListener.prototype.enterOperatorBitwiseAnd = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseAnd.
+TspListener.prototype.exitOperatorBitwiseAnd = function(ctx) {
+};
+
+
+// Enter a parse tree produced by TspParser#operatorBitwiseShift.
+TspListener.prototype.enterOperatorBitwiseShift = function(ctx) {
+};
+
+// Exit a parse tree produced by TspParser#operatorBitwiseShift.
+TspListener.prototype.exitOperatorBitwiseShift = function(ctx) {
+};
+
+
 // Enter a parse tree produced by TspParser#operatorStrcat.
 TspListener.prototype.enterOperatorStrcat = function(ctx) {
 };
@@ -191,39 +227,12 @@ TspListener.prototype.exitOperatorMulDiv = function(ctx) {
 };
 
 
-// Enter a parse tree produced by TspParser#operatorBitwiseAnd.
-TspListener.prototype.enterOperatorBitwiseAnd = function(ctx) {
+// Enter a parse tree produced by TspParser#operatorPower.
+TspListener.prototype.enterOperatorPower = function(ctx) {
 };
 
-// Exit a parse tree produced by TspParser#operatorBitwiseAnd.
-TspListener.prototype.exitOperatorBitwiseAnd = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#operatorBitwiseOr.
-TspListener.prototype.enterOperatorBitwiseOr = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#operatorBitwiseOr.
-TspListener.prototype.exitOperatorBitwiseOr = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#operatorBitwiseXor.
-TspListener.prototype.enterOperatorBitwiseXor = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#operatorBitwiseXor.
-TspListener.prototype.exitOperatorBitwiseXor = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#operatorBitwiseShift.
-TspListener.prototype.enterOperatorBitwiseShift = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#operatorBitwiseShift.
-TspListener.prototype.exitOperatorBitwiseShift = function(ctx) {
+// Exit a parse tree produced by TspParser#operatorPower.
+TspListener.prototype.exitOperatorPower = function(ctx) {
 };
 
 
@@ -233,15 +242,6 @@ TspListener.prototype.enterOperatorUnary = function(ctx) {
 
 // Exit a parse tree produced by TspParser#operatorUnary.
 TspListener.prototype.exitOperatorUnary = function(ctx) {
-};
-
-
-// Enter a parse tree produced by TspParser#operatorPower.
-TspListener.prototype.enterOperatorPower = function(ctx) {
-};
-
-// Exit a parse tree produced by TspParser#operatorPower.
-TspListener.prototype.exitOperatorPower = function(ctx) {
 };
 
 
@@ -264,4 +264,4 @@ TspListener.prototype.exitString = function(ctx) {
 
 
 
-exports.TspListener = TspListener;
+export { TspListener };
