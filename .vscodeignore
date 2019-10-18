@@ -1,5 +1,6 @@
-**/*.ts
+**/*.g4
 **/*.map
+**/*.ts
 **/mocha.opts
 **/tsconfig.json
 .github/**
@@ -11,7 +12,7 @@ coverage/**
 node_modules/**
 server/antlr4-tsplang/out/test/**
 server/antlr4-tsplang/src/**
-server/grammar/**
+server/antlr4-tsplang/scripts/**
 server/out/test/**
 server/src/**
 utils/**
