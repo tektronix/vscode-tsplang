@@ -1,8 +1,9 @@
-// Generated from C:\Source\vscode-tsplang\server\antlr4-tsplang\scripts\..\Tsp.g4 by ANTLR 4.7.1
+// Generated from C:\Source\vscode-tsplang\server\antlr4-tsplang\scripts\..\Tsp.g4 by ANTLR 4.7.2
 // jshint ignore: start
 var antlr4 = require('antlr4/index');
 var TspListener = require('./TspListener').TspListener;
 var grammarFileName = "Tsp.g4";
+
 
 var serializedATN = ["\u0003\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964",
     "\u0003A\u01fd\u0004\u0002\t\u0002\u0004\u0003\t\u0003\u0004\u0004\t",
@@ -520,6 +521,7 @@ TspParser.RULE_operatorUnary = 25;
 TspParser.RULE_number = 26;
 TspParser.RULE_string = 27;
 
+
 const ChunkContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -566,7 +568,7 @@ ChunkContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.ChunkContext = ChunkContext;
 
 TspParser.prototype.chunk = function() {
 
@@ -608,6 +610,7 @@ TspParser.prototype.chunk = function() {
     }
     return localctx;
 };
+
 
 const StatementContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -690,7 +693,7 @@ StatementContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.StatementContext = StatementContext;
 
 TspParser.prototype.statement = function() {
 
@@ -1251,6 +1254,7 @@ TspParser.prototype.statement = function() {
     return localctx;
 };
 
+
 const AssignmentContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -1304,7 +1308,7 @@ AssignmentContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.AssignmentContext = AssignmentContext;
 
 TspParser.prototype.assignment = function() {
 
@@ -1356,6 +1360,7 @@ TspParser.prototype.assignment = function() {
     }
     return localctx;
 };
+
 
 const ValueContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -1420,7 +1425,7 @@ ValueContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.ValueContext = ValueContext;
 
 TspParser.prototype.value = function() {
 
@@ -1497,6 +1502,7 @@ TspParser.prototype.value = function() {
     }
     return localctx;
 };
+
 
 const ExpressionContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -1612,7 +1618,7 @@ ExpressionContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.ExpressionContext = ExpressionContext;
 
 TspParser.prototype.expression = function() {
 
@@ -1791,6 +1797,7 @@ TspParser.prototype.expression = function() {
     return localctx;
 };
 
+
 const PrefixContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -1830,7 +1837,7 @@ PrefixContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.PrefixContext = PrefixContext;
 
 TspParser.prototype.prefix = function() {
 
@@ -1870,6 +1877,7 @@ TspParser.prototype.prefix = function() {
     }
     return localctx;
 };
+
 
 const SuffixContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -1914,7 +1922,7 @@ SuffixContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.SuffixContext = SuffixContext;
 
 TspParser.prototype.suffix = function() {
 
@@ -1968,6 +1976,7 @@ TspParser.prototype.suffix = function() {
     return localctx;
 };
 
+
 const IndexContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -2007,7 +2016,7 @@ IndexContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.IndexContext = IndexContext;
 
 TspParser.prototype.index = function() {
 
@@ -2049,6 +2058,7 @@ TspParser.prototype.index = function() {
     }
     return localctx;
 };
+
 
 const VariableContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2104,7 +2114,7 @@ VariableContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.VariableContext = VariableContext;
 
 TspParser.prototype.variable = function() {
 
@@ -2156,6 +2166,7 @@ TspParser.prototype.variable = function() {
     }
     return localctx;
 };
+
 
 const FunctionCallContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2211,7 +2222,7 @@ FunctionCallContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.FunctionCallContext = FunctionCallContext;
 
 TspParser.prototype.functionCall = function() {
 
@@ -2260,6 +2271,7 @@ TspParser.prototype.functionCall = function() {
     }
     return localctx;
 };
+
 
 const ArgsContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2311,7 +2323,7 @@ ArgsContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.ArgsContext = ArgsContext;
 
 TspParser.prototype.args = function() {
 
@@ -2378,6 +2390,7 @@ TspParser.prototype.args = function() {
     return localctx;
 };
 
+
 const TableConstructorContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -2413,7 +2426,7 @@ TableConstructorContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.TableConstructorContext = TableConstructorContext;
 
 TspParser.prototype.tableConstructor = function() {
 
@@ -2447,6 +2460,7 @@ TspParser.prototype.tableConstructor = function() {
     }
     return localctx;
 };
+
 
 const FieldListContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2490,7 +2504,7 @@ FieldListContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.FieldListContext = FieldListContext;
 
 TspParser.prototype.fieldList = function() {
 
@@ -2552,6 +2566,7 @@ TspParser.prototype.fieldList = function() {
     return localctx;
 };
 
+
 const FieldContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -2598,7 +2613,7 @@ FieldContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.FieldContext = FieldContext;
 
 TspParser.prototype.field = function() {
 
@@ -2654,6 +2669,7 @@ TspParser.prototype.field = function() {
     return localctx;
 };
 
+
 const OperatorOrContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
 	    parent = null;
@@ -2686,7 +2702,7 @@ OperatorOrContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorOrContext = OperatorOrContext;
 
 TspParser.prototype.operatorOr = function() {
 
@@ -2709,6 +2725,7 @@ TspParser.prototype.operatorOr = function() {
     }
     return localctx;
 };
+
 
 const OperatorAndContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2742,7 +2759,7 @@ OperatorAndContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorAndContext = OperatorAndContext;
 
 TspParser.prototype.operatorAnd = function() {
 
@@ -2765,6 +2782,7 @@ TspParser.prototype.operatorAnd = function() {
     }
     return localctx;
 };
+
 
 const OperatorComparisonContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2798,7 +2816,7 @@ OperatorComparisonContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorComparisonContext = OperatorComparisonContext;
 
 TspParser.prototype.operatorComparison = function() {
 
@@ -2829,6 +2847,7 @@ TspParser.prototype.operatorComparison = function() {
     }
     return localctx;
 };
+
 
 const OperatorBitwiseOrContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2862,7 +2881,7 @@ OperatorBitwiseOrContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorBitwiseOrContext = OperatorBitwiseOrContext;
 
 TspParser.prototype.operatorBitwiseOr = function() {
 
@@ -2885,6 +2904,7 @@ TspParser.prototype.operatorBitwiseOr = function() {
     }
     return localctx;
 };
+
 
 const OperatorBitwiseXorContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2918,7 +2938,7 @@ OperatorBitwiseXorContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorBitwiseXorContext = OperatorBitwiseXorContext;
 
 TspParser.prototype.operatorBitwiseXor = function() {
 
@@ -2941,6 +2961,7 @@ TspParser.prototype.operatorBitwiseXor = function() {
     }
     return localctx;
 };
+
 
 const OperatorBitwiseAndContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -2974,7 +2995,7 @@ OperatorBitwiseAndContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorBitwiseAndContext = OperatorBitwiseAndContext;
 
 TspParser.prototype.operatorBitwiseAnd = function() {
 
@@ -2997,6 +3018,7 @@ TspParser.prototype.operatorBitwiseAnd = function() {
     }
     return localctx;
 };
+
 
 const OperatorBitwiseShiftContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3030,7 +3052,7 @@ OperatorBitwiseShiftContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorBitwiseShiftContext = OperatorBitwiseShiftContext;
 
 TspParser.prototype.operatorBitwiseShift = function() {
 
@@ -3061,6 +3083,7 @@ TspParser.prototype.operatorBitwiseShift = function() {
     }
     return localctx;
 };
+
 
 const OperatorStrcatContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3094,7 +3117,7 @@ OperatorStrcatContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorStrcatContext = OperatorStrcatContext;
 
 TspParser.prototype.operatorStrcat = function() {
 
@@ -3117,6 +3140,7 @@ TspParser.prototype.operatorStrcat = function() {
     }
     return localctx;
 };
+
 
 const OperatorAddSubContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3150,7 +3174,7 @@ OperatorAddSubContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorAddSubContext = OperatorAddSubContext;
 
 TspParser.prototype.operatorAddSub = function() {
 
@@ -3181,6 +3205,7 @@ TspParser.prototype.operatorAddSub = function() {
     }
     return localctx;
 };
+
 
 const OperatorMulDivContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3214,7 +3239,7 @@ OperatorMulDivContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorMulDivContext = OperatorMulDivContext;
 
 TspParser.prototype.operatorMulDiv = function() {
 
@@ -3245,6 +3270,7 @@ TspParser.prototype.operatorMulDiv = function() {
     }
     return localctx;
 };
+
 
 const OperatorPowerContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3278,7 +3304,7 @@ OperatorPowerContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorPowerContext = OperatorPowerContext;
 
 TspParser.prototype.operatorPower = function() {
 
@@ -3301,6 +3327,7 @@ TspParser.prototype.operatorPower = function() {
     }
     return localctx;
 };
+
 
 const OperatorUnaryContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3334,7 +3361,7 @@ OperatorUnaryContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.OperatorUnaryContext = OperatorUnaryContext;
 
 TspParser.prototype.operatorUnary = function() {
 
@@ -3365,6 +3392,7 @@ TspParser.prototype.operatorUnary = function() {
     }
     return localctx;
 };
+
 
 const NumberContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3409,7 +3437,7 @@ NumberContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.NumberContext = NumberContext;
 
 TspParser.prototype.number = function() {
 
@@ -3440,6 +3468,7 @@ TspParser.prototype.number = function() {
     }
     return localctx;
 };
+
 
 const StringContext = function(parser, parent, invokingState): void {
 	if(parent===undefined) {
@@ -3484,7 +3513,7 @@ StringContext.prototype.exitRule = function(listener) {
 
 
 
-
+TspParser.StringContext = StringContext;
 
 TspParser.prototype.string = function() {
 
