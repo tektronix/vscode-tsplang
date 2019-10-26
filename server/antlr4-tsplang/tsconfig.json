@@ -6,6 +6,7 @@
         "tsBuildInfoFile": ".tsbuildinfo",
         "outDir": "out",
         "rootDir": "src",
+        "strictNullChecks": true,
         "composite": true,
         "sourceMap": true,
     },

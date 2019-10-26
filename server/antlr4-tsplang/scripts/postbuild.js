@@ -16,7 +16,6 @@ new Map([
         {
             dest: "../src/TspParser.generated.ts",
             replace: [
-                [/TspParser\.(.*Context) = \1;/g, ""],
                 [/function (.*Context)(\(.*\))/g, "const $1 = function$2: void"],
                 [/exports.TspParser = TspParser;/g, "export { TspParser };"],
             ],

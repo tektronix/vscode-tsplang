@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { CommonTokenStream, Token } from "antlr4"
+import { CommonTokenStream, Lexer, Token } from "antlr4"
 
 import "./token"
 import { ExtendedLexer } from "./TspLexer"
@@ -22,13 +22,12 @@ export class ExtendedTokenStream extends CommonTokenStream {
     tokens: Array<Token>
 
     constructor(lexer: ExtendedLexer) {
-        // @ts-ignore
-        super(lexer)
+        super((lexer as unknown) as Lexer)
         this.tokens = []
     }
 
     fetch(n: number): number {
-        if (this.fetchEOF) {
+        if (this.fetchedEOF) {
             return 0
         }
         for (let i = 0; i < n; i++) {
@@ -36,7 +35,7 @@ export class ExtendedTokenStream extends CommonTokenStream {
             t.tokenIndex = this.tokens.length
             this.tokens.push(t)
             if (t.type === Token.EOF) {
-                this.fetchEOF = true
+                this.fetchedEOF = true
                 return i + 1
             }
         }

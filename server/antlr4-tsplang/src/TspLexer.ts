@@ -16,12 +16,12 @@
 import { InputStream, Token } from "antlr4"
 import { LexerATNSimulator } from "antlr4/atn"
 import { Position } from "vscode-languageserver"
-import "./token"
 
+import "./token"
 import { TspLexer } from "./TspLexer.generated"
 import "./TspLexer.generated"
 
-interface ATNState {
+interface ATNSnapshot {
     column: number
     line: number
     mode: number
@@ -95,13 +95,15 @@ export class ExtendedLexer extends TspLexer {
     static readonly VERTICAL_WS: number
     static readonly SHEBANG: number
 
+    // protected _factory: CommonTokenFactory
     protected _interp: LexerATNSimulator
 
     constructor(input: InputStream) {
         super(input)
+        // this._factory = new ExtendedTokenFactory(this._factory.copyText)
     }
 
-    protected saveATNState(): ATNState {
+    protected getATNSnapshot(): ATNSnapshot {
         return {
             column: this._interp.column,
             line: this._interp.line,
@@ -112,41 +114,56 @@ export class ExtendedLexer extends TspLexer {
 
     public nextToken(): Token {
         const hidden = super.channelNames.indexOf("HIDDEN")
+        // let triviaCache: ExtendedCommonToken[] = []
         let triviaCache: Token[] = []
         // Collect any leading trivia.
-        let t: Token = (super.nextToken() as Token).augment()
+        // let t: ExtendedCommonToken = ExtendedCommonToken.extend(super.nextToken())
+        let t: Token = super.nextToken()
         while (t.channel === hidden) {
             triviaCache.push(t)
-            t = (super.nextToken() as Token).augment()
+            // t = ExtendedCommonToken.extend(super.nextToken())
+            t = super.nextToken()
         }
-        // The first Token found on the Default Channel is our target.
+        // The first token found on the Default Channel is our target.
         const result = t
         result.leadingTrivia = [...triviaCache]
         triviaCache = []
         // Collect any trailing trivia.
-        let lastATNState: ATNState = this.saveATNState()
-        t = (super.nextToken() as Token).augment()
+        let lastATNState: ATNSnapshot = this.getATNSnapshot()
+        // t = ExtendedCommonToken.extend(super.nextToken())
+        t = super.nextToken()
         while (t.channel === hidden && t.line === result.line) {
             triviaCache.push(t)
-            lastATNState = this.saveATNState()
-            t = (super.nextToken() as Token).augment()
+            lastATNState = this.getATNSnapshot()
+            // t = ExtendedCommonToken.extend(super.nextToken())
+            t = super.nextToken()
         }
         result.trailingTrivia = [...triviaCache]
-        // Reset to the start of the last Token.
+        // Reset to the start of the last token.
         super.inputStream.seek(t.start)
-        this._interp.copyState(lastATNState)
-        // Finalize the TokenPlus object.
-        result.span = {
-            end: {
-                character: result.column + result.text.length,
-                line: result.line - 1,
-            },
-            start: {
-                character: result.column,
-                line: result.line - 1,
-            },
+        this._interp.copyState(lastATNState as LexerATNSimulator)
+        // Calculate the range of the token's content.
+        if (result.column !== null && result.line !== null) {
+            result.span = {
+                end: {
+                    character: result.column + (result.text || "").length,
+                    line: result.line - 1,
+                },
+                start: {
+                    character: result.column,
+                    line: result.line - 1,
+                },
+            }
+        } else {
+            // Full-span cannot be calculated without a span.
+            return result
         }
-        if (result.leadingTrivia.length > 0) {
+        // Calculate the starting range of any attached trivia.
+        if (
+            result.leadingTrivia.length > 0 &&
+            result.leadingTrivia[0].column !== null &&
+            result.leadingTrivia[0].line !== null
+        ) {
             result.fullSpan = {
                 end: {} as Position,
                 start: {
@@ -163,13 +180,19 @@ export class ExtendedLexer extends TspLexer {
                 },
             }
         }
-        if (result.trailingTrivia.length > 0) {
-            const lastIndex = result.trailingTrivia.length - 1
+        // Calculated the ending range of any attached trivia.
+        const lastIndex = result.trailingTrivia.length - 1
+        if (
+            lastIndex > -1 &&
+            result.trailingTrivia[lastIndex].column !== null &&
+            result.trailingTrivia[lastIndex].text !== null &&
+            result.trailingTrivia[lastIndex].line !== null
+        ) {
             result.fullSpan.end = {
                 character:
-                    result.trailingTrivia[lastIndex].column +
-                    result.trailingTrivia[lastIndex].text.length,
-                line: result.trailingTrivia[lastIndex].line - 1,
+                    (result.trailingTrivia[lastIndex].column as number) +
+                    (result.trailingTrivia[lastIndex].text as string).length,
+                line: (result.trailingTrivia[lastIndex].line as number) - 1,
             }
         } else {
             result.fullSpan.end = {
@@ -177,6 +200,7 @@ export class ExtendedLexer extends TspLexer {
                 line: result.span.end.line,
             }
         }
+
         return result
     }
 }

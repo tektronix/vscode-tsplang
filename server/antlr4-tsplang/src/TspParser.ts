@@ -14,55 +14,11 @@
  *  limitations under the License.
  */
 import { CommonTokenStream, Parser, ParserRuleContext } from "antlr4"
-// import { CommonTokenStream, Interval, Parser, ParserRuleContext, Token } from "antlr4"
-// import { RecognitionException } from "antlr4/error/Errors"
-// import { RuleContext } from "antlr4/RuleContext"
 import { TerminalNode } from "antlr4/tree/Tree"
-// import { ErrorNode, ParseTreeListener, TerminalNode } from "antlr4/tree/Tree"
 import "./token"
 
 import { TspParser } from "./TspParser.generated"
 import "./TspParser.generated"
-
-// declare module "antlr4" {
-//     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-//     class ParserRuleContext extends RuleContext {
-//         static readonly EMPTY: ParserRuleContext
-
-//         readonly children: Array<ParserRuleContext | TerminalNode>
-//         readonly start: Token
-//         readonly stop: Token
-//         readonly ruleIndex: number
-//         readonly exception: RecognitionException
-
-//         constructor(parent: ParserRuleContext, invokingState: number)
-
-//         copyFrom(ctx: ParserRuleContext): void
-//         enterRule(listener: ParseTreeListener): void
-//         exitRule(listener: ParseTreeListener): void
-//         addChild(
-//             child: ParserRuleContext | TerminalNode
-//         ): ParserRuleContext | TerminalNode
-//         removeLastChild(): void
-//         addTokenNode(token: Token): Token
-//         addErrorNode(badToken: Token): ErrorNode
-//         getChild(
-//             i: number,
-//             type?: ParserRuleContext | TerminalNode
-//         ): ParserRuleContext | TerminalNode | null
-//         getToken(ttype: number, i: number): TerminalNode | null
-//         getTokens(ttype: number): Array<TerminalNode>
-//         getTypedRuleContext(
-//             ctxType: ParserRuleContext | TerminalNode,
-//             i: number
-//         ): ParserRuleContext | TerminalNode | null
-//         getTypedRuleContexts(
-//             ctxType: ParserRuleContext | TerminalNode
-//         ): Array<ParserRuleContext | TerminalNode>
-//         getChildCount(): number
-//         getSourceInterval(): Interval
-//     }
-// }
 
 // @ts-ignore
 export class ExtendedParser extends TspParser {
