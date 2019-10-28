@@ -5,36 +5,31 @@ const process = require("process")
 
 new Map([
     [
-        "../.antlr/TspLexer.js",
+        "../.antlr/TspLexer.ts",
         {
             dest: "../src/TspLexer.generated.ts",
-            replace: [[/exports.TspLexer = TspLexer;/g, "export { TspLexer };"]],
+            replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
         },
     ],
     [
-        "../.antlr/TspParser.js",
+        "../.antlr/TspParser.ts",
         {
             dest: "../src/TspParser.generated.ts",
-            replace: [
-                [/function (.*Context)(\(.*\))/g, "const $1 = function$2: void"],
-                [/exports.TspParser = TspParser;/g, "export { TspParser };"],
-            ],
+            replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
         },
     ],
     [
-        "../.antlr/TspListener.js",
+        "../.antlr/TspListener.ts",
         {
             dest: "../src/TspListener.generated.ts",
-            replace: [
-                [/exports.TspListener = TspListener;/g, "export { TspListener };"],
-            ],
+            replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
         },
     ],
     [
-        "../.antlr/TspVisitor.js",
+        "../.antlr/TspVisitor.ts",
         {
             dest: "../src/TspVisitor.generated.ts",
-            replace: [[/exports.TspVisitor = TspVisitor;/g, "export { TspVisitor };"]],
+            replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
         },
     ],
 ]).forEach((obj, src) => {

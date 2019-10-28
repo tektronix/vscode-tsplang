@@ -13,47 +13,92 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { Token } from "antlr4"
+import { CharStream, TokenSource } from "antlr4ts"
+import { Token } from "antlr4ts/Token"
 import { Range } from "vscode-languageserver"
 
-declare module "antlr4" {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    class Token {
+declare module "antlr4ts/Token" {
+    interface Token {
+        // Builtins
+        readonly text: string | undefined
+        readonly type: number
+        readonly line: number
+        readonly charPositionInLine: number
+        readonly channel: number
+        readonly tokenIndex: number
+        readonly startIndex: number
+        readonly stopIndex: number
+        readonly tokenSource: TokenSource | undefined
+        readonly inputStream: CharStream | undefined
+
         // Augmentations
-        fullSpan: Range | null
-        leadingTrivia: Array<Token>
-        span: Range | null
-        trailingTrivia: Array<Token>
-
-        augment(): Token
+        fullSpan?: Range
+        leadingTrivia?: Array<Token>
+        span?: Range
+        trailingTrivia?: Array<Token>
+    }
+    namespace Token {
+        function getFullSpan(token: Token): Range
+        function getSpan(token: Token): Range
     }
 }
-Token.prototype.constructor = function(): void {
-    this.source = null
-    this.type = null
-    this.channel = null
-    this.start = null
-    this.stop = null
-    this.tokenIndex = null
-    this.line = null
-    this.column = null
-    this._text = null
-
-    this.fullSpan = null
-    this.leadingTrivia = []
-    this.span = null
-    this.trailingTrivia = []
-
-    return this
-}
-/* eslint-disable-next-line @typescript-eslint/unbound-method */
-Token.prototype.augment = function(): Token {
-    if (this.leadingTrivia === undefined) {
-        this.leadingTrivia = []
+Token.getSpan = function(token: Token): Range {
+    return {
+        end: {
+            character: token.charPositionInLine + (token.text || "").length,
+            line: token.line - 1,
+        },
+        start: {
+            character: token.charPositionInLine,
+            line: token.line - 1,
+        },
     }
-    if (this.trailingTrivia === undefined) {
-        this.trailingTrivia = []
-    }
-    return this
 }
-export default Token
+Token.getFullSpan = function(token: Token): Range {
+    const result: Range = {} as Range
+    let span: Range | undefined = undefined
+
+    const getSpan = (): Range =>
+        token.span === undefined ? Token.getSpan(token) : token.span
+
+    // Calculate the starting range of any attached trivia.
+    if (token.leadingTrivia !== undefined && token.leadingTrivia.length > 0) {
+        result.start = {
+            character: token.leadingTrivia[0].charPositionInLine,
+            line: token.leadingTrivia[0].line - 1,
+        }
+    } else {
+        span = getSpan()
+
+        result.start = {
+            character: span.start.character,
+            line: span.start.line,
+        }
+    }
+
+    // Calculate the ending range of any attached trivia.
+    if (
+        token.trailingTrivia !== undefined &&
+        token.trailingTrivia.length > 0 &&
+        token.trailingTrivia[token.trailingTrivia.length - 1].text !== undefined
+    ) {
+        const lastIndex = token.trailingTrivia.length - 1
+        result.end = {
+            character:
+                token.trailingTrivia[lastIndex].charPositionInLine +
+                (token.trailingTrivia[lastIndex].text as string).length,
+            line: token.trailingTrivia[lastIndex].line - 1,
+        }
+    } else {
+        if (!span) {
+            span = getSpan()
+        }
+
+        result.end = {
+            character: span.end.character,
+            line: span.end.line,
+        }
+    }
+
+    return result
+}

@@ -14,16 +14,14 @@
  *  limitations under the License.
  */
 // ANTLR4 Exports
-export { InputStream, ParserRuleContext } from "antlr4"
-export { TerminalNode } from "antlr4/tree/Tree"
+export { ANTLRInputStream, CommonTokenStream } from "antlr4ts"
 
 // ANTLR4 Overrides
-export { ExtendedTokenStream as CommonTokenStream } from "./commonTokenStream"
-import { Token } from "antlr4"
+import { Token } from "antlr4ts"
 import "./token"
 export { Token }
+export { ExtendedLexer as TspLexer } from "./TspLexer"
 
 // Generated Exports
-export { ExtendedLexer as TspLexer } from "./TspLexer"
-export { ExtendedListener as TspListener } from "./TspListener"
-export { ExtendedParser as TspParser } from "./TspParser"
+export { TspListener } from "./TspListener.generated"
+export { TspParser } from "./TspParser.generated"
