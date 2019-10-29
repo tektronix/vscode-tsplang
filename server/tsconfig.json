@@ -7,13 +7,13 @@
         "outDir": "out",
         "rootDir": "src",
         "composite": true,
-        "sourceMap": true,
+        "sourceMap": true
     },
     "include": [
-        "src/**/*",
+        "src/**/*"
     ],
     "exclude": [
-        "node_modules",
+        "node_modules"
     ],
     "references": [
         { "path": "./antlr4-tsplang" }

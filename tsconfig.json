@@ -2,10 +2,10 @@
     "files": [],
     "include": [],
     "exclude": [
-        "node_modules",
+        "node_modules"
     ],
     "references": [
         { "path": "./client" },
-        { "path": "./server" },
-    ],
+        { "path": "./server" }
+    ]
 }

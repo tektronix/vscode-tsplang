@@ -9,8 +9,11 @@
         "project": [
             "./tsconfig.json",
             "./client/tsconfig.json",
+            "./client/tsconfig.test.json",
             "./server/antlr4-tsplang/tsconfig.json",
-            "./server/tsconfig.json"
+            "./server/antlr4-tsplang/tsconfig.test.json",
+            "./server/tsconfig.json",
+            "./server/tsconfig.test.json"
         ],
         "sourceType": "module"
     },

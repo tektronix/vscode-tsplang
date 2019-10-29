@@ -18,6 +18,7 @@
     },
     "scripts": {
         "build": "antlr4ts -o ./.antlr -message-format gnu -listener ./Tsp.g4",
-        "postbuild": "cd scripts && node ./postbuild.js && cd .."
+        "postbuild": "cd scripts && node ./postbuild.js && cd ..",
+        "test:antlr4-tsplang": "mocha --config .mocharc.json"
     }
 }

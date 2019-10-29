@@ -19,6 +19,9 @@
         "vscode-languageserver": "^5.2.1"
     },
     "scripts": {
-        "postinstall": "cd antlr4-tsplang && npm install && cd .."
-    }
+        "postinstall": "cd antlr4-tsplang && npm install && cd ..",
+        "test:antlr4-tsplang": "cd antlr4-tsplang & npm run test:antlr4-tsplang && cd ..",
+        "test:server": "mocha --config .mocharc.json"
+    },
+    "devDependencies": {}
 }
