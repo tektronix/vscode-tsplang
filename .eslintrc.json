@@ -36,11 +36,6 @@
     "rules": {
         // typescript
         "@typescript-eslint/no-namespace": "off",
-        "quotes": "off",
-        "@typescript-eslint/quotes": ["error", "double", {
-                "avoidEscape": true,
-                "allowTemplateLiterals": true
-        }],
         "semi": "off",
         "@typescript-eslint/semi": "off",
         "@typescript-eslint/unified-signatures": "warn",
@@ -57,7 +52,7 @@
 
         // eslint-plugin-pretter
         "prettier/prettier": ["error", {}, {
-                "usePrettierrc": true
+            "usePrettierrc": true
         }]
     }
 }
