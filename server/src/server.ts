@@ -17,6 +17,7 @@
 
 import {
     ANTLRInputStream,
+    ChunkContext,
     CommonTokenStream,
     TspLexer,
     TspParser,
@@ -32,11 +33,6 @@ import {
     TextDocumentItem,
     TextDocumentSyncKind,
 } from "vscode-languageserver"
-
-const DEFAULT_RANGE: Range = {
-    end: { character: 0, line: 0 },
-    start: { character: 0, line: 0 },
-}
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -73,13 +69,16 @@ declare type HRTime = [number, number]
 let count = 0
 connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) => {
     const inputStream = new ANTLRInputStream(param.text)
+    inputStream.name = param.uri
     const lexer = new TspLexer(inputStream)
     const tokenStream = new CommonTokenStream(lexer)
     const parser = new TspParser(tokenStream)
+
     const time: HRTime = process.hrtime()
-    // tokenStream.fill()
-    parser.chunk()
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    const root: ChunkContext = parser.chunk()
     const done: HRTime = process.hrtime(time)
+
     console.log(`${count}> parsed ${param.uri}`)
 
     // Format and print elapsed time.
@@ -100,8 +99,8 @@ connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) =
     connection.sendNotification(DocumentAreaNotification, {
         arr: tokenStream.getTokens().map(t => {
             return {
-                fullSpan: t.fullSpan || DEFAULT_RANGE,
-                span: t.span || DEFAULT_RANGE,
+                fullSpan: t.fullSpan,
+                span: t.span,
             }
         }),
     })

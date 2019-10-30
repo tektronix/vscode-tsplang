@@ -14,14 +14,43 @@
  *  limitations under the License.
  */
 // ANTLR4 Exports
-export { ANTLRInputStream, CommonTokenStream } from "antlr4ts"
+export { ANTLRInputStream } from "antlr4ts"
 
 // ANTLR4 Overrides
-import { Token } from "antlr4ts"
-import "./token"
-export { Token }
-export { ExtendedLexer as TspLexer } from "./TspLexer"
+export { ExtendedTspLexer as TspLexer } from "./extendedTspLexer"
+export { TspCommonToken as CommonToken } from "./tspCommonToken"
+export { TspCommonTokenStream as CommonTokenStream } from "./tspCommonTokenStream"
 
 // Generated Exports
 export { TspListener } from "./TspListener.generated"
-export { TspParser } from "./TspParser.generated"
+export {
+    TspParser,
+    ArgsContext,
+    AssignmentContext,
+    ChunkContext,
+    ExpressionContext,
+    FieldContext,
+    FieldListContext,
+    FunctionCallContext,
+    IndexContext,
+    NumberContext,
+    OperatorAddSubContext,
+    OperatorAndContext,
+    OperatorBitwiseAndContext,
+    OperatorBitwiseOrContext,
+    OperatorBitwiseShiftContext,
+    OperatorBitwiseXorContext,
+    OperatorComparisonContext,
+    OperatorMulDivContext,
+    OperatorOrContext,
+    OperatorPowerContext,
+    OperatorStrcatContext,
+    OperatorUnaryContext,
+    PrefixContext,
+    StatementContext,
+    StringContext,
+    SuffixContext,
+    TableConstructorContext,
+    ValueContext,
+    VariableContext,
+} from "./TspParser.generated"

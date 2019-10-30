@@ -13,10 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ANTLRInputStream, Token } from "antlr4ts"
+import { ANTLRInputStream } from "antlr4ts"
 import { LexerATNSimulator } from "antlr4ts/atn/LexerATNSimulator"
 
-import "./token"
+import { TspCommonToken } from "./tspCommonToken"
+import { TspCommonTokenFactory } from "./tspCommonTokenFactory"
 import { TspLexer } from "./TspLexer.generated"
 
 interface ATNSnapshot {
@@ -26,9 +27,10 @@ interface ATNSnapshot {
     startIndex: number
 }
 
-export class ExtendedLexer extends TspLexer {
+export class ExtendedTspLexer extends TspLexer {
     constructor(input: ANTLRInputStream) {
         super(input)
+        this.tokenFactory = new TspCommonTokenFactory()
     }
 
     protected getATNSnapshot(): ATNSnapshot {
@@ -40,40 +42,33 @@ export class ExtendedLexer extends TspLexer {
         }
     }
 
-    public nextToken(): Token {
-        const hidden = super.channelNames.indexOf("HIDDEN")
-        // let triviaCache: ExtendedCommonToken[] = []
-        let triviaCache: Token[] = []
+    public nextToken(): TspCommonToken {
+        const defaultChannel: number = TspLexer.DEFAULT_TOKEN_CHANNEL
+        let triviaCache: TspCommonToken[] = []
+
         // Collect any leading trivia.
-        // let t: ExtendedCommonToken = ExtendedCommonToken.extend(super.nextToken())
-        let t: Token = super.nextToken()
-        while (t.channel === hidden) {
-            triviaCache.push(t)
-            // t = ExtendedCommonToken.extend(super.nextToken())
-            t = super.nextToken()
+        let token = super.nextToken() as TspCommonToken
+        while (token.channel !== defaultChannel) {
+            triviaCache.push(token)
+            token = super.nextToken() as TspCommonToken
         }
         // The first token found on the Default Channel is our target.
-        const result = t
+        const result = token
         result.leadingTrivia = [...triviaCache]
         triviaCache = []
         // Collect any trailing trivia.
         let lastATNState: ATNSnapshot = this.getATNSnapshot()
-        // t = ExtendedCommonToken.extend(super.nextToken())
-        t = super.nextToken()
-        while (t.channel === hidden && t.line === result.line) {
-            triviaCache.push(t)
+        token = super.nextToken() as TspCommonToken
+        while (token.channel !== defaultChannel && token.line === result.line) {
+            triviaCache.push(token)
             lastATNState = this.getATNSnapshot()
-            // t = ExtendedCommonToken.extend(super.nextToken())
-            t = super.nextToken()
+            token = super.nextToken() as TspCommonToken
         }
         result.trailingTrivia = [...triviaCache]
-        // Reset to the start of the last token.
-        super.inputStream.seek(t.startIndex)
-        this._interp.copyState((lastATNState as unknown) as LexerATNSimulator)
 
-        // Calculate token spans
-        result.span = Token.getSpan(result)
-        result.fullSpan = Token.getFullSpan(result)
+        // Reset to the start of the last token.
+        super.inputStream.seek(token.startIndex)
+        this._interp.copyState((lastATNState as unknown) as LexerATNSimulator)
 
         return result
     }
