@@ -12,6 +12,7 @@
     "exclude": [
         "**/*.d.ts",
         "**/*.generated.ts",
+        "**/.antlr/**",
         "**/scripts/**",
         "**/test/**"
     ],
