@@ -6,17 +6,11 @@
         "tsBuildInfoFile": ".tsbuildinfo",
         "outDir": "out",
         "rootDir": "src",
+        "strictNullChecks": true,
         "composite": true,
         "sourceMap": true
     },
     "include": [
         "src/**/*"
-    ],
-    "exclude": [
-        "node_modules"
-    ],
-    "references": [
-        { "path": "./@antlr4-tsplang" },
-        { "path": "./@tsplang-plugins" }
     ]
 }
