@@ -5,5 +5,5 @@
         "source-map-support/register"
     ],
     "spec": "server/test/*.test.ts",
-    "ui": "tdd"
+    "ui": "bdd"
 }

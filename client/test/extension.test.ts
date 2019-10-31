@@ -15,6 +15,6 @@
  */
 import "mocha"
 
-suite("Extension", function() {
-    test("TODO")
+describe("Extension", function() {
+    it("TODO")
 })
