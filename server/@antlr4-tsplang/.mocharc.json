@@ -4,6 +4,6 @@
         "ts-node/register",
         "source-map-support/register"
     ],
-    "spec": "server/antlr4-tsplang/test/*.test.ts",
-    "ui": "tdd"
+    "spec": "server/@antlr4-tsplang/test/*.test.ts",
+    "ui": "bdd"
 }

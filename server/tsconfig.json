@@ -16,6 +16,6 @@
         "node_modules"
     ],
     "references": [
-        { "path": "./antlr4-tsplang" }
+        { "path": "./@antlr4-tsplang" }
     ]
 }

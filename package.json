@@ -167,7 +167,7 @@
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "test": "npm run test:client && npm run test:antlr4-tsplang && npm run test:server",
         "test:client": "mocha --config client/.mocharc.json",
-        "test:antlr4-tsplang": "mocha --config server/antlr4-tsplang/.mocharc.json",
+        "test:antlr4-tsplang": "mocha --config server/@antlr4-tsplang/.mocharc.json",
         "test:server": "mocha --config server/.mocharc.json",
         "cover": "npm run cover:client && npm run cover:antlr4-tsplang && npm run cover:server && npm run cover:report",
         "cover:client": "nyc --silent npm run test:client",

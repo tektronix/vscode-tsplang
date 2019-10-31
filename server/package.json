@@ -14,14 +14,12 @@
         "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
     },
     "dependencies": {
-        "antlr4-tsplang": "file:antlr4-tsplang",
+        "antlr4-tsplang": "file:@antlr4-tsplang",
         "vscode-jsonrpc": "^4.0.0",
         "vscode-languageserver": "^5.2.1"
     },
     "scripts": {
-        "postinstall": "cd antlr4-tsplang && npm install && cd ..",
-        "test:antlr4-tsplang": "cd antlr4-tsplang & npm run test:antlr4-tsplang && cd ..",
-        "test:server": "mocha --config .mocharc.json"
+        "postinstall": "cd @antlr4-tsplang && npm install && cd .."
     },
     "devDependencies": {}
 }

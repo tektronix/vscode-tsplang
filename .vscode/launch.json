@@ -6,19 +6,19 @@
             "type": "antlr-debug",
             "request": "launch",
             "name": "Pretty Parse",
-            "input": "server/antlr4-tsplang/sandbox.lua",
+            "input": "server/@antlr4-tsplang/sandbox.lua",
             "startRule": "chunk",
             "visualParseTree": true,
-            "grammar": "server/antlr4-tsplang/Tsp.g4"
+            "grammar": "server/@antlr4-tsplang/Tsp.g4"
         },
         {
             "type": "antlr-debug",
             "request": "launch",
             "name": "Text Parse",
-            "input": "server/antlr4-tsplang/sandbox.lua",
+            "input": "server/@antlr4-tsplang/sandbox.lua",
             "startRule": "chunk",
             "visualParseTree": false,
-            "grammar": "server/antlr4-tsplang/Tsp.g4",
+            "grammar": "server/@antlr4-tsplang/Tsp.g4",
             "printParseTree": true,
             "internalConsoleOptions": "openOnSessionStart"
         },

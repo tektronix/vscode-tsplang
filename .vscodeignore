@@ -10,9 +10,9 @@ client/out/test/**
 client/src/**
 coverage/**
 node_modules/**
-server/antlr4-tsplang/out/test/**
-server/antlr4-tsplang/src/**
-server/antlr4-tsplang/scripts/**
+server/@antlr4-tsplang/out/test/**
+server/@antlr4-tsplang/src/**
+server/@antlr4-tsplang/scripts/**
 server/out/test/**
 server/src/**
 utils/**
