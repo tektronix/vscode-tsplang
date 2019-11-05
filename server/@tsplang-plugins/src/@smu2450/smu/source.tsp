@@ -1,6 +1,6 @@
 require("../smu.tsp")
 
-source = {
+smu.source = {
     --[[
         Get or set the active source function to {smu.FUNC_DC_CURRENT} or
         {smu.FUNC_DC_VOLTAGE}.
