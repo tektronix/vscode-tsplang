@@ -308,7 +308,7 @@ LONGCOMMENT
     ;
 
 LINE_COMMENT
-    : '--' .*? ('\r\n'|'\r'|'\n'|EOF) -> channel(HIDDEN)
+    : '--' .*? (VERTICAL_WS|EOF) -> channel(HIDDEN)
     ;
 
 HORIZONTAL_WS
