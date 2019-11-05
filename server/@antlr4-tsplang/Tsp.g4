@@ -46,6 +46,10 @@
  */
 grammar Tsp;
 
+@lexer::members {public tsp1 = true;}
+@parser::members {public get tsp1(): boolean { return !!this.inputStream.tokenSource["tsp1"]; }
+}
+
 chunk
     : (statement ';'?)* EOF
     ;
@@ -143,40 +147,41 @@ field
     ;
 
 operatorOr
-    : 'or';
-
+    : OR
+    ;
 operatorAnd
-    : 'and';
-
+    : AND
+    ;
 operatorComparison
-    : '<' | '>' | '<=' | '>=' | '~=' | '!=' | '==';
-
+    : '<' | '>' | '<=' | '>=' | NE | '=='
+    ;
 operatorBitwiseOr
-    : '|';
-
+    : BIT_OR
+    ;
 operatorBitwiseXor
-    : '^^';
-
+    : BIT_XOR
+    ;
 operatorBitwiseAnd
-    : '&';
-
+    : BIT_AND
+    ;
 operatorBitwiseShift
-    : '<<' | '>>';
-
+    : BIT_LS | BIT_RS
+    ;
 operatorStrcat
-    : '..';
-
+    : '..'
+    ;
 operatorAddSub
-    : '+' | '-';
-
+    : '+' | '-'
+    ;
 operatorMulDiv
-    : '*' | '/';
-
+    : '*' | '/'
+    ;
 operatorPower
-    : '^';
-
+    : '^'
+    ;
 operatorUnary
-    : 'not' | '-' | '!';
+    : 'not' | '-' | LOGICAL_NOT
+    ;
 
 number
     : INT | HEX | FLOAT
@@ -188,9 +193,32 @@ string
 
 // LEXER
 
-NIL
-    : 'nil'
+OR
+    : 'or';
+AND
+    : 'and';
+
+NE
+    : '~='
+    | {!this.tsp1}? '!='
     ;
+
+BIT_OR
+    : {!this.tsp1}? '|';
+BIT_XOR
+    : {!this.tsp1}? '^^';
+BIT_AND
+    : {!this.tsp1}? '&';
+BIT_LS
+    : {!this.tsp1}? '<<';
+BIT_RS
+    : {!this.tsp1}? '>>';
+
+LOGICAL_NOT
+    : {!this.tsp1}? '!';
+
+NIL
+    : 'nil';
 
 BOOLEAN
     : 'true'
@@ -198,12 +226,10 @@ BOOLEAN
     ;
 
 LOCAL
-    : 'local'
-    ;
+    : 'local';
 
 VARARG
-    : '...'
-    ;
+    : '...';
 
 NAME
     : [a-zA-Z_][a-zA-Z_0-9]*
