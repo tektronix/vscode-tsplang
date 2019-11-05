@@ -88,18 +88,18 @@ value
 expression
     : value
     | 'function' '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end'
-    | value (operatorOr
-        | operatorAnd
-        | operatorComparison
-        | operatorBitwiseOr
-        | operatorBitwiseXor
-        | operatorBitwiseAnd
-        | operatorBitwiseShift
-        | operatorStrcat
-        | operatorAddSub
-        | operatorMulDiv
-        | operatorPower) expression
+    | <assoc=right> value operatorPower expression
     | operatorUnary expression
+    | value (operatorMulDiv
+        | operatorBitwiseShift
+        | operatorAddSub
+        | operatorBitwiseAnd
+        | operatorBitwiseOr
+        | operatorBitwiseXor) expression
+    | <assoc=right> value operatorStrcat expression
+    | value (operatorComparison
+        | operatorAnd
+        | operatorOr) expression
     ;
 
 prefix
