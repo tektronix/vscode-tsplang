@@ -45,6 +45,7 @@
  *      http://lua-users.org/lists/lua-l/2010-12/msg00699.html
  */
 grammar Tsp;
+import CommonLexerRules;
 
 @lexer::members {public tsp1 = true;}
 @parser::members {public get tsp1(): boolean { return !!this.inputStream.tokenSource["tsp1"]; }
@@ -217,9 +218,6 @@ BIT_RS
 LOGICAL_NOT
     : {!this.tsp1}? '!';
 
-NIL
-    : 'nil';
-
 BOOLEAN
     : 'true'
     | 'false'
@@ -231,92 +229,12 @@ LOCAL
 VARARG
     : '...';
 
-NAME
-    : [a-zA-Z_][a-zA-Z_0-9]*
-    ;
-
-NORMALSTRING
-    : '"' ( EscapeSequence | ~('\\'|'"') )* '"'
-    ;
-
-CHARSTRING
-    : '\'' ( EscapeSequence | ~('\''|'\\') )* '\''
-    ;
-
-LONGSTRING
-    : '[' NestedString ']'
-    ;
-
-fragment
-NestedString
-    : '[' ( LONGSTRING | . )*? ']'
-    ;
-
-INT
-    : Digit+
-    ;
-
-HEX
-    : '0' [xX] HexDigit+
-    ;
-
-FLOAT
-    : Digit+ '.' Digit* ExponentPart?
-    | '.' Digit+ ExponentPart?
-    | Digit+ ExponentPart
-    ;
-
-fragment
-ExponentPart
-    : [eE] [+-]? Digit+
-    ;
-
-fragment
-EscapeSequence
-    : '\\' [abfnrtv"'\\]
-    | '\\' '['
-    | '\\' ']'
-    | '\\' '\r'? '\n'
-    | DecimalEscape
-    | HexEscape
-    ;
-
-fragment
-DecimalEscape
-    : '\\' Digit
-    | '\\' Digit Digit
-    | '\\' [0-2] Digit Digit
-    ;
-
-fragment
-HexEscape
-    : '\\' 'x' HexDigit HexDigit
-    ;
-
-fragment
-Digit
-    : [0-9]
-    ;
-
-fragment
-HexDigit
-    : [0-9a-fA-F]
-    ;
-
 LONGCOMMENT
     : '--[' NestedString ']' -> channel(HIDDEN)
     ;
 
 LINE_COMMENT
     : '--' .*? (VERTICAL_WS|EOF) -> channel(HIDDEN)
-    ;
-
-HORIZONTAL_WS
-    : [ \t\u000C]+ -> channel(HIDDEN)
-    ;
-
-VERTICAL_WS
-    : ('\r\n'|'\r'|'\n') -> channel(HIDDEN)
     ;
 
 SHEBANG
