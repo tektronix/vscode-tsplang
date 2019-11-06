@@ -13,16 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-grammar TspDoc;
-import CommonLexerRules;
+parser grammar TspDoc;
 
-/* PARSER */
+options { tokenVocab=TspDocLexer; }
 
 docstring
-    : OPEN description param* returns_ errata* CLOSE;
+    : OPEN DEPRECATED? description param* returns_ errata* CLOSE;
 
 content
-    : ~( TAG_START | CLOSE )*?;
+    : ( link content | ~( TAG_START | CLOSE ))*?;
+
+link
+    : LINK_TAG_START LINK_TAG_TARGET LINK_TAG_DISPLAY? LINK_TAG_END;
 
 description
     : DESCRIPTION? content;
@@ -31,16 +33,16 @@ param
     : PARAM typeDeclaration nameDeclaration content;
 
 typeDeclaration
-    : '{' (list | union) '}';
+    : CURLY_OPEN (list | union) CURLY_CLOSE;
 
 list
-    : '{' typeList '}';
+    : CURLY_OPEN typeList CURLY_CLOSE;
 
 union
-    : '(' typeList ')';
+    : PAREN_OPEN typeList PAREN_CLOSE;
 
 typeList
-    : type ((',' | ';') type)* (',' | ';')?;
+    : type ((COMMA | SEMICOLON) type)* (COMMA | SEMICOLON)?;
 
 type
     : NIL
@@ -55,24 +57,36 @@ type
     | ANY
     ;
 
-// typeDeclaration
+// end typeDeclaration
 
 nameDeclaration
-    : NAME
-    | '[' NAME '=' value ']'
+    : NAME                                          # NameRequired
+    | SQUARE_OPEN NAME EQUALS value SQUARE_CLOSE    # NameOptional
     ;
 
-// param
+// end param
 
 returns_
     : RETURNS typeDeclaration content;
 
 errata
-    : SEE content;
+    : SEE (NAME | link) # See
+    | TSPLINK           # Tsplink
+    ;
+
+seeList
+    : seeItem (COMMA seeItem)* (COMMA)?;
+
+seeItem
+    : NAME
+    | link
+    ;
+
+// end errata
 
 value
     : NIL
-    | 'true' | 'false'
+    | TRUE | FALSE
     | number
     | string
     | NAME
@@ -83,165 +97,3 @@ number
 
 string
     : NORMALSTRING | CHARSTRING;
-
-/* LEXER */
-
-OPEN
-    : '--[[';
-
-/* Tags */
-
-TAG_START
-    : '@';
-
-DESCRIPTION
-    : TAG_START 'description';
-
-PARAM
-    : TAG_START 'param';
-
-RETURNS
-    : TAG_START 'returns';
-
-SEE
-    : TAG_START 'see';
-
-TSPLINK
-    : TAG_START 'tsplink';
-
-/* Lua Types */
-
-// Included in CommonLexerRules.
-// NIL
-//     : 'nil';
-
-BOOLEAN
-    : Nilable 'boolean';
-
-NUMBER
-    : Nilable 'number';
-
-STRING
-    : Nilable 'string';
-
-FUNCTION
-    : Nilable 'function';
-
-USERDATA
-    : Nilable 'userdata';
-
-THREAD
-    : Nilable 'thread';
-
-TABLE
-    : Nilable 'table';
-
-/* Custom Types */
-
-ENUM
-    : Nilable NAME ('.' NAME)*;
-
-ANY
-    : '*';
-
-/* End */
-
-CLOSE
-    : ']]';
-
-/* Fragments */
-
-fragment
-Nilable
-    : '?'?;
-
-
-
-
-
-
-
-
-/* vvvv === DELETE EVERYTHING UNDER THIS === vvvv */
-NIL
-    : 'nil';
-
-NAME
-    : [a-zA-Z_][a-zA-Z_0-9]*
-    ;
-
-NORMALSTRING
-    : '"' ( EscapeSequence | ~('\\'|'"') )* '"'
-    ;
-
-CHARSTRING
-    : '\'' ( EscapeSequence | ~('\''|'\\') )* '\''
-    ;
-
-LONGSTRING
-    : '[' NestedString ']'
-    ;
-
-fragment
-NestedString
-    : '[' ( LONGSTRING | . )*? ']'
-    ;
-
-INT
-    : Digit+
-    ;
-
-HEX
-    : '0' [xX] HexDigit+
-    ;
-
-FLOAT
-    : Digit+ '.' Digit* ExponentPart?
-    | '.' Digit+ ExponentPart?
-    | Digit+ ExponentPart
-    ;
-
-fragment
-ExponentPart
-    : [eE] [+-]? Digit+
-    ;
-
-fragment
-EscapeSequence
-    : '\\' [abfnrtv"'\\]
-    | '\\' '['
-    | '\\' ']'
-    | '\\' '\r'? '\n'
-    | DecimalEscape
-    | HexEscape
-    ;
-
-fragment
-DecimalEscape
-    : '\\' Digit
-    | '\\' Digit Digit
-    | '\\' [0-2] Digit Digit
-    ;
-
-fragment
-HexEscape
-    : '\\' 'x' HexDigit HexDigit
-    ;
-
-fragment
-Digit
-    : [0-9]
-    ;
-
-fragment
-HexDigit
-    : [0-9a-fA-F]
-    ;
-
-HORIZONTAL_WS
-    : [ \t\u000C]+ -> channel(HIDDEN)
-    ;
-
-VERTICAL_WS
-    : ('\r\n'|'\r'|'\n') -> channel(HIDDEN)
-    ;
