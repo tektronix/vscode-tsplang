@@ -8,6 +8,7 @@
 
     @param {(function|number)} [f=1] A target function or the function at a
         given stack level as a number.
+
     @returns {table} The environment of the target function or stack level. If
         the given function is not a Lua function, or if f is 0, then the
         global environment is returned.

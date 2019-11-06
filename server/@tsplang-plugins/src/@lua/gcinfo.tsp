@@ -1,9 +1,9 @@
 --[[
-    Get an `inUse, threshold` tuple, where *inUse* is the number of kilobytes
-    of dynamic memory TSP is using and *threshold* is the current garbage
-    collector threshold in kilobytes.
+    Get a list containing garbage collection information. All values are in
+    kilobytes.
 
-    @returns {{1: number, 2: number}} Garbage collection information tuple.
+    @returns {{number, number}} A list containing TSP's memory usage and current
+        garbage collection threshold.
 ]]
 function gcinfo()
 end
