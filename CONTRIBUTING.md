@@ -39,7 +39,7 @@ Performs linting on all source files. Also performed during the `test` and `prep
 
 Executes unit tests located in [`test`](/test). Also performed during the `prepackage` script.
 
-### Coverage Mapping: `npm run test:coverage`
+### Coverage Mapping: `npm run cover`
 
 Runs unit tests and outputs a coverage map.
 
