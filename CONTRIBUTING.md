@@ -89,7 +89,7 @@ Watches Server files in [`server`](/server) and compiles any changes.
     * Run `npm run test`.
         * Ensure no linting errors are present.
         * All unit tests must pass.
-    * Run `npm run test:coverage`.
+    * Run `npm run cover`.
         * Coverage should be the same or better than when you started.
 * Commit your changes.
     * Each commit should be as limited in scope as possible.
