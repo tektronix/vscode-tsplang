@@ -1,12 +1,12 @@
 name: Code Extention CI
 
-on:
-  push:
-    branches:
-      - '**'
-  pull_request:
-    - 'master'
-    - 'dev'
+on: [push]
+  # push:
+  #   branches:
+  #     - '**'
+  # pull_request:
+  #   - 'master'
+  #   - 'dev'
   # TODO on create tag
 
 jobs:
@@ -48,7 +48,8 @@ jobs:
       - name: coverage export
         if: github.ref == 'master' || github.ref == 'dev'
         run: |
-          npm run cover:report # TODO send this to Codecov (for master and dev branch only)
+          npm run cover:report
+          # TODO send this to Codecov (for master and dev branch only)
           env:
             CI: true
       # - name: create package # TODO we need vsce for this
