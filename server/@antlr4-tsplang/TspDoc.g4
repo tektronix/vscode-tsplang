@@ -87,6 +87,12 @@ seeItem
     | link
     ;
 
+// TODO
+// constant
+// type
+// fw: ( LT | GTE )#.#.# COMMA? fw?
+// version: (@tsp-v1 (@v2 NAME (DOT NAME)*)? | @tsp-v2 (@v1 NAME (DOT NAME)*)?)
+
 // end errata
 
 typedef

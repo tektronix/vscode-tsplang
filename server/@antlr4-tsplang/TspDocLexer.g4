@@ -48,6 +48,15 @@ TYPEDEF
 FIELD
     : TAG_START 'field';
 
+// TODO
+// constant
+// type
+// fw
+// tsp-v1
+// tsp-v2
+// v1
+// v2
+
 /* Inline Tags */
 
 LINK_TAG_START
