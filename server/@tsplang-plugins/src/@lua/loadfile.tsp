@@ -12,7 +12,7 @@
         is returned; otherwise the list contains nil followed by an error
         message.
 
-    @see {@link ./assert | assert}
+    @see {@link assert}
 ]]
 function loadfile(filename)
 end
