@@ -28,8 +28,12 @@ jobs:
       - name: npm install
         run: |
           npm ci --ignore-scripts
-          cd client && npm ci && cd ..
-          cd server && npm ci && cd ..
+          cd client
+          npm ci
+          cd ..
+          cd server
+          npm ci
+          cd ..
         env:
           CI: true
       - name: build
