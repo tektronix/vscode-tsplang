@@ -18,7 +18,9 @@ parser grammar TspDoc;
 options { tokenVocab=TspDocLexer; }
 
 docstring
-    : OPEN DEPRECATED? description param* returns_ errata* CLOSE;
+    : OPEN DEPRECATED? description param* returns_? errata* CLOSE   # External
+    | OPEN DEPRECATED? description typedef field CLOSE              # Internal
+    ;
 
 content
     : ( link content | ~( TAG_START | CLOSE ))*?;
@@ -30,7 +32,10 @@ description
     : DESCRIPTION? content;
 
 param
-    : PARAM typeDeclaration nameDeclaration content;
+    : PARAM typeNameContent;
+
+typeNameContent
+    : typeDeclaration nameDeclaration content;
 
 typeDeclaration
     : CURLY_OPEN (list | union) CURLY_CLOSE;
@@ -70,19 +75,25 @@ returns_
     : RETURNS typeDeclaration content;
 
 errata
-    : SEE (NAME | link) # See
-    | TSPLINK           # Tsplink
+    : SEE seeList   # See
+    | TSPLINK       # Tsplink
     ;
 
 seeList
     : seeItem (COMMA seeItem)* (COMMA)?;
 
 seeItem
-    : NAME
+    : NAME (DOT NAME)*
     | link
     ;
 
 // end errata
+
+typedef
+    : TYPEDEF typeDeclaration NAME;
+
+field
+    : FIELD typeNameContent;
 
 value
     : NIL
