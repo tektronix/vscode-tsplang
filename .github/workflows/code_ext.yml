@@ -37,7 +37,7 @@ jobs:
       - name: style
         run: |
           npm run format
-          npm lint
+          npm run lint
         env:
           CI: true
       - name: test
