@@ -4,22 +4,22 @@ on:
   push:
     branches:
       - '**'
+    tags:
+      - *
   pull_request:
     branches:
       - 'master'
       - 'dev'
-  # TODO on create tag
-  # TODO on pull_request created for master or dev branch
 
 jobs:
   build:
-
-    runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         node-version: [10.x, 12.x]
+
+    runs-on: ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v1
@@ -27,6 +27,7 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+
       - name: npm install
         run: |
           npm ci --ignore-scripts
@@ -38,22 +39,26 @@ jobs:
           cd ..
         env:
           CI: true
+
       - name: build
         run: |
           npm run compile
         env:
           CI: true
+
       - name: style
         run: |
           npm run format
           npm run lint
         env:
           CI: true
+
       - name: test
         run: |
           npm run cover
         env:
           CI: true
+
       - name: coverage export
         if: github.ref == 'master' || github.ref == 'dev'
         run: |
@@ -61,12 +66,14 @@ jobs:
           # TODO send this to Codecov (for master and dev branch only)
         env:
           CI: true
-      # - name: create package # TODO we need vsce for this
+
+      # - name: create package
       #   if: false
       #   run: |
-      #     npm run package
+      #     npm run package # TODO we need vsce for this
       #   env:
       #     CI: true
+
       # - name: export package
       #   if: false
       #   uses: actions/upload-artifact@master
