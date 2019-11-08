@@ -7,6 +7,8 @@ smu.source = {
 
         When the active source function is changed, settings that are retained
         on a per-function basis are also changed.
+
+        @type {TODO}
     ]]
     func = smu.FUNC_DC_CURRENT
 }
