@@ -1,6 +1,6 @@
 name: Code Extention CI
 
-on: [push]
+on:
   push:
     branches:
       - '**'
