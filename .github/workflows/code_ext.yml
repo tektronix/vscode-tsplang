@@ -1,0 +1,70 @@
+name: Code Extention CI
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    - 'master'
+    - 'dev'
+  # TODO on create tag
+
+jobs:
+  build:
+
+    runs-on: [ubuntu-latest, windows-latest, macos-latest]
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x] # TODO get the correct version
+
+    steps:
+      - uses: actions/checkout@v1
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install
+        run: |
+          npm ci # TODO differnet script?
+          env:
+            CI: true
+      - name: build
+        run: |
+          npm run compile #TODO Different Script?
+          env:
+            CI: true
+      - name: style
+        run: |
+          npm run format
+          npm lint
+          env:
+            CI: true
+      - name: test
+        run: |
+          npm run cover #TODO Different script?
+          env:
+            CI: true
+      - name: coverage export
+        if: github.ref == 'master' || github.ref == 'dev'
+        run: |
+          npm run cover:report # TODO send this to Codecov (for master and dev branch only)
+          env:
+            CI: true
+      # - name: create package # TODO we need vsce for this
+      #   if: false
+      #   run: |
+      #     npm run package
+      #   env:
+      #     CI: true
+      # - name: export package
+      #   if: false
+      #   uses: actions/upload-artifact@master
+      #   with:
+      #     name: vscode-tsplang
+      #     path: vscode-tsplang*.vsix
+      #   run: |
+      #     npm run cover:report # TODO send this to Codecov (for master and dev branch only)
+      #     env:
+      #       CI: true
+
