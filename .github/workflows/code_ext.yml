@@ -8,6 +8,7 @@ on: [push]
   #   - 'master'
   #   - 'dev'
   # TODO on create tag
+  # TODO on pull_request created for master or dev branch
 
 jobs:
   build:
@@ -17,7 +18,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        node-version: [10.x, 12.x] # TODO get the correct version
+        node-version: [10.x, 12.x]
 
     steps:
       - uses: actions/checkout@v1
@@ -38,7 +39,7 @@ jobs:
           CI: true
       - name: build
         run: |
-          npm run compile #TODO Different Script?
+          npm run compile
         env:
           CI: true
       - name: style
@@ -49,7 +50,7 @@ jobs:
           CI: true
       - name: test
         run: |
-          npm run cover #TODO Different script?
+          npm run cover
         env:
           CI: true
       - name: coverage export
@@ -71,8 +72,4 @@ jobs:
       #   with:
       #     name: vscode-tsplang
       #     path: vscode-tsplang*.vsix
-      #   run: |
-      #     npm run cover:report # TODO send this to Codecov (for master and dev branch only)
-      #     env:
-      #       CI: true
 
