@@ -1,12 +1,13 @@
 name: Code Extention CI
 
 on: [push]
-  # push:
-  #   branches:
-  #     - '**'
-  # pull_request:
-  #   - 'master'
-  #   - 'dev'
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - 'master'
+      - 'dev'
   # TODO on create tag
   # TODO on pull_request created for master or dev branch
 
