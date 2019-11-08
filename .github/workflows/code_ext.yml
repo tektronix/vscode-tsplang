@@ -27,31 +27,31 @@ jobs:
       - name: npm install
         run: |
           npm ci # TODO differnet script?
-          env:
-            CI: true
+        env:
+          CI: true
       - name: build
         run: |
           npm run compile #TODO Different Script?
-          env:
-            CI: true
+        env:
+          CI: true
       - name: style
         run: |
           npm run format
           npm lint
-          env:
-            CI: true
+        env:
+          CI: true
       - name: test
         run: |
           npm run cover #TODO Different script?
-          env:
-            CI: true
+        env:
+          CI: true
       - name: coverage export
         if: github.ref == 'master' || github.ref == 'dev'
         run: |
           npm run cover:report
           # TODO send this to Codecov (for master and dev branch only)
-          env:
-            CI: true
+        env:
+          CI: true
       # - name: create package # TODO we need vsce for this
       #   if: false
       #   run: |
