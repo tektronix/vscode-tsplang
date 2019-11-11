@@ -126,8 +126,8 @@
         "grammars": [
             {
                 "language": "tsp",
-                "scopeName": "source.lua",
-                "path": "./third_party/syntaxes/Lua.plist"
+                "scopeName": "source.tsp",
+                "path": "./tsp.tmLanguage.json"
             }
         ]
     },

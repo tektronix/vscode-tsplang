@@ -1,0 +1,262 @@
+{
+    "COPYRIGHT_NOTICE": [
+        "This file is adapted by Tektronix from lua.tmLanguage.json at commit",
+        "    74c270e8878ceeed9a85e11b2621779eaa525bac",
+        "available at https://github.com/microsoft/vscode/tree/74c270e8878ceeed9a85e11b2621779eaa525bac/extensions/lua/syntaxes.",
+        "",
+        "Except as otherwise noted, the content of this file is licensed under the",
+        "MIT license. The text of the MIT license is reproduced below.",
+        "",
+        "----------------------------------------------------------------------------",
+        "",
+        "MIT License",
+        "",
+        "Copyright (c) 2015 - 2018 Microsoft Corporation",
+        "Copyright (c) 2019 Tektronix Inc.",
+        "",
+        "All rights reserved.",
+        "",
+        "Permission is hereby granted, free of charge, to any person obtaining a copy",
+        "of this software and associated documentation files (the \"Software\"), to deal",
+        "in the Software without restriction, including without limitation the rights",
+        "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
+        "copies of the Software, and to permit persons to whom the Software is",
+        "furnished to do so, subject to the following conditions:",
+        "",
+        "The above copyright notice and this permission notice shall be included in all",
+        "copies or substantial portions of the Software.",
+        "",
+        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR",
+        "IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,",
+        "FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE",
+        "AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER",
+        "LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,",
+        "OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE",
+        "SOFTWARE."
+    ],
+    "version": "https://github.com/microsoft/vscode/commit/74c270e8878ceeed9a85e11b2621779eaa525bac",
+    "name": "tsp",
+    "scopeName": "source.tsp",
+    "patterns": [
+        {
+            "begin": "\\b(?:(local)\\s+)?(function)\\s*(?:\\s+([a-zA-Z_][a-zA-Z0-9_]*(?:([\\.:])[a-zA-Z_][a-zA-Z0-9_]*)?)\\s*)?(\\()",
+            "beginCaptures": {
+                "1": {
+                    "name": "storage.modifier.local.tsp"
+                },
+                "2": {
+                    "name": "keyword.control.tsp"
+                },
+                "3": {
+                    "name": "entity.name.function.tsp"
+                },
+                "4": {
+                    "name": "punctuation.separator.parameter.tsp"
+                },
+                "5": {
+                    "name": "punctuation.definition.parameters.begin.tsp"
+                }
+            },
+            "end": "\\)",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.parameters.end.tsp"
+                }
+            },
+            "name": "meta.function.tsp",
+            "patterns": [
+                {
+                    "match": "[a-zA-Z_][a-zA-Z0-9_]*",
+                    "name": "variable.parameter.function.tsp"
+                },
+                {
+                    "match": ",",
+                    "name": "punctuation.separator.arguments.tsp"
+                }
+            ]
+        },
+        {
+            "match": "(?<![\\w\\d.])0[xX][0-9A-Fa-f]+(?![pPeE.0-9])",
+            "name": "constant.numeric.integer.hexadecimal.tsp"
+        },
+        {
+            "match": "(?<![\\w\\d.])0[xX][0-9A-Fa-f]+(\\.[0-9A-Fa-f]+)?([eE]-?\\d*)?([pP][-+]\\d+)?",
+            "name": "constant.numeric.float.hexadecimal.tsp"
+        },
+        {
+            "match": "(?<![\\w\\d.])\\d+(?![pPeE.0-9])",
+            "name": "constant.numeric.integer.tsp"
+        },
+        {
+            "match": "(?<![\\w\\d.])\\d+(\\.\\d+)?([eE]-?\\d*)?",
+            "name": "constant.numeric.float.tsp"
+        },
+        {
+            "begin": "'",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.begin.tsp"
+                }
+            },
+            "end": "'",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.end.tsp"
+                }
+            },
+            "name": "string.quoted.single.tsp",
+            "patterns": [
+                {
+                    "include": "#escaped_char"
+                }
+            ]
+        },
+        {
+            "begin": "\"",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.begin.tsp"
+                }
+            },
+            "end": "\"",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.end.tsp"
+                }
+            },
+            "name": "string.quoted.double.tsp",
+            "patterns": [
+                {
+                    "include": "#escaped_char"
+                }
+            ]
+        },
+        {
+            "begin": "(?<!--)\\[\\[",
+            "beginCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.begin.tsp"
+                }
+            },
+            "end": "\\]\\]",
+            "endCaptures": {
+                "0": {
+                    "name": "punctuation.definition.string.end.tsp"
+                }
+            },
+            "name": "string.quoted.other.multiline.tsp"
+        },
+        {
+            "captures": {
+                "1": {
+                    "name": "punctuation.definition.comment.tsp"
+                }
+            },
+            "match": "\\A(#!).*$\\n?",
+            "name": "comment.line.shebang.tsp"
+        },
+        {
+            "begin": "(^[ \\t]+)?(?=--)",
+            "beginCaptures": {
+                "1": {
+                    "name": "punctuation.whitespace.comment.leading.tsp"
+                }
+            },
+            "end": "(?!\\G)((?!^)[ \\t]+\\n)?",
+            "endCaptures": {
+                "1": {
+                    "name": "punctuation.whitespace.comment.trailing.tsp"
+                }
+            },
+            "patterns": [
+                {
+                    "begin": "--\\[\\[(?!\\[)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.begin.tsp"
+                        }
+                    },
+                    "end": "\\]\\]",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.end.tsp"
+                        }
+                    },
+                    "name": "comment.block.tsp"
+                },
+                {
+                    "begin": "--",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.tsp"
+                        }
+                    },
+                    "end": "\\n",
+                    "name": "comment.line.double-dash.tsp"
+                }
+            ]
+        },
+        {
+            "match": "\\b(break|do|else|for|if|elseif|return|then|repeat|while|until|end|function|local|in)\\b",
+            "name": "keyword.control.tsp"
+        },
+        {
+            "match": "(?<![^.]\\.|:)\\b(false|nil|true|_G|_VERSION|math\\.(pi|huge))\\b|(?<![.])\\.{3}(?!\\.)",
+            "name": "constant.language.tsp"
+        },
+        {
+            "match": "(?<![^.]\\.|:)\\b(self)\\b",
+            "name": "variable.language.self.tsp"
+        },
+        {
+            "match": "(?<![^.]\\.|:)\\b(assert|collectgarbage|dofile|error|gcinfo|getfenv|getmetatable|ipairs|loadfile|loadstring|next|pairs|pcall|print|rawequal|rawget|rawset|require|setfenv|setmetatable|tonumber|tostring|type|unpack|xpcall)\\b(?=\\s*(?:[({\"']|\\[\\[))",
+            "name": "support.function.tsp"
+        },
+        {
+            "match": "(?<![^.]\\.|:)\\b(coroutine\\.(create|resume|status|wrap|yield)|string\\.(byte|char|dump|find|format|gsub|len|lower|rep|sub|upper)|table\\.(concat|insert|remove|sort)|math\\.(abs|acos|asin|atan2?|ceil|cos|deg|exp|floor|frexp|ldexp|log|log10|max|min|pow|rad|random|randomseed|sin|sqrt|tan)|io\\.(close|flush|input|open|output|read|type|write)|os\\.(clock|date|difftime|execute|exit|getenv|remove|rename|setlocale|time|tmpname)|debug\\.(debug|[gs]ethook|getinfo|[gs]etlocal|[gs]etupvalue|traceback))\\b(?=\\s*(?:[({\"']|\\[\\[))",
+            "name": "support.function.library.tsp"
+        },
+        {
+            "match": "\\b(and|or|not)\\b",
+            "name": "keyword.operator.tsp"
+        },
+        {
+            "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\b(?=\\s*(?:[({\"']|\\[\\[))",
+            "name": "support.function.any-method.tsp"
+        },
+        {
+            "match": "(?<=[^.]\\.|:)\\b([a-zA-Z_][a-zA-Z0-9_]*)",
+            "name": "variable.other.tsp"
+        },
+        {
+            "match": "\\+|-|\\*|\\/|\\^\\^?|==?|~=|!=?|<(<|=)?|>(>|=)?|\\||&|(?<!\\.)\\.{2}(?!\\.)",
+            "name": "keyword.operator.tsp"
+        }
+    ],
+    "repository": {
+        "escaped_char": {
+            "patterns": [
+                {
+                    "match": "\\\\[abfnrtvz\\\\\"'\\n]",
+                    "name": "constant.character.escape.tsp"
+                },
+                {
+                    "match": "\\\\\\d{1,3}",
+                    "name": "constant.character.escape.byte.tsp"
+                },
+                {
+                    "match": "\\\\x[0-9A-Fa-f][0-9A-Fa-f]",
+                    "name": "constant.character.escape.byte.tsp"
+                },
+                {
+                    "match": "\\\\u\\{[0-9A-Fa-f]+\\}",
+                    "name": "constant.character.escape.unicode.tsp"
+                },
+                {
+                    "match": "\\\\.",
+                    "name": "invalid.illegal.character.escape.tsp"
+                }
+            ]
+        }
+    }
+}
