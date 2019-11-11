@@ -4,6 +4,11 @@
         "    74c270e8878ceeed9a85e11b2621779eaa525bac",
         "available at https://github.com/microsoft/vscode/tree/74c270e8878ceeed9a85e11b2621779eaa525bac/extensions/lua/syntaxes.",
         "",
+        "It includes content for docstring highlighting adapted by Tektronix from",
+        "JavaScript.tmLanguage.json at commit",
+        "    56d3f0acf27ac43140164ded85266d017b568027",
+        "available at https://github.com/microsoft/vscode/tree/56d3f0acf27ac43140164ded85266d017b568027/extensions/javascript/syntaxes.",
+        "",
         "Except as otherwise noted, the content of this file is licensed under the",
         "MIT license. The text of the MIT license is reproduced below.",
         "",
@@ -170,6 +175,26 @@
             },
             "patterns": [
                 {
+                    "name": "comment.block.documentation.tsp",
+                    "begin": "--\\[\\[\\[",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.begin.tsp"
+                        }
+                    },
+                    "end": "\\]\\]",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.comment.end.tsp"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#docblock"
+                        }
+                    ]
+                },
+                {
                     "begin": "--\\[\\[(?!\\[)",
                     "beginCaptures": {
                         "0": {
@@ -234,6 +259,193 @@
         }
     ],
     "repository": {
+        "brackets": {
+            "patterns": [
+                {
+                    "begin": "{",
+                    "end": "}|(?=\\]\\])",
+                    "patterns": [
+                        {
+                            "include": "#brackets"
+                        }
+                    ]
+                },
+                {
+                    "begin": "\\(",
+                    "end": "\\)|(?=\\]\\])",
+                    "patterns": [
+                        {
+                            "include": "#brackets"
+                        }
+                    ]
+                }
+            ]
+        },
+        "docblock": {
+            "patterns": [
+                {
+                    "match": "(?x)\n((@)author)\n\\s+\n(\n  [^@\\s<>*/]\n  (?:[^@<>*/]|\\*[^/])*\n)\n(?:\n  \\s*\n  (<)\n  ([^>\\s]+)\n  (>)\n)?",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        },
+                        "3": {
+                            "name": "entity.name.type.instance.tspdoc"
+                        },
+                        "4": {
+                            "name": "punctuation.definition.bracket.angle.begin.tspdoc"
+                        },
+                        "5": {
+                            "name": "constant.other.email.link.underline.tspdoc"
+                        },
+                        "6": {
+                            "name": "punctuation.definition.bracket.angle.end.tspdoc"
+                        }
+                    }
+                },
+                {
+                    "match": "(?x)\n((@)see)\n\\s+\n(?:\n  # URL\n  (\n    (?=https?://)\n    (?:[^\\s*]|\\*[^/])+\n  )\n  |\n  # tspdoc namepath\n  (\n    (?!\n      # Avoid matching bare URIs (also acceptable as links)\n      https?://\n      |\n      # Avoid matching {@inline tags}; we match those below\n      (?:\\[[^\\[\\]]*\\])? # Possible description [preceding]{@tag}\n      {@(?:link|linkcode|linkplain|tutorial)\\b\n    )\n    # Matched namepath\n    (?:[^@\\s*/]|\\*[^/])+\n  )\n)",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        },
+                        "3": {
+                            "name": "variable.other.link.underline.tspdoc"
+                        },
+                        "4": {
+                            "name": "entity.name.type.instance.tspdoc"
+                        }
+                    }
+                },
+                {
+                    "comment": "@tag nameDeclaration",
+                    "match": "(?x)\n(\n  (@)\n  (?:const|constant|field|param|parameter|typedef)\n)\n\\s+\n(\n  [A-Za-z_]\n  [\\w.]*\n)",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        },
+                        "3": {
+                            "name": "variable.other.tspdoc"
+                        }
+                    }
+                },
+                {
+                    "begin": "((@)typedef)\\s+(?={)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        }
+                    },
+                    "end": "(?=\\s|\\]\\]|[^{}\\[\\]A-Za-z_$])",
+                    "patterns": [
+                        {
+                            "include": "#tspdoctype"
+                        },
+                        {
+                            "name": "entity.name.type.instance.tspdoc",
+                            "match": "(?:[^@\\s*/]|\\*[^/])+"
+                        }
+                    ]
+                },
+                {
+                    "begin": "((@)(?:arg|argument|const|constant|member|namespace|param|prop|property|var))\\s+(?={)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        }
+                    },
+                    "end": "(?=\\s|\\]\\]|[^{}\\[\\]A-Za-z_$])",
+                    "patterns": [
+                        {
+                            "include": "#tspdoctype"
+                        },
+                        {
+                            "name": "variable.other.tspdoc",
+                            "match": "([A-Za-z_$][\\w$.\\[\\]]*)"
+                        },
+                        {
+                            "name": "variable.other.tspdoc",
+                            "match": "(?x)\n(\\[)\\s*\n[\\w$]+\n(?:\n  (?:\\[\\])?                                        # Foo[ ].bar properties within an array\n  \\.                                                # Foo.Bar namespaced parameter\n  [\\w$]+\n)*\n(?:\n  \\s*\n  (=)                                                # [foo=bar] Default parameter value\n  \\s*\n  (\n    # The inner regexes are to stop the match early at */ and to not stop at escaped quotes\n    (?>\n      \"(?:(?:\\*(?!/))|(?:\\\\(?!\"))|[^*\\\\])*?\" |                      # [foo=\"bar\"] Double-quoted\n      '(?:(?:\\*(?!/))|(?:\\\\(?!'))|[^*\\\\])*?' |                      # [foo='bar'] Single-quoted\n      \\[ (?:(?:\\*(?!/))|[^*])*? \\] |                                # [foo=[1,2]] Array literal\n      (?:(?:\\*(?!/))|\\s(?!\\s*\\])|\\[.*?(?:\\]|(?=\\]\\]))|[^*\\s\\[\\]])*   # Everything else\n    )*\n  )\n)?\n\\s*(?:(\\])((?:[^*\\s]|\\*[^\\s/])+)?|(?=\\]\\]))",
+                            "captures": {
+                                "1": {
+                                    "name": "punctuation.definition.optional-value.begin.bracket.square.tspdoc"
+                                },
+                                "2": {
+                                    "name": "keyword.operator.assignment.tspdoc"
+                                },
+                                "3": {
+                                    "name": "source.embedded.js"
+                                },
+                                "4": {
+                                    "name": "punctuation.definition.optional-value.end.bracket.square.tspdoc"
+                                },
+                                "5": {
+                                    "name": "invalid.illegal.syntax.tspdoc"
+                                }
+                            }
+                        }
+                    ]
+                },
+                {
+                    "begin": "(?x)\n(\n  (@)\n  (?:define|enum|exception|export|extends|lends|implements|modifies\n  |namespace|private|protected|returns?|suppress|this|throws|type\n  |yields?)\n)\n\\s+(?={)",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        }
+                    },
+                    "end": "(?=\\s|\\]\\]|[^{}\\[\\]A-Za-z_$])",
+                    "patterns": [
+                        {
+                            "include": "#tspdoctype"
+                        }
+                    ]
+                },
+                {
+                    "match": "(?x)\n(\n  (@)\n  (?:alias|augments|callback|constructs|emits|event|fires|exports?\n  |extends|external|function|func|host|lends|listens|interface|memberof!?\n  |method|module|mixes|mixin|name|requires|see|this|typedef|uses)\n)\n\\s+\n(\n  (?:\n    [^{}@\\s*] | \\*[^/]\n  )+\n)",
+                    "captures": {
+                        "1": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        },
+                        "3": {
+                            "name": "entity.name.type.instance.tspdoc"
+                        }
+                    }
+                },
+                {
+                    "name": "storage.type.class.tspdoc",
+                    "match": "(?x) (@) (?:const(?:ant)? |deprecated|desc(?:ription)? |field|fw|firmware |param(?:eter)? |read[Oo]nly|returns? |see |tsp-(?:v1|v2)|tsplink|type|typedef |v(?:1|2) |write[Oo]nly) \\b",
+                    "captures": {
+                        "1": {
+                            "name": "punctuation.definition.block.tag.tspdoc"
+                        }
+                    }
+                },
+                {
+                    "include": "#inline-tags"
+                }
+            ]
+        },
         "escaped_char": {
             "patterns": [
                 {
@@ -255,6 +467,85 @@
                 {
                     "match": "\\\\.",
                     "name": "invalid.illegal.character.escape.tsp"
+                }
+            ]
+        },
+        "inline-tags": {
+            "patterns": [
+                {
+                    "name": "entity.name.type.instance.tspdoc",
+                    "begin": "({)((@)(?:link))\\s*",
+                    "beginCaptures": {
+                        "1": {
+                            "name": "punctuation.definition.bracket.curly.begin.tspdoc"
+                        },
+                        "2": {
+                            "name": "storage.type.class.tspdoc"
+                        },
+                        "3": {
+                            "name": "punctuation.definition.inline.tag.tspdoc"
+                        }
+                    },
+                    "end": "}|(?=\\]\\])",
+                    "endCaptures": {
+                        "0": {
+                            "name": "punctuation.definition.bracket.curly.end.tspdoc"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "match": "\\G((?=https?://)(?:[^|}\\s*]|\\*[/])+)(\\|)?",
+                            "captures": {
+                                "1": {
+                                    "name": "variable.other.link.underline.tspdoc"
+                                },
+                                "2": {
+                                    "name": "punctuation.separator.pipe.tspdoc"
+                                }
+                            }
+                        },
+                        {
+                            "match": "\\G((?:[^{}@\\s|*]|\\*[^/])+)(\\|)?",
+                            "captures": {
+                                "1": {
+                                    "name": "variable.other.description.tspdoc"
+                                },
+                                "2": {
+                                    "name": "punctuation.separator.pipe.tspdoc"
+                                }
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "tspdoctype": {
+            "patterns": [
+                {
+                    "contentName": "entity.name.type.instance.tspdoc",
+                    "begin": "\\G({)",
+                    "beginCaptures": {
+                        "0": {
+                            "name": "entity.name.type.instance.tspdoc"
+                        },
+                        "1": {
+                            "name": "punctuation.definition.bracket.curly.begin.tspdoc"
+                        }
+                    },
+                    "end": "((}))\\s*|(?=\\]\\])",
+                    "endCaptures": {
+                        "1": {
+                            "name": "entity.name.type.instance.tspdoc"
+                        },
+                        "2": {
+                            "name": "punctuation.definition.bracket.curly.end.tspdoc"
+                        }
+                    },
+                    "patterns": [
+                        {
+                            "include": "#brackets"
+                        }
+                    ]
                 }
             ]
         }
