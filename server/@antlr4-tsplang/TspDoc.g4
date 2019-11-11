@@ -18,8 +18,9 @@ parser grammar TspDoc;
 options { tokenVocab=TspDocLexer; }
 
 docstring
-    : OPEN DEPRECATED? description param* returns_? errata* CLOSE   # External
-    | OPEN DEPRECATED? description typedef field CLOSE              # Internal
+    : OPEN DEPRECATED_TAG? description param* returns_? errata* CLOSE                                       # Function
+    | OPEN DEPRECATED_TAG? description (READONLY_TAG | WRITEONLY_TAG)? (TYPE_TAG typeDeclaration)? CLOSE    # Property
+    | OPEN DEPRECATED_TAG? description typedef field* CLOSE                                                 # TypeDef
     ;
 
 content
@@ -29,16 +30,16 @@ link
     : LINK_TAG_START LINK_TAG_TARGET LINK_TAG_DISPLAY? LINK_TAG_END;
 
 description
-    : DESCRIPTION? content;
+    : DESCRIPTION_TAG? content;
 
 param
-    : PARAM typeNameContent;
+    : PARAM_TAG typeNameContent;
 
 typeNameContent
     : typeDeclaration nameDeclaration content;
 
 typeDeclaration
-    : CURLY_OPEN (list | union) CURLY_CLOSE;
+    : CURLY_OPEN (list | union | type) CURLY_CLOSE;
 
 list
     : CURLY_OPEN typeList CURLY_CLOSE;
@@ -54,12 +55,13 @@ type
     | BOOLEAN
     | NUMBER
     | STRING
-    | FUNCTION
+    | FUNCTION (PAREN_OPEN typeList* PAREN_CLOSE RETURN_ARROW type)?
     | USERDATA
     | THREAD
     | TABLE
     | ENUM
     | ANY
+    | NAME
     ;
 
 // end typeDeclaration
@@ -72,11 +74,14 @@ nameDeclaration
 // end param
 
 returns_
-    : RETURNS typeDeclaration content;
+    : RETURNS_TAG typeDeclaration content;
 
 errata
-    : SEE seeList   # See
-    | TSPLINK       # Tsplink
+    : SEE_TAG seeList   # See
+    | TSPLINK_TAG       # Tsplink
+    | CONSTANT_TAG      # Constant
+    | fw                # Firmware
+    | ver               # Version
     ;
 
 seeList
@@ -85,6 +90,14 @@ seeList
 seeItem
     : NAME (DOT NAME)*
     | link
+    ;
+
+fw
+    : (LT | GTE) INT DOT INT DOT INT COMMA? fw?;
+
+ver
+    : TSPV1_TAG (V2_TAG NAME (DOT NAME)*)?  # Version1
+    | TSPV2_TAG (V1_TAG NAME (DOT NAME)*)?  # Version2
     ;
 
 // TODO
@@ -96,10 +109,10 @@ seeItem
 // end errata
 
 typedef
-    : TYPEDEF typeDeclaration NAME;
+    : TYPEDEF_TAG typeDeclaration NAME;
 
 field
-    : FIELD typeNameContent;
+    : FIELD_TAG typeNameContent;
 
 value
     : NIL

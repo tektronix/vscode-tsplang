@@ -17,45 +17,63 @@ lexer grammar TspDocLexer;
 import CommonLexerRules;
 
 OPEN
-    : '--[[';
+    : '--[[[';
 
 /* Tags */
 
 TAG_START
     : '@';
 
-DEPRECATED
+DEPRECATED_TAG
     : TAG_START 'deprecated';
 
-DESCRIPTION
-    : TAG_START 'description';
+DESCRIPTION_TAG
+    : TAG_START ('desc'|'description');
 
-PARAM
-    : TAG_START 'param';
+PARAM_TAG
+    : TAG_START ('param'|'parameter');
 
-RETURNS
-    : TAG_START 'returns';
+RETURNS_TAG
+    : TAG_START 'return' 's'?;
 
-SEE
+SEE_TAG
     : TAG_START 'see';
 
-TSPLINK
+TSPLINK_TAG
     : TAG_START 'tsplink';
 
-TYPEDEF
+TYPEDEF_TAG
     : TAG_START 'typedef';
 
-FIELD
+FIELD_TAG
     : TAG_START 'field';
 
-// TODO
-// constant
-// type
-// fw
-// tsp-v1
-// tsp-v2
-// v1
-// v2
+READONLY_TAG
+    : TAG_START 'read' [Oo] 'nly';
+
+WRITEONLY_TAG
+    : TAG_START 'write' [Oo] 'nly';
+
+CONSTANT_TAG
+    : TAG_START ('const'|'constant');
+
+TYPE_TAG
+    : TAG_START 'type';
+
+FW_TAG
+    : TAG_START ('fw'|'firmware');
+
+TSPV1_TAG
+    : TAG_START 'tsp-v1';
+
+TSPV2_TAG
+    : TAG_START 'tsp-v2';
+
+V1_TAG
+    : TAG_START 'v1';
+
+V2_TAG
+    : TAG_START 'v2';
 
 /* Inline Tags */
 
@@ -68,30 +86,30 @@ LINK_TAG_START
 // NIL is imported from CommonLexerRules.
 
 BOOLEAN
-    : Nilable 'boolean';
+    : Nilable? 'boolean';
 
 NUMBER
-    : Nilable 'number';
+    : Nilable? 'number';
 
 STRING
-    : Nilable 'string';
+    : Nilable? 'string';
 
 FUNCTION
-    : Nilable 'function';
+    : Nilable? 'function';
 
 USERDATA
-    : Nilable 'userdata';
+    : Nilable? 'userdata';
 
 THREAD
-    : Nilable 'thread';
+    : Nilable? 'thread';
 
 TABLE
-    : Nilable 'table';
+    : Nilable? 'table';
 
 /* Custom Type Strings */
 
 ENUM
-    : Nilable NAME ('.' NAME)*;
+    : Nilable? NAME ('.' NAME)*;
 
 ANY
     : '*';
@@ -131,12 +149,18 @@ SQUARE_CLOSE
     : ']';
 TRUE
     : 'true';
+LT
+    : '<';
+GTE
+    : '>=';
+RETURN_ARROW
+    : '=>';
 
 /* Fragments */
 
 fragment
 Nilable
-    : '?'?;
+    : '?';
 
 /* Inline Link Mode */
 mode LINK_MODE;
