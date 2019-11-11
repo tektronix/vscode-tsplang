@@ -37,9 +37,9 @@ jobs:
           cd ..
           cd server
           npm ci --ignore-scripts
-          cd antlr4-tsplang
+          cd @antlr4-tsplang
           npm ci --ignore-scripts
-          cd ../tsplang-plugins
+          cd ../@tsplang-plugins
           npm ci --ignore-scripts
           cd ..
         env:
