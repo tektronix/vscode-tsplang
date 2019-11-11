@@ -7,14 +7,14 @@
     ```
 
     @param {string} chunkString The string to load.
-    @param {string} chunkName Optional name to use in error messages and debug
+    @param {?string} chunkName Optional name to use in error messages and debug
         information.
 
     @returns {{?function, ?string}} If loaded successfully, then only the chunk
         is returned; otherwise the list contains nil followed by an error
         message.
 
-    @see {@link ./assert | assert}
+    @see {@link assert}
 ]]
 function loadstring(chunkString, chunkName)
 end

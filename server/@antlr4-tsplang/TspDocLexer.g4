@@ -42,6 +42,23 @@ SEE
 TSPLINK
     : TAG_START 'tsplink';
 
+TYPEDEF
+    : TAG_START 'typedef';
+
+FIELD
+    : TAG_START 'field';
+
+// TODO
+// constant
+// type
+// fw
+// tsp-v1
+// tsp-v2
+// v1
+// v2
+
+/* Inline Tags */
+
 LINK_TAG_START
     : '{' HORIZONTAL_WS? TAG_START 'link' -> pushMode(LINK_MODE)
     ;
@@ -96,6 +113,8 @@ CURLY_CLOSE
     : '}';
 COMMA
     : ',';
+DOT
+    : '.';
 EQUALS
     : '=';
 FALSE

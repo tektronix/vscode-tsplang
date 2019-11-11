@@ -1,72 +1,27 @@
 #!/usr/bin/env node
-// const fsExistsSync = require("fs").existsSync
-// const fsStatSync = require("fs").statSync
-const fs = require("fs").promises
+const fs = require("fs")
 const path = require("path")
 const process = require("process")
 
-// new Map([
-//     [
-//         "../.antlr/TspLexer.ts",
-//         {
-//             destdir: "../src",
-//             replace: [[, 'from "$1.generated"']],
-//         },
-//     ],
-//     [
-//         "../.antlr/TspParser.ts",
-//         {
-//             dest: "../src/TspParser.generated.ts",
-//             replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
-//         },
-//     ],
-//     [
-//         "../.antlr/TspListener.ts",
-//         {
-//             dest: "../src/TspListener.generated.ts",
-//             replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
-//         },
-//     ],
-//     [
-//         "../.antlr/TspVisitor.ts",
-//         {
-//             dest: "../src/TspVisitor.generated.ts",
-//             replace: [[/from ["'](\.\/.*)["']/g, 'from "$1.generated"']],
-//         },
-//     ],
-// ]).forEach((obj, src) => {
-//     name = path.basename(process.argv[1], ".ts")
-//     fullsrc = path.resolve(src)
-//     fulldest = path.resolve(fullsrc, obj.dest)
+const scriptName = path.basename(process.argv[1], ".js")
 
-//     if (fsExistsSync(fullsrc)) {
-//         console.log(`${name}: ${fullsrc}`)
-//         fs.readFile(fullsrc, {
-//             encoding: "utf8"
-//         }).then((content) => {
-//             if (!obj.replace) {
-//                 obj.replace = []
-//             }
+/**
+ * Contains the conditions and context for a `String.replace` call.
+ * @typedef Edit
+ * @property {() => boolean} [doEdit=]
+ * An optional callback that determines whether to apply an edit.
+ * The edit is always applied if left undefined.
+ * @property {RegExp} regexp What should be edited.
+ * @property {string} replacement A Regular Expression replacement string.
+ */
 
-//             let modifiedContent = content
-//             obj.replace.forEach((replaceArgs) => {
-//                 modifiedContent = modifiedContent.replace(...replaceArgs)
-//             })
-
-//             return fs.writeFile(obj.path, modifiedContent)
-//         }).then(() => {
-//             return fs.unlink(src)
-//         }).catch((reason) => {
-//             console.error(reason)
-//             process.exit(1)
-//         })
-//     } else {
-//         console.log(`${name}: skipping ${fullsrc}`)
-//     }
-// })
-
-const scriptName = path.basename(process.argv[1], ".ts")
-
+/**
+ * @typedef Recipe
+ * @property {string} sourceDirectory Where to find the target files.
+ * @property {string} sourceExtension The file extension of the source files.
+ * @property {string} destinationDirectory Where to write the output files.
+ * @property {Array<Edit>} edits Changes to apply to a file before being output.
+ */
 const recipe = {
     sourceDirectory: "../.antlr/",
     sourceExtension: ".ts",
@@ -75,101 +30,74 @@ const recipe = {
         {
             regexp: /from ["'](\.\/.*)["']/g,
             replacement: 'from "$1.generated"'
+        },
+        {
+            doEdit: () => process.platform === "win32",
+            regexp: /\r\n/g,
+            replacement: '\n'
         }
     ]
 }
 
-fs.readdir(path.resolve(recipe.sourceDirectory))
-.then(value => {
-    // Get an array of files that end with the desired extension.
-    // return value
-    //     .filter(async (candidate) => (await fs.stat(candidate)).isFile())
-    //     .filter(candidate => path.extname(candidate) === recipe.sourceExtension)
-    return [path.resolve("../asdf")]
-})
-.then(tsFiles => {
-    // Read each source file and package the content with its file path.
-    return tsFiles.map(source => {
-        const content = fs.readFile(source, { encoding: "utf-8" })
-            .then(value => {
-                console.log(`${scriptName} <-- ${source}`)
-                return value
-            })
-            .catch(reason => {
-                console.log(`${scriptName} x-- ${source}`)
-                console.error(reason)
-            })
+// Get a list of absolute filepaths to TypeScript files.
+const tsFiles = fs
+    .readdirSync(path.resolve(recipe.sourceDirectory))
+    .map(filename => path.resolve(recipe.sourceDirectory, filename))
+    .filter(candidate => fs.statSync(candidate).isFile())
+    .filter(candidate => path.extname(candidate) === recipe.sourceExtension)
 
-        return {
-            content,
-            source,
-            destination: "",
+let successful = true
+
+tsFiles.forEach(source => {
+    let content;
+
+    // Read the contents of each TypeScript file found.
+    try {
+        content = fs.readFileSync(source, { encoding: "utf-8" })
+        console.log(`${scriptName} <-- ${source}`)
+    } catch (reason) {
+        console.log(`${scriptName} x-- ${source}`)
+        console.error(`${reason}\n`)
+        successful = false
+        return
+    }
+
+    // Apply edits to the file content if the edit predicate either
+    // does not exist or returns true.
+    recipe.edits.forEach(edit => {
+        if (edit.doEdit === undefined || edit.doEdit()) {
+            content = content.replace(edit.regexp, edit.replacement)
         }
     })
-})
-.then(sourceContents => {
-    // Edit the content of each object.
-    return sourceContents.map(sourceObj => {
-        return recipe.edits.reduce((editedValue, edit) => {
-            const content = editedValue.content
-                .then(resolvedContent => {
-                    const result = resolvedContent || ""
-                    return result.replace(edit.regexp, edit.replacement)
-                })
 
-            return {
-                content,
-                destination: "",
-                source: editedValue.source,
-            }
-        }, sourceObj)
-    })
-})
-.then(sourceContents => {
-    // Calculate the absolute path to the destination file and
-    // package the result with the source-content object.
-    return sourceContents.map(sourceObj => {
-        const basename = path.basename(sourceObj.source, ".ts")
-        sourceObj.destination = path.resolve(
-            path.dirname(sourceObj.source),
-            recipe.destinationDirectory,
-            `${basename}.generated.ts`
-        )
-        return sourceObj
-    })
-})
-.then(sourceContents => {
-    // Write the contents of the file to the destination.
-    // Return an array of source files to delete.
-    return sourceContents.map(async sourceObj => {
-        const result = await sourceObj.content
-        return fs.writeFile(sourceObj.destination, result, {
-            encoding: "utf-8"
-        })
-        .then(() => {
-            console.log(`${scriptName} --> ${sourceObj.destination}`)
-            return sourceObj.source
-        })
-        .catch(reason => {
-            console.log(`${scriptName} --x ${sourceObj.destination}`)
-            console.error(reason)
-        })
-        .then(value => value || "")
-    })
-})
-.then(tsFiles => {
-    // Delete the files.
-    tsFiles.forEach(async value => {
-        const target = await value
+    // Calculate the absolute path to the destination TypeScript file.
+    const sourceBasename = path.basename(source, recipe.sourceExtension)
+    const destination = path.resolve(
+        path.dirname(source),
+        recipe.destinationDirectory,
+        `${sourceBasename}.generated${recipe.sourceExtension}`
+    )
 
-        if (target === "") {
-            return
-        }
+    // Write the modified file contents to the destination filepath.
+    try {
+        fs.writeFileSync(destination, content, { encoding: "utf-8" })
+        console.log(`${scriptName} --> ${destination}\n`)
+    } catch (reason) {
+        console.log(`${scriptName} --x ${destination}`)
+        console.error(`${reason}\n`)
+        successful = false
+        return
+    }
 
-        fs.unlink(value).catch(reason => { console.error(reason) })
-    })
+    // Delete the source file.
+    try {
+        fs.unlinkSync(source)
+    } catch (reason) {
+        console.error(`${reason}\n`)
+        successful = false
+    }
 })
-.catch(reason => {
-    console.error(reason)
+
+if (!successful) {
     process.exit(1)
-})
+}
