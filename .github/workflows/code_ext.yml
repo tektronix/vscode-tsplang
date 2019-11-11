@@ -23,6 +23,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
@@ -35,7 +36,11 @@ jobs:
           npm ci
           cd ..
           cd server
-          npm ci
+          npm ci --ignore-scripts
+          cd antlr4-tsplang
+          npm ci --ignore-scripts
+          cd ../tsplang-plugins
+          npm ci --ignore-scripts
           cd ..
         env:
           CI: true
@@ -48,7 +53,6 @@ jobs:
 
       - name: style
         run: |
-          npm run format
           npm run lint
         env:
           CI: true
