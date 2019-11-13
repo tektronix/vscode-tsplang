@@ -34,7 +34,7 @@ const recipe = {
         {
             doEdit: () => process.platform === "win32",
             regexp: /\r\n/g,
-            replacement: '\n'
+            replacement: "\n"
         }
     ]
 }
