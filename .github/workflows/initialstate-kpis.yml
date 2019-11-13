@@ -3,6 +3,7 @@ on:
   push:
     branches:
     - master
+    # TODO: other branches. See https://github.com/tektronix/initialstate-kpi-streamer/issues/5
 jobs:
   build:
     runs-on: ubuntu-latest
