@@ -1,4 +1,5 @@
---[[
+
+--[[[
     Sets the garbage-collection threshold to the given limit (in Kbytes) and
     checks it against the byte counter. If the new threshold is smaller than
     the byte counter, then Lua immediately runs the garbage collector. If

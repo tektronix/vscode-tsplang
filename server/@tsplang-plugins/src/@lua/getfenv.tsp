@@ -1,4 +1,5 @@
---[[
+
+--[[[
     Get the current environment in use by the function.
 
     If the environment has a "__fenv" field, its associated value is returned
