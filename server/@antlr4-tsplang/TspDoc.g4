@@ -18,112 +18,126 @@ parser grammar TspDoc;
 options { tokenVocab=TspDocLexer; }
 
 docstring
-    : OPEN DEPRECATED_TAG? description param* returns_? errata* CLOSE                                       # Function
-    | OPEN DEPRECATED_TAG? description (READONLY_TAG | WRITEONLY_TAG)? (TYPE_TAG typeDeclaration)? CLOSE    # Property
-    | OPEN DEPRECATED_TAG? description typedef field* CLOSE                                                 # TypeDef
+    : OPEN docblock CLOSE;
+
+docblock
+    : (docDeprecated
+        | docDescription
+        | docParameter
+        | docReturns
+        | docReadonly
+        | docWriteonly
+        | docType
+        | docTypedef
+        | docField
+        | docSee
+        | docTsplink
+        | docFirmware
+        | docVersion)*
     ;
 
-content
-    : ( link content | ~( TAG_START | CLOSE ))*?;
+docDeprecated
+    : DEPRECATED_TAG docContent;
+
+docDescription
+    : DESCRIPTION_TAG docContent;
+
+docContent
+    : ( link docContent | ~( TAG_START | CLOSE ))*?;
 
 link
     : LINK_TAG_START LINK_TAG_TARGET LINK_TAG_DISPLAY? LINK_TAG_END;
 
-description
-    : DESCRIPTION_TAG? content;
-
-param
-    : PARAM_TAG typeNameContent;
-
-typeNameContent
-    : typeDeclaration nameDeclaration content;
+docParameter
+    : PARAM_TAG typeDeclaration? nameDeclaration docContent;
 
 typeDeclaration
-    : CURLY_OPEN (list | union | type) CURLY_CLOSE;
+    : CURLY_OPEN typeEntry CURLY_CLOSE;
 
-list
-    : CURLY_OPEN typeList CURLY_CLOSE;
+typeEntry
+    : type
+    | typeUnion
+    ;
 
-union
-    : PAREN_OPEN typeList PAREN_CLOSE;
-
-typeList
-    : type ((COMMA | SEMICOLON) type)* (COMMA | SEMICOLON)?;
+typeUnion
+    : type PIPE (typeUnion+ | type);
 
 type
-    : NIL
-    | BOOLEAN
-    | NUMBER
-    | STRING
-    | FUNCTION (PAREN_OPEN typeList* PAREN_CLOSE RETURN_ARROW type)?
-    | USERDATA
-    | THREAD
-    | TABLE
-    | ENUM
-    | ANY
-    | NAME
+    : NIL                                                                   # Nil
+    | BOOLEAN                                                               # Boolean
+    | NUMBER                                                                # Number
+    | STRING                                                                # String
+    | FUNCTION (PAREN_OPEN typeList* PAREN_CLOSE RETURN_ARROW typeEntry)?   # Function
+    | USERDATA                                                              # Userdata
+    | THREAD                                                                # Thread
+    | TABLE                                                                 # Table
+    | ENUM                                                                  # Enum
+    | ANY                                                                   # Any
+    | NAME                                                                  # Name
     ;
+
+typeList
+    : type COMMA (typeList+ | type);
 
 // end typeDeclaration
 
 nameDeclaration
     : NAME                                          # NameRequired
-    | SQUARE_OPEN NAME EQUALS value SQUARE_CLOSE    # NameOptional
+    | SQUARE_OPEN NAME (EQUALS value)? SQUARE_CLOSE # NameOptional
     ;
 
-// end param
+// end docParameter
 
-returns_
-    : RETURNS_TAG typeDeclaration content;
+docReturns
+    : RETURNS_TAG (CURLY_OPEN (typeEntry | typeList) CURLY_CLOSE)? docContent;
 
-errata
-    : SEE_TAG seeList   # See
-    | TSPLINK_TAG       # Tsplink
-    | CONSTANT_TAG      # Constant
-    | fw                # Firmware
-    | ver               # Version
-    ;
+docReadonly
+    : READONLY_TAG docContent;
 
-seeList
-    : seeItem (COMMA seeItem)* (COMMA)?;
+docWriteonly
+    : WRITEONLY_TAG docContent;
 
-seeItem
+docType
+    : TYPE_TAG typeDeclaration docContent;
+
+docTypedef
+    : TYPEDEF_TAG typeDeclaration? NAME docContent;
+
+docField
+    : FIELD_TAG typeDeclaration? nameDeclaration docContent;
+
+docSee
+    : SEE_TAG seeTarget docContent;
+
+seeTarget
     : NAME (DOT NAME)*
     | link
     ;
 
-fw
-    : (LT | GTE) INT DOT INT DOT INT COMMA? fw?;
+// end docSee
 
-ver
+docTsplink
+    : TSPLINK_TAG docContent;
+
+docFirmware
+    : (LT | GTE | EQUALS EQUALS) INT DOT INT DOT INT COMMA? docFirmware?;
+
+docVersion
+    // Using non-nilable Enum equivalent after version reference tag.
     : TSPV1_TAG (V2_TAG NAME (DOT NAME)*)?  # Version1
     | TSPV2_TAG (V1_TAG NAME (DOT NAME)*)?  # Version2
     ;
 
-// TODO
-// constant
-// type
-// fw: ( LT | GTE )#.#.# COMMA? fw?
-// version: (@tsp-v1 (@v2 NAME (DOT NAME)*)? | @tsp-v2 (@v1 NAME (DOT NAME)*)?)
-
-// end errata
-
-typedef
-    : TYPEDEF_TAG typeDeclaration NAME;
-
-field
-    : FIELD_TAG typeNameContent;
-
 value
     : NIL
     | TRUE | FALSE
-    | number
-    | string
+    | num
+    | str
     | NAME
     ;
 
-number
+num
     : INT | HEX | FLOAT;
 
-string
+str
     : NORMALSTRING | CHARSTRING;

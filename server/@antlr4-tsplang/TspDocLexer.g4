@@ -49,13 +49,10 @@ FIELD_TAG
     : TAG_START 'field';
 
 READONLY_TAG
-    : TAG_START 'read' [Oo] 'nly';
+    : TAG_START ('const'|'constant'|'read'[oO]'nly');
 
 WRITEONLY_TAG
-    : TAG_START 'write' [Oo] 'nly';
-
-CONSTANT_TAG
-    : TAG_START ('const'|'constant');
+    : TAG_START 'write'[oO]'nly';
 
 TYPE_TAG
     : TAG_START 'type';
@@ -86,33 +83,33 @@ LINK_TAG_START
 // NIL is imported from CommonLexerRules.
 
 BOOLEAN
-    : Nilable? 'boolean';
+    : 'boolean' Nilable;
 
 NUMBER
-    : Nilable? 'number';
+    : 'number' Nilable;
 
 STRING
-    : Nilable? 'string';
+    : 'string' Nilable;
 
 FUNCTION
-    : Nilable? 'function';
+    : 'function' Nilable;
 
 USERDATA
-    : Nilable? 'userdata';
+    : 'userdata' Nilable;
 
 THREAD
-    : Nilable? 'thread';
+    : 'thread' Nilable;
 
 TABLE
-    : Nilable? 'table';
+    : 'table' Nilable;
 
 /* Custom Type Strings */
 
 ENUM
-    : Nilable? NAME ('.' NAME)*;
+    : NAME '.' NAME ('.' NAME)* Nilable;
 
 ANY
-    : '*';
+    : 'any';
 
 /* End */
 
@@ -155,6 +152,8 @@ GTE
     : '>=';
 RETURN_ARROW
     : '=>';
+PIPE
+    : '|';
 
 /* Fragments */
 
