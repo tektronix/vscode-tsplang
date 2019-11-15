@@ -7,7 +7,7 @@
 
     Stack level 1 is the function calling this function.
 
-    @param {(function|number)} [f=1] A target function or the function at a
+    @param {function|number} [f=1] A target function or the function at a
         given stack level as a number.
 
     @returns {table} The environment of the target function or stack level. If
