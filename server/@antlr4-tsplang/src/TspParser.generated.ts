@@ -75,14 +75,14 @@ export class TspParser extends Parser {
 	public static readonly BOOLEAN = 47;
 	public static readonly LOCAL = 48;
 	public static readonly VARARG = 49;
-	public static readonly LONGCOMMENT = 50;
-	public static readonly LINE_COMMENT = 51;
-	public static readonly SHEBANG = 52;
-	public static readonly NIL = 53;
-	public static readonly NAME = 54;
-	public static readonly NORMALSTRING = 55;
-	public static readonly CHARSTRING = 56;
-	public static readonly LONGSTRING = 57;
+	public static readonly LONGSTRING = 50;
+	public static readonly LONGCOMMENT = 51;
+	public static readonly LINE_COMMENT = 52;
+	public static readonly SHEBANG = 53;
+	public static readonly NIL = 54;
+	public static readonly NAME = 55;
+	public static readonly NORMALSTRING = 56;
+	public static readonly CHARSTRING = 57;
 	public static readonly INT = 58;
 	public static readonly HEX = 59;
 	public static readonly FLOAT = 60;
@@ -133,7 +133,7 @@ export class TspParser extends Parser {
 		"'{'", "'}'", "'<'", "'>'", "'<='", "'>='", "'=='", "'..'", "'+'", "'-'", 
 		"'*'", "'/'", "'^'", "'not'", "'or'", "'and'", undefined, undefined, undefined, 
 		undefined, undefined, undefined, undefined, undefined, "'local'", "'...'", 
-		undefined, undefined, undefined, "'nil'",
+		undefined, undefined, undefined, undefined, "'nil'",
 	];
 	private static readonly _SYMBOLIC_NAMES: Array<string | undefined> = [
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
@@ -143,8 +143,9 @@ export class TspParser extends Parser {
 		undefined, undefined, undefined, undefined, undefined, undefined, undefined, 
 		undefined, undefined, undefined, "OR", "AND", "NE", "BIT_OR", "BIT_XOR", 
 		"BIT_AND", "BIT_LS", "BIT_RS", "LOGICAL_NOT", "BOOLEAN", "LOCAL", "VARARG", 
-		"LONGCOMMENT", "LINE_COMMENT", "SHEBANG", "NIL", "NAME", "NORMALSTRING", 
-		"CHARSTRING", "LONGSTRING", "INT", "HEX", "FLOAT", "HORIZONTAL_WS", "VERTICAL_WS",
+		"LONGSTRING", "LONGCOMMENT", "LINE_COMMENT", "SHEBANG", "NIL", "NAME", 
+		"NORMALSTRING", "CHARSTRING", "INT", "HEX", "FLOAT", "HORIZONTAL_WS", 
+		"VERTICAL_WS",
 	];
 	public static readonly VOCABULARY: Vocabulary = new VocabularyImpl(TspParser._LITERAL_NAMES, TspParser._SYMBOLIC_NAMES, []);
 
@@ -1379,9 +1380,9 @@ export class TspParser extends Parser {
 			case TspParser.T__18:
 			case TspParser.T__19:
 			case TspParser.T__23:
+			case TspParser.LONGSTRING:
 			case TspParser.NORMALSTRING:
 			case TspParser.CHARSTRING:
-			case TspParser.LONGSTRING:
 				this.enterOuterAlt(_localctx, 1);
 				{
 				this.state = 405;
@@ -1604,7 +1605,7 @@ export class TspParser extends Parser {
 				this.state = 453;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
-				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__23))) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (TspParser.T__32 - 33)) | (1 << (TspParser.T__36 - 33)) | (1 << (TspParser.LOGICAL_NOT - 33)) | (1 << (TspParser.BOOLEAN - 33)) | (1 << (TspParser.NIL - 33)) | (1 << (TspParser.NAME - 33)) | (1 << (TspParser.NORMALSTRING - 33)) | (1 << (TspParser.CHARSTRING - 33)) | (1 << (TspParser.LONGSTRING - 33)) | (1 << (TspParser.INT - 33)) | (1 << (TspParser.HEX - 33)) | (1 << (TspParser.FLOAT - 33)))) !== 0)) {
+				if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__23))) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (TspParser.T__32 - 33)) | (1 << (TspParser.T__36 - 33)) | (1 << (TspParser.LOGICAL_NOT - 33)) | (1 << (TspParser.BOOLEAN - 33)) | (1 << (TspParser.LONGSTRING - 33)) | (1 << (TspParser.NIL - 33)) | (1 << (TspParser.NAME - 33)) | (1 << (TspParser.NORMALSTRING - 33)) | (1 << (TspParser.CHARSTRING - 33)) | (1 << (TspParser.INT - 33)) | (1 << (TspParser.HEX - 33)) | (1 << (TspParser.FLOAT - 33)))) !== 0)) {
 					{
 					this.state = 445;
 					this.expression();
@@ -1638,9 +1639,9 @@ export class TspParser extends Parser {
 				this.tableConstructor();
 				}
 				break;
+			case TspParser.LONGSTRING:
 			case TspParser.NORMALSTRING:
 			case TspParser.CHARSTRING:
-			case TspParser.LONGSTRING:
 				this.enterOuterAlt(_localctx, 3);
 				{
 				this.state = 457;
@@ -1678,7 +1679,7 @@ export class TspParser extends Parser {
 			this.state = 462;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__21) | (1 << TspParser.T__23))) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (TspParser.T__32 - 33)) | (1 << (TspParser.T__36 - 33)) | (1 << (TspParser.LOGICAL_NOT - 33)) | (1 << (TspParser.BOOLEAN - 33)) | (1 << (TspParser.NIL - 33)) | (1 << (TspParser.NAME - 33)) | (1 << (TspParser.NORMALSTRING - 33)) | (1 << (TspParser.CHARSTRING - 33)) | (1 << (TspParser.LONGSTRING - 33)) | (1 << (TspParser.INT - 33)) | (1 << (TspParser.HEX - 33)) | (1 << (TspParser.FLOAT - 33)))) !== 0)) {
+			if ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspParser.T__16) | (1 << TspParser.T__19) | (1 << TspParser.T__21) | (1 << TspParser.T__23))) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (TspParser.T__32 - 33)) | (1 << (TspParser.T__36 - 33)) | (1 << (TspParser.LOGICAL_NOT - 33)) | (1 << (TspParser.BOOLEAN - 33)) | (1 << (TspParser.LONGSTRING - 33)) | (1 << (TspParser.NIL - 33)) | (1 << (TspParser.NAME - 33)) | (1 << (TspParser.NORMALSTRING - 33)) | (1 << (TspParser.CHARSTRING - 33)) | (1 << (TspParser.INT - 33)) | (1 << (TspParser.HEX - 33)) | (1 << (TspParser.FLOAT - 33)))) !== 0)) {
 				{
 				this.state = 461;
 				this.fieldList();
@@ -2238,7 +2239,7 @@ export class TspParser extends Parser {
 			{
 			this.state = 515;
 			_la = this._input.LA(1);
-			if (!(((((_la - 55)) & ~0x1F) === 0 && ((1 << (_la - 55)) & ((1 << (TspParser.NORMALSTRING - 55)) | (1 << (TspParser.CHARSTRING - 55)) | (1 << (TspParser.LONGSTRING - 55)))) !== 0))) {
+			if (!(((((_la - 50)) & ~0x1F) === 0 && ((1 << (_la - 50)) & ((1 << (TspParser.LONGSTRING - 50)) | (1 << (TspParser.NORMALSTRING - 50)) | (1 << (TspParser.CHARSTRING - 50)))) !== 0))) {
 			this._errHandler.recoverInline(this);
 			} else {
 				if (this._input.LA(1) === Token.EOF) {
@@ -2329,7 +2330,7 @@ export class TspParser extends Parser {
 		"\x02\x14\x02\x16\x02\x18\x02\x1A\x02\x1C\x02\x1E\x02 \x02\"\x02$\x02&" +
 		"\x02(\x02*\x02,\x02.\x020\x022\x024\x026\x028\x02\x02\n\x04\x02\x03\x03" +
 		"\x0E\x0E\x04\x02\x1C **\x03\x02./\x03\x02\"#\x03\x02$%\x05\x02##\'\'0" +
-		"0\x03\x02<>\x03\x029;\x02\u024E\x02@\x03\x02\x02\x02\x04\u0131\x03\x02" +
+		"0\x03\x02<>\x04\x0244:;\x02\u024E\x02@\x03\x02\x02\x02\x04\u0131\x03\x02" +
 		"\x02\x02\x06\u0133\x03\x02\x02\x02\b\u014F\x03\x02\x02\x02\n\u018C\x03" +
 		"\x02\x02\x02\f\u0193\x03\x02\x02\x02\x0E\u019B\x03\x02\x02\x02\x10\u01A3" +
 		"\x03\x02\x02\x02\x12\u01AF\x03\x02\x02\x02\x14\u01B1\x03\x02\x02\x02\x16" +
@@ -2374,7 +2375,7 @@ export class TspParser extends Parser {
 		"\x02\x02\x02\x9D\x9B\x03\x02\x02\x02\x9D\x9E\x03\x02\x02\x02\x9E\xA1\x03" +
 		"\x02\x02\x02\x9F\x9D\x03\x02\x02\x02\xA0\x98\x03\x02\x02\x02\xA0\xA1\x03" +
 		"\x02\x02\x02\xA1\u0132\x03\x02\x02\x02\xA2\u0132\x07\x0F\x02\x02\xA3\xA4" +
-		"\x07\x10\x02\x02\xA4\xA5\x078\x02\x02\xA5\xA6\x07\x11\x02\x02\xA6\xA7" +
+		"\x07\x10\x02\x02\xA4\xA5\x079\x02\x02\xA5\xA6\x07\x11\x02\x02\xA6\xA7" +
 		"\x05\n\x06\x02\xA7\xA8\x07\x0E\x02\x02\xA8\xAB\x05\n\x06\x02\xA9\xAA\x07" +
 		"\x0E\x02\x02\xAA\xAC\x05\n\x06\x02\xAB\xA9\x03\x02\x02\x02\xAB\xAC\x03" +
 		"\x02\x02\x02\xAC\xAD\x03\x02\x02\x02\xAD\xB4\x07\x04\x02\x02\xAE\xB0\x05" +
@@ -2382,8 +2383,8 @@ export class TspParser extends Parser {
 		"\x02\x02\x02\xB1\xB3\x03\x02\x02\x02\xB2\xAE\x03\x02\x02\x02\xB3\xB6\x03" +
 		"\x02\x02\x02\xB4\xB2\x03\x02\x02\x02\xB4\xB5\x03\x02\x02\x02\xB5\xB7\x03" +
 		"\x02\x02\x02\xB6\xB4\x03\x02\x02\x02\xB7\xB8\x07\x05\x02\x02\xB8\u0132" +
-		"\x03\x02\x02\x02\xB9\xBA\x07\x10\x02\x02\xBA\xBF\x078\x02\x02\xBB\xBC" +
-		"\x07\x0E\x02\x02\xBC\xBE\x078\x02\x02\xBD\xBB\x03\x02\x02\x02\xBE\xC1" +
+		"\x03\x02\x02\x02\xB9\xBA\x07\x10\x02\x02\xBA\xBF\x079\x02\x02\xBB\xBC" +
+		"\x07\x0E\x02\x02\xBC\xBE\x079\x02\x02\xBD\xBB\x03\x02\x02\x02\xBE\xC1" +
 		"\x03\x02\x02\x02\xBF\xBD\x03\x02\x02\x02\xBF\xC0\x03\x02\x02\x02\xC0\xC2" +
 		"\x03\x02\x02\x02\xC1\xBF\x03\x02\x02\x02\xC2\xC3\x07\x12\x02\x02\xC3\xC8" +
 		"\x05\n\x06\x02\xC4\xC5\x07\x0E\x02\x02\xC5\xC7\x05\n\x06\x02\xC6\xC4\x03" +
@@ -2394,12 +2395,12 @@ export class TspParser extends Parser {
 		"\x02\x02\x02\xD1\xD4\x03\x02\x02\x02\xD2\xD0\x03\x02\x02\x02\xD2\xD3\x03" +
 		"\x02\x02\x02\xD3\xD5\x03\x02\x02\x02\xD4\xD2\x03\x02\x02\x02\xD5\xD6\x07" +
 		"\x05\x02\x02\xD6\u0132\x03\x02\x02\x02\xD7\xD8\x07\x13\x02\x02\xD8\xDD" +
-		"\x078\x02\x02\xD9\xDA\x07\x14\x02\x02\xDA\xDC\x078\x02\x02\xDB\xD9\x03" +
+		"\x079\x02\x02\xD9\xDA\x07\x14\x02\x02\xDA\xDC\x079\x02\x02\xDB\xD9\x03" +
 		"\x02\x02\x02\xDC\xDF\x03\x02\x02\x02\xDD\xDB\x03\x02\x02\x02\xDD\xDE\x03" +
 		"\x02\x02\x02\xDE\xE2\x03\x02\x02\x02\xDF\xDD\x03\x02\x02\x02\xE0\xE1\x07" +
-		"\x15\x02\x02\xE1\xE3\x078\x02\x02\xE2\xE0\x03\x02\x02\x02\xE2\xE3\x03" +
+		"\x15\x02\x02\xE1\xE3\x079\x02\x02\xE2\xE0\x03\x02\x02\x02\xE2\xE3\x03" +
 		"\x02\x02\x02\xE3\xE4\x03\x02\x02\x02\xE4\xF2\x07\x16\x02\x02\xE5\xEA\x07" +
-		"8\x02\x02\xE6\xE7\x07\x0E\x02\x02\xE7\xE9\x078\x02\x02\xE8\xE6\x03\x02" +
+		"9\x02\x02\xE6\xE7\x07\x0E\x02\x02\xE7\xE9\x079\x02\x02\xE8\xE6\x03\x02" +
 		"\x02\x02\xE9\xEC\x03\x02\x02\x02\xEA\xE8\x03\x02\x02\x02\xEA\xEB\x03\x02" +
 		"\x02\x02\xEB\xEF\x03\x02\x02\x02\xEC\xEA\x03\x02\x02\x02\xED\xEE\x07\x0E" +
 		"\x02\x02\xEE\xF0\x073\x02\x02\xEF\xED\x03\x02\x02\x02\xEF\xF0\x03\x02" +
@@ -2410,9 +2411,9 @@ export class TspParser extends Parser {
 		"\x02\x02\xF9\xF5\x03\x02\x02\x02\xFA\xFD\x03\x02\x02\x02\xFB\xF9\x03\x02" +
 		"\x02\x02\xFB\xFC\x03\x02\x02\x02\xFC\xFE\x03\x02\x02\x02\xFD\xFB\x03\x02" +
 		"\x02\x02\xFE\u0132\x07\x05\x02\x02\xFF\u0100\x072\x02\x02\u0100\u0101" +
-		"\x07\x13\x02\x02\u0101\u0102\x078\x02\x02\u0102\u0110\x07\x16\x02\x02" +
-		"\u0103\u0108\x078\x02\x02\u0104\u0105\x07\x0E\x02\x02\u0105\u0107\x07" +
-		"8\x02\x02\u0106\u0104\x03\x02\x02\x02\u0107\u010A\x03\x02\x02\x02\u0108" +
+		"\x07\x13\x02\x02\u0101\u0102\x079\x02\x02\u0102\u0110\x07\x16\x02\x02" +
+		"\u0103\u0108\x079\x02\x02\u0104\u0105\x07\x0E\x02\x02\u0105\u0107\x07" +
+		"9\x02\x02\u0106\u0104\x03\x02\x02\x02\u0107\u010A\x03\x02\x02\x02\u0108" +
 		"\u0106\x03\x02\x02\x02\u0108\u0109\x03\x02\x02\x02\u0109\u010D\x03\x02" +
 		"\x02\x02\u010A\u0108\x03\x02\x02\x02\u010B\u010C\x07\x0E\x02\x02\u010C" +
 		"\u010E\x073\x02\x02\u010D\u010B\x03\x02\x02\x02\u010D\u010E\x03\x02\x02" +
@@ -2424,7 +2425,7 @@ export class TspParser extends Parser {
 		"\x02\x02\u0118\u011B\x03\x02\x02\x02\u0119\u0117\x03\x02\x02\x02\u0119" +
 		"\u011A\x03\x02\x02\x02\u011A\u011C\x03\x02\x02\x02\u011B\u0119\x03\x02" +
 		"\x02\x02\u011C\u0132\x07\x05\x02\x02\u011D\u011E\x072\x02\x02\u011E\u0123" +
-		"\x078\x02\x02\u011F\u0120\x07\x0E\x02\x02\u0120\u0122\x078\x02\x02\u0121" +
+		"\x079\x02\x02\u011F\u0120\x07\x0E\x02\x02\u0120\u0122\x079\x02\x02\u0121" +
 		"\u011F\x03\x02\x02\x02\u0122\u0125\x03\x02\x02\x02\u0123\u0121\x03\x02" +
 		"\x02\x02\u0123\u0124\x03\x02\x02\x02\u0124\u012F\x03\x02\x02\x02\u0125" +
 		"\u0123\x03\x02\x02\x02\u0126\u0127\x07\x11\x02\x02\u0127\u012C\x05\n\x06" +
@@ -2444,7 +2445,7 @@ export class TspParser extends Parser {
 		"\x02\x02\u013C\u0141\x05\n\x06\x02\u013D\u013E\x07\x0E\x02\x02\u013E\u0140" +
 		"\x05\n\x06\x02\u013F\u013D\x03\x02\x02\x02\u0140\u0143\x03\x02\x02\x02" +
 		"\u0141\u013F\x03\x02\x02\x02\u0141\u0142\x03\x02\x02\x02\u0142\x07\x03" +
-		"\x02\x02\x02\u0143\u0141\x03\x02\x02\x02\u0144\u0150\x077\x02\x02\u0145" +
+		"\x02\x02\x02\u0143\u0141\x03\x02\x02\x02\u0144\u0150\x078\x02\x02\u0145" +
 		"\u0150\x071\x02\x02\u0146\u0150\x056\x1C\x02\u0147\u0150\x058\x1D\x02" +
 		"\u0148\u0150\x05\x12\n\x02\u0149\u0150\x05\x14\v\x02\u014A\u0150\x05\x18" +
 		"\r\x02\u014B\u014C\x07\x16\x02\x02\u014C\u014D\x05\n\x06\x02\u014D\u014E" +
@@ -2453,8 +2454,8 @@ export class TspParser extends Parser {
 		"\x02\x02\x02\u014F\u0148\x03\x02\x02\x02\u014F\u0149\x03\x02\x02\x02\u014F" +
 		"\u014A\x03\x02\x02\x02\u014F\u014B\x03\x02\x02\x02\u0150\t\x03\x02\x02" +
 		"\x02\u0151\u018D\x05\b\x05\x02\u0152\u0153\x07\x13\x02\x02\u0153\u0161" +
-		"\x07\x16\x02\x02\u0154\u0159\x078\x02\x02\u0155\u0156\x07\x0E\x02\x02" +
-		"\u0156\u0158\x078\x02\x02\u0157\u0155\x03\x02\x02\x02\u0158\u015B\x03" +
+		"\x07\x16\x02\x02\u0154\u0159\x079\x02\x02\u0155\u0156\x07\x0E\x02\x02" +
+		"\u0156\u0158\x079\x02\x02\u0157\u0155\x03\x02\x02\x02\u0158\u015B\x03" +
 		"\x02\x02\x02\u0159\u0157\x03\x02\x02\x02\u0159\u015A\x03\x02\x02\x02\u015A" +
 		"\u015E\x03\x02\x02\x02\u015B\u0159\x03\x02\x02\x02\u015C\u015D\x07\x0E" +
 		"\x02\x02\u015D\u015F\x073\x02\x02\u015E\u015C\x03\x02\x02\x02\u015E\u015F" +
@@ -2484,25 +2485,25 @@ export class TspParser extends Parser {
 		"\x03\x02\x02\x02\u018C\u0175\x03\x02\x02\x02\u018C\u0180\x03\x02\x02\x02" +
 		"\u018C\u0184\x03\x02\x02\x02\u018D\v\x03\x02\x02\x02\u018E\u018F\x07\x16" +
 		"\x02\x02\u018F\u0190\x05\n\x06\x02\u0190\u0191\x07\x17\x02\x02\u0191\u0194" +
-		"\x03\x02\x02\x02\u0192\u0194\x078\x02\x02\u0193\u018E\x03\x02\x02\x02" +
+		"\x03\x02\x02\x02\u0192\u0194\x079\x02\x02\u0193\u018E\x03\x02\x02\x02" +
 		"\u0193\u0192\x03\x02\x02\x02\u0194\r\x03\x02\x02\x02\u0195\u0196\x07\x15" +
-		"\x02\x02\u0196\u0198\x078\x02\x02\u0197\u0195\x03\x02\x02\x02\u0197\u0198" +
+		"\x02\x02\u0196\u0198\x079\x02\x02\u0197\u0195\x03\x02\x02\x02\u0197\u0198" +
 		"\x03\x02\x02\x02\u0198\u0199\x03\x02\x02\x02\u0199\u019C\x05\x16\f\x02" +
 		"\u019A\u019C\x05\x10\t\x02\u019B\u0197\x03\x02\x02\x02\u019B\u019A\x03" +
 		"\x02\x02\x02\u019C\x0F\x03\x02\x02\x02\u019D\u019E\x07\x18\x02\x02\u019E" +
 		"\u019F\x05\n\x06\x02\u019F\u01A0\x07\x19\x02\x02\u01A0\u01A4\x03\x02\x02" +
-		"\x02\u01A1\u01A2\x07\x14\x02\x02\u01A2\u01A4\x078\x02\x02\u01A3\u019D" +
+		"\x02\u01A1\u01A2\x07\x14\x02\x02\u01A2\u01A4\x079\x02\x02\u01A3\u019D" +
 		"\x03\x02\x02\x02\u01A3\u01A1\x03\x02\x02\x02\u01A4\x11\x03\x02\x02\x02" +
 		"\u01A5\u01A9\x05\f\x07\x02\u01A6\u01A8\x05\x0E\b\x02\u01A7\u01A6\x03\x02" +
 		"\x02\x02\u01A8\u01AB\x03\x02\x02\x02\u01A9\u01A7\x03\x02\x02\x02\u01A9" +
 		"\u01AA\x03\x02\x02\x02\u01AA\u01AC\x03\x02\x02\x02\u01AB\u01A9\x03\x02" +
 		"\x02\x02\u01AC\u01AD\x05\x10\t\x02\u01AD\u01B0\x03\x02\x02\x02\u01AE\u01B0" +
-		"\x078\x02\x02\u01AF\u01A5\x03\x02\x02\x02\u01AF\u01AE\x03\x02\x02\x02" +
+		"\x079\x02\x02\u01AF\u01A5\x03\x02\x02\x02\u01AF\u01AE\x03\x02\x02\x02" +
 		"\u01B0\x13\x03\x02\x02\x02\u01B1\u01B5\x05\f\x07\x02\u01B2\u01B4\x05\x0E" +
 		"\b\x02\u01B3\u01B2\x03\x02\x02\x02\u01B4\u01B7\x03\x02\x02\x02\u01B5\u01B3" +
 		"\x03\x02\x02\x02\u01B5\u01B6\x03\x02\x02\x02\u01B6\u01BA\x03\x02\x02\x02" +
 		"\u01B7\u01B5\x03\x02\x02\x02\u01B8\u01B9\x07\x15\x02\x02\u01B9\u01BB\x07" +
-		"8\x02\x02\u01BA\u01B8\x03\x02\x02\x02\u01BA\u01BB\x03\x02\x02\x02\u01BB" +
+		"9\x02\x02\u01BA\u01B8\x03\x02\x02\x02\u01BA\u01BB\x03\x02\x02\x02\u01BB" +
 		"\u01BC\x03\x02\x02\x02\u01BC\u01BD\x05\x16\f\x02\u01BD\x15\x03\x02\x02" +
 		"\x02\u01BE\u01C7\x07\x16\x02\x02\u01BF\u01C4\x05\n\x06\x02\u01C0\u01C1" +
 		"\x07\x0E\x02\x02\u01C1\u01C3\x05\n\x06\x02\u01C2\u01C0\x03\x02\x02\x02" +
@@ -2522,7 +2523,7 @@ export class TspParser extends Parser {
 		"\x02\u01DE\x1B\x03\x02\x02\x02\u01DF\u01E0\x07\x18\x02\x02\u01E0\u01E1" +
 		"\x05\n\x06\x02\u01E1\u01E2\x07\x19\x02\x02\u01E2\u01E3\x07\x11\x02\x02" +
 		"\u01E3\u01E4\x05\n\x06\x02\u01E4\u01EA\x03\x02\x02\x02\u01E5\u01E6\x07" +
-		"8\x02\x02\u01E6\u01E7\x07\x11\x02\x02\u01E7\u01EA\x05\n\x06\x02\u01E8" +
+		"9\x02\x02\u01E6\u01E7\x07\x11\x02\x02\u01E7\u01EA\x05\n\x06\x02\u01E8" +
 		"\u01EA\x05\n\x06\x02\u01E9\u01DF\x03\x02\x02\x02\u01E9\u01E5\x03\x02\x02" +
 		"\x02\u01E9\u01E8\x03\x02\x02\x02\u01EA\x1D\x03\x02\x02\x02\u01EB\u01EC" +
 		"\x07(\x02\x02\u01EC\x1F\x03\x02\x02\x02\u01ED\u01EE\x07)\x02\x02\u01EE" +
