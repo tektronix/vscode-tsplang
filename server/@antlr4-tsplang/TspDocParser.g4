@@ -63,17 +63,17 @@ typeUnion
     : type PIPE (typeUnion+ | type);
 
 type
-    : NIL                                                                   # Nil
-    | BOOLEAN                                                               # Boolean
-    | NUMBER                                                                # Number
-    | STRING                                                                # String
-    | FUNCTION (PAREN_OPEN typeList* PAREN_CLOSE RETURN_ARROW typeEntry)?   # Function
-    | USERDATA                                                              # Userdata
-    | THREAD                                                                # Thread
-    | TABLE                                                                 # Table
-    | ENUM                                                                  # Enum
-    | ANY                                                                   # Any
-    | NAME                                                                  # Name
+    : NIL                                                                   # NilType
+    | BOOLEAN                                                               # BooleanType
+    | NUMBER                                                                # NumberType
+    | STRING                                                                # StringType
+    | FUNCTION (PAREN_OPEN typeList* PAREN_CLOSE RETURN_ARROW typeEntry)?   # FunctionType
+    | USERDATA                                                              # UserdataType
+    | THREAD                                                                # ThreadType
+    | TABLE                                                                 # TableType
+    | ENUM                                                                  # EnumType
+    | ANY                                                                   # AnyType
+    | NAME                                                                  # NameType
     ;
 
 typeList
@@ -82,8 +82,8 @@ typeList
 // end typeDeclaration
 
 nameDeclaration
-    : NAME                                          # NameRequired
-    | SQUARE_OPEN NAME (EQUALS value)? SQUARE_CLOSE # NameOptional
+    : NAME                                              # NameRequired
+    | SQUARE_OPEN NAME (EQUALS docValue)? SQUARE_CLOSE  # NameOptional
     ;
 
 // end docParameter
@@ -128,7 +128,7 @@ docVersion
     | TSPV2_TAG (V1_TAG NAME (DOT NAME)*)?  # Version2
     ;
 
-value
+docValue
     : NIL
     | TRUE | FALSE
     | num
