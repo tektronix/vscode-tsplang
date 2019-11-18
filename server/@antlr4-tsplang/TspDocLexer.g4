@@ -138,8 +138,6 @@ PAREN_OPEN
     : '(';
 PAREN_CLOSE
     : ')';
-SEMICOLON
-    : ';';
 SQUARE_OPEN
     : '[';
 SQUARE_CLOSE
@@ -160,6 +158,12 @@ PIPE
 fragment
 Nilable
     : '?';
+
+/* Everything Else */
+
+OTHER
+    /* Part of the character group is inlined from CommonLexerRules::HORIZONTAL_WS */
+    : ~[a-zA-Z0-9_{}[\],.=<>|@ \t\u000C\r\n];
 
 /* Inline Link Mode */
 mode LINK_MODE;

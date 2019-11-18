@@ -33,23 +33,26 @@ docblock
         | docSee
         | docTsplink
         | docFirmware
-        | docVersion)*
+        | docVersion
+        | docContent)*
     ;
 
 docDeprecated
-    : DEPRECATED_TAG docContent;
+    : DEPRECATED_TAG docContent?;
 
 docDescription
-    : DESCRIPTION_TAG docContent;
+    : DESCRIPTION_TAG docContent?;
 
 docContent
-    : ( link docContent | ~( TAG_START | CLOSE ))*?;
+    : link docContent
+    | ~( TAG_START | CLOSE )
+    ;
 
 link
     : LINK_TAG_START LINK_TAG_TARGET LINK_TAG_DISPLAY? LINK_TAG_END;
 
 docParameter
-    : PARAM_TAG typeDeclaration? nameDeclaration docContent;
+    : PARAM_TAG typeDeclaration? nameDeclaration docContent?;
 
 typeDeclaration
     : CURLY_OPEN typeEntry CURLY_CLOSE;
@@ -92,22 +95,22 @@ docReturns
     : RETURNS_TAG (CURLY_OPEN (typeEntry | typeList) CURLY_CLOSE)? docContent;
 
 docReadonly
-    : READONLY_TAG docContent;
+    : READONLY_TAG docContent?;
 
 docWriteonly
-    : WRITEONLY_TAG docContent;
+    : WRITEONLY_TAG docContent?;
 
 docType
-    : TYPE_TAG typeDeclaration docContent;
+    : TYPE_TAG typeDeclaration docContent?;
 
 docTypedef
-    : TYPEDEF_TAG typeDeclaration? NAME docContent;
+    : TYPEDEF_TAG typeDeclaration? NAME docContent?;
 
 docField
-    : FIELD_TAG typeDeclaration? nameDeclaration docContent;
+    : FIELD_TAG typeDeclaration? nameDeclaration docContent?;
 
 docSee
-    : SEE_TAG seeTarget docContent;
+    : SEE_TAG seeTarget docContent?;
 
 seeTarget
     : NAME (DOT NAME)*
@@ -117,7 +120,7 @@ seeTarget
 // end docSee
 
 docTsplink
-    : TSPLINK_TAG docContent;
+    : TSPLINK_TAG docContent?;
 
 docFirmware
     : (LT | GTE | EQUALS EQUALS) INT DOT INT DOT INT COMMA? docFirmware?;
