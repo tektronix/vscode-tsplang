@@ -15,8 +15,7 @@
  */
 
 /*
- * NOTICE! any updates to this file should also be made to:
- *      ./extendedTspDocLexer.ts
+ * NOTE: This file is (almost) an exact copy of ./extendedTspLexer.ts
  */
 
 import { ANTLRInputStream } from "antlr4ts"
@@ -24,7 +23,7 @@ import { LexerATNSimulator } from "antlr4ts/atn/LexerATNSimulator"
 
 import { TspCommonToken } from "./tspCommonToken"
 import { TspCommonTokenFactory } from "./tspCommonTokenFactory"
-import { TspLexer } from "./TspLexer.generated"
+import { TspDocLexer } from "./TspDocLexer.generated"
 
 interface ATNSnapshot {
     charPositionInLine: number
@@ -33,7 +32,7 @@ interface ATNSnapshot {
     startIndex: number
 }
 
-export class ExtendedTspLexer extends TspLexer {
+export class ExtendedTspDocLexer extends TspDocLexer {
     constructor(input: ANTLRInputStream) {
         super(input)
         this.tokenFactory = new TspCommonTokenFactory()
@@ -49,7 +48,7 @@ export class ExtendedTspLexer extends TspLexer {
     }
 
     public nextToken(): TspCommonToken {
-        const defaultChannel: number = TspLexer.DEFAULT_TOKEN_CHANNEL
+        const defaultChannel: number = TspDocLexer.DEFAULT_TOKEN_CHANNEL
         let triviaCache: TspCommonToken[] = []
 
         // Collect any leading trivia.
