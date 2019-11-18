@@ -174,12 +174,12 @@ LINK_TAG_END
 
 LINK_TAG_TARGET
     : NAME ('.' NAME)*
-    /* Character group is inlined from CommonLexerRules::HORIZONTAL_WS */
-    | ( EndEscape | ~([ \t\u000C]|'|'|'}') )+
+    /* Part of the character group is inlined from CommonLexerRules::HORIZONTAL_WS */
+    | ~[}| \t\u000C]+
     ;
 
 LINK_TAG_DISPLAY
-    : '|'? ( EndEscape | ~('}') )+;
+    : '|' ( EndEscape | ~('}') )+;
 
 fragment
 EndEscape
