@@ -6,6 +6,13 @@ const process = require("process")
 const scriptName = path.basename(process.argv[1], ".js")
 
 /**
+ * Contains special filename transformations.
+ * @typedef BasenameTransform
+ * @property {string} source The original filename.
+ * @property {string} destination The name of the output file.
+ */
+
+/**
  * Contains the conditions and context for a `String.replace` call.
  * @typedef Edit
  * @property {() => boolean} [doEdit=]
@@ -20,12 +27,21 @@ const scriptName = path.basename(process.argv[1], ".js")
  * @property {string} sourceDirectory Where to find the target files.
  * @property {string} sourceExtension The file extension of the source files.
  * @property {string} destinationDirectory Where to write the output files.
- * @property {Array<Edit>} edits Changes to apply to a file before being output.
+ * @property {Array<BasenameTransform>} basenameTransforms Files that do not
+ *  follow the standard renaming convention.
+ * @property {Array<Edit>} edits Changes to apply to a file before being
+ *  output.
  */
 const recipe = {
     sourceDirectory: "../.antlr/",
     sourceExtension: ".ts",
     destinationDirectory: "../src/",
+    basenameTransforms: [
+        {
+            source: "TspDocParserListener",
+            destination: "TspDocListener"
+        }
+    ],
     edits: [
         {
             regexp: /from ["'](\.\/.*)["']/g,
@@ -51,6 +67,20 @@ let successful = true
 tsFiles.forEach(source => {
     let content;
 
+    const sourceBasename = path.basename(source, recipe.sourceExtension)
+    // If this transform matches the source file's basename, then use the
+    // transform's destination file basename.
+    const destinationBasename = recipe.basenameTransforms.reduce(
+        (resolvedBasename, transform) => {
+            if (transform.source === sourceBasename) {
+                return transform.destination
+            } else {
+                return resolvedBasename
+            }
+        },
+        sourceBasename
+    )
+
     // Read the contents of each TypeScript file found.
     try {
         content = fs.readFileSync(source, { encoding: "utf-8" })
@@ -62,6 +92,15 @@ tsFiles.forEach(source => {
         return
     }
 
+    // Change all instances of  source filename to the its associated
+    // destination filename.
+    recipe.basenameTransforms.forEach(transform => {
+        content = content.replace(
+            new RegExp(transform.source, "g"),
+            transform.destination
+        )
+    })
+
     // Apply edits to the file content if the edit predicate either
     // does not exist or returns true.
     recipe.edits.forEach(edit => {
@@ -71,11 +110,10 @@ tsFiles.forEach(source => {
     })
 
     // Calculate the absolute path to the destination TypeScript file.
-    const sourceBasename = path.basename(source, recipe.sourceExtension)
     const destination = path.resolve(
         path.dirname(source),
         recipe.destinationDirectory,
-        `${sourceBasename}.generated${recipe.sourceExtension}`
+        `${destinationBasename}.generated${recipe.sourceExtension}`
     )
 
     // Write the modified file contents to the destination filepath.
