@@ -89,21 +89,9 @@ EscapeSequence
     : '\\' [abfnrtv"'\\]
     | '\\' '['
     | '\\' ']'
-    | '\\' '\r'? '\n'
-    | DecimalEscape
-    | HexEscape
-    ;
-
-fragment
-DecimalEscape
-    : '\\' Digit
-    | '\\' Digit Digit
-    | '\\' [0-2] Digit Digit
-    ;
-
-fragment
-HexEscape
-    : '\\' 'x' HexDigit HexDigit
+    | '\\' '\r'? '\n'       // String continuation character.
+    | '\\' Digit+           // Valid decimal escape values are 0-255, inclusive.
+    | '\\' 'x' HexDigit+    // Valid hex escape values are 0-FF, inclusive.
     ;
 
 fragment
@@ -113,7 +101,7 @@ Digit
 
 fragment
 HexDigit
-    : [0-9a-fA-F]
+    : [a-fA-F0-9]
     ;
 
 /* NOTICE! any updates to this rule should also be made to the following:
