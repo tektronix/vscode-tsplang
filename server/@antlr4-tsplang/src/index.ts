@@ -17,40 +17,13 @@
 export { ANTLRInputStream } from "antlr4ts"
 
 // ANTLR4 Overrides
+export { ExtendedTspDocLexer as TspDocLexer } from "./extendedTspDocLexer"
 export { ExtendedTspLexer as TspLexer } from "./extendedTspLexer"
 export { TspCommonToken as CommonToken } from "./tspCommonToken"
 export { TspCommonTokenStream as CommonTokenStream } from "./tspCommonTokenStream"
 
 // Generated Exports
+export { TspDocListener } from "./TspDocListener.generated"
+export * from "./TspDocParser.generated"
 export { TspListener } from "./TspListener.generated"
-export {
-    TspParser,
-    ArgsContext,
-    AssignmentContext,
-    ChunkContext,
-    ExpressionContext,
-    FieldContext,
-    FieldListContext,
-    FunctionCallContext,
-    IndexContext,
-    NumberContext,
-    OperatorAddSubContext,
-    OperatorAndContext,
-    OperatorBitwiseAndContext,
-    OperatorBitwiseOrContext,
-    OperatorBitwiseShiftContext,
-    OperatorBitwiseXorContext,
-    OperatorComparisonContext,
-    OperatorMulDivContext,
-    OperatorOrContext,
-    OperatorPowerContext,
-    OperatorStrcatContext,
-    OperatorUnaryContext,
-    PrefixContext,
-    StatementContext,
-    StringContext,
-    SuffixContext,
-    TableConstructorContext,
-    ValueContext,
-    VariableContext,
-} from "./TspParser.generated"
+export * from "./TspParser.generated"
