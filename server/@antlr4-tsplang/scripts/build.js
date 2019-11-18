@@ -10,7 +10,7 @@ class SynchronousTaskRunner {
         this.tasks = [
             "antlr4ts -o ./.antlr -message-format gnu -listener ./Tsp.g4",
             "antlr4ts -o ./.antlr -message-format gnu -listener ./TspDocLexer.g4",
-            "antlr4ts -o ./.antlr -message-format gnu -listener ./TspDoc.g4",
+            "antlr4ts -o ./.antlr -message-format gnu -listener ./TspDocParser.g4",
         ]
     }
 

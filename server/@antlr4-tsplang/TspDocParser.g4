@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-parser grammar TspDoc;
+parser grammar TspDocParser;
 
 options { tokenVocab=TspDocLexer; }
 
