@@ -56,15 +56,6 @@ CHARSTRING
     : '\'' ( EscapeSequence | ~('\''|'\\') )* '\''
     ;
 
-LONGSTRING
-    : '[' NestedString ']'
-    ;
-
-fragment
-NestedString
-    : '[' ( LONGSTRING | . )*? ']'
-    ;
-
 INT
     : Digit+
     ;

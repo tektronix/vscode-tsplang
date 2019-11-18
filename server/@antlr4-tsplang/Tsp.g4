@@ -229,6 +229,15 @@ LOCAL
 VARARG
     : '...';
 
+LONGSTRING
+    : '[' NestedString ']'
+    ;
+
+fragment
+NestedString
+    : '[' ( LONGSTRING | . )*? ']'
+    ;
+
 LONGCOMMENT
     : '--[' NestedString ']' -> channel(HIDDEN)
     ;
