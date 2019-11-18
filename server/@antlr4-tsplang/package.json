@@ -17,7 +17,7 @@
         "antlr4ts-cli": "^0.5.0-alpha.3"
     },
     "scripts": {
-        "build": "antlr4ts -o ./.antlr -message-format gnu -listener ./Tsp.g4",
+        "build": "cd scripts && node ./build.js && cd ..",
         "postbuild": "cd scripts && node ./postbuild.js && cd .."
     }
 }
