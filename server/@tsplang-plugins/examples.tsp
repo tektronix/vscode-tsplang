@@ -22,7 +22,7 @@
 
     @param {type} lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter {function} PascalCase Sed eget turpis venenatis leo maximus
+    @parameter {thread?} PascalCase Sed eget turpis venenatis leo maximus
         mattis.
 
     @param {
@@ -35,12 +35,12 @@
         function(userdata?) => any
     } snake_case Sed eget turpis venenatis leo maximus mattis.
 
-    @param [lowercase=] Sed eget turpis venenatis leo maximus mattis.
+    @param lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter [PascalCase="\"double\" quoted"] Sed eget turpis venenatis leo
+    @parameter [PascalCase="\"double (\")\" quoted"] Sed eget turpis venenatis leo
         maximus mattis.
 
-    @param [camelCase='\'single\' quoted'] Sed eget turpis venenatis leo
+    @param [camelCase='\'single (\')\' quoted'] Sed eget turpis venenatis leo
         maximus mattis.
 
     @parameter [snake_case=smu.FUNC_DC_VOLTAGE] Sed eget turpis venenatis leo
@@ -54,16 +54,16 @@
 
     @return {type} Quisque fringilla est.
 
-    @returns {{table;
-                userdata,}} Quisque fringilla est.
+    @returns {thread?} Quisque fringilla est.
 
-    @return {(
-        smu.FUNC_DC_CURRENT,
-        thread,
-    )} Quisque fringilla est.
+    @return {
+        nil|
+        buffer.UNIT_AMP
+        |table?
+    } Quisque fringilla est.
 
     @returns {
-        function( ({this, could}, be, any) ) => any
+        function( userdata? ) => any
     } Quisque fringilla est.
 
     @return Quisque fringilla est.
@@ -72,7 +72,7 @@
 
     ---
 
-    @see smu.measure.math.mxb.bfactor:syntacticSugar is not highlighted!
+    @see my.table.field:syntacticSugar is not highlighted!
 
     @see MyType$ only valid TSP variable characters are highlighted!
 
@@ -88,36 +88,38 @@
 
     @tsplink
 
+    @tsplink Nullam id risus ex.
+
     ---
 
     @typedef smu.measure.math.mxb.bfactor:syntacticSugar is not highlighted!
 
     @typedef MyNewType[] only valid TSP variable characters are highlighted!
 
-    @typedef {(
-        buffer.DIGIT_3_5,
-        buffer.DIGIT_4_5,
-        buffer.DIGIT_5_5,
-        buffer.DIGIT_6_5,
-        buffer.DIGIT_7_5,
-        buffer.DIGIT_8_5,
-    )} BufferDigits&& only valid TSP variable characters are highlighted!
+    @typedef {
+        buffer.DIGIT_3_5
+        |buffer.DIGIT_4_5
+        |buffer.DIGIT_5_5
+        |buffer.DIGIT_6_5
+        |buffer.DIGIT_7_5
+        |buffer.DIGIT_8_5
+    } BufferDigits&& only valid TSP variable characters are highlighted!
 
     ---
 
     @field {type} lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @field {{string;
-             number,}} PascalCase Sed eget turpis venenatis leo maximus
+    @field {thread?} PascalCase Sed eget turpis venenatis leo maximus
         mattis.
 
-    @field {(
-        nil,
+    @field {
+        nil|
         buffer.UNIT_AMP
-    )} camelCase Sed eget turpis venenatis leo maximus mattis.
+        |table?
+    } camelCase Sed eget turpis venenatis leo maximus mattis.
 
     @field {
-        function({ infinite, {recursion} }) => any
+        function( userdata? ) => any
     } snake_case Sed eget turpis venenatis leo maximus mattis.
 
     @field [lowercase=] Sed eget turpis venenatis leo maximus mattis.
@@ -137,34 +139,46 @@
 
     @readonly
 
+    @readonly Nullam id risus ex.
+
     @readOnly
+
+    @readOnly Nullam id risus ex.
 
     ---
 
     @writeonly
 
+    @writeonly Nullam id risus ex.
+
     @writeOnly
+
+    @writeOnly Nullam id risus ex.
 
     ---
 
     @const
 
+    @const Nullam id risus ex.
+
     @constant
+
+    @constant Nullam id risus ex.
 
     ---
 
     @type {type} Quisque fringilla est.
 
-    @type {{table;
-            userdata,}} Quisque fringilla est.
-
-    @type {(
-        smu.FUNC_DC_CURRENT,
-        thread,
-    )} Quisque fringilla est.
+    @type {thread?} Quisque fringilla est.
 
     @type {
-        function( ({this, could}, be, any) ) => any
+        nil|
+        buffer.UNIT_AMP
+        |table?
+    } Quisque fringilla est.
+
+    @type {
+        function( userdata? ) => any
     } Quisque fringilla est.
 
     @type Quisque fringilla est.
@@ -173,13 +187,19 @@
 
     @fw >0.0.0, <=1.0.0, ==2.0.0
 
+    @firmware >0.0.0, <=1.0.0, ==2.0.0
+
     ---
 
     @tsp-v1
 
+    @tsp-v1 Nullam id risus ex.
+
     ---
 
     @tsp-v2
+
+    @tsp-v2 Nullam id risus ex.
 
     ---
 
