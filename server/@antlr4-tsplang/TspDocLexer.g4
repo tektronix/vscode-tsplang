@@ -181,6 +181,10 @@ LINK_TAG_TARGET
 LINK_TAG_DISPLAY
     : '|' ( EndEscape | ~('}') )+;
 
+LINK_TAG_WHITESPACE
+    : ( HORIZONTAL_WS | VERTICAL_WS ) -> channel(HIDDEN)
+    ;
+
 fragment
 EndEscape
     : '\\' '}';
