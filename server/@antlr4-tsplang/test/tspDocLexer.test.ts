@@ -13,19 +13,38 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ANTLRInputStream, CommonToken } from "antlr4ts"
+import { ANTLRErrorListener, ANTLRInputStream, CommonToken } from "antlr4ts"
 import { expect } from "chai"
 import "mocha"
 
 import { TspDocLexer } from "../out/TspDocLexer.generated"
 
+class ErrorListener implements ANTLRErrorListener<TspDocLexer> {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e): never {
+        throw Error(`line ${line}:${charPositionInLine} ${msg}`)
+    }
+}
+const ERROR_LISTENER = new ErrorListener()
+
+function flatten(value: Array<string | Array<string>>): Array<string> {
+    const result = new Array<string>()
+    value.forEach(v => {
+        if (typeof v === "object") {
+            result.push(...flatten(v))
+        } else {
+            result.push(v)
+        }
+    })
+    return result
+}
+const typeExtractor = (token: CommonToken): number => token.type
+
 interface LexTest {
     name: string
     content: string
-    tokenNames: Array<string>
+    tokenNames: Array<string | Array<string>>
 }
-
-const typeExtractor = (token: CommonToken): number => token.type
 
 describe("antlr4-tsplang", function() {
     describe("TspDocLexer", function() {
@@ -48,10 +67,12 @@ describe("antlr4-tsplang", function() {
                 it(test.name, () => {
                     const inputStream = new ANTLRInputStream(test.content)
                     const lexer = new TspDocLexer(inputStream)
+                    lexer.addErrorListener(ERROR_LISTENER)
 
-                    const expected = test.tokenNames.map(name => {
+                    const expected = flatten(test.tokenNames).map(name => {
                         return lexer.getTokenType(name)
                     })
+
                     const actual = lexer.getAllTokens().map(typeExtractor)
 
                     expect(actual).deep.equals(expected)
@@ -101,10 +122,7 @@ describe("antlr4-tsplang", function() {
                         tokenNames: [
                             "OPEN",
                             "NAME",
-                            "LINK_TAG_START",
-                            "LINK_TAG_TARGET",
-                            "LINK_TAG_DISPLAY",
-                            "LINK_TAG_END",
+                            ["LINK_TAG_START", "LINK_TAG_TARGET", "LINK_TAG_DISPLAY", "LINK_TAG_END"],
                             "NAME",
                             "NAME",
                             "NAME",
@@ -115,15 +133,107 @@ describe("antlr4-tsplang", function() {
                     },
                     {
                         name: "Tokenizes @deprecated tags",
-                        content: `--[[[ @deprecated
-                            @deprecated Aliquam blandit nulla in volutpat dignissim.
+                        content: `--[[[ @deprecated Aliquam blandit nulla in volutpat dignissim.
+                            @deprecated
                         ]]`,
                         tokenNames: [
                             "OPEN",
+                            ["DEPRECATED_TAG", "NAME", "NAME", "NAME", "NAME", "NAME", "NAME", "DOT"],
                             "DEPRECATED_TAG",
-                            "DEPRECATED_TAG",
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @desc(ription) tags",
+                        content: `--[[[ @desc Pellentesque ac iaculis velit.
+                            @description Pellentesque ac iaculis velit.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            ["DESCRIPTION_TAG", "NAME", "NAME", "NAME", "NAME", "DOT"],
+                            ["DESCRIPTION_TAG", "NAME", "NAME", "NAME", "NAME", "DOT"],
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @param(eter) tags 1",
+                        content: `--[[[
+                            @param {type} lowercase Aenean et gravida nulla.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            "PARAM_TAG",
+                            ["CURLY_OPEN", "NAME", "CURLY_CLOSE"],
+                            ["NAME"],
                             "NAME",
                             "NAME",
+                            "NAME",
+                            "NAME",
+                            "DOT",
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @param(eter) tags 2",
+                        content: `--[[[
+                            @parameter {function} PascalCase Aenean et gravida nulla.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            "PARAM_TAG",
+                            ["CURLY_OPEN", "FUNCTION", "CURLY_CLOSE"],
+                            ["NAME"],
+                            "NAME",
+                            "NAME",
+                            "NAME",
+                            "NAME",
+                            "DOT",
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @param(eter) tags 3",
+                        content: `--[[[
+                            @param {
+                                nil|
+                                buffer.UNIT_AMP
+                                |table?
+                            } camelCase Aenean et gravida nulla.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            "PARAM_TAG",
+                            ["CURLY_OPEN", "NIL", "PIPE", "ENUM", "PIPE", "TABLE", "CURLY_CLOSE"],
+                            ["NAME"],
+                            "NAME",
+                            "NAME",
+                            "NAME",
+                            "NAME",
+                            "DOT",
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @param(eter) tags 4",
+                        content: `--[[[
+                            @parameter {
+                                function(userdata?) => any
+                            } snake_case Aenean et gravida nulla.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            "PARAM_TAG",
+                            [
+                                "CURLY_OPEN",
+                                "FUNCTION",
+                                "PAREN_OPEN",
+                                "USERDATA",
+                                "PAREN_CLOSE",
+                                "RETURN_ARROW",
+                                "ANY",
+                                "CURLY_CLOSE",
+                            ],
+                            ["NAME"],
                             "NAME",
                             "NAME",
                             "NAME",
@@ -137,12 +247,13 @@ describe("antlr4-tsplang", function() {
                 it(test.name, () => {
                     const inputStream = new ANTLRInputStream(test.content)
                     const lexer = new TspDocLexer(inputStream)
+                    lexer.addErrorListener(ERROR_LISTENER)
 
                     const targetTokens = lexer.getAllTokens().filter(token => {
                         return token.channel === TspDocLexer.DEFAULT_TOKEN_CHANNEL
                     })
 
-                    const expected = test.tokenNames.map(name => {
+                    const expected = flatten(test.tokenNames).map(name => {
                         return lexer.getTokenType(name)
                     })
                     const actual = targetTokens.map(typeExtractor)

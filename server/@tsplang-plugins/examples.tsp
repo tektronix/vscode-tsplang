@@ -22,17 +22,17 @@
 
     @param {type} lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter {{string;
-                 number,}} PascalCase Sed eget turpis venenatis leo maximus
+    @parameter {function} PascalCase Sed eget turpis venenatis leo maximus
         mattis.
 
-    @param {(
-        nil,
+    @param {
+        nil|
         buffer.UNIT_AMP
-    )} camelCase Sed eget turpis venenatis leo maximus mattis.
+        |table?
+    } camelCase Sed eget turpis venenatis leo maximus mattis.
 
     @parameter {
-        function({ infinite, {recursion} }) => any
+        function(userdata?) => any
     } snake_case Sed eget turpis venenatis leo maximus mattis.
 
     @param [lowercase=] Sed eget turpis venenatis leo maximus mattis.
