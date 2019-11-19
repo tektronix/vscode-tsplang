@@ -41,6 +41,7 @@ import { DocSeeContext } from "./TspDocParser.generated";
 import { SeeTargetContext } from "./TspDocParser.generated";
 import { DocTsplinkContext } from "./TspDocParser.generated";
 import { DocFirmwareContext } from "./TspDocParser.generated";
+import { FirmwareEntryContext } from "./TspDocParser.generated";
 import { DocVersionContext } from "./TspDocParser.generated";
 import { DocValueContext } from "./TspDocParser.generated";
 import { NumContext } from "./TspDocParser.generated";
@@ -499,6 +500,17 @@ export interface TspDocListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDocFirmware?: (ctx: DocFirmwareContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.firmwareEntry`.
+	 * @param ctx the parse tree
+	 */
+	enterFirmwareEntry?: (ctx: FirmwareEntryContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.firmwareEntry`.
+	 * @param ctx the parse tree
+	 */
+	exitFirmwareEntry?: (ctx: FirmwareEntryContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspDocParser.docVersion`.
