@@ -85,8 +85,8 @@ typeList
 // end typeDeclaration
 
 nameDeclaration
-    : NAME                                              # NameRequired
-    | SQUARE_OPEN NAME (EQUALS docValue)? SQUARE_CLOSE  # NameOptional
+    : NAME                                          # NameRequired
+    | SQUARE_OPEN NAME EQUALS docValue SQUARE_CLOSE # NameOptional
     ;
 
 // end docParameter
