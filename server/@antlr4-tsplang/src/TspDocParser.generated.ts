@@ -83,6 +83,7 @@ export class TspDocParser extends Parser {
 	public static readonly LINK_TAG_END = 55;
 	public static readonly LINK_TAG_TARGET = 56;
 	public static readonly LINK_TAG_DISPLAY = 57;
+	public static readonly LINK_TAG_WHITESPACE = 58;
 	public static readonly RULE_docstring = 0;
 	public static readonly RULE_docblock = 1;
 	public static readonly RULE_docDeprecated = 2;
@@ -137,7 +138,8 @@ export class TspDocParser extends Parser {
 		"COMMA", "DOT", "EQUALS", "FALSE", "PAREN_OPEN", "PAREN_CLOSE", "SQUARE_OPEN", 
 		"SQUARE_CLOSE", "TRUE", "LT", "GTE", "RETURN_ARROW", "PIPE", "OTHER", 
 		"NIL", "NAME", "NORMALSTRING", "CHARSTRING", "INT", "HEX", "FLOAT", "HORIZONTAL_WS", 
-		"VERTICAL_WS", "LINK_TAG_END", "LINK_TAG_TARGET", "LINK_TAG_DISPLAY",
+		"VERTICAL_WS", "LINK_TAG_END", "LINK_TAG_TARGET", "LINK_TAG_DISPLAY", 
+		"LINK_TAG_WHITESPACE",
 	];
 	public static readonly VOCABULARY: Vocabulary = new VocabularyImpl(TspDocParser._LITERAL_NAMES, TspDocParser._SYMBOLIC_NAMES, []);
 
@@ -201,7 +203,7 @@ export class TspDocParser extends Parser {
 			this.state = 74;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspDocParser.OPEN) | (1 << TspDocParser.DEPRECATED_TAG) | (1 << TspDocParser.DESCRIPTION_TAG) | (1 << TspDocParser.PARAM_TAG) | (1 << TspDocParser.RETURNS_TAG) | (1 << TspDocParser.SEE_TAG) | (1 << TspDocParser.TSPLINK_TAG) | (1 << TspDocParser.TYPEDEF_TAG) | (1 << TspDocParser.FIELD_TAG) | (1 << TspDocParser.READONLY_TAG) | (1 << TspDocParser.WRITEONLY_TAG) | (1 << TspDocParser.TYPE_TAG) | (1 << TspDocParser.FW_TAG) | (1 << TspDocParser.TSPV1_TAG) | (1 << TspDocParser.TSPV2_TAG) | (1 << TspDocParser.V1_TAG) | (1 << TspDocParser.V2_TAG) | (1 << TspDocParser.LINK_TAG_START) | (1 << TspDocParser.BOOLEAN) | (1 << TspDocParser.NUMBER) | (1 << TspDocParser.STRING) | (1 << TspDocParser.FUNCTION) | (1 << TspDocParser.USERDATA) | (1 << TspDocParser.THREAD) | (1 << TspDocParser.TABLE) | (1 << TspDocParser.ENUM) | (1 << TspDocParser.ANY) | (1 << TspDocParser.CURLY_OPEN) | (1 << TspDocParser.CURLY_CLOSE))) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & ((1 << (TspDocParser.COMMA - 32)) | (1 << (TspDocParser.DOT - 32)) | (1 << (TspDocParser.EQUALS - 32)) | (1 << (TspDocParser.FALSE - 32)) | (1 << (TspDocParser.PAREN_OPEN - 32)) | (1 << (TspDocParser.PAREN_CLOSE - 32)) | (1 << (TspDocParser.SQUARE_OPEN - 32)) | (1 << (TspDocParser.SQUARE_CLOSE - 32)) | (1 << (TspDocParser.TRUE - 32)) | (1 << (TspDocParser.LT - 32)) | (1 << (TspDocParser.GTE - 32)) | (1 << (TspDocParser.RETURN_ARROW - 32)) | (1 << (TspDocParser.PIPE - 32)) | (1 << (TspDocParser.OTHER - 32)) | (1 << (TspDocParser.NIL - 32)) | (1 << (TspDocParser.NAME - 32)) | (1 << (TspDocParser.NORMALSTRING - 32)) | (1 << (TspDocParser.CHARSTRING - 32)) | (1 << (TspDocParser.INT - 32)) | (1 << (TspDocParser.HEX - 32)) | (1 << (TspDocParser.FLOAT - 32)) | (1 << (TspDocParser.HORIZONTAL_WS - 32)) | (1 << (TspDocParser.VERTICAL_WS - 32)) | (1 << (TspDocParser.LINK_TAG_END - 32)) | (1 << (TspDocParser.LINK_TAG_TARGET - 32)) | (1 << (TspDocParser.LINK_TAG_DISPLAY - 32)))) !== 0)) {
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspDocParser.OPEN) | (1 << TspDocParser.DEPRECATED_TAG) | (1 << TspDocParser.DESCRIPTION_TAG) | (1 << TspDocParser.PARAM_TAG) | (1 << TspDocParser.RETURNS_TAG) | (1 << TspDocParser.SEE_TAG) | (1 << TspDocParser.TSPLINK_TAG) | (1 << TspDocParser.TYPEDEF_TAG) | (1 << TspDocParser.FIELD_TAG) | (1 << TspDocParser.READONLY_TAG) | (1 << TspDocParser.WRITEONLY_TAG) | (1 << TspDocParser.TYPE_TAG) | (1 << TspDocParser.FW_TAG) | (1 << TspDocParser.TSPV1_TAG) | (1 << TspDocParser.TSPV2_TAG) | (1 << TspDocParser.V1_TAG) | (1 << TspDocParser.V2_TAG) | (1 << TspDocParser.LINK_TAG_START) | (1 << TspDocParser.BOOLEAN) | (1 << TspDocParser.NUMBER) | (1 << TspDocParser.STRING) | (1 << TspDocParser.FUNCTION) | (1 << TspDocParser.USERDATA) | (1 << TspDocParser.THREAD) | (1 << TspDocParser.TABLE) | (1 << TspDocParser.ENUM) | (1 << TspDocParser.ANY) | (1 << TspDocParser.CURLY_OPEN) | (1 << TspDocParser.CURLY_CLOSE))) !== 0) || ((((_la - 32)) & ~0x1F) === 0 && ((1 << (_la - 32)) & ((1 << (TspDocParser.COMMA - 32)) | (1 << (TspDocParser.DOT - 32)) | (1 << (TspDocParser.EQUALS - 32)) | (1 << (TspDocParser.FALSE - 32)) | (1 << (TspDocParser.PAREN_OPEN - 32)) | (1 << (TspDocParser.PAREN_CLOSE - 32)) | (1 << (TspDocParser.SQUARE_OPEN - 32)) | (1 << (TspDocParser.SQUARE_CLOSE - 32)) | (1 << (TspDocParser.TRUE - 32)) | (1 << (TspDocParser.LT - 32)) | (1 << (TspDocParser.GTE - 32)) | (1 << (TspDocParser.RETURN_ARROW - 32)) | (1 << (TspDocParser.PIPE - 32)) | (1 << (TspDocParser.OTHER - 32)) | (1 << (TspDocParser.NIL - 32)) | (1 << (TspDocParser.NAME - 32)) | (1 << (TspDocParser.NORMALSTRING - 32)) | (1 << (TspDocParser.CHARSTRING - 32)) | (1 << (TspDocParser.INT - 32)) | (1 << (TspDocParser.HEX - 32)) | (1 << (TspDocParser.FLOAT - 32)) | (1 << (TspDocParser.HORIZONTAL_WS - 32)) | (1 << (TspDocParser.VERTICAL_WS - 32)) | (1 << (TspDocParser.LINK_TAG_END - 32)) | (1 << (TspDocParser.LINK_TAG_TARGET - 32)) | (1 << (TspDocParser.LINK_TAG_DISPLAY - 32)) | (1 << (TspDocParser.LINK_TAG_WHITESPACE - 32)))) !== 0)) {
 				{
 				this.state = 72;
 				this._errHandler.sync(this);
@@ -1650,7 +1652,7 @@ export class TspDocParser extends Parser {
 	}
 
 	public static readonly _serializedATN: string =
-		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03;\u0120\x04\x02" +
+		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03<\u0120\x04\x02" +
 		"\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04\x07" +
 		"\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x04\f\t\f\x04\r\t\r\x04" +
 		"\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x04\x11\t\x11\x04\x12\t\x12\x04" +
