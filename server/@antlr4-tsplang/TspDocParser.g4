@@ -123,7 +123,10 @@ docTsplink
     : TSPLINK_TAG docContent?;
 
 docFirmware
-    : (LT | GTE | EQUALS EQUALS) INT DOT INT DOT INT COMMA? docFirmware?;
+    : FIRMWARE_TAG firmwareEntry+;
+
+firmwareEntry
+    : (GT | LTE | EQUALS EQUALS) FIRMWARE COMMA? docFirmware?;
 
 docVersion
     // Using non-nilable Enum equivalent after version reference tag.

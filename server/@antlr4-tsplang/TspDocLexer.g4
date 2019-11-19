@@ -19,6 +19,21 @@ import CommonLexerRules;
 OPEN
     : '--[[[';
 
+/* New Types */
+
+FIRMWARE
+    // Indentation is tabs to match generated code style.
+    : {(
+		// Previous character was ">".
+		this._input.LA(-1) === 62
+
+		// Previous 2 characters were "<=".
+		|| ( this._input.LA(-2) === 60 && this._input.LA(-1) === 61 )
+
+		// Previous 2 characters were "==".
+		|| ( this._input.LA(-2) === 61 && this._input.LA(-1) === 61 )
+	)}? Digit+ '.' Digit+ '.' Digit+;
+
 /* Tags */
 
 TAG_START
@@ -57,7 +72,7 @@ WRITEONLY_TAG
 TYPE_TAG
     : TAG_START 'type';
 
-FW_TAG
+FIRMWARE_TAG
     : TAG_START ('fw'|'firmware');
 
 TSPV1_TAG
@@ -144,10 +159,10 @@ SQUARE_CLOSE
     : ']';
 TRUE
     : 'true';
-LT
-    : '<';
-GTE
-    : '>=';
+GT
+    : '>';
+LTE
+    : '<=';
 RETURN_ARROW
     : '=>';
 PIPE
