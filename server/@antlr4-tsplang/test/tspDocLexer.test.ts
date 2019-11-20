@@ -492,7 +492,9 @@ describe("antlr4-tsplang", function() {
                     // #endregion @param
 
                     // #region @returns
-                    // These tests are similar to the @type tests.
+                    // These tests are similar to the following tests:
+                    //      @index
+                    //      @type
                     {
                         name: "Tokenizes @returns tag with a basic type",
                         content: `--[[[
@@ -675,7 +677,7 @@ describe("antlr4-tsplang", function() {
                     // #endregion @see
 
                     // #region @tsplink
-                    // These tests are similar to the following tags:
+                    // These tests are similar to the following tests:
                     //      @readonly
                     //      @writeonly
                     {
@@ -940,8 +942,90 @@ describe("antlr4-tsplang", function() {
                     },
                     // #endregion @field
 
+                    // #region @index
+                    // These tests are similar to the following tests:
+                    //      @returns
+                    //      @type
+                    {
+                        name: "Tokenizes @index tag with a basic type",
+                        content: `--[[[
+                            @index {type} Quisque fringilla est.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            ["INDEX_TAG", ["CURLY_OPEN", ["NAME"], "CURLY_CLOSE"], "NAME", "NAME", "NAME", "DOT"],
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @index tag with a nilable type",
+                        content: `--[[[
+                            @index {thread?} Quisque fringilla est.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            ["INDEX_TAG", ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"], "NAME", "NAME", "NAME", "DOT"],
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @index tag with a nilable type",
+                        content: `--[[[
+                            @index {
+                                nil|
+                                buffer.UNIT_AMP
+                                |table?
+                            } Quisque fringilla est.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            [
+                                "INDEX_TAG",
+                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                "NAME",
+                                "NAME",
+                                "NAME",
+                                "DOT",
+                            ],
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @index tag with a function signature",
+                        content: `--[[[
+                            @index {
+                                function(userdata?) => any
+                            } snake_case Quisque fringilla est.
+                        ]]`,
+                        tokenNames: [
+                            "OPEN",
+                            [
+                                "INDEX_TAG",
+                                [
+                                    "CURLY_OPEN",
+                                    ["FUNCTION", "PAREN_OPEN", "USERDATA", "PAREN_CLOSE", "RETURN_ARROW", "ANY"],
+                                    "CURLY_CLOSE",
+                                ],
+                                ["NAME"],
+                                "NAME",
+                                "NAME",
+                                "NAME",
+                                "DOT",
+                            ],
+                            "CLOSE",
+                        ],
+                    },
+                    {
+                        name: "Tokenizes @index tag with no type declaration",
+                        content: `--[[[
+                            @index Quisque fringilla est.
+                        ]]`,
+                        tokenNames: ["OPEN", ["INDEX_TAG", "NAME", "NAME", "NAME", "DOT"], "CLOSE"],
+                    },
+                    // #endregion @index
+
                     // #region @readonly
-                    // These tests are similar to the following tags:
+                    // These tests are similar to the following tests:
                     //      @tsplink
                     //      @writeonly
                     {
@@ -981,7 +1065,7 @@ describe("antlr4-tsplang", function() {
                     // #endregion @readonly
 
                     // #region @writeonly
-                    // These tests are similar to the following tags:
+                    // These tests are similar to the following tests:
                     //      @tsplink
                     //      @readonly
                     {
@@ -1004,7 +1088,9 @@ describe("antlr4-tsplang", function() {
                     // #endregion @writeonly
 
                     // #region @type
-                    // These tests are similar to the @returns tests.
+                    // These tests are similar to the following tests:
+                    //      @returns
+                    //      @index
                     {
                         name: "Tokenizes @type tag with a basic type",
                         content: `--[[[

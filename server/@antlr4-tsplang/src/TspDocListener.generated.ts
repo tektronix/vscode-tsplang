@@ -37,6 +37,7 @@ import { DocWriteonlyContext } from "./TspDocParser.generated";
 import { DocTypeContext } from "./TspDocParser.generated";
 import { DocTypedefContext } from "./TspDocParser.generated";
 import { DocFieldContext } from "./TspDocParser.generated";
+import { DocIndexContext } from "./TspDocParser.generated";
 import { DocSeeContext } from "./TspDocParser.generated";
 import { SeeTargetContext } from "./TspDocParser.generated";
 import { DocTsplinkContext } from "./TspDocParser.generated";
@@ -456,6 +457,17 @@ export interface TspDocListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDocField?: (ctx: DocFieldContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.docIndex`.
+	 * @param ctx the parse tree
+	 */
+	enterDocIndex?: (ctx: DocIndexContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.docIndex`.
+	 * @param ctx the parse tree
+	 */
+	exitDocIndex?: (ctx: DocIndexContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspDocParser.docSee`.

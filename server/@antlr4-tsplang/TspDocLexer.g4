@@ -51,6 +51,9 @@ FIELD_TAG
 FIRMWARE_TAG
     : TAG_START ('fw'|'firmware');
 
+INDEX_TAG
+    : TAG_START 'index';
+
 PARAM_TAG
     : TAG_START ('param'|'parameter');
 

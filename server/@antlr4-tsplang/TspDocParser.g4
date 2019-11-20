@@ -30,6 +30,7 @@ docblock
         | docType
         | docTypedef
         | docField
+        | docIndex
         | docSee
         | docTsplink
         | docFirmware
@@ -108,6 +109,9 @@ docTypedef
 
 docField
     : FIELD_TAG typeDeclaration? nameDeclaration docContent?;
+
+docIndex
+    : INDEX_TAG typeDeclaration docContent?;
 
 docSee
     : SEE_TAG seeTarget docContent?;
