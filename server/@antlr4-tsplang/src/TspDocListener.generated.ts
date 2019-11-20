@@ -31,6 +31,9 @@ import { TypeUnionContext } from "./TspDocParser.generated";
 import { TypeContext } from "./TspDocParser.generated";
 import { TypeListContext } from "./TspDocParser.generated";
 import { NameDeclarationContext } from "./TspDocParser.generated";
+import { NameValueContext } from "./TspDocParser.generated";
+import { NumContext } from "./TspDocParser.generated";
+import { StrContext } from "./TspDocParser.generated";
 import { DocReturnsContext } from "./TspDocParser.generated";
 import { DocReadonlyContext } from "./TspDocParser.generated";
 import { DocWriteonlyContext } from "./TspDocParser.generated";
@@ -44,9 +47,6 @@ import { DocTsplinkContext } from "./TspDocParser.generated";
 import { DocFirmwareContext } from "./TspDocParser.generated";
 import { FirmwareEntryContext } from "./TspDocParser.generated";
 import { DocVersionContext } from "./TspDocParser.generated";
-import { DocValueContext } from "./TspDocParser.generated";
-import { NumContext } from "./TspDocParser.generated";
-import { StrContext } from "./TspDocParser.generated";
 
 
 /**
@@ -393,6 +393,39 @@ export interface TspDocListener extends ParseTreeListener {
 	exitNameDeclaration?: (ctx: NameDeclarationContext) => void;
 
 	/**
+	 * Enter a parse tree produced by `TspDocParser.nameValue`.
+	 * @param ctx the parse tree
+	 */
+	enterNameValue?: (ctx: NameValueContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.nameValue`.
+	 * @param ctx the parse tree
+	 */
+	exitNameValue?: (ctx: NameValueContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.num`.
+	 * @param ctx the parse tree
+	 */
+	enterNum?: (ctx: NumContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.num`.
+	 * @param ctx the parse tree
+	 */
+	exitNum?: (ctx: NumContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.str`.
+	 * @param ctx the parse tree
+	 */
+	enterStr?: (ctx: StrContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.str`.
+	 * @param ctx the parse tree
+	 */
+	exitStr?: (ctx: StrContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `TspDocParser.docReturns`.
 	 * @param ctx the parse tree
 	 */
@@ -534,38 +567,5 @@ export interface TspDocListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDocVersion?: (ctx: DocVersionContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `TspDocParser.docValue`.
-	 * @param ctx the parse tree
-	 */
-	enterDocValue?: (ctx: DocValueContext) => void;
-	/**
-	 * Exit a parse tree produced by `TspDocParser.docValue`.
-	 * @param ctx the parse tree
-	 */
-	exitDocValue?: (ctx: DocValueContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `TspDocParser.num`.
-	 * @param ctx the parse tree
-	 */
-	enterNum?: (ctx: NumContext) => void;
-	/**
-	 * Exit a parse tree produced by `TspDocParser.num`.
-	 * @param ctx the parse tree
-	 */
-	exitNum?: (ctx: NumContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `TspDocParser.str`.
-	 * @param ctx the parse tree
-	 */
-	enterStr?: (ctx: StrContext) => void;
-	/**
-	 * Exit a parse tree produced by `TspDocParser.str`.
-	 * @param ctx the parse tree
-	 */
-	exitStr?: (ctx: StrContext) => void;
 }
 

@@ -104,8 +104,24 @@ typeList
 
 nameDeclaration
     : NAME                                          # NameRequired
-    | SQUARE_OPEN NAME EQUALS docValue SQUARE_CLOSE # NameOptional
+    | SQUARE_OPEN NAME EQUALS nameValue SQUARE_CLOSE # NameOptional
     ;
+
+nameValue
+    : NIL
+    | TRUE | FALSE
+    | num
+    | str
+    | NAME
+    ;
+
+num
+    : INT | HEX | FLOAT;
+
+str
+    : NORMALSTRING | CHARSTRING;
+
+// end nameDeclaration
 
 // end docParameter
 
@@ -154,17 +170,3 @@ docVersion
     : TSPV1_TAG (V2_TAG NAME (DOT NAME)*)?  # Version1
     | TSPV2_TAG (V1_TAG NAME (DOT NAME)*)?  # Version2
     ;
-
-docValue
-    : NIL
-    | TRUE | FALSE
-    | num
-    | str
-    | NAME
-    ;
-
-num
-    : INT | HEX | FLOAT;
-
-str
-    : NORMALSTRING | CHARSTRING;

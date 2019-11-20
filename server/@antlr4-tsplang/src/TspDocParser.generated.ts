@@ -99,30 +99,29 @@ export class TspDocParser extends Parser {
 	public static readonly RULE_type = 10;
 	public static readonly RULE_typeList = 11;
 	public static readonly RULE_nameDeclaration = 12;
-	public static readonly RULE_docReturns = 13;
-	public static readonly RULE_docReadonly = 14;
-	public static readonly RULE_docWriteonly = 15;
-	public static readonly RULE_docType = 16;
-	public static readonly RULE_docTypedef = 17;
-	public static readonly RULE_docField = 18;
-	public static readonly RULE_docIndex = 19;
-	public static readonly RULE_docSee = 20;
-	public static readonly RULE_seeTarget = 21;
-	public static readonly RULE_docTsplink = 22;
-	public static readonly RULE_docFirmware = 23;
-	public static readonly RULE_firmwareEntry = 24;
-	public static readonly RULE_docVersion = 25;
-	public static readonly RULE_docValue = 26;
-	public static readonly RULE_num = 27;
-	public static readonly RULE_str = 28;
+	public static readonly RULE_nameValue = 13;
+	public static readonly RULE_num = 14;
+	public static readonly RULE_str = 15;
+	public static readonly RULE_docReturns = 16;
+	public static readonly RULE_docReadonly = 17;
+	public static readonly RULE_docWriteonly = 18;
+	public static readonly RULE_docType = 19;
+	public static readonly RULE_docTypedef = 20;
+	public static readonly RULE_docField = 21;
+	public static readonly RULE_docIndex = 22;
+	public static readonly RULE_docSee = 23;
+	public static readonly RULE_seeTarget = 24;
+	public static readonly RULE_docTsplink = 25;
+	public static readonly RULE_docFirmware = 26;
+	public static readonly RULE_firmwareEntry = 27;
+	public static readonly RULE_docVersion = 28;
 	// tslint:disable:no-trailing-whitespace
 	public static readonly ruleNames: string[] = [
 		"docstring", "docblock", "docDeprecated", "docDescription", "docContent", 
 		"link", "docParameter", "typeDeclaration", "typeEntry", "typeUnion", "type", 
-		"typeList", "nameDeclaration", "docReturns", "docReadonly", "docWriteonly", 
-		"docType", "docTypedef", "docField", "docIndex", "docSee", "seeTarget", 
-		"docTsplink", "docFirmware", "firmwareEntry", "docVersion", "docValue", 
-		"num", "str",
+		"typeList", "nameDeclaration", "nameValue", "num", "str", "docReturns", 
+		"docReadonly", "docWriteonly", "docType", "docTypedef", "docField", "docIndex", 
+		"docSee", "seeTarget", "docTsplink", "docFirmware", "firmwareEntry", "docVersion",
 	];
 
 	private static readonly _LITERAL_NAMES: Array<string | undefined> = [
@@ -964,7 +963,7 @@ export class TspDocParser extends Parser {
 				this.state = 171;
 				this.match(TspDocParser.EQUALS);
 				this.state = 172;
-				this.docValue();
+				this.nameValue();
 				this.state = 173;
 				this.match(TspDocParser.SQUARE_CLOSE);
 				}
@@ -988,679 +987,31 @@ export class TspDocParser extends Parser {
 		return _localctx;
 	}
 	// @RuleVersion(0)
-	public docReturns(): DocReturnsContext {
-		let _localctx: DocReturnsContext = new DocReturnsContext(this._ctx, this.state);
-		this.enterRule(_localctx, 26, TspDocParser.RULE_docReturns);
+	public nameValue(): NameValueContext {
+		let _localctx: NameValueContext = new NameValueContext(this._ctx, this.state);
+		this.enterRule(_localctx, 26, TspDocParser.RULE_nameValue);
 		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 177;
-			this.match(TspDocParser.RETURNS_TAG);
-			this.state = 185;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 19, this._ctx) ) {
-			case 1:
-				{
-				this.state = 178;
-				this.match(TspDocParser.CURLY_OPEN);
-				this.state = 181;
-				this._errHandler.sync(this);
-				switch ( this.interpreter.adaptivePredict(this._input, 18, this._ctx) ) {
-				case 1:
-					{
-					this.state = 179;
-					this.typeEntry();
-					}
-					break;
-
-				case 2:
-					{
-					this.state = 180;
-					this.typeList();
-					}
-					break;
-				}
-				this.state = 183;
-				this.match(TspDocParser.CURLY_CLOSE);
-				}
-				break;
-			}
-			this.state = 187;
-			this.docContent();
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docReadonly(): DocReadonlyContext {
-		let _localctx: DocReadonlyContext = new DocReadonlyContext(this._ctx, this.state);
-		this.enterRule(_localctx, 28, TspDocParser.RULE_docReadonly);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 189;
-			this.match(TspDocParser.READONLY_TAG);
-			this.state = 191;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 20, this._ctx) ) {
-			case 1:
-				{
-				this.state = 190;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docWriteonly(): DocWriteonlyContext {
-		let _localctx: DocWriteonlyContext = new DocWriteonlyContext(this._ctx, this.state);
-		this.enterRule(_localctx, 30, TspDocParser.RULE_docWriteonly);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 193;
-			this.match(TspDocParser.WRITEONLY_TAG);
-			this.state = 195;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 21, this._ctx) ) {
-			case 1:
-				{
-				this.state = 194;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docType(): DocTypeContext {
-		let _localctx: DocTypeContext = new DocTypeContext(this._ctx, this.state);
-		this.enterRule(_localctx, 32, TspDocParser.RULE_docType);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 197;
-			this.match(TspDocParser.TYPE_TAG);
-			this.state = 198;
-			this.typeDeclaration();
-			this.state = 200;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 22, this._ctx) ) {
-			case 1:
-				{
-				this.state = 199;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docTypedef(): DocTypedefContext {
-		let _localctx: DocTypedefContext = new DocTypedefContext(this._ctx, this.state);
-		this.enterRule(_localctx, 34, TspDocParser.RULE_docTypedef);
-		let _la: number;
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 202;
-			this.match(TspDocParser.TYPEDEF_TAG);
-			this.state = 204;
-			this._errHandler.sync(this);
-			_la = this._input.LA(1);
-			if (_la === TspDocParser.CURLY_OPEN) {
-				{
-				this.state = 203;
-				this.typeDeclaration();
-				}
-			}
-
-			this.state = 206;
-			this.match(TspDocParser.NAME);
-			this.state = 208;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 24, this._ctx) ) {
-			case 1:
-				{
-				this.state = 207;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docField(): DocFieldContext {
-		let _localctx: DocFieldContext = new DocFieldContext(this._ctx, this.state);
-		this.enterRule(_localctx, 36, TspDocParser.RULE_docField);
-		let _la: number;
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 210;
-			this.match(TspDocParser.FIELD_TAG);
-			this.state = 212;
-			this._errHandler.sync(this);
-			_la = this._input.LA(1);
-			if (_la === TspDocParser.CURLY_OPEN) {
-				{
-				this.state = 211;
-				this.typeDeclaration();
-				}
-			}
-
-			this.state = 214;
-			this.nameDeclaration();
-			this.state = 216;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 26, this._ctx) ) {
-			case 1:
-				{
-				this.state = 215;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docIndex(): DocIndexContext {
-		let _localctx: DocIndexContext = new DocIndexContext(this._ctx, this.state);
-		this.enterRule(_localctx, 38, TspDocParser.RULE_docIndex);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 218;
-			this.match(TspDocParser.INDEX_TAG);
-			this.state = 219;
-			this.typeDeclaration();
-			this.state = 221;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 27, this._ctx) ) {
-			case 1:
-				{
-				this.state = 220;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docSee(): DocSeeContext {
-		let _localctx: DocSeeContext = new DocSeeContext(this._ctx, this.state);
-		this.enterRule(_localctx, 40, TspDocParser.RULE_docSee);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 223;
-			this.match(TspDocParser.SEE_TAG);
-			this.state = 224;
-			this.seeTarget();
-			this.state = 226;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 28, this._ctx) ) {
-			case 1:
-				{
-				this.state = 225;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public seeTarget(): SeeTargetContext {
-		let _localctx: SeeTargetContext = new SeeTargetContext(this._ctx, this.state);
-		this.enterRule(_localctx, 42, TspDocParser.RULE_seeTarget);
-		try {
-			let _alt: number;
-			this.state = 237;
-			this._errHandler.sync(this);
-			switch (this._input.LA(1)) {
-			case TspDocParser.NAME:
-				this.enterOuterAlt(_localctx, 1);
-				{
-				this.state = 228;
-				this.match(TspDocParser.NAME);
-				this.state = 233;
-				this._errHandler.sync(this);
-				_alt = this.interpreter.adaptivePredict(this._input, 29, this._ctx);
-				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-					if (_alt === 1) {
-						{
-						{
-						this.state = 229;
-						this.match(TspDocParser.DOT);
-						this.state = 230;
-						this.match(TspDocParser.NAME);
-						}
-						}
-					}
-					this.state = 235;
-					this._errHandler.sync(this);
-					_alt = this.interpreter.adaptivePredict(this._input, 29, this._ctx);
-				}
-				}
-				break;
-			case TspDocParser.LINK_TAG_START:
-				this.enterOuterAlt(_localctx, 2);
-				{
-				this.state = 236;
-				this.link();
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docTsplink(): DocTsplinkContext {
-		let _localctx: DocTsplinkContext = new DocTsplinkContext(this._ctx, this.state);
-		this.enterRule(_localctx, 44, TspDocParser.RULE_docTsplink);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 239;
-			this.match(TspDocParser.TSPLINK_TAG);
-			this.state = 241;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 31, this._ctx) ) {
-			case 1:
-				{
-				this.state = 240;
-				this.docContent();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docFirmware(): DocFirmwareContext {
-		let _localctx: DocFirmwareContext = new DocFirmwareContext(this._ctx, this.state);
-		this.enterRule(_localctx, 46, TspDocParser.RULE_docFirmware);
-		try {
-			let _alt: number;
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 243;
-			this.match(TspDocParser.FIRMWARE_TAG);
-			this.state = 245;
-			this._errHandler.sync(this);
-			_alt = 1;
-			do {
-				switch (_alt) {
-				case 1:
-					{
-					{
-					this.state = 244;
-					this.firmwareEntry();
-					}
-					}
-					break;
-				default:
-					throw new NoViableAltException(this);
-				}
-				this.state = 247;
-				this._errHandler.sync(this);
-				_alt = this.interpreter.adaptivePredict(this._input, 32, this._ctx);
-			} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public firmwareEntry(): FirmwareEntryContext {
-		let _localctx: FirmwareEntryContext = new FirmwareEntryContext(this._ctx, this.state);
-		this.enterRule(_localctx, 48, TspDocParser.RULE_firmwareEntry);
-		try {
-			this.enterOuterAlt(_localctx, 1);
-			{
-			this.state = 253;
-			this._errHandler.sync(this);
-			switch (this._input.LA(1)) {
-			case TspDocParser.GT:
-				{
-				this.state = 249;
-				this.match(TspDocParser.GT);
-				}
-				break;
-			case TspDocParser.LTE:
-				{
-				this.state = 250;
-				this.match(TspDocParser.LTE);
-				}
-				break;
-			case TspDocParser.EQUALS:
-				{
-				this.state = 251;
-				this.match(TspDocParser.EQUALS);
-				this.state = 252;
-				this.match(TspDocParser.EQUALS);
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-			this.state = 255;
-			this.match(TspDocParser.FIRMWARE);
-			this.state = 257;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 34, this._ctx) ) {
-			case 1:
-				{
-				this.state = 256;
-				this.match(TspDocParser.COMMA);
-				}
-				break;
-			}
-			this.state = 260;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 35, this._ctx) ) {
-			case 1:
-				{
-				this.state = 259;
-				this.docFirmware();
-				}
-				break;
-			}
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docVersion(): DocVersionContext {
-		let _localctx: DocVersionContext = new DocVersionContext(this._ctx, this.state);
-		this.enterRule(_localctx, 50, TspDocParser.RULE_docVersion);
-		let _la: number;
-		try {
-			let _alt: number;
-			this.state = 286;
-			this._errHandler.sync(this);
-			switch (this._input.LA(1)) {
-			case TspDocParser.TSPV1_TAG:
-				_localctx = new Version1Context(_localctx);
-				this.enterOuterAlt(_localctx, 1);
-				{
-				this.state = 262;
-				this.match(TspDocParser.TSPV1_TAG);
-				this.state = 272;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				if (_la === TspDocParser.V2_TAG) {
-					{
-					this.state = 263;
-					this.match(TspDocParser.V2_TAG);
-					this.state = 264;
-					this.match(TspDocParser.NAME);
-					this.state = 269;
-					this._errHandler.sync(this);
-					_alt = this.interpreter.adaptivePredict(this._input, 36, this._ctx);
-					while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-						if (_alt === 1) {
-							{
-							{
-							this.state = 265;
-							this.match(TspDocParser.DOT);
-							this.state = 266;
-							this.match(TspDocParser.NAME);
-							}
-							}
-						}
-						this.state = 271;
-						this._errHandler.sync(this);
-						_alt = this.interpreter.adaptivePredict(this._input, 36, this._ctx);
-					}
-					}
-				}
-
-				}
-				break;
-			case TspDocParser.TSPV2_TAG:
-				_localctx = new Version2Context(_localctx);
-				this.enterOuterAlt(_localctx, 2);
-				{
-				this.state = 274;
-				this.match(TspDocParser.TSPV2_TAG);
-				this.state = 284;
-				this._errHandler.sync(this);
-				_la = this._input.LA(1);
-				if (_la === TspDocParser.V1_TAG) {
-					{
-					this.state = 275;
-					this.match(TspDocParser.V1_TAG);
-					this.state = 276;
-					this.match(TspDocParser.NAME);
-					this.state = 281;
-					this._errHandler.sync(this);
-					_alt = this.interpreter.adaptivePredict(this._input, 38, this._ctx);
-					while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
-						if (_alt === 1) {
-							{
-							{
-							this.state = 277;
-							this.match(TspDocParser.DOT);
-							this.state = 278;
-							this.match(TspDocParser.NAME);
-							}
-							}
-						}
-						this.state = 283;
-						this._errHandler.sync(this);
-						_alt = this.interpreter.adaptivePredict(this._input, 38, this._ctx);
-					}
-					}
-				}
-
-				}
-				break;
-			default:
-				throw new NoViableAltException(this);
-			}
-		}
-		catch (re) {
-			if (re instanceof RecognitionException) {
-				_localctx.exception = re;
-				this._errHandler.reportError(this, re);
-				this._errHandler.recover(this, re);
-			} else {
-				throw re;
-			}
-		}
-		finally {
-			this.exitRule();
-		}
-		return _localctx;
-	}
-	// @RuleVersion(0)
-	public docValue(): DocValueContext {
-		let _localctx: DocValueContext = new DocValueContext(this._ctx, this.state);
-		this.enterRule(_localctx, 52, TspDocParser.RULE_docValue);
-		try {
-			this.state = 294;
+			this.state = 183;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case TspDocParser.NIL:
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 288;
+				this.state = 177;
 				this.match(TspDocParser.NIL);
 				}
 				break;
 			case TspDocParser.TRUE:
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 289;
+				this.state = 178;
 				this.match(TspDocParser.TRUE);
 				}
 				break;
 			case TspDocParser.FALSE:
 				this.enterOuterAlt(_localctx, 3);
 				{
-				this.state = 290;
+				this.state = 179;
 				this.match(TspDocParser.FALSE);
 				}
 				break;
@@ -1669,7 +1020,7 @@ export class TspDocParser extends Parser {
 			case TspDocParser.FLOAT:
 				this.enterOuterAlt(_localctx, 4);
 				{
-				this.state = 291;
+				this.state = 180;
 				this.num();
 				}
 				break;
@@ -1677,14 +1028,14 @@ export class TspDocParser extends Parser {
 			case TspDocParser.CHARSTRING:
 				this.enterOuterAlt(_localctx, 5);
 				{
-				this.state = 292;
+				this.state = 181;
 				this.str();
 				}
 				break;
 			case TspDocParser.NAME:
 				this.enterOuterAlt(_localctx, 6);
 				{
-				this.state = 293;
+				this.state = 182;
 				this.match(TspDocParser.NAME);
 				}
 				break;
@@ -1709,12 +1060,12 @@ export class TspDocParser extends Parser {
 	// @RuleVersion(0)
 	public num(): NumContext {
 		let _localctx: NumContext = new NumContext(this._ctx, this.state);
-		this.enterRule(_localctx, 54, TspDocParser.RULE_num);
+		this.enterRule(_localctx, 28, TspDocParser.RULE_num);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 296;
+			this.state = 185;
 			_la = this._input.LA(1);
 			if (!(((((_la - 52)) & ~0x1F) === 0 && ((1 << (_la - 52)) & ((1 << (TspDocParser.INT - 52)) | (1 << (TspDocParser.HEX - 52)) | (1 << (TspDocParser.FLOAT - 52)))) !== 0))) {
 			this._errHandler.recoverInline(this);
@@ -1745,12 +1096,12 @@ export class TspDocParser extends Parser {
 	// @RuleVersion(0)
 	public str(): StrContext {
 		let _localctx: StrContext = new StrContext(this._ctx, this.state);
-		this.enterRule(_localctx, 56, TspDocParser.RULE_str);
+		this.enterRule(_localctx, 30, TspDocParser.RULE_str);
 		let _la: number;
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 298;
+			this.state = 187;
 			_la = this._input.LA(1);
 			if (!(_la === TspDocParser.NORMALSTRING || _la === TspDocParser.CHARSTRING)) {
 			this._errHandler.recoverInline(this);
@@ -1762,6 +1113,654 @@ export class TspDocParser extends Parser {
 				this._errHandler.reportMatch(this);
 				this.consume();
 			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docReturns(): DocReturnsContext {
+		let _localctx: DocReturnsContext = new DocReturnsContext(this._ctx, this.state);
+		this.enterRule(_localctx, 32, TspDocParser.RULE_docReturns);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 189;
+			this.match(TspDocParser.RETURNS_TAG);
+			this.state = 197;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 20, this._ctx) ) {
+			case 1:
+				{
+				this.state = 190;
+				this.match(TspDocParser.CURLY_OPEN);
+				this.state = 193;
+				this._errHandler.sync(this);
+				switch ( this.interpreter.adaptivePredict(this._input, 19, this._ctx) ) {
+				case 1:
+					{
+					this.state = 191;
+					this.typeEntry();
+					}
+					break;
+
+				case 2:
+					{
+					this.state = 192;
+					this.typeList();
+					}
+					break;
+				}
+				this.state = 195;
+				this.match(TspDocParser.CURLY_CLOSE);
+				}
+				break;
+			}
+			this.state = 199;
+			this.docContent();
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docReadonly(): DocReadonlyContext {
+		let _localctx: DocReadonlyContext = new DocReadonlyContext(this._ctx, this.state);
+		this.enterRule(_localctx, 34, TspDocParser.RULE_docReadonly);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 201;
+			this.match(TspDocParser.READONLY_TAG);
+			this.state = 203;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 21, this._ctx) ) {
+			case 1:
+				{
+				this.state = 202;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docWriteonly(): DocWriteonlyContext {
+		let _localctx: DocWriteonlyContext = new DocWriteonlyContext(this._ctx, this.state);
+		this.enterRule(_localctx, 36, TspDocParser.RULE_docWriteonly);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 205;
+			this.match(TspDocParser.WRITEONLY_TAG);
+			this.state = 207;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 22, this._ctx) ) {
+			case 1:
+				{
+				this.state = 206;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docType(): DocTypeContext {
+		let _localctx: DocTypeContext = new DocTypeContext(this._ctx, this.state);
+		this.enterRule(_localctx, 38, TspDocParser.RULE_docType);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 209;
+			this.match(TspDocParser.TYPE_TAG);
+			this.state = 210;
+			this.typeDeclaration();
+			this.state = 212;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 23, this._ctx) ) {
+			case 1:
+				{
+				this.state = 211;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docTypedef(): DocTypedefContext {
+		let _localctx: DocTypedefContext = new DocTypedefContext(this._ctx, this.state);
+		this.enterRule(_localctx, 40, TspDocParser.RULE_docTypedef);
+		let _la: number;
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 214;
+			this.match(TspDocParser.TYPEDEF_TAG);
+			this.state = 216;
+			this._errHandler.sync(this);
+			_la = this._input.LA(1);
+			if (_la === TspDocParser.CURLY_OPEN) {
+				{
+				this.state = 215;
+				this.typeDeclaration();
+				}
+			}
+
+			this.state = 218;
+			this.match(TspDocParser.NAME);
+			this.state = 220;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 25, this._ctx) ) {
+			case 1:
+				{
+				this.state = 219;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docField(): DocFieldContext {
+		let _localctx: DocFieldContext = new DocFieldContext(this._ctx, this.state);
+		this.enterRule(_localctx, 42, TspDocParser.RULE_docField);
+		let _la: number;
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 222;
+			this.match(TspDocParser.FIELD_TAG);
+			this.state = 224;
+			this._errHandler.sync(this);
+			_la = this._input.LA(1);
+			if (_la === TspDocParser.CURLY_OPEN) {
+				{
+				this.state = 223;
+				this.typeDeclaration();
+				}
+			}
+
+			this.state = 226;
+			this.nameDeclaration();
+			this.state = 228;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 27, this._ctx) ) {
+			case 1:
+				{
+				this.state = 227;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docIndex(): DocIndexContext {
+		let _localctx: DocIndexContext = new DocIndexContext(this._ctx, this.state);
+		this.enterRule(_localctx, 44, TspDocParser.RULE_docIndex);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 230;
+			this.match(TspDocParser.INDEX_TAG);
+			this.state = 231;
+			this.typeDeclaration();
+			this.state = 233;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 28, this._ctx) ) {
+			case 1:
+				{
+				this.state = 232;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docSee(): DocSeeContext {
+		let _localctx: DocSeeContext = new DocSeeContext(this._ctx, this.state);
+		this.enterRule(_localctx, 46, TspDocParser.RULE_docSee);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 235;
+			this.match(TspDocParser.SEE_TAG);
+			this.state = 236;
+			this.seeTarget();
+			this.state = 238;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 29, this._ctx) ) {
+			case 1:
+				{
+				this.state = 237;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public seeTarget(): SeeTargetContext {
+		let _localctx: SeeTargetContext = new SeeTargetContext(this._ctx, this.state);
+		this.enterRule(_localctx, 48, TspDocParser.RULE_seeTarget);
+		try {
+			let _alt: number;
+			this.state = 249;
+			this._errHandler.sync(this);
+			switch (this._input.LA(1)) {
+			case TspDocParser.NAME:
+				this.enterOuterAlt(_localctx, 1);
+				{
+				this.state = 240;
+				this.match(TspDocParser.NAME);
+				this.state = 245;
+				this._errHandler.sync(this);
+				_alt = this.interpreter.adaptivePredict(this._input, 30, this._ctx);
+				while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
+					if (_alt === 1) {
+						{
+						{
+						this.state = 241;
+						this.match(TspDocParser.DOT);
+						this.state = 242;
+						this.match(TspDocParser.NAME);
+						}
+						}
+					}
+					this.state = 247;
+					this._errHandler.sync(this);
+					_alt = this.interpreter.adaptivePredict(this._input, 30, this._ctx);
+				}
+				}
+				break;
+			case TspDocParser.LINK_TAG_START:
+				this.enterOuterAlt(_localctx, 2);
+				{
+				this.state = 248;
+				this.link();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docTsplink(): DocTsplinkContext {
+		let _localctx: DocTsplinkContext = new DocTsplinkContext(this._ctx, this.state);
+		this.enterRule(_localctx, 50, TspDocParser.RULE_docTsplink);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 251;
+			this.match(TspDocParser.TSPLINK_TAG);
+			this.state = 253;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 32, this._ctx) ) {
+			case 1:
+				{
+				this.state = 252;
+				this.docContent();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docFirmware(): DocFirmwareContext {
+		let _localctx: DocFirmwareContext = new DocFirmwareContext(this._ctx, this.state);
+		this.enterRule(_localctx, 52, TspDocParser.RULE_docFirmware);
+		try {
+			let _alt: number;
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 255;
+			this.match(TspDocParser.FIRMWARE_TAG);
+			this.state = 257;
+			this._errHandler.sync(this);
+			_alt = 1;
+			do {
+				switch (_alt) {
+				case 1:
+					{
+					{
+					this.state = 256;
+					this.firmwareEntry();
+					}
+					}
+					break;
+				default:
+					throw new NoViableAltException(this);
+				}
+				this.state = 259;
+				this._errHandler.sync(this);
+				_alt = this.interpreter.adaptivePredict(this._input, 33, this._ctx);
+			} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public firmwareEntry(): FirmwareEntryContext {
+		let _localctx: FirmwareEntryContext = new FirmwareEntryContext(this._ctx, this.state);
+		this.enterRule(_localctx, 54, TspDocParser.RULE_firmwareEntry);
+		try {
+			this.enterOuterAlt(_localctx, 1);
+			{
+			this.state = 265;
+			this._errHandler.sync(this);
+			switch (this._input.LA(1)) {
+			case TspDocParser.GT:
+				{
+				this.state = 261;
+				this.match(TspDocParser.GT);
+				}
+				break;
+			case TspDocParser.LTE:
+				{
+				this.state = 262;
+				this.match(TspDocParser.LTE);
+				}
+				break;
+			case TspDocParser.EQUALS:
+				{
+				this.state = 263;
+				this.match(TspDocParser.EQUALS);
+				this.state = 264;
+				this.match(TspDocParser.EQUALS);
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+			this.state = 267;
+			this.match(TspDocParser.FIRMWARE);
+			this.state = 269;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 35, this._ctx) ) {
+			case 1:
+				{
+				this.state = 268;
+				this.match(TspDocParser.COMMA);
+				}
+				break;
+			}
+			this.state = 272;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 36, this._ctx) ) {
+			case 1:
+				{
+				this.state = 271;
+				this.docFirmware();
+				}
+				break;
+			}
+			}
+		}
+		catch (re) {
+			if (re instanceof RecognitionException) {
+				_localctx.exception = re;
+				this._errHandler.reportError(this, re);
+				this._errHandler.recover(this, re);
+			} else {
+				throw re;
+			}
+		}
+		finally {
+			this.exitRule();
+		}
+		return _localctx;
+	}
+	// @RuleVersion(0)
+	public docVersion(): DocVersionContext {
+		let _localctx: DocVersionContext = new DocVersionContext(this._ctx, this.state);
+		this.enterRule(_localctx, 56, TspDocParser.RULE_docVersion);
+		let _la: number;
+		try {
+			let _alt: number;
+			this.state = 298;
+			this._errHandler.sync(this);
+			switch (this._input.LA(1)) {
+			case TspDocParser.TSPV1_TAG:
+				_localctx = new Version1Context(_localctx);
+				this.enterOuterAlt(_localctx, 1);
+				{
+				this.state = 274;
+				this.match(TspDocParser.TSPV1_TAG);
+				this.state = 284;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+				if (_la === TspDocParser.V2_TAG) {
+					{
+					this.state = 275;
+					this.match(TspDocParser.V2_TAG);
+					this.state = 276;
+					this.match(TspDocParser.NAME);
+					this.state = 281;
+					this._errHandler.sync(this);
+					_alt = this.interpreter.adaptivePredict(this._input, 37, this._ctx);
+					while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
+						if (_alt === 1) {
+							{
+							{
+							this.state = 277;
+							this.match(TspDocParser.DOT);
+							this.state = 278;
+							this.match(TspDocParser.NAME);
+							}
+							}
+						}
+						this.state = 283;
+						this._errHandler.sync(this);
+						_alt = this.interpreter.adaptivePredict(this._input, 37, this._ctx);
+					}
+					}
+				}
+
+				}
+				break;
+			case TspDocParser.TSPV2_TAG:
+				_localctx = new Version2Context(_localctx);
+				this.enterOuterAlt(_localctx, 2);
+				{
+				this.state = 286;
+				this.match(TspDocParser.TSPV2_TAG);
+				this.state = 296;
+				this._errHandler.sync(this);
+				_la = this._input.LA(1);
+				if (_la === TspDocParser.V1_TAG) {
+					{
+					this.state = 287;
+					this.match(TspDocParser.V1_TAG);
+					this.state = 288;
+					this.match(TspDocParser.NAME);
+					this.state = 293;
+					this._errHandler.sync(this);
+					_alt = this.interpreter.adaptivePredict(this._input, 39, this._ctx);
+					while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
+						if (_alt === 1) {
+							{
+							{
+							this.state = 289;
+							this.match(TspDocParser.DOT);
+							this.state = 290;
+							this.match(TspDocParser.NAME);
+							}
+							}
+						}
+						this.state = 295;
+						this._errHandler.sync(this);
+						_alt = this.interpreter.adaptivePredict(this._input, 39, this._ctx);
+					}
+					}
+				}
+
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
 			}
 		}
 		catch (re) {
@@ -1798,62 +1797,62 @@ export class TspDocParser extends Parser {
 		"\v\f\x03\f\x03\f\x03\f\x05\f\x97\n\f\x03\f\x03\f\x03\f\x03\f\x03\f\x03" +
 		"\f\x05\f\x9F\n\f\x03\r\x03\r\x03\r\x06\r\xA4\n\r\r\r\x0E\r\xA5\x03\r\x05" +
 		"\r\xA9\n\r\x03\x0E\x03\x0E\x03\x0E\x03\x0E\x03\x0E\x03\x0E\x03\x0E\x05" +
-		"\x0E\xB2\n\x0E\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x05\x0F\xB8\n\x0F\x03\x0F" +
-		"\x03\x0F\x05\x0F\xBC\n\x0F\x03\x0F\x03\x0F\x03\x10\x03\x10\x05\x10\xC2" +
-		"\n\x10\x03\x11\x03\x11\x05\x11\xC6\n\x11\x03\x12\x03\x12\x03\x12\x05\x12" +
-		"\xCB\n\x12\x03\x13\x03\x13\x05\x13\xCF\n\x13\x03\x13\x03\x13\x05\x13\xD3" +
-		"\n\x13\x03\x14\x03\x14\x05\x14\xD7\n\x14\x03\x14\x03\x14\x05\x14\xDB\n" +
-		"\x14\x03\x15\x03\x15\x03\x15\x05\x15\xE0\n\x15\x03\x16\x03\x16\x03\x16" +
-		"\x05\x16\xE5\n\x16\x03\x17\x03\x17\x03\x17\x07\x17\xEA\n\x17\f\x17\x0E" +
-		"\x17\xED\v\x17\x03\x17\x05\x17\xF0\n\x17\x03\x18\x03\x18\x05\x18\xF4\n" +
-		"\x18\x03\x19\x03\x19\x06\x19\xF8\n\x19\r\x19\x0E\x19\xF9\x03\x1A\x03\x1A" +
-		"\x03\x1A\x03\x1A\x05\x1A\u0100\n\x1A\x03\x1A\x03\x1A\x05\x1A\u0104\n\x1A" +
-		"\x03\x1A\x05\x1A\u0107\n\x1A\x03\x1B\x03\x1B\x03\x1B\x03\x1B\x03\x1B\x07" +
-		"\x1B\u010E\n\x1B\f\x1B\x0E\x1B\u0111\v\x1B\x05\x1B\u0113\n\x1B\x03\x1B" +
-		"\x03\x1B\x03\x1B\x03\x1B\x03\x1B\x07\x1B\u011A\n\x1B\f\x1B\x0E\x1B\u011D" +
-		"\v\x1B\x05\x1B\u011F\n\x1B\x05\x1B\u0121\n\x1B\x03\x1C\x03\x1C\x03\x1C" +
-		"\x03\x1C\x03\x1C\x03\x1C\x05\x1C\u0129\n\x1C\x03\x1D\x03\x1D\x03\x1E\x03" +
-		"\x1E\x03\x1E\x02\x02\x02\x1F\x02\x02\x04\x02\x06\x02\b\x02\n\x02\f\x02" +
+		"\x0E\xB2\n\x0E\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x03\x0F\x05\x0F" +
+		"\xBA\n\x0F\x03\x10\x03\x10\x03\x11\x03\x11\x03\x12\x03\x12\x03\x12\x03" +
+		"\x12\x05\x12\xC4\n\x12\x03\x12\x03\x12\x05\x12\xC8\n\x12\x03\x12\x03\x12" +
+		"\x03\x13\x03\x13\x05\x13\xCE\n\x13\x03\x14\x03\x14\x05\x14\xD2\n\x14\x03" +
+		"\x15\x03\x15\x03\x15\x05\x15\xD7\n\x15\x03\x16\x03\x16\x05\x16\xDB\n\x16" +
+		"\x03\x16\x03\x16\x05\x16\xDF\n\x16\x03\x17\x03\x17\x05\x17\xE3\n\x17\x03" +
+		"\x17\x03\x17\x05\x17\xE7\n\x17\x03\x18\x03\x18\x03\x18\x05\x18\xEC\n\x18" +
+		"\x03\x19\x03\x19\x03\x19\x05\x19\xF1\n\x19\x03\x1A\x03\x1A\x03\x1A\x07" +
+		"\x1A\xF6\n\x1A\f\x1A\x0E\x1A\xF9\v\x1A\x03\x1A\x05\x1A\xFC\n\x1A\x03\x1B" +
+		"\x03\x1B\x05\x1B\u0100\n\x1B\x03\x1C\x03\x1C\x06\x1C\u0104\n\x1C\r\x1C" +
+		"\x0E\x1C\u0105\x03\x1D\x03\x1D\x03\x1D\x03\x1D\x05\x1D\u010C\n\x1D\x03" +
+		"\x1D\x03\x1D\x05\x1D\u0110\n\x1D\x03\x1D\x05\x1D\u0113\n\x1D\x03\x1E\x03" +
+		"\x1E\x03\x1E\x03\x1E\x03\x1E\x07\x1E\u011A\n\x1E\f\x1E\x0E\x1E\u011D\v" +
+		"\x1E\x05\x1E\u011F\n\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x07\x1E" +
+		"\u0126\n\x1E\f\x1E\x0E\x1E\u0129\v\x1E\x05\x1E\u012B\n\x1E\x05\x1E\u012D" +
+		"\n\x1E\x03\x1E\x02\x02\x02\x1F\x02\x02\x04\x02\x06\x02\b\x02\n\x02\f\x02" +
 		"\x0E\x02\x10\x02\x12\x02\x14\x02\x16\x02\x18\x02\x1A\x02\x1C\x02\x1E\x02" +
 		" \x02\"\x02$\x02&\x02(\x02*\x02,\x02.\x020\x022\x024\x026\x028\x02:\x02" +
 		"\x02\x05\x04\x02\x06\x16!!\x03\x0268\x03\x0245\x02\u0156\x02<\x03\x02" +
 		"\x02\x02\x04Q\x03\x02\x02\x02\x06T\x03\x02\x02\x02\bX\x03\x02\x02\x02" +
 		"\nd\x03\x02\x02\x02\ff\x03\x02\x02\x02\x0Em\x03\x02\x02\x02\x10u\x03\x02" +
 		"\x02\x02\x12{\x03\x02\x02\x02\x14}\x03\x02\x02\x02\x16\x9E\x03\x02\x02" +
-		"\x02\x18\xA0\x03\x02\x02\x02\x1A\xB1\x03\x02\x02\x02\x1C\xB3\x03\x02\x02" +
-		"\x02\x1E\xBF\x03\x02\x02\x02 \xC3\x03\x02\x02\x02\"\xC7\x03\x02\x02\x02" +
-		"$\xCC\x03\x02\x02\x02&\xD4\x03\x02\x02\x02(\xDC\x03\x02\x02\x02*\xE1\x03" +
-		"\x02\x02\x02,\xEF\x03\x02\x02\x02.\xF1\x03\x02\x02\x020\xF5\x03\x02\x02" +
-		"\x022\xFF\x03\x02\x02\x024\u0120\x03\x02\x02\x026\u0128\x03\x02\x02\x02" +
-		"8\u012A\x03\x02\x02\x02:\u012C\x03\x02\x02\x02<=\x07\x03\x02\x02=>\x05" +
+		"\x02\x18\xA0\x03\x02\x02\x02\x1A\xB1\x03\x02\x02\x02\x1C\xB9\x03\x02\x02" +
+		"\x02\x1E\xBB\x03\x02\x02\x02 \xBD\x03\x02\x02\x02\"\xBF\x03\x02\x02\x02" +
+		"$\xCB\x03\x02\x02\x02&\xCF\x03\x02\x02\x02(\xD3\x03\x02\x02\x02*\xD8\x03" +
+		"\x02\x02\x02,\xE0\x03\x02\x02\x02.\xE8\x03\x02\x02\x020\xED\x03\x02\x02" +
+		"\x022\xFB\x03\x02\x02\x024\xFD\x03\x02\x02\x026\u0101\x03\x02\x02\x02" +
+		"8\u010B\x03\x02\x02\x02:\u012C\x03\x02\x02\x02<=\x07\x03\x02\x02=>\x05" +
 		"\x04\x03\x02>?\x07!\x02\x02?\x03\x03\x02\x02\x02@P\x05\x06\x04\x02AP\x05" +
-		"\b\x05\x02BP\x05\x0E\b\x02CP\x05\x1C\x0F\x02DP\x05\x1E\x10\x02EP\x05 " +
-		"\x11\x02FP\x05\"\x12\x02GP\x05$\x13\x02HP\x05&\x14\x02IP\x05(\x15\x02" +
-		"JP\x05*\x16\x02KP\x05.\x18\x02LP\x050\x19\x02MP\x054\x1B\x02NP\x05\n\x06" +
-		"\x02O@\x03\x02\x02\x02OA\x03\x02\x02\x02OB\x03\x02\x02\x02OC\x03\x02\x02" +
-		"\x02OD\x03\x02\x02\x02OE\x03\x02\x02\x02OF\x03\x02\x02\x02OG\x03\x02\x02" +
-		"\x02OH\x03\x02\x02\x02OI\x03\x02\x02\x02OJ\x03\x02\x02\x02OK\x03\x02\x02" +
-		"\x02OL\x03\x02\x02\x02OM\x03\x02\x02\x02ON\x03\x02\x02\x02PS\x03\x02\x02" +
-		"\x02QO\x03\x02\x02\x02QR\x03\x02\x02\x02R\x05\x03\x02\x02\x02SQ\x03\x02" +
-		"\x02\x02TV\x07\x06\x02\x02UW\x05\n\x06\x02VU\x03\x02\x02\x02VW\x03\x02" +
-		"\x02\x02W\x07\x03\x02\x02\x02XZ\x07\x07\x02\x02Y[\x05\n\x06\x02ZY\x03" +
-		"\x02\x02\x02Z[\x03\x02\x02\x02[\t\x03\x02\x02\x02\\]\x05\f\x07\x02]^\x05" +
-		"\n\x06\x02^e\x03\x02\x02\x02_a\n\x02\x02\x02`_\x03\x02\x02\x02ab\x03\x02" +
-		"\x02\x02b`\x03\x02\x02\x02bc\x03\x02\x02\x02ce\x03\x02\x02\x02d\\\x03" +
-		"\x02\x02\x02d`\x03\x02\x02\x02e\v\x03\x02\x02\x02fg\x07\x17\x02\x02gi" +
-		"\x07<\x02\x02hj\x07=\x02\x02ih\x03\x02\x02\x02ij\x03\x02\x02\x02jk\x03" +
-		"\x02\x02\x02kl\x07;\x02\x02l\r\x03\x02\x02\x02mo\x07\v\x02\x02np\x05\x10" +
-		"\t\x02on\x03\x02\x02\x02op\x03\x02\x02\x02pq\x03\x02\x02\x02qs\x05\x1A" +
-		"\x0E\x02rt\x05\n\x06\x02sr\x03\x02\x02\x02st\x03\x02\x02\x02t\x0F\x03" +
-		"\x02\x02\x02uv\x07\"\x02\x02vw\x05\x12\n\x02wx\x07#\x02\x02x\x11\x03\x02" +
-		"\x02\x02y|\x05\x16\f\x02z|\x05\x14\v\x02{y\x03\x02\x02\x02{z\x03\x02\x02" +
-		"\x02|\x13\x03\x02\x02\x02}~\x05\x16\f\x02~\x85\x07,\x02\x02\x7F\x81\x05" +
-		"\x14\v\x02\x80\x7F\x03\x02\x02\x02\x81\x82\x03\x02\x02\x02\x82\x80\x03" +
-		"\x02\x02\x02\x82\x83\x03\x02\x02\x02\x83\x86\x03\x02\x02\x02\x84\x86\x05" +
-		"\x16\f\x02\x85\x80\x03\x02\x02\x02\x85\x84\x03\x02\x02\x02\x86\x15\x03" +
-		"\x02\x02\x02\x87\x9F\x072\x02\x02\x88\x9F\x07\x18\x02\x02\x89\x9F\x07" +
-		"\x1A\x02\x02\x8A\x9F\x07\x1B\x02\x02\x8B\x96\x07\x19\x02\x02\x8C\x90\x07" +
-		"*\x02\x02\x8D\x8F\x05\x18\r\x02\x8E\x8D\x03\x02\x02\x02\x8F\x92\x03\x02" +
+		"\b\x05\x02BP\x05\x0E\b\x02CP\x05\"\x12\x02DP\x05$\x13\x02EP\x05&\x14\x02" +
+		"FP\x05(\x15\x02GP\x05*\x16\x02HP\x05,\x17\x02IP\x05.\x18\x02JP\x050\x19" +
+		"\x02KP\x054\x1B\x02LP\x056\x1C\x02MP\x05:\x1E\x02NP\x05\n\x06\x02O@\x03" +
+		"\x02\x02\x02OA\x03\x02\x02\x02OB\x03\x02\x02\x02OC\x03\x02\x02\x02OD\x03" +
+		"\x02\x02\x02OE\x03\x02\x02\x02OF\x03\x02\x02\x02OG\x03\x02\x02\x02OH\x03" +
+		"\x02\x02\x02OI\x03\x02\x02\x02OJ\x03\x02\x02\x02OK\x03\x02\x02\x02OL\x03" +
+		"\x02\x02\x02OM\x03\x02\x02\x02ON\x03\x02\x02\x02PS\x03\x02\x02\x02QO\x03" +
+		"\x02\x02\x02QR\x03\x02\x02\x02R\x05\x03\x02\x02\x02SQ\x03\x02\x02\x02" +
+		"TV\x07\x06\x02\x02UW\x05\n\x06\x02VU\x03\x02\x02\x02VW\x03\x02\x02\x02" +
+		"W\x07\x03\x02\x02\x02XZ\x07\x07\x02\x02Y[\x05\n\x06\x02ZY\x03\x02\x02" +
+		"\x02Z[\x03\x02\x02\x02[\t\x03\x02\x02\x02\\]\x05\f\x07\x02]^\x05\n\x06" +
+		"\x02^e\x03\x02\x02\x02_a\n\x02\x02\x02`_\x03\x02\x02\x02ab\x03\x02\x02" +
+		"\x02b`\x03\x02\x02\x02bc\x03\x02\x02\x02ce\x03\x02\x02\x02d\\\x03\x02" +
+		"\x02\x02d`\x03\x02\x02\x02e\v\x03\x02\x02\x02fg\x07\x17\x02\x02gi\x07" +
+		"<\x02\x02hj\x07=\x02\x02ih\x03\x02\x02\x02ij\x03\x02\x02\x02jk\x03\x02" +
+		"\x02\x02kl\x07;\x02\x02l\r\x03\x02\x02\x02mo\x07\v\x02\x02np\x05\x10\t" +
+		"\x02on\x03\x02\x02\x02op\x03\x02\x02\x02pq\x03\x02\x02\x02qs\x05\x1A\x0E" +
+		"\x02rt\x05\n\x06\x02sr\x03\x02\x02\x02st\x03\x02\x02\x02t\x0F\x03\x02" +
+		"\x02\x02uv\x07\"\x02\x02vw\x05\x12\n\x02wx\x07#\x02\x02x\x11\x03\x02\x02" +
+		"\x02y|\x05\x16\f\x02z|\x05\x14\v\x02{y\x03\x02\x02\x02{z\x03\x02\x02\x02" +
+		"|\x13\x03\x02\x02\x02}~\x05\x16\f\x02~\x85\x07,\x02\x02\x7F\x81\x05\x14" +
+		"\v\x02\x80\x7F\x03\x02\x02\x02\x81\x82\x03\x02\x02\x02\x82\x80\x03\x02" +
+		"\x02\x02\x82\x83\x03\x02\x02\x02\x83\x86\x03\x02\x02\x02\x84\x86\x05\x16" +
+		"\f\x02\x85\x80\x03\x02\x02\x02\x85\x84\x03\x02\x02\x02\x86\x15\x03\x02" +
+		"\x02\x02\x87\x9F\x072\x02\x02\x88\x9F\x07\x18\x02\x02\x89\x9F\x07\x1A" +
+		"\x02\x02\x8A\x9F\x07\x1B\x02\x02\x8B\x96\x07\x19\x02\x02\x8C\x90\x07*" +
+		"\x02\x02\x8D\x8F\x05\x18\r\x02\x8E\x8D\x03\x02\x02\x02\x8F\x92\x03\x02" +
 		"\x02\x02\x90\x8E\x03\x02\x02\x02\x90\x91\x03\x02\x02\x02\x91\x93\x03\x02" +
 		"\x02\x02\x92\x90\x03\x02\x02\x02\x93\x94\x07+\x02\x02\x94\x95\x07-\x02" +
 		"\x02\x95\x97\x05\x12\n\x02\x96\x8C\x03\x02\x02\x02\x96\x97\x03\x02\x02" +
@@ -1868,64 +1867,64 @@ export class TspDocParser extends Parser {
 		"\xA5\xA3\x03\x02\x02\x02\xA5\xA6\x03\x02\x02\x02\xA6\xA9\x03\x02\x02\x02" +
 		"\xA7\xA9\x05\x16\f\x02\xA8\xA3\x03\x02\x02\x02\xA8\xA7\x03\x02\x02\x02" +
 		"\xA9\x19\x03\x02\x02\x02\xAA\xB2\x073\x02\x02\xAB\xAC\x07.\x02\x02\xAC" +
-		"\xAD\x073\x02\x02\xAD\xAE\x07&\x02\x02\xAE\xAF\x056\x1C\x02\xAF\xB0\x07" +
-		"/\x02\x02\xB0\xB2\x03\x02\x02\x02\xB1\xAA\x03\x02\x02\x02\xB1\xAB\x03" +
-		"\x02\x02\x02\xB2\x1B\x03\x02\x02\x02\xB3\xBB\x07\f\x02\x02\xB4\xB7\x07" +
-		"\"\x02\x02\xB5\xB8\x05\x12\n\x02\xB6\xB8\x05\x18\r\x02\xB7\xB5\x03\x02" +
-		"\x02\x02\xB7\xB6\x03\x02\x02\x02\xB8\xB9\x03\x02\x02\x02\xB9\xBA\x07#" +
-		"\x02\x02\xBA\xBC\x03\x02\x02\x02\xBB\xB4\x03\x02\x02\x02\xBB\xBC\x03\x02" +
-		"\x02\x02\xBC\xBD\x03\x02\x02\x02\xBD\xBE\x05\n\x06\x02\xBE\x1D\x03\x02" +
-		"\x02\x02\xBF\xC1\x07\r\x02\x02\xC0\xC2\x05\n\x06\x02\xC1\xC0\x03\x02\x02" +
-		"\x02\xC1\xC2\x03\x02\x02\x02\xC2\x1F\x03\x02\x02\x02\xC3\xC5\x07\x16\x02" +
-		"\x02\xC4\xC6\x05\n\x06\x02\xC5\xC4\x03\x02\x02\x02\xC5\xC6\x03\x02\x02" +
-		"\x02\xC6!\x03\x02\x02\x02\xC7\xC8\x07\x12\x02\x02\xC8\xCA\x05\x10\t\x02" +
-		"\xC9\xCB\x05\n\x06\x02\xCA\xC9\x03\x02\x02\x02\xCA\xCB\x03\x02\x02\x02" +
-		"\xCB#\x03\x02\x02\x02\xCC\xCE\x07\x13\x02\x02\xCD\xCF\x05\x10\t\x02\xCE" +
-		"\xCD\x03\x02\x02\x02\xCE\xCF\x03\x02\x02\x02\xCF\xD0\x03\x02\x02\x02\xD0" +
-		"\xD2\x073\x02\x02\xD1\xD3\x05\n\x06\x02\xD2\xD1\x03\x02\x02\x02\xD2\xD3" +
-		"\x03\x02\x02\x02\xD3%\x03\x02\x02\x02\xD4\xD6\x07\b\x02\x02\xD5\xD7\x05" +
-		"\x10\t\x02\xD6\xD5\x03\x02\x02\x02\xD6\xD7\x03\x02\x02\x02\xD7\xD8\x03" +
-		"\x02\x02\x02\xD8\xDA\x05\x1A\x0E\x02\xD9\xDB\x05\n\x06\x02\xDA\xD9\x03" +
-		"\x02\x02\x02\xDA\xDB\x03\x02\x02\x02\xDB\'\x03\x02\x02\x02\xDC\xDD\x07" +
-		"\n\x02\x02\xDD\xDF\x05\x10\t\x02\xDE\xE0\x05\n\x06\x02\xDF\xDE\x03\x02" +
-		"\x02\x02\xDF\xE0\x03\x02\x02\x02\xE0)\x03\x02\x02\x02\xE1\xE2\x07\x0E" +
-		"\x02\x02\xE2\xE4\x05,\x17\x02\xE3\xE5\x05\n\x06\x02\xE4\xE3\x03\x02\x02" +
-		"\x02\xE4\xE5\x03\x02\x02\x02\xE5+\x03\x02\x02\x02\xE6\xEB\x073\x02\x02" +
-		"\xE7\xE8\x07%\x02\x02\xE8\xEA\x073\x02\x02\xE9\xE7\x03\x02\x02\x02\xEA" +
-		"\xED\x03\x02\x02\x02\xEB\xE9\x03\x02\x02\x02\xEB\xEC\x03\x02\x02\x02\xEC" +
-		"\xF0\x03\x02\x02\x02\xED\xEB\x03\x02\x02\x02\xEE\xF0\x05\f\x07\x02\xEF" +
-		"\xE6\x03\x02\x02\x02\xEF\xEE\x03\x02\x02\x02\xF0-\x03\x02\x02\x02\xF1" +
-		"\xF3\x07\x0F\x02\x02\xF2\xF4\x05\n\x06\x02\xF3\xF2\x03\x02\x02\x02\xF3" +
-		"\xF4\x03\x02\x02\x02\xF4/\x03\x02\x02\x02\xF5\xF7\x07\t\x02\x02\xF6\xF8" +
-		"\x052\x1A\x02\xF7\xF6\x03\x02\x02\x02\xF8\xF9\x03\x02\x02\x02\xF9\xF7" +
-		"\x03\x02\x02\x02\xF9\xFA\x03\x02\x02\x02\xFA1\x03\x02\x02\x02\xFB\u0100" +
-		"\x07(\x02\x02\xFC\u0100\x07)\x02\x02\xFD\xFE\x07&\x02\x02\xFE\u0100\x07" +
-		"&\x02\x02\xFF\xFB\x03\x02\x02\x02\xFF\xFC\x03\x02\x02\x02\xFF\xFD\x03" +
-		"\x02\x02\x02\u0100\u0101\x03\x02\x02\x02\u0101\u0103\x07\x04\x02\x02\u0102" +
-		"\u0104\x07$\x02\x02\u0103\u0102\x03\x02\x02\x02\u0103\u0104\x03\x02\x02" +
-		"\x02\u0104\u0106\x03\x02\x02\x02\u0105\u0107\x050\x19\x02\u0106\u0105" +
-		"\x03\x02\x02\x02\u0106\u0107\x03\x02\x02\x02\u01073\x03\x02\x02\x02\u0108" +
-		"\u0112\x07\x10\x02\x02\u0109\u010A\x07\x15\x02\x02\u010A\u010F\x073\x02" +
-		"\x02\u010B\u010C\x07%\x02\x02\u010C\u010E\x073\x02\x02\u010D\u010B\x03" +
-		"\x02\x02\x02\u010E\u0111\x03\x02\x02\x02\u010F\u010D\x03\x02\x02\x02\u010F" +
-		"\u0110\x03\x02\x02\x02\u0110\u0113\x03\x02\x02\x02\u0111\u010F\x03\x02" +
-		"\x02\x02\u0112\u0109\x03\x02\x02\x02\u0112\u0113\x03\x02\x02\x02\u0113" +
-		"\u0121\x03\x02\x02\x02\u0114\u011E\x07\x11\x02\x02\u0115\u0116\x07\x14" +
-		"\x02\x02\u0116\u011B\x073\x02\x02\u0117\u0118\x07%\x02\x02\u0118\u011A" +
-		"\x073\x02\x02\u0119\u0117\x03\x02\x02\x02\u011A\u011D\x03\x02\x02\x02" +
-		"\u011B\u0119\x03\x02\x02\x02\u011B\u011C\x03\x02\x02\x02\u011C\u011F\x03" +
-		"\x02\x02\x02\u011D\u011B\x03\x02\x02\x02\u011E\u0115\x03\x02\x02\x02\u011E" +
-		"\u011F\x03\x02\x02\x02\u011F\u0121\x03\x02\x02\x02\u0120\u0108\x03\x02" +
-		"\x02\x02\u0120\u0114\x03\x02\x02\x02\u01215\x03\x02\x02\x02\u0122\u0129" +
-		"\x072\x02\x02\u0123\u0129\x070\x02\x02\u0124\u0129\x07\'\x02\x02\u0125" +
-		"\u0129\x058\x1D\x02\u0126\u0129\x05:\x1E\x02\u0127\u0129\x073\x02\x02" +
-		"\u0128\u0122\x03\x02\x02\x02\u0128\u0123\x03\x02\x02\x02\u0128\u0124\x03" +
-		"\x02\x02\x02\u0128\u0125\x03\x02\x02\x02\u0128\u0126\x03\x02\x02\x02\u0128" +
-		"\u0127\x03\x02\x02\x02\u01297\x03\x02\x02\x02\u012A\u012B\t\x03\x02\x02" +
-		"\u012B9\x03\x02\x02\x02\u012C\u012D\t\x04\x02\x02\u012D;\x03\x02\x02\x02" +
-		",OQVZbdios{\x82\x85\x90\x96\x9E\xA5\xA8\xB1\xB7\xBB\xC1\xC5\xCA\xCE\xD2" +
-		"\xD6\xDA\xDF\xE4\xEB\xEF\xF3\xF9\xFF\u0103\u0106\u010F\u0112\u011B\u011E" +
-		"\u0120\u0128";
+		"\xAD\x073\x02\x02\xAD\xAE\x07&\x02\x02\xAE\xAF\x05\x1C\x0F\x02\xAF\xB0" +
+		"\x07/\x02\x02\xB0\xB2\x03\x02\x02\x02\xB1\xAA\x03\x02\x02\x02\xB1\xAB" +
+		"\x03\x02\x02\x02\xB2\x1B\x03\x02\x02\x02\xB3\xBA\x072\x02\x02\xB4\xBA" +
+		"\x070\x02\x02\xB5\xBA\x07\'\x02\x02\xB6\xBA\x05\x1E\x10\x02\xB7\xBA\x05" +
+		" \x11\x02\xB8\xBA\x073\x02\x02\xB9\xB3\x03\x02\x02\x02\xB9\xB4\x03\x02" +
+		"\x02\x02\xB9\xB5\x03\x02\x02\x02\xB9\xB6\x03\x02\x02\x02\xB9\xB7\x03\x02" +
+		"\x02\x02\xB9\xB8\x03\x02\x02\x02\xBA\x1D\x03\x02\x02\x02\xBB\xBC\t\x03" +
+		"\x02\x02\xBC\x1F\x03\x02\x02\x02\xBD\xBE\t\x04\x02\x02\xBE!\x03\x02\x02" +
+		"\x02\xBF\xC7\x07\f\x02\x02\xC0\xC3\x07\"\x02\x02\xC1\xC4\x05\x12\n\x02" +
+		"\xC2\xC4\x05\x18\r\x02\xC3\xC1\x03\x02\x02\x02\xC3\xC2\x03\x02\x02\x02" +
+		"\xC4\xC5\x03\x02\x02\x02\xC5\xC6\x07#\x02\x02\xC6\xC8\x03\x02\x02\x02" +
+		"\xC7\xC0\x03\x02\x02\x02\xC7\xC8\x03\x02\x02\x02\xC8\xC9\x03\x02\x02\x02" +
+		"\xC9\xCA\x05\n\x06\x02\xCA#\x03\x02\x02\x02\xCB\xCD\x07\r\x02\x02\xCC" +
+		"\xCE\x05\n\x06\x02\xCD\xCC\x03\x02\x02\x02\xCD\xCE\x03\x02\x02\x02\xCE" +
+		"%\x03\x02\x02\x02\xCF\xD1\x07\x16\x02\x02\xD0\xD2\x05\n\x06\x02\xD1\xD0" +
+		"\x03\x02\x02\x02\xD1\xD2\x03\x02\x02\x02\xD2\'\x03\x02\x02\x02\xD3\xD4" +
+		"\x07\x12\x02\x02\xD4\xD6\x05\x10\t\x02\xD5\xD7\x05\n\x06\x02\xD6\xD5\x03" +
+		"\x02\x02\x02\xD6\xD7\x03\x02\x02\x02\xD7)\x03\x02\x02\x02\xD8\xDA\x07" +
+		"\x13\x02\x02\xD9\xDB\x05\x10\t\x02\xDA\xD9\x03\x02\x02\x02\xDA\xDB\x03" +
+		"\x02\x02\x02\xDB\xDC\x03\x02\x02\x02\xDC\xDE\x073\x02\x02\xDD\xDF\x05" +
+		"\n\x06\x02\xDE\xDD\x03\x02\x02\x02\xDE\xDF\x03\x02\x02\x02\xDF+\x03\x02" +
+		"\x02\x02\xE0\xE2\x07\b\x02\x02\xE1\xE3\x05\x10\t\x02\xE2\xE1\x03\x02\x02" +
+		"\x02\xE2\xE3\x03\x02\x02\x02\xE3\xE4\x03\x02\x02\x02\xE4\xE6\x05\x1A\x0E" +
+		"\x02\xE5\xE7\x05\n\x06\x02\xE6\xE5\x03\x02\x02\x02\xE6\xE7\x03\x02\x02" +
+		"\x02\xE7-\x03\x02\x02\x02\xE8\xE9\x07\n\x02\x02\xE9\xEB\x05\x10\t\x02" +
+		"\xEA\xEC\x05\n\x06\x02\xEB\xEA\x03\x02\x02\x02\xEB\xEC\x03\x02\x02\x02" +
+		"\xEC/\x03\x02\x02\x02\xED\xEE\x07\x0E\x02\x02\xEE\xF0\x052\x1A\x02\xEF" +
+		"\xF1\x05\n\x06\x02\xF0\xEF\x03\x02\x02\x02\xF0\xF1\x03\x02\x02\x02\xF1" +
+		"1\x03\x02\x02\x02\xF2\xF7\x073\x02\x02\xF3\xF4\x07%\x02\x02\xF4\xF6\x07" +
+		"3\x02\x02\xF5\xF3\x03\x02\x02\x02\xF6\xF9\x03\x02\x02\x02\xF7\xF5\x03" +
+		"\x02\x02\x02\xF7\xF8\x03\x02\x02\x02\xF8\xFC\x03\x02\x02\x02\xF9\xF7\x03" +
+		"\x02\x02\x02\xFA\xFC\x05\f\x07\x02\xFB\xF2\x03\x02\x02\x02\xFB\xFA\x03" +
+		"\x02\x02\x02\xFC3\x03\x02\x02\x02\xFD\xFF\x07\x0F\x02\x02\xFE\u0100\x05" +
+		"\n\x06\x02\xFF\xFE\x03\x02\x02\x02\xFF\u0100\x03\x02\x02\x02\u01005\x03" +
+		"\x02\x02\x02\u0101\u0103\x07\t\x02\x02\u0102\u0104\x058\x1D\x02\u0103" +
+		"\u0102\x03\x02\x02\x02\u0104\u0105\x03\x02\x02\x02\u0105\u0103\x03\x02" +
+		"\x02\x02\u0105\u0106\x03\x02\x02\x02\u01067\x03\x02\x02\x02\u0107\u010C" +
+		"\x07(\x02\x02\u0108\u010C\x07)\x02\x02\u0109\u010A\x07&\x02\x02\u010A" +
+		"\u010C\x07&\x02\x02\u010B\u0107\x03\x02\x02\x02\u010B\u0108\x03\x02\x02" +
+		"\x02\u010B\u0109\x03\x02\x02\x02\u010C\u010D\x03\x02\x02\x02\u010D\u010F" +
+		"\x07\x04\x02\x02\u010E\u0110\x07$\x02\x02\u010F\u010E\x03\x02\x02\x02" +
+		"\u010F\u0110\x03\x02\x02\x02\u0110\u0112\x03\x02\x02\x02\u0111\u0113\x05" +
+		"6\x1C\x02\u0112\u0111\x03\x02\x02\x02\u0112\u0113\x03\x02\x02\x02\u0113" +
+		"9\x03\x02\x02\x02\u0114\u011E\x07\x10\x02\x02\u0115\u0116\x07\x15\x02" +
+		"\x02\u0116\u011B\x073\x02\x02\u0117\u0118\x07%\x02\x02\u0118\u011A\x07" +
+		"3\x02\x02\u0119\u0117\x03\x02\x02\x02\u011A\u011D\x03\x02\x02\x02\u011B" +
+		"\u0119\x03\x02\x02\x02\u011B\u011C\x03\x02\x02\x02\u011C\u011F\x03\x02" +
+		"\x02\x02\u011D\u011B\x03\x02\x02\x02\u011E\u0115\x03\x02\x02\x02\u011E" +
+		"\u011F\x03\x02\x02\x02\u011F\u012D\x03\x02\x02\x02\u0120\u012A\x07\x11" +
+		"\x02\x02\u0121\u0122\x07\x14\x02\x02\u0122\u0127\x073\x02\x02\u0123\u0124" +
+		"\x07%\x02\x02\u0124\u0126\x073\x02\x02\u0125\u0123\x03\x02\x02\x02\u0126" +
+		"\u0129\x03\x02\x02\x02\u0127\u0125\x03\x02\x02\x02\u0127\u0128\x03\x02" +
+		"\x02\x02\u0128\u012B\x03\x02\x02\x02\u0129\u0127\x03\x02\x02\x02\u012A" +
+		"\u0121\x03\x02\x02\x02\u012A\u012B\x03\x02\x02\x02\u012B\u012D\x03\x02" +
+		"\x02\x02\u012C\u0114\x03\x02\x02\x02\u012C\u0120\x03\x02\x02\x02\u012D" +
+		";\x03\x02\x02\x02,OQVZbdios{\x82\x85\x90\x96\x9E\xA5\xA8\xB1\xB9\xC3\xC7" +
+		"\xCD\xD1\xD6\xDA\xDE\xE2\xE6\xEB\xF0\xF7\xFB\xFF\u0105\u010B\u010F\u0112" +
+		"\u011B\u011E\u0127\u012A\u012C";
 	public static __ATN: ATN;
 	public static get _ATN(): ATN {
 		if (!TspDocParser.__ATN) {
@@ -2816,8 +2815,8 @@ export class NameOptionalContext extends NameDeclarationContext {
 	public SQUARE_OPEN(): TerminalNode { return this.getToken(TspDocParser.SQUARE_OPEN, 0); }
 	public NAME(): TerminalNode { return this.getToken(TspDocParser.NAME, 0); }
 	public EQUALS(): TerminalNode { return this.getToken(TspDocParser.EQUALS, 0); }
-	public docValue(): DocValueContext {
-		return this.getRuleContext(0, DocValueContext);
+	public nameValue(): NameValueContext {
+		return this.getRuleContext(0, NameValueContext);
 	}
 	public SQUARE_CLOSE(): TerminalNode { return this.getToken(TspDocParser.SQUARE_CLOSE, 0); }
 	constructor(ctx: NameDeclarationContext) {
@@ -2834,6 +2833,84 @@ export class NameOptionalContext extends NameDeclarationContext {
 	public exitRule(listener: TspDocListener): void {
 		if (listener.exitNameOptional) {
 			listener.exitNameOptional(this);
+		}
+	}
+}
+
+
+export class NameValueContext extends ParserRuleContext {
+	public NIL(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NIL, 0); }
+	public TRUE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.TRUE, 0); }
+	public FALSE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.FALSE, 0); }
+	public num(): NumContext | undefined {
+		return this.tryGetRuleContext(0, NumContext);
+	}
+	public str(): StrContext | undefined {
+		return this.tryGetRuleContext(0, StrContext);
+	}
+	public NAME(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NAME, 0); }
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
+	}
+	// @Override
+	public get ruleIndex(): number { return TspDocParser.RULE_nameValue; }
+	// @Override
+	public enterRule(listener: TspDocListener): void {
+		if (listener.enterNameValue) {
+			listener.enterNameValue(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspDocListener): void {
+		if (listener.exitNameValue) {
+			listener.exitNameValue(this);
+		}
+	}
+}
+
+
+export class NumContext extends ParserRuleContext {
+	public INT(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.INT, 0); }
+	public HEX(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.HEX, 0); }
+	public FLOAT(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.FLOAT, 0); }
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
+	}
+	// @Override
+	public get ruleIndex(): number { return TspDocParser.RULE_num; }
+	// @Override
+	public enterRule(listener: TspDocListener): void {
+		if (listener.enterNum) {
+			listener.enterNum(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspDocListener): void {
+		if (listener.exitNum) {
+			listener.exitNum(this);
+		}
+	}
+}
+
+
+export class StrContext extends ParserRuleContext {
+	public NORMALSTRING(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NORMALSTRING, 0); }
+	public CHARSTRING(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.CHARSTRING, 0); }
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
+	}
+	// @Override
+	public get ruleIndex(): number { return TspDocParser.RULE_str; }
+	// @Override
+	public enterRule(listener: TspDocListener): void {
+		if (listener.enterStr) {
+			listener.enterStr(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspDocListener): void {
+		if (listener.exitStr) {
+			listener.exitStr(this);
 		}
 	}
 }
@@ -3284,84 +3361,6 @@ export class Version2Context extends DocVersionContext {
 	public exitRule(listener: TspDocListener): void {
 		if (listener.exitVersion2) {
 			listener.exitVersion2(this);
-		}
-	}
-}
-
-
-export class DocValueContext extends ParserRuleContext {
-	public NIL(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NIL, 0); }
-	public TRUE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.TRUE, 0); }
-	public FALSE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.FALSE, 0); }
-	public num(): NumContext | undefined {
-		return this.tryGetRuleContext(0, NumContext);
-	}
-	public str(): StrContext | undefined {
-		return this.tryGetRuleContext(0, StrContext);
-	}
-	public NAME(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NAME, 0); }
-	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
-		super(parent, invokingState);
-	}
-	// @Override
-	public get ruleIndex(): number { return TspDocParser.RULE_docValue; }
-	// @Override
-	public enterRule(listener: TspDocListener): void {
-		if (listener.enterDocValue) {
-			listener.enterDocValue(this);
-		}
-	}
-	// @Override
-	public exitRule(listener: TspDocListener): void {
-		if (listener.exitDocValue) {
-			listener.exitDocValue(this);
-		}
-	}
-}
-
-
-export class NumContext extends ParserRuleContext {
-	public INT(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.INT, 0); }
-	public HEX(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.HEX, 0); }
-	public FLOAT(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.FLOAT, 0); }
-	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
-		super(parent, invokingState);
-	}
-	// @Override
-	public get ruleIndex(): number { return TspDocParser.RULE_num; }
-	// @Override
-	public enterRule(listener: TspDocListener): void {
-		if (listener.enterNum) {
-			listener.enterNum(this);
-		}
-	}
-	// @Override
-	public exitRule(listener: TspDocListener): void {
-		if (listener.exitNum) {
-			listener.exitNum(this);
-		}
-	}
-}
-
-
-export class StrContext extends ParserRuleContext {
-	public NORMALSTRING(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NORMALSTRING, 0); }
-	public CHARSTRING(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.CHARSTRING, 0); }
-	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
-		super(parent, invokingState);
-	}
-	// @Override
-	public get ruleIndex(): number { return TspDocParser.RULE_str; }
-	// @Override
-	public enterRule(listener: TspDocListener): void {
-		if (listener.enterStr) {
-			listener.enterStr(this);
-		}
-	}
-	// @Override
-	public exitRule(listener: TspDocListener): void {
-		if (listener.exitStr) {
-			listener.exitStr(this);
 		}
 	}
 }
