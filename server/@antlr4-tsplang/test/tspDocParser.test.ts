@@ -14,6 +14,7 @@
  *  limitations under the License.
  */
 import { ANTLRInputStream, CommonTokenStream } from "antlr4ts"
+import { TerminalNode } from "antlr4ts/tree"
 import { ParseTreePattern } from "antlr4ts/tree/pattern"
 import { XPath } from "antlr4ts/tree/xpath"
 import { expect } from "chai"
@@ -108,13 +109,49 @@ describe("antlr4-tsplang", function() {
 
                 expect(actual).to.have.lengthOf(1)
             })
+
+            // All other TspDocParser test cases will implicitly expand upon these tests.
+        })
+
+        describe("docDeprecated", function() {
+            it("Supports inlining", function(done) {
+                const context = contextFactory("--[[[@deprecated]]")
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docDeprecated", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                actual.forEach(value => {
+                    expect(value.childCount).to.equal(1)
+                    expect(value.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                    // Call done so we can fail on the 2nd loop (if necessary).
+                    done()
+                })
+            })
+
+            it("Supports trailing content", function(done) {
+                const context = contextFactory(`--[[[
+                    @deprecated It's for the best. ⚰
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docDeprecated", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                actual.forEach(value => {
+                    expect(value.childCount).to.equal(2)
+                    expect(value.getChild(1)).to.be.an.instanceOf(DocContentContext)
+                    // Call done so we can fail on the 2nd loop (if necessary).
+                    done()
+                })
+            })
         })
 
         describe("docContent", function() {
             it("Stops before the next valid tag", function(done) {
                 const context = contextFactory(`--[[[
                     \\@ Some random "content" with an \\@invalidtag thrown in for good measure
-                    (and good testing). \\@\\@\\@
+                    (and good testing). 🦖 \\@\\@\\@
                     @returns {number} docContent that belongs to the \\@returns tag.
                 ]]`)
                 context.root = context.parser.docstring()
@@ -122,10 +159,9 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docContent", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-
                 actual.forEach(value => {
                     expect(value.text).to.not.contain("@returns")
-                    // Call done so if there is a 2nd loop, then it will fail.
+                    // Call done so we can fail on the 2nd loop (if necessary).
                     done()
                 })
             })
