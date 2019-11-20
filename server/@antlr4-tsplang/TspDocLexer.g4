@@ -45,11 +45,20 @@ DEPRECATED_TAG
 DESCRIPTION_TAG
     : TAG_START ('desc'|'description');
 
+FIELD_TAG
+    : TAG_START 'field';
+
+FIRMWARE_TAG
+    : TAG_START ('fw'|'firmware');
+
 PARAM_TAG
     : TAG_START ('param'|'parameter');
 
 RETURNS_TAG
     : TAG_START 'return' 's'?;
+
+READONLY_TAG
+    : TAG_START ('const'|'constant'|'read'[oO]'nly');
 
 SEE_TAG
     : TAG_START 'see';
@@ -57,35 +66,26 @@ SEE_TAG
 TSPLINK_TAG
     : TAG_START 'tsplink';
 
-TYPEDEF_TAG
-    : TAG_START 'typedef';
-
-FIELD_TAG
-    : TAG_START 'field';
-
-READONLY_TAG
-    : TAG_START ('const'|'constant'|'read'[oO]'nly');
-
-WRITEONLY_TAG
-    : TAG_START 'write'[oO]'nly';
-
-TYPE_TAG
-    : TAG_START 'type';
-
-FIRMWARE_TAG
-    : TAG_START ('fw'|'firmware');
-
 TSPV1_TAG
     : TAG_START 'tsp-v1';
 
 TSPV2_TAG
     : TAG_START 'tsp-v2';
 
+TYPE_TAG
+    : TAG_START 'type';
+
+TYPEDEF_TAG
+    : TAG_START 'typedef';
+
 V1_TAG
     : TAG_START 'v1';
 
 V2_TAG
     : TAG_START 'v2';
+
+WRITEONLY_TAG
+    : TAG_START 'write'[oO]'nly';
 
 /* Inline Tags */
 
@@ -95,10 +95,13 @@ LINK_TAG_START
 
 /* Lua Type Strings */
 
-// NIL is imported from CommonLexerRules.
-
 BOOLEAN
     : 'boolean' Nilable;
+
+FUNCTION
+    : 'function' Nilable;
+
+// NIL is imported from CommonLexerRules.
 
 NUMBER
     : 'number' Nilable;
@@ -106,25 +109,22 @@ NUMBER
 STRING
     : 'string' Nilable;
 
-FUNCTION
-    : 'function' Nilable;
-
-USERDATA
-    : 'userdata' Nilable;
+TABLE
+    : 'table' Nilable;
 
 THREAD
     : 'thread' Nilable;
 
-TABLE
-    : 'table' Nilable;
+USERDATA
+    : 'userdata' Nilable;
 
 /* Custom Type Strings */
 
-ENUM
-    : NAME '.' NAME ('.' NAME)* Nilable;
-
 ANY
     : 'any';
+
+ENUM
+    : NAME '.' NAME ('.' NAME)* Nilable;
 
 /* End */
 
@@ -149,24 +149,24 @@ EQUALS
     : '=';
 FALSE
     : 'false';
+GT
+    : '>';
+LTE
+    : '<=';
 PAREN_OPEN
     : '(';
 PAREN_CLOSE
     : ')';
+PIPE
+    : '|';
+RETURN_ARROW
+    : '=>';
 SQUARE_OPEN
     : '[';
 SQUARE_CLOSE
     : ']';
 TRUE
     : 'true';
-GT
-    : '>';
-LTE
-    : '<=';
-RETURN_ARROW
-    : '=>';
-PIPE
-    : '|';
 
 /* Fragments */
 
