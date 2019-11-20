@@ -37,7 +37,11 @@ FIRMWARE
 /* Tags */
 
 TAG_START
-    : '@';
+    // Indentation is tabs to match generated code style.
+    : {(
+		// Previous character was not "\".
+		this._input.LA(-1) !== 92
+	)}? '@';
 
 DEPRECATED_TAG
     : TAG_START 'deprecated';
@@ -181,7 +185,11 @@ Nilable
 
 OTHER
     /* Part of the character group is inlined from CommonLexerRules::HORIZONTAL_WS */
-    : ~[a-zA-Z0-9_{}[\],.=<>|@ \t\u000C\r\n];
+    : ~[a-zA-Z0-9_{}[\],.=<>|@ \t\u000C\r\n]
+    | {(
+		// Previous character was "\".
+		this._input.LA(-1) === 92
+	)}? '@';
 
 /* Inline Link Mode */
 mode LINK_MODE;

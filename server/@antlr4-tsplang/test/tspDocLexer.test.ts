@@ -13,25 +13,18 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ANTLRErrorListener, ANTLRInputStream, CommonToken } from "antlr4ts"
+import { ANTLRInputStream, CommonToken } from "antlr4ts"
 import { expect } from "chai"
 import "mocha"
 
 import { TspDocLexer } from "../out/TspDocLexer.generated"
 
+import { ERROR_THROWER } from "./errorListener.fixture"
+
 // An infinitely nested string array type.
 type NestedArray<T> = Array<string | T>
 /* eslint-disable-next-line @typescript-eslint/no-empty-interface */
 interface RecursiveStringArray extends NestedArray<RecursiveStringArray> {}
-
-// The default error listener simply outputs to stderr, but we need to fail outright.
-class ErrorListener implements ANTLRErrorListener<TspDocLexer> {
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e): never {
-        throw Error(`line ${line}:${charPositionInLine} ${msg}`)
-    }
-}
-const ERROR_LISTENER = new ErrorListener()
 
 // Remove all dimensionality from the recursive array. N-D array -> 1-D array.
 function flatten(value: RecursiveStringArray): Array<string> {
@@ -81,7 +74,7 @@ describe("antlr4-tsplang", function() {
                 it(test.name, () => {
                     const inputStream = new ANTLRInputStream(test.content)
                     const lexer = new TspDocLexer(inputStream)
-                    lexer.addErrorListener(ERROR_LISTENER)
+                    lexer.addErrorListener(ERROR_THROWER)
 
                     const expected = flatten(test.tokenNames)
                     const actual = lexer
@@ -1253,7 +1246,7 @@ describe("antlr4-tsplang", function() {
                 it(test.name, () => {
                     const inputStream = new ANTLRInputStream(test.content)
                     const lexer = new TspDocLexer(inputStream)
-                    lexer.addErrorListener(ERROR_LISTENER)
+                    lexer.addErrorListener(ERROR_THROWER)
 
                     const targetTokens = lexer.getAllTokens().filter(token => {
                         return token.channel === TspDocLexer.DEFAULT_TOKEN_CHANNEL

@@ -21,7 +21,7 @@ docstring
     : OPEN docblock CLOSE;
 
 docblock
-    : (docDeprecated
+    : ( docDeprecated
         | docDescription
         | docParameter
         | docReturns
@@ -46,7 +46,24 @@ docDescription
 
 docContent
     : link docContent
-    | ~( TAG_START | CLOSE )
+    | ~( DEPRECATED_TAG
+        | DESCRIPTION_TAG
+        | FIELD_TAG
+        | FIRMWARE_TAG
+        | INDEX_TAG
+        | PARAM_TAG
+        | RETURNS_TAG
+        | READONLY_TAG
+        | SEE_TAG
+        | TSPLINK_TAG
+        | TSPV1_TAG
+        | TSPV2_TAG
+        | TYPE_TAG
+        | TYPEDEF_TAG
+        | V1_TAG
+        | V2_TAG
+        | WRITEONLY_TAG
+        | CLOSE )+
     ;
 
 link
