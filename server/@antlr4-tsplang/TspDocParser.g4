@@ -45,25 +45,26 @@ docDescription
     : DESCRIPTION_TAG docContent;
 
 docContent
-    : link docContent
-    | ~( DEPRECATED_TAG
-        | DESCRIPTION_TAG
-        | FIELD_TAG
-        | FIRMWARE_TAG
-        | INDEX_TAG
-        | PARAM_TAG
-        | RETURNS_TAG
-        | READONLY_TAG
-        | SEE_TAG
-        | TSPLINK_TAG
-        | TSPV1_TAG
-        | TSPV2_TAG
-        | TYPE_TAG
-        | TYPEDEF_TAG
-        | V1_TAG
-        | V2_TAG
-        | WRITEONLY_TAG
-        | CLOSE )+
+    : ( link
+        | ~( DEPRECATED_TAG
+            | DESCRIPTION_TAG
+            | FIELD_TAG
+            | FIRMWARE_TAG
+            | INDEX_TAG
+            | PARAM_TAG
+            | RETURNS_TAG
+            | READONLY_TAG
+            | SEE_TAG
+            | TSPLINK_TAG
+            | TSPV1_TAG
+            | TSPV2_TAG
+            | TYPE_TAG
+            | TYPEDEF_TAG
+            | V1_TAG
+            | V2_TAG
+            | WRITEONLY_TAG
+            | CLOSE )
+        )+
     ;
 
 link
@@ -103,8 +104,8 @@ typeList
 // end typeDeclaration
 
 nameDeclaration
-    : NAME                                          # NameRequired
-    | SQUARE_OPEN NAME EQUALS nameValue SQUARE_CLOSE # NameOptional
+    : NAME                                              # NameRequired
+    | SQUARE_OPEN NAME EQUALS nameValue SQUARE_CLOSE    # NameOptional
     ;
 
 nameValue
