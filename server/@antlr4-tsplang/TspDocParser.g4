@@ -126,7 +126,7 @@ str
 // end docParameter
 
 docReturns
-    : RETURNS_TAG (CURLY_OPEN (typeEntry | typeList) CURLY_CLOSE)? docContent;
+    : RETURNS_TAG (CURLY_OPEN (typeEntry | typeList) CURLY_CLOSE)? docContent?;
 
 docReadonly
     : READONLY_TAG docContent?;
