@@ -36,12 +36,15 @@ FIRMWARE
 
 /* Tags */
 
+TAG_DELIMETER
+    : '@';
+
 TAG_START
     // Indentation is tabs to match generated code style.
     : {(
 		// Previous character was not "\".
 		this._input.LA(-1) !== 92
-	)}? '@';
+	)}? TAG_DELIMETER;
 
 DEPRECATED_TAG
     : TAG_START 'deprecated';
@@ -189,7 +192,7 @@ OTHER
     | {(
 		// Previous character was "\".
 		this._input.LA(-1) === 92
-	)}? '@';
+	)}? TAG_DELIMETER;
 
 /* Inline Link Mode */
 mode LINK_MODE;
