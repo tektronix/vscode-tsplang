@@ -42,7 +42,7 @@ docDeprecated
     : DEPRECATED_TAG docContent?;
 
 docDescription
-    : DESCRIPTION_TAG docContent?;
+    : DESCRIPTION_TAG docContent;
 
 docContent
     : link docContent
