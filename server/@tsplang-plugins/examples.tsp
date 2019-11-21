@@ -22,53 +22,48 @@
 
     @param {type} lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter {thread?} PascalCase Sed eget turpis venenatis leo maximus
-        mattis.
-
-    @param {
+    @parameter {
         nil|
         buffer.UNIT_AMP
-        |table?
+        |table
     } camelCase Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter {
-        function(userdata?) => any
+    @param {
+        function(userdata) => any
     } snake_case Sed eget turpis venenatis leo maximus mattis.
 
-    @param lowercase Sed eget turpis venenatis leo maximus mattis.
+    @parameter lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter [PascalCase="\"double (\")\" quoted"] Sed eget turpis venenatis leo
+    @param [PascalCase="\"double (\")\" quoted"] Sed eget turpis venenatis leo
         maximus mattis.
 
-    @param [camelCase='\'single (\')\' quoted'] Sed eget turpis venenatis leo
+    @parameter [camelCase='\'single (\')\' quoted'] Sed eget turpis venenatis leo
         maximus mattis.
 
-    @parameter [snake_case=smu.FUNC_DC_VOLTAGE] Sed eget turpis venenatis leo
+    @param [snake_case=smu.FUNC_DC_VOLTAGE] Sed eget turpis venenatis leo
         maximus mattis.
 
-    @param sArCaStIcCaSe Sed eget turpis venenatis leo maximus mattis.
+    @parameter sArCaStIcCaSe Sed eget turpis venenatis leo maximus mattis.
 
-    @parameter InVeRsEsArCaStIcCaSe Sed eget turpis venenatis leo maximus mattis.
+    @param InVeRsEsArCaStIcCaSe Sed eget turpis venenatis leo maximus mattis.
 
     ---
 
     @return {type} Quisque fringilla est.
 
-    @returns {thread?} Quisque fringilla est.
-
-    @return {
+    @returns {
         nil|
         buffer.UNIT_AMP
-        |table?
+        |table
     } Quisque fringilla est.
 
-    @returns {
-        function( userdata? ) => any
+    @return {
+        function( userdata ) => any
     } Quisque fringilla est.
-
-    @return Quisque fringilla est.
 
     @returns Quisque fringilla est.
+
+    @return Quisque fringilla est.
 
     ---
 
@@ -109,17 +104,14 @@
 
     @field {type} lowercase Sed eget turpis venenatis leo maximus mattis.
 
-    @field {thread?} PascalCase Sed eget turpis venenatis leo maximus
-        mattis.
-
     @field {
         nil|
         buffer.UNIT_AMP
-        |table?
+        |table
     } camelCase Sed eget turpis venenatis leo maximus mattis.
 
     @field {
-        function( userdata? ) => any
+        function( userdata ) => any
     } snake_case Sed eget turpis venenatis leo maximus mattis.
 
     @field [lowercase=] Sed eget turpis venenatis leo maximus mattis.
@@ -169,16 +161,14 @@
 
     @type {type} Quisque fringilla est.
 
-    @type {thread?} Quisque fringilla est.
-
     @type {
         nil|
         buffer.UNIT_AMP
-        |table?
+        |table
     } Quisque fringilla est.
 
     @type {
-        function( userdata? ) => any
+        function( userdata ) => any
     } Quisque fringilla est.
 
     @type Quisque fringilla est.

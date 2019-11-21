@@ -210,49 +210,18 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @param tag with a nilable type",
-                        content: `--[[[
-                            @param {thread?} PascalCase Aenean et gravida nulla.
-                            @parameter {thread?} PascalCase Aenean et gravida nulla.
-                        ]]`,
-                        tokenNames: [
-                            "OPEN",
-                            [
-                                "PARAM_TAG",
-                                ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"],
-                                ["NAME"],
-                                "NAME",
-                                "NAME",
-                                "NAME",
-                                "NAME",
-                                "DOT",
-                            ],
-                            [
-                                "PARAM_TAG",
-                                ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"],
-                                ["NAME"],
-                                "NAME",
-                                "NAME",
-                                "NAME",
-                                "NAME",
-                                "DOT",
-                            ],
-                            "CLOSE",
-                        ],
-                    },
-                    {
                         name: "Tokenizes @param tag with a type union",
                         content: `--[[[
                             @param {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } camelCase Aenean et gravida nulla.
 
                             @parameter {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } camelCase Aenean et gravida nulla.
                         ]]`,
                         tokenNames: [
@@ -284,11 +253,11 @@ describe("antlr4-tsplang", function() {
                         name: "Tokenizes @param tag with a function signature",
                         content: `--[[[
                             @param {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Aenean et gravida nulla.
 
                             @parameter {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Aenean et gravida nulla.
                         ]]`,
                         tokenNames: [
@@ -504,29 +473,16 @@ describe("antlr4-tsplang", function() {
                     {
                         name: "Tokenizes @returns tag with a nilable type",
                         content: `--[[[
-                            @returns {thread?} Quisque fringilla est.
-                            @return {thread?} Quisque fringilla est.
-                        ]]`,
-                        tokenNames: [
-                            "OPEN",
-                            ["RETURNS_TAG", ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"], "NAME", "NAME", "NAME", "DOT"],
-                            ["RETURNS_TAG", ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"], "NAME", "NAME", "NAME", "DOT"],
-                            "CLOSE",
-                        ],
-                    },
-                    {
-                        name: "Tokenizes @returns tag with a nilable type",
-                        content: `--[[[
                             @returns {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } Quisque fringilla est.
 
                             @return {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } Quisque fringilla est.
                         ]]`,
                         tokenNames: [
@@ -554,11 +510,11 @@ describe("antlr4-tsplang", function() {
                         name: "Tokenizes @returns tag with a function signature",
                         content: `--[[[
                             @returns {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Quisque fringilla est.
 
                             @return {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Quisque fringilla est.
                         ]]`,
                         tokenNames: [
@@ -762,32 +718,12 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @field tag with a nilable type",
-                        content: `--[[[
-                            @field {thread?} PascalCase Aenean et gravida nulla.
-                        ]]`,
-                        tokenNames: [
-                            "OPEN",
-                            [
-                                "FIELD_TAG",
-                                ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"],
-                                ["NAME"],
-                                "NAME",
-                                "NAME",
-                                "NAME",
-                                "NAME",
-                                "DOT",
-                            ],
-                            "CLOSE",
-                        ],
-                    },
-                    {
                         name: "Tokenizes @field tag with a type union",
                         content: `--[[[
                             @field {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } camelCase Aenean et gravida nulla.
                         ]]`,
                         tokenNames: [
@@ -809,7 +745,7 @@ describe("antlr4-tsplang", function() {
                         name: "Tokenizes @field tag with a function signature",
                         content: `--[[[
                             @field {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Aenean et gravida nulla.
                         ]]`,
                         tokenNames: [
@@ -953,21 +889,10 @@ describe("antlr4-tsplang", function() {
                     {
                         name: "Tokenizes @index tag with a nilable type",
                         content: `--[[[
-                            @index {thread?} Quisque fringilla est.
-                        ]]`,
-                        tokenNames: [
-                            "OPEN",
-                            ["INDEX_TAG", ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"], "NAME", "NAME", "NAME", "DOT"],
-                            "CLOSE",
-                        ],
-                    },
-                    {
-                        name: "Tokenizes @index tag with a nilable type",
-                        content: `--[[[
                             @index {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } Quisque fringilla est.
                         ]]`,
                         tokenNames: [
@@ -987,7 +912,7 @@ describe("antlr4-tsplang", function() {
                         name: "Tokenizes @index tag with a function signature",
                         content: `--[[[
                             @index {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Quisque fringilla est.
                         ]]`,
                         tokenNames: [
@@ -1098,21 +1023,10 @@ describe("antlr4-tsplang", function() {
                     {
                         name: "Tokenizes @type tag with a nilable type",
                         content: `--[[[
-                            @type {thread?} Quisque fringilla est.
-                        ]]`,
-                        tokenNames: [
-                            "OPEN",
-                            ["TYPE_TAG", ["CURLY_OPEN", ["THREAD"], "CURLY_CLOSE"], "NAME", "NAME", "NAME", "DOT"],
-                            "CLOSE",
-                        ],
-                    },
-                    {
-                        name: "Tokenizes @type tag with a nilable type",
-                        content: `--[[[
                             @type {
                                 nil|
                                 buffer.UNIT_AMP
-                                |table?
+                                |table
                             } Quisque fringilla est.
                         ]]`,
                         tokenNames: [
@@ -1132,7 +1046,7 @@ describe("antlr4-tsplang", function() {
                         name: "Tokenizes @type tag with a function signature",
                         content: `--[[[
                             @type {
-                                function(userdata?) => any
+                                function(userdata) => any
                             } snake_case Quisque fringilla est.
                         ]]`,
                         tokenNames: [

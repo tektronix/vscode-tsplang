@@ -106,27 +106,27 @@ LINK_TAG_START
 /* Lua Type Strings */
 
 BOOLEAN
-    : 'boolean' Nilable;
+    : 'boolean';
 
 FUNCTION
-    : 'function' Nilable;
+    : 'function';
 
 // NIL is imported from CommonLexerRules.
 
 NUMBER
-    : 'number' Nilable;
+    : 'number';
 
 STRING
-    : 'string' Nilable;
+    : 'string';
 
 TABLE
-    : 'table' Nilable;
+    : 'table';
 
 THREAD
-    : 'thread' Nilable;
+    : 'thread';
 
 USERDATA
-    : 'userdata' Nilable;
+    : 'userdata';
 
 /* Custom Type Strings */
 
@@ -134,7 +134,7 @@ ANY
     : 'any';
 
 NAMESPACE
-    : NAME '.' NAME ('.' NAME)* Nilable;
+    : NAME '.' NAME ('.' NAME)*;
 
 /* End */
 
@@ -177,12 +177,6 @@ SQUARE_CLOSE
     : ']';
 TRUE
     : 'true';
-
-/* Fragments */
-
-fragment
-Nilable
-    : '?'?;
 
 /* Everything Else */
 
