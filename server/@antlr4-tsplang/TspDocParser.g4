@@ -92,7 +92,7 @@ type
     | USERDATA                                                              # UserdataType
     | THREAD                                                                # ThreadType
     | TABLE                                                                 # TableType
-    | ENUM                                                                  # EnumType
+    | NAMESPACE                                                             # NamespaceType
     | ANY                                                                   # AnyType
     | NAME                                                                  # NameType
     ;
@@ -166,7 +166,7 @@ firmwareEntry
     : (GT | LTE | EQUALS EQUALS) FIRMWARE COMMA? docFirmware?;
 
 docVersion
-    // Using non-nilable Enum equivalent after version reference tag.
+    // Using non-nilable NAMESPACE equivalent after version reference tag.
     : TSPV1_TAG (V2_TAG NAME (DOT NAME)*)?  # Version1
     | TSPV2_TAG (V1_TAG NAME (DOT NAME)*)?  # Version2
     ;

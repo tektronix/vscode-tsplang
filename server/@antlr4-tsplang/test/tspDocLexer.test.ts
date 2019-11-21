@@ -259,7 +259,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "PARAM_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 ["NAME"],
                                 "NAME",
                                 "NAME",
@@ -269,7 +269,7 @@ describe("antlr4-tsplang", function() {
                             ],
                             [
                                 "PARAM_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 ["NAME"],
                                 "NAME",
                                 "NAME",
@@ -454,7 +454,7 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @param tag with an enum default value",
+                        name: "Tokenizes @param tag with a namespace default value",
                         content: `--[[[
                             @param [snake_case=smu.FUNC_DC_VOLTAGE] Pellentesque ullamcorper facilisis viverra.
                             @parameter [snake_case=smu.FUNC_DC_VOLTAGE] Pellentesque ullamcorper facilisis viverra.
@@ -463,7 +463,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "PARAM_TAG",
-                                ["SQUARE_OPEN", ["NAME", "EQUALS", "ENUM"], "SQUARE_CLOSE"],
+                                ["SQUARE_OPEN", ["NAME", "EQUALS", "NAMESPACE"], "SQUARE_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -472,7 +472,7 @@ describe("antlr4-tsplang", function() {
                             ],
                             [
                                 "PARAM_TAG",
-                                ["SQUARE_OPEN", ["NAME", "EQUALS", "ENUM"], "SQUARE_CLOSE"],
+                                ["SQUARE_OPEN", ["NAME", "EQUALS", "NAMESPACE"], "SQUARE_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -533,7 +533,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "RETURNS_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -541,7 +541,7 @@ describe("antlr4-tsplang", function() {
                             ],
                             [
                                 "RETURNS_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -616,7 +616,7 @@ describe("antlr4-tsplang", function() {
                         ]]`,
                         tokenNames: [
                             "OPEN",
-                            ["SEE_TAG", ["ENUM"], "NAME", "NAME", "DOT"],
+                            ["SEE_TAG", ["NAMESPACE"], "NAME", "NAME", "DOT"],
                             ["SEE_TAG", ["NAME"], "NAME", "NAME", "DOT"],
                             "CLOSE",
                         ],
@@ -630,7 +630,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "SEE_TAG",
-                                ["NAME", "OTHER", "OTHER", "OTHER", "ENUM", "OTHER", "NAME"],
+                                ["NAME", "OTHER", "OTHER", "OTHER", "NAMESPACE", "OTHER", "NAME"],
                                 "NAME",
                                 "NAME",
                                 "DOT",
@@ -714,17 +714,17 @@ describe("antlr4-tsplang", function() {
                                 "TYPEDEF_TAG",
                                 [
                                     "CURLY_OPEN",
-                                    "ENUM",
+                                    "NAMESPACE",
                                     "PIPE",
-                                    "ENUM",
+                                    "NAMESPACE",
                                     "PIPE",
-                                    "ENUM",
+                                    "NAMESPACE",
                                     "PIPE",
-                                    "ENUM",
+                                    "NAMESPACE",
                                     "PIPE",
-                                    "ENUM",
+                                    "NAMESPACE",
                                     "PIPE",
-                                    "ENUM",
+                                    "NAMESPACE",
                                     "CURLY_CLOSE",
                                 ],
                                 ["NAME"],
@@ -794,7 +794,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "FIELD_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 ["NAME"],
                                 "NAME",
                                 "NAME",
@@ -915,7 +915,7 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @field tag with an enum default value",
+                        name: "Tokenizes @field tag with a namespace default value",
                         content: `--[[[
                             @field [snake_case=smu.FUNC_DC_VOLTAGE] Pellentesque ullamcorper facilisis viverra.
                         ]]`,
@@ -923,7 +923,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "FIELD_TAG",
-                                ["SQUARE_OPEN", ["NAME", "EQUALS", "ENUM"], "SQUARE_CLOSE"],
+                                ["SQUARE_OPEN", ["NAME", "EQUALS", "NAMESPACE"], "SQUARE_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -974,7 +974,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "INDEX_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -1119,7 +1119,7 @@ describe("antlr4-tsplang", function() {
                             "OPEN",
                             [
                                 "TYPE_TAG",
-                                ["CURLY_OPEN", ["NIL", "PIPE", "ENUM", "PIPE", "TABLE"], "CURLY_CLOSE"],
+                                ["CURLY_OPEN", ["NIL", "PIPE", "NAMESPACE", "PIPE", "TABLE"], "CURLY_CLOSE"],
                                 "NAME",
                                 "NAME",
                                 "NAME",
@@ -1226,7 +1226,7 @@ describe("antlr4-tsplang", function() {
                             @v1 smu.measure.math.mxb.mfactor
                             @v1 TypeAlias
                         ]]`,
-                        tokenNames: ["OPEN", ["V1_TAG", ["ENUM"]], ["V1_TAG", ["NAME"]], "CLOSE"],
+                        tokenNames: ["OPEN", ["V1_TAG", ["NAMESPACE"]], ["V1_TAG", ["NAME"]], "CLOSE"],
                     },
                     // #endregion @v1
 
@@ -1238,7 +1238,7 @@ describe("antlr4-tsplang", function() {
                             @v2 smu.measure.math.mxb.mfactor
                             @v2 TypeAlias
                         ]]`,
-                        tokenNames: ["OPEN", ["V2_TAG", ["ENUM"]], ["V2_TAG", ["NAME"]], "CLOSE"],
+                        tokenNames: ["OPEN", ["V2_TAG", ["NAMESPACE"]], ["V2_TAG", ["NAME"]], "CLOSE"],
                     },
                     // #endregion @v2
                 ]

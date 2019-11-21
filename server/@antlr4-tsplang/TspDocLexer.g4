@@ -133,7 +133,7 @@ USERDATA
 ANY
     : 'any';
 
-ENUM
+NAMESPACE
     : NAME '.' NAME ('.' NAME)* Nilable;
 
 /* End */

@@ -11,7 +11,7 @@ import { FunctionTypeContext } from "./TspDocParser.generated";
 import { UserdataTypeContext } from "./TspDocParser.generated";
 import { ThreadTypeContext } from "./TspDocParser.generated";
 import { TableTypeContext } from "./TspDocParser.generated";
-import { EnumTypeContext } from "./TspDocParser.generated";
+import { NamespaceTypeContext } from "./TspDocParser.generated";
 import { AnyTypeContext } from "./TspDocParser.generated";
 import { NameTypeContext } from "./TspDocParser.generated";
 import { NameRequiredContext } from "./TspDocParser.generated";
@@ -159,17 +159,17 @@ export interface TspDocListener extends ParseTreeListener {
 	exitTableType?: (ctx: TableTypeContext) => void;
 
 	/**
-	 * Enter a parse tree produced by the `EnumType`
+	 * Enter a parse tree produced by the `NamespaceType`
 	 * labeled alternative in `TspDocParser.type`.
 	 * @param ctx the parse tree
 	 */
-	enterEnumType?: (ctx: EnumTypeContext) => void;
+	enterNamespaceType?: (ctx: NamespaceTypeContext) => void;
 	/**
-	 * Exit a parse tree produced by the `EnumType`
+	 * Exit a parse tree produced by the `NamespaceType`
 	 * labeled alternative in `TspDocParser.type`.
 	 * @param ctx the parse tree
 	 */
-	exitEnumType?: (ctx: EnumTypeContext) => void;
+	exitNamespaceType?: (ctx: NamespaceTypeContext) => void;
 
 	/**
 	 * Enter a parse tree produced by the `AnyType`

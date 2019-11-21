@@ -46,7 +46,7 @@ export class TspDocLexer extends Lexer {
 	public static readonly THREAD = 28;
 	public static readonly USERDATA = 29;
 	public static readonly ANY = 30;
-	public static readonly ENUM = 31;
+	public static readonly NAMESPACE = 31;
 	public static readonly CLOSE = 32;
 	public static readonly CURLY_OPEN = 33;
 	public static readonly CURLY_CLOSE = 34;
@@ -95,8 +95,8 @@ export class TspDocLexer extends Lexer {
 		"READONLY_TAG", "SEE_TAG", "TSPLINK_TAG", "TSPV1_TAG", "TSPV2_TAG", "TYPE_TAG", 
 		"TYPEDEF_TAG", "V1_TAG", "V2_TAG", "WRITEONLY_TAG", "LINK_TAG_START", 
 		"BOOLEAN", "FUNCTION", "NUMBER", "STRING", "TABLE", "THREAD", "USERDATA", 
-		"ANY", "ENUM", "CLOSE", "CURLY_OPEN", "CURLY_CLOSE", "COMMA", "DOT", "EQUALS", 
-		"FALSE", "GT", "LTE", "PAREN_OPEN", "PAREN_CLOSE", "PIPE", "RETURN_ARROW", 
+		"ANY", "NAMESPACE", "CLOSE", "CURLY_OPEN", "CURLY_CLOSE", "COMMA", "DOT", 
+		"EQUALS", "FALSE", "GT", "LTE", "PAREN_OPEN", "PAREN_CLOSE", "PIPE", "RETURN_ARROW", 
 		"SQUARE_OPEN", "SQUARE_CLOSE", "TRUE", "Nilable", "OTHER", "NIL", "NAME", 
 		"NORMALSTRING", "CHARSTRING", "INT", "HEX", "FLOAT", "ExponentPart", "EscapeSequence", 
 		"Digit", "HexDigit", "HORIZONTAL_WS", "VERTICAL_WS", "LINK_TAG_END", "LINK_TAG_TARGET", 
@@ -118,7 +118,7 @@ export class TspDocLexer extends Lexer {
 		"RETURNS_TAG", "READONLY_TAG", "SEE_TAG", "TSPLINK_TAG", "TSPV1_TAG", 
 		"TSPV2_TAG", "TYPE_TAG", "TYPEDEF_TAG", "V1_TAG", "V2_TAG", "WRITEONLY_TAG", 
 		"LINK_TAG_START", "BOOLEAN", "FUNCTION", "NUMBER", "STRING", "TABLE", 
-		"THREAD", "USERDATA", "ANY", "ENUM", "CLOSE", "CURLY_OPEN", "CURLY_CLOSE", 
+		"THREAD", "USERDATA", "ANY", "NAMESPACE", "CLOSE", "CURLY_OPEN", "CURLY_CLOSE", 
 		"COMMA", "DOT", "EQUALS", "FALSE", "GT", "LTE", "PAREN_OPEN", "PAREN_CLOSE", 
 		"PIPE", "RETURN_ARROW", "SQUARE_OPEN", "SQUARE_CLOSE", "TRUE", "OTHER", 
 		"NIL", "NAME", "NORMALSTRING", "CHARSTRING", "INT", "HEX", "FLOAT", "HORIZONTAL_WS", 

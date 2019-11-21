@@ -56,7 +56,7 @@ export class TspDocParser extends Parser {
 	public static readonly THREAD = 28;
 	public static readonly USERDATA = 29;
 	public static readonly ANY = 30;
-	public static readonly ENUM = 31;
+	public static readonly NAMESPACE = 31;
 	public static readonly CLOSE = 32;
 	public static readonly CURLY_OPEN = 33;
 	public static readonly CURLY_CLOSE = 34;
@@ -140,7 +140,7 @@ export class TspDocParser extends Parser {
 		"RETURNS_TAG", "READONLY_TAG", "SEE_TAG", "TSPLINK_TAG", "TSPV1_TAG", 
 		"TSPV2_TAG", "TYPE_TAG", "TYPEDEF_TAG", "V1_TAG", "V2_TAG", "WRITEONLY_TAG", 
 		"LINK_TAG_START", "BOOLEAN", "FUNCTION", "NUMBER", "STRING", "TABLE", 
-		"THREAD", "USERDATA", "ANY", "ENUM", "CLOSE", "CURLY_OPEN", "CURLY_CLOSE", 
+		"THREAD", "USERDATA", "ANY", "NAMESPACE", "CLOSE", "CURLY_OPEN", "CURLY_CLOSE", 
 		"COMMA", "DOT", "EQUALS", "FALSE", "GT", "LTE", "PAREN_OPEN", "PAREN_CLOSE", 
 		"PIPE", "RETURN_ARROW", "SQUARE_OPEN", "SQUARE_CLOSE", "TRUE", "OTHER", 
 		"NIL", "NAME", "NORMALSTRING", "CHARSTRING", "INT", "HEX", "FLOAT", "HORIZONTAL_WS", 
@@ -209,7 +209,7 @@ export class TspDocParser extends Parser {
 			this.state = 79;
 			this._errHandler.sync(this);
 			_la = this._input.LA(1);
-			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspDocParser.OPEN) | (1 << TspDocParser.FIRMWARE) | (1 << TspDocParser.TAG_DELIMETER) | (1 << TspDocParser.TAG_START) | (1 << TspDocParser.DEPRECATED_TAG) | (1 << TspDocParser.DESCRIPTION_TAG) | (1 << TspDocParser.FIELD_TAG) | (1 << TspDocParser.FIRMWARE_TAG) | (1 << TspDocParser.INDEX_TAG) | (1 << TspDocParser.PARAM_TAG) | (1 << TspDocParser.RETURNS_TAG) | (1 << TspDocParser.READONLY_TAG) | (1 << TspDocParser.SEE_TAG) | (1 << TspDocParser.TSPLINK_TAG) | (1 << TspDocParser.TSPV1_TAG) | (1 << TspDocParser.TSPV2_TAG) | (1 << TspDocParser.TYPE_TAG) | (1 << TspDocParser.TYPEDEF_TAG) | (1 << TspDocParser.WRITEONLY_TAG) | (1 << TspDocParser.LINK_TAG_START) | (1 << TspDocParser.BOOLEAN) | (1 << TspDocParser.FUNCTION) | (1 << TspDocParser.NUMBER) | (1 << TspDocParser.STRING) | (1 << TspDocParser.TABLE) | (1 << TspDocParser.THREAD) | (1 << TspDocParser.USERDATA) | (1 << TspDocParser.ANY) | (1 << TspDocParser.ENUM))) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (TspDocParser.CURLY_OPEN - 33)) | (1 << (TspDocParser.CURLY_CLOSE - 33)) | (1 << (TspDocParser.COMMA - 33)) | (1 << (TspDocParser.DOT - 33)) | (1 << (TspDocParser.EQUALS - 33)) | (1 << (TspDocParser.FALSE - 33)) | (1 << (TspDocParser.GT - 33)) | (1 << (TspDocParser.LTE - 33)) | (1 << (TspDocParser.PAREN_OPEN - 33)) | (1 << (TspDocParser.PAREN_CLOSE - 33)) | (1 << (TspDocParser.PIPE - 33)) | (1 << (TspDocParser.RETURN_ARROW - 33)) | (1 << (TspDocParser.SQUARE_OPEN - 33)) | (1 << (TspDocParser.SQUARE_CLOSE - 33)) | (1 << (TspDocParser.TRUE - 33)) | (1 << (TspDocParser.OTHER - 33)) | (1 << (TspDocParser.NIL - 33)) | (1 << (TspDocParser.NAME - 33)) | (1 << (TspDocParser.NORMALSTRING - 33)) | (1 << (TspDocParser.CHARSTRING - 33)) | (1 << (TspDocParser.INT - 33)) | (1 << (TspDocParser.HEX - 33)) | (1 << (TspDocParser.FLOAT - 33)) | (1 << (TspDocParser.HORIZONTAL_WS - 33)) | (1 << (TspDocParser.VERTICAL_WS - 33)) | (1 << (TspDocParser.LINK_TAG_END - 33)) | (1 << (TspDocParser.LINK_TAG_TARGET - 33)) | (1 << (TspDocParser.LINK_TAG_DISPLAY - 33)) | (1 << (TspDocParser.LINK_TAG_WHITESPACE - 33)))) !== 0)) {
+			while ((((_la) & ~0x1F) === 0 && ((1 << _la) & ((1 << TspDocParser.OPEN) | (1 << TspDocParser.FIRMWARE) | (1 << TspDocParser.TAG_DELIMETER) | (1 << TspDocParser.TAG_START) | (1 << TspDocParser.DEPRECATED_TAG) | (1 << TspDocParser.DESCRIPTION_TAG) | (1 << TspDocParser.FIELD_TAG) | (1 << TspDocParser.FIRMWARE_TAG) | (1 << TspDocParser.INDEX_TAG) | (1 << TspDocParser.PARAM_TAG) | (1 << TspDocParser.RETURNS_TAG) | (1 << TspDocParser.READONLY_TAG) | (1 << TspDocParser.SEE_TAG) | (1 << TspDocParser.TSPLINK_TAG) | (1 << TspDocParser.TSPV1_TAG) | (1 << TspDocParser.TSPV2_TAG) | (1 << TspDocParser.TYPE_TAG) | (1 << TspDocParser.TYPEDEF_TAG) | (1 << TspDocParser.WRITEONLY_TAG) | (1 << TspDocParser.LINK_TAG_START) | (1 << TspDocParser.BOOLEAN) | (1 << TspDocParser.FUNCTION) | (1 << TspDocParser.NUMBER) | (1 << TspDocParser.STRING) | (1 << TspDocParser.TABLE) | (1 << TspDocParser.THREAD) | (1 << TspDocParser.USERDATA) | (1 << TspDocParser.ANY) | (1 << TspDocParser.NAMESPACE))) !== 0) || ((((_la - 33)) & ~0x1F) === 0 && ((1 << (_la - 33)) & ((1 << (TspDocParser.CURLY_OPEN - 33)) | (1 << (TspDocParser.CURLY_CLOSE - 33)) | (1 << (TspDocParser.COMMA - 33)) | (1 << (TspDocParser.DOT - 33)) | (1 << (TspDocParser.EQUALS - 33)) | (1 << (TspDocParser.FALSE - 33)) | (1 << (TspDocParser.GT - 33)) | (1 << (TspDocParser.LTE - 33)) | (1 << (TspDocParser.PAREN_OPEN - 33)) | (1 << (TspDocParser.PAREN_CLOSE - 33)) | (1 << (TspDocParser.PIPE - 33)) | (1 << (TspDocParser.RETURN_ARROW - 33)) | (1 << (TspDocParser.SQUARE_OPEN - 33)) | (1 << (TspDocParser.SQUARE_CLOSE - 33)) | (1 << (TspDocParser.TRUE - 33)) | (1 << (TspDocParser.OTHER - 33)) | (1 << (TspDocParser.NIL - 33)) | (1 << (TspDocParser.NAME - 33)) | (1 << (TspDocParser.NORMALSTRING - 33)) | (1 << (TspDocParser.CHARSTRING - 33)) | (1 << (TspDocParser.INT - 33)) | (1 << (TspDocParser.HEX - 33)) | (1 << (TspDocParser.FLOAT - 33)) | (1 << (TspDocParser.HORIZONTAL_WS - 33)) | (1 << (TspDocParser.VERTICAL_WS - 33)) | (1 << (TspDocParser.LINK_TAG_END - 33)) | (1 << (TspDocParser.LINK_TAG_TARGET - 33)) | (1 << (TspDocParser.LINK_TAG_DISPLAY - 33)) | (1 << (TspDocParser.LINK_TAG_WHITESPACE - 33)))) !== 0)) {
 				{
 				this.state = 77;
 				this._errHandler.sync(this);
@@ -312,7 +312,7 @@ export class TspDocParser extends Parser {
 				case TspDocParser.THREAD:
 				case TspDocParser.USERDATA:
 				case TspDocParser.ANY:
-				case TspDocParser.ENUM:
+				case TspDocParser.NAMESPACE:
 				case TspDocParser.CURLY_OPEN:
 				case TspDocParser.CURLY_CLOSE:
 				case TspDocParser.COMMA:
@@ -780,7 +780,7 @@ export class TspDocParser extends Parser {
 					this.state = 141;
 					this._errHandler.sync(this);
 					_la = this._input.LA(1);
-					while (((((_la - 23)) & ~0x1F) === 0 && ((1 << (_la - 23)) & ((1 << (TspDocParser.BOOLEAN - 23)) | (1 << (TspDocParser.FUNCTION - 23)) | (1 << (TspDocParser.NUMBER - 23)) | (1 << (TspDocParser.STRING - 23)) | (1 << (TspDocParser.TABLE - 23)) | (1 << (TspDocParser.THREAD - 23)) | (1 << (TspDocParser.USERDATA - 23)) | (1 << (TspDocParser.ANY - 23)) | (1 << (TspDocParser.ENUM - 23)) | (1 << (TspDocParser.NIL - 23)) | (1 << (TspDocParser.NAME - 23)))) !== 0)) {
+					while (((((_la - 23)) & ~0x1F) === 0 && ((1 << (_la - 23)) & ((1 << (TspDocParser.BOOLEAN - 23)) | (1 << (TspDocParser.FUNCTION - 23)) | (1 << (TspDocParser.NUMBER - 23)) | (1 << (TspDocParser.STRING - 23)) | (1 << (TspDocParser.TABLE - 23)) | (1 << (TspDocParser.THREAD - 23)) | (1 << (TspDocParser.USERDATA - 23)) | (1 << (TspDocParser.ANY - 23)) | (1 << (TspDocParser.NAMESPACE - 23)) | (1 << (TspDocParser.NIL - 23)) | (1 << (TspDocParser.NAME - 23)))) !== 0)) {
 						{
 						{
 						this.state = 138;
@@ -826,12 +826,12 @@ export class TspDocParser extends Parser {
 				this.match(TspDocParser.TABLE);
 				}
 				break;
-			case TspDocParser.ENUM:
-				_localctx = new EnumTypeContext(_localctx);
+			case TspDocParser.NAMESPACE:
+				_localctx = new NamespaceTypeContext(_localctx);
 				this.enterOuterAlt(_localctx, 9);
 				{
 				this.state = 152;
-				this.match(TspDocParser.ENUM);
+				this.match(TspDocParser.NAMESPACE);
 				}
 				break;
 			case TspDocParser.ANY:
@@ -2686,22 +2686,22 @@ export class TableTypeContext extends TypeContext {
 		}
 	}
 }
-export class EnumTypeContext extends TypeContext {
-	public ENUM(): TerminalNode { return this.getToken(TspDocParser.ENUM, 0); }
+export class NamespaceTypeContext extends TypeContext {
+	public NAMESPACE(): TerminalNode { return this.getToken(TspDocParser.NAMESPACE, 0); }
 	constructor(ctx: TypeContext) {
 		super(ctx.parent, ctx.invokingState);
 		this.copyFrom(ctx);
 	}
 	// @Override
 	public enterRule(listener: TspDocListener): void {
-		if (listener.enterEnumType) {
-			listener.enterEnumType(this);
+		if (listener.enterNamespaceType) {
+			listener.enterNamespaceType(this);
 		}
 	}
 	// @Override
 	public exitRule(listener: TspDocListener): void {
-		if (listener.exitEnumType) {
-			listener.exitEnumType(this);
+		if (listener.exitNamespaceType) {
+			listener.exitNamespaceType(this);
 		}
 	}
 }
