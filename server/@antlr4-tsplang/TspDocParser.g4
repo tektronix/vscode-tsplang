@@ -99,7 +99,7 @@ type
     ;
 
 typeList
-    : type COMMA (typeList+ | type);
+    : type (COMMA type)* COMMA?;
 
 // end typeDeclaration
 
