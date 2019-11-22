@@ -40,6 +40,8 @@ import {
     TypeContext,
     TypeDeclarationContext,
     TypeEntryContext,
+    TypeListContext,
+    TypeUnionContext,
     UserdataTypeContext,
 } from "../out/TspDocParser.generated"
 
@@ -332,10 +334,10 @@ describe("antlr4-tsplang", function() {
                 singleItemSetTestFixture(
                     actual,
                     item => {
-                        if (item instanceof DocContentContext) {
+                        const expectedType = DocContentContext
+                        if (item instanceof expectedType) {
                             expect(item.link()).to.have.lengthOf(3)
                         } else {
-                            const expectedType = DocContentContext
                             expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
                         }
                     },
@@ -538,7 +540,7 @@ describe("antlr4-tsplang", function() {
                 return testTypeDeclaration(context)
             })
 
-            describe("Basic Type", function() {
+            describe("Single Type", function() {
                 interface BasicType {
                     title: string
                     value: string
@@ -574,12 +576,12 @@ describe("antlr4-tsplang", function() {
                         singleItemSetTestFixture(
                             actual,
                             item => {
-                                if (item instanceof TypeEntryContext) {
+                                const expectedType = TypeEntryContext
+                                if (item instanceof expectedType) {
                                     expect(item.childCount).to.equal(1)
                                     const typeChild = item.getChild(0)
                                     expect(typeChild).to.be.an.instanceOf(test.type)
                                 } else {
-                                    const expectedType = TypeEntryContext
                                     expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
                                 }
                             },
@@ -589,8 +591,103 @@ describe("antlr4-tsplang", function() {
                 })
             })
 
-            describe("Basic Function Signature", function() {
-                it("Accepts a signature without parameters", function(done) {
+            describe("Type Union", function() {
+                it("Is two types delimited by a PIPE", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>(
+                        "{awesomeType1|function(function(function()=>any)=>any)=>any}"
+                    )
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/typeUnion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeUnionContext
+                            if (item instanceof expectedType) {
+                                const unionTypes = item.type()
+                                expect(unionTypes).to.have.lengthOf(2)
+                                expect(unionTypes[0]).to.be.an.instanceOf(NameTypeContext)
+                                expect(unionTypes[1]).to.be.an.instanceOf(FunctionTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts more than two types delimited by PIPEs", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>(
+                        "{trigger.timer.start.fractionalseconds|string|table|nil}"
+                    )
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/typeUnion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeUnionContext
+                            if (item instanceof expectedType) {
+                                const unionTypes = item.type()
+                                expect(unionTypes).to.have.lengthOf(4)
+                                expect(unionTypes[0]).to.be.an.instanceOf(NamespaceTypeContext)
+                                expect(unionTypes[1]).to.be.an.instanceOf(StringTypeContext)
+                                expect(unionTypes[2]).to.be.an.instanceOf(TableTypeContext)
+                                expect(unionTypes[3]).to.be.an.instanceOf(NilTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Is not one type", function() {
+                    const context = contextFactory<TypeUnionContext>("string")
+                    expect(() => context.parser.typeUnion()).to.throw(Error)
+                })
+
+                it("Supports trailing PIPEs", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{string|number|}")
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/typeUnion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeUnionContext
+                            if (item instanceof expectedType) {
+                                expect(item.PIPE()).to.be.lengthOf(2)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+            })
+
+            describe("Function Signature", function() {
+                it("Rejects a signature containing only a COMMA", function() {
+                    const context = contextFactory<TypeDeclarationContext>("{function(,) => any}")
+                    expect(() => context.parser.typeDeclaration()).to.throw(Error)
+                })
+
+                it("Rejects a signature without a return type", function() {
+                    const context = contextFactory<TypeDeclarationContext>("{function()}")
+                    expect(() => context.parser.typeDeclaration()).to.throw(Error)
+
+                    const context2 = contextFactory<TypeDeclarationContext>("{function(any)}")
+                    expect(() => context2.parser.typeDeclaration()).to.throw(Error)
+                })
+
+                it("Accepts a signature with no parameters and one return type", function(done) {
                     const context = contextFactory<TypeDeclarationContext>("{function() => any}")
                     context.root = context.parser.typeDeclaration()
 
@@ -600,10 +697,19 @@ describe("antlr4-tsplang", function() {
                     singleItemSetTestFixture(
                         actual,
                         item => {
-                            if (item instanceof FunctionTypeContext) {
-                                expect(item.typeList()).to.have.lengthOf(0)
+                            const expectedType = FunctionTypeContext
+                            if (item instanceof expectedType) {
+                                // Check parameter types.
+                                expect(item.typeList()).to.be.undefined
+
+                                // Check return types.
+                                const typeReturnEntryChild = item.typeReturnEntry()
+                                expect(typeReturnEntryChild).to.not.be.undefined
+                                const typeListChild = typeReturnEntryChild.typeList()
+                                expect(typeListChild).to.not.be.undefined
+                                expect(typeListChild.type()).to.have.lengthOf(1)
+                                expect(typeListChild.getChild(0)).to.be.instanceOf(AnyTypeContext)
                             } else {
-                                const expectedType = FunctionTypeContext
                                 expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
                             }
                         },
@@ -611,15 +717,268 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it.skip("Accepts a signature with one parameter type")
+                it("Accepts a signature with a COMMA trailing the return type", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{function() => number,}")
+                    context.root = context.parser.typeDeclaration()
 
-                it.skip("Accepts a signature with multiple parameter types")
+                    const actual = XPath.findAll(
+                        context.root,
+                        "/typeDeclaration/typeEntry/type/typeReturnEntry/typeList",
+                        context.parser
+                    )
 
-                it.skip("Accepts a signature with one param and multiple return types")
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeListContext
+                            if (item instanceof expectedType) {
+                                expect(item.COMMA()).to.have.lengthOf(1)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
 
-                it.skip("Accepts a signature with multiple params and returns types")
+                it("Accepts a signature with one parameter and one return type", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{function(string) => any}")
+                    context.root = context.parser.typeDeclaration()
 
-                it.skip("Supports trailing COMMAs")
+                    const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = FunctionTypeContext
+                            if (item instanceof expectedType) {
+                                // Check parameter types.
+                                const typeListChild = item.typeList()
+                                expect(typeListChild).to.not.be.undefined
+                                expect(typeListChild.type()).to.have.lengthOf(1)
+                                expect(typeListChild.getChild(0)).to.be.an.instanceOf(StringTypeContext)
+
+                                // Check return types.
+                                const typeReturnEntryChild = item.typeReturnEntry()
+                                expect(typeReturnEntryChild).to.not.be.undefined
+                                const typeListChild2 = typeReturnEntryChild.typeList()
+                                expect(typeListChild2).to.not.be.undefined
+                                expect(typeListChild2.type()).to.have.lengthOf(1)
+                                expect(typeListChild2.getChild(0)).to.be.instanceOf(AnyTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with a COMMA trailing one parameter type", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{function(string,) => any}")
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(
+                        context.root,
+                        "/typeDeclaration/typeEntry/type/typeList",
+                        context.parser
+                    )
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeListContext
+                            if (item instanceof expectedType) {
+                                expect(item.COMMA()).to.have.lengthOf(1)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with multiple parameter types", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>(
+                        "{function(userdata, thread, number) => any}"
+                    )
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = FunctionTypeContext
+                            if (item instanceof expectedType) {
+                                const typeListChild = item.typeList()
+                                expect(typeListChild).to.not.be.undefined
+                                const paramTypes = typeListChild.type()
+                                expect(paramTypes).to.have.lengthOf(3)
+                                expect(paramTypes[0]).to.be.an.instanceOf(UserdataTypeContext)
+                                expect(paramTypes[1]).to.be.an.instanceOf(ThreadTypeContext)
+                                expect(paramTypes[2]).to.be.an.instanceOf(NumberTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with a COMMA trailing multiple parameter types", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>(
+                        "{function(userdata, thread, number,) => any}"
+                    )
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(
+                        context.root,
+                        "/typeDeclaration/typeEntry/type/typeList",
+                        context.parser
+                    )
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeListContext
+                            if (item instanceof expectedType) {
+                                expect(item.COMMA()).to.have.lengthOf(3)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with one param and a return type union", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{function(any) => boolean|string|nil}")
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(
+                        context.root,
+                        "/typeDeclaration/typeEntry/type/typeReturnEntry/typeUnion",
+                        context.parser
+                    )
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeUnionContext
+                            if (item instanceof expectedType) {
+                                const unionTypes = item.type()
+                                expect(unionTypes).to.have.lengthOf(3)
+                                expect(unionTypes[0]).to.be.an.instanceOf(BooleanTypeContext)
+                                expect(unionTypes[1]).to.be.an.instanceOf(StringTypeContext)
+                                expect(unionTypes[2]).to.be.an.instanceOf(NilTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with a PIPE trailing a return type union", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{function(any) => snakey_type|userdata|}")
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(
+                        context.root,
+                        "/typeDeclaration/typeEntry/type/typeReturnEntry/typeUnion",
+                        context.parser
+                    )
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeUnionContext
+                            if (item instanceof expectedType) {
+                                expect(item.PIPE()).to.have.lengthOf(2)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with multiple params and a return type union", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>(
+                        "{function(myType, table, smu.FUNC_DC_CURRENT) => any | UserListType | function()=>function }"
+                    )
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = FunctionTypeContext
+                            if (item instanceof expectedType) {
+                                // Check the parameter types.
+                                const typeListChild = item.typeList()
+                                expect(typeListChild).to.not.be.undefined
+                                const paramTypes = typeListChild.type()
+                                expect(paramTypes).to.have.lengthOf(3)
+                                expect(paramTypes[0]).to.be.an.instanceOf(NameTypeContext)
+                                expect(paramTypes[1]).to.be.an.instanceOf(TableTypeContext)
+                                expect(paramTypes[2]).to.be.an.instanceOf(NamespaceTypeContext)
+
+                                // Check the return type union.
+                                const typeReturnEntryChild = item.typeReturnEntry()
+                                expect(typeReturnEntryChild).to.not.be.undefined
+                                const typeUnionChild = typeReturnEntryChild.typeUnion()
+                                expect(typeUnionChild).to.not.be.undefined
+                                const unionTypes = typeUnionChild.type()
+                                expect(unionTypes).to.have.lengthOf(3)
+                                expect(unionTypes[0]).to.be.an.instanceOf(AnyTypeContext)
+                                expect(unionTypes[1]).to.be.an.instanceOf(NameTypeContext)
+                                expect(unionTypes[2]).to.be.an.instanceOf(FunctionTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a signature with one param and a return type list", function(done) {
+                    const context = contextFactory<TypeDeclarationContext>("{function(any) => function, number, table}")
+                    context.root = context.parser.typeDeclaration()
+
+                    const actual = XPath.findAll(
+                        context.root,
+                        "/typeDeclaration/typeEntry/type/typeReturnEntry/typeList",
+                        context.parser
+                    )
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            const expectedType = TypeListContext
+                            if (item instanceof expectedType) {
+                                const listTypes = item.type()
+                                expect(listTypes).to.have.lengthOf(3)
+                                expect(listTypes[0]).to.be.an.instanceOf(FunctionTypeContext)
+                                expect(listTypes[1]).to.be.an.instanceOf(NumberTypeContext)
+                                expect(listTypes[2]).to.be.an.instanceOf(TableTypeContext)
+                            } else {
+                                expect.fail(item, expectedType, `Matched item is not of type ${expectedType.name}`)
+                            }
+                        },
+                        done
+                    )
+                })
             })
         })
     })

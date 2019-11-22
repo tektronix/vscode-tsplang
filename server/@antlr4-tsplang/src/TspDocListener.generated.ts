@@ -30,6 +30,7 @@ import { TypeEntryContext } from "./TspDocParser.generated";
 import { TypeUnionContext } from "./TspDocParser.generated";
 import { TypeContext } from "./TspDocParser.generated";
 import { TypeListContext } from "./TspDocParser.generated";
+import { TypeReturnEntryContext } from "./TspDocParser.generated";
 import { NameDeclarationContext } from "./TspDocParser.generated";
 import { NameValueContext } from "./TspDocParser.generated";
 import { NumContext } from "./TspDocParser.generated";
@@ -380,6 +381,17 @@ export interface TspDocListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitTypeList?: (ctx: TypeListContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.typeReturnEntry`.
+	 * @param ctx the parse tree
+	 */
+	enterTypeReturnEntry?: (ctx: TypeReturnEntryContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.typeReturnEntry`.
+	 * @param ctx the parse tree
+	 */
+	exitTypeReturnEntry?: (ctx: TypeReturnEntryContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspDocParser.nameDeclaration`.

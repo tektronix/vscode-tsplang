@@ -82,24 +82,29 @@ typeEntry
     ;
 
 typeUnion
-    : type PIPE (typeUnion+ | type);
+    : type (PIPE type)+ PIPE?;
 
 type
-    : NIL                                                                   # NilType
-    | BOOLEAN                                                               # BooleanType
-    | NUMBER                                                                # NumberType
-    | STRING                                                                # StringType
-    | FUNCTION (PAREN_OPEN typeList? PAREN_CLOSE RETURN_ARROW typeEntry)?   # FunctionType
-    | USERDATA                                                              # UserdataType
-    | THREAD                                                                # ThreadType
-    | TABLE                                                                 # TableType
-    | NAMESPACE                                                             # NamespaceType
-    | ANY                                                                   # AnyType
-    | NAME                                                                  # NameType
+    : NIL       # NilType
+    | BOOLEAN   # BooleanType
+    | NUMBER    # NumberType
+    | STRING    # StringType
+    | FUNCTION (PAREN_OPEN typeList? PAREN_CLOSE RETURN_ARROW typeReturnEntry)? # FunctionType
+    | USERDATA  # UserdataType
+    | THREAD    # ThreadType
+    | TABLE     # TableType
+    | NAMESPACE # NamespaceType
+    | ANY       # AnyType
+    | NAME      # NameType
     ;
 
 typeList
     : type (COMMA type)* COMMA?;
+
+typeReturnEntry
+    : typeList
+    | typeUnion
+    ;
 
 // end typeDeclaration
 
@@ -127,7 +132,7 @@ str
 // end docParameter
 
 docReturns
-    : RETURNS_TAG (CURLY_OPEN (typeEntry | typeList) CURLY_CLOSE)? docContent?;
+    : RETURNS_TAG (CURLY_OPEN typeReturnEntry CURLY_CLOSE)? docContent?;
 
 docReadonly
     : READONLY_TAG docContent?;
