@@ -25,4 +25,22 @@
             "autoFix": false
         }
     ],
+    "mocha.coverage": {
+        // Use `npm run cover` for more accurate coverage results.
+        "enable": false,
+        "decoration": false,
+        "runWithInterval": false,
+        "activeOnStart": false,
+        "runAfterTest": false,
+        "runCoverageAfterFileSave": false,
+    },
+    "mocha.files.glob": "**/test/**/*.test.ts",
+    "mocha.logVerbose": true,
+    "mocha.options": {
+        "ui": "bdd"
+    },
+    "mocha.requires": [
+        "ts-node/register",
+        "source-map-support/register"
+    ]
 }
