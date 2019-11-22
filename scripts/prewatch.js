@@ -1,1 +1,1 @@
-precompile.js
+require("./precompile")
