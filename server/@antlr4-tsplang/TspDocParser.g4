@@ -89,7 +89,7 @@ type
     | BOOLEAN                                                               # BooleanType
     | NUMBER                                                                # NumberType
     | STRING                                                                # StringType
-    | FUNCTION (PAREN_OPEN typeList* PAREN_CLOSE RETURN_ARROW typeEntry)?   # FunctionType
+    | FUNCTION (PAREN_OPEN typeList? PAREN_CLOSE RETURN_ARROW typeEntry)?   # FunctionType
     | USERDATA                                                              # UserdataType
     | THREAD                                                                # ThreadType
     | TABLE                                                                 # TableType
