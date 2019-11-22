@@ -7,7 +7,7 @@
 
     @param {table} object The target object.
 
-    @returns {table?} The metatable of the target object or nil if the object
+    @returns {table|nil} The metatable of the target object or nil if the object
         does not have a metatable.
 ]]
 function getmetatable(object)
