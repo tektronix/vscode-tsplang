@@ -171,10 +171,10 @@ docTsplink
     : TSPLINK_TAG docContent?;
 
 docFirmware
-    : FIRMWARE_TAG firmwareEntry+;
+    : FIRMWARE_TAG firmwareEntry (COMMA firmwareEntry)* COMMA?;
 
 firmwareEntry
-    : (GT | LTE | EQUALS EQUALS) FIRMWARE COMMA? docFirmware?;
+    : (GT | LTE | EQUALS EQUALS) FIRMWARE;
 
 docVersion
     : TSPV1_TAG (V2_TAG (NAME | NAMESPACE))?    # Version1

@@ -1593,26 +1593,36 @@ export class TspDocParser extends Parser {
 			{
 			this.state = 253;
 			this.match(TspDocParser.FIRMWARE_TAG);
-			this.state = 255;
+			this.state = 254;
+			this.firmwareEntry();
+			this.state = 259;
 			this._errHandler.sync(this);
-			_alt = 1;
-			do {
-				switch (_alt) {
-				case 1:
+			_alt = this.interpreter.adaptivePredict(this._input, 33, this._ctx);
+			while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER) {
+				if (_alt === 1) {
 					{
 					{
-					this.state = 254;
+					this.state = 255;
+					this.match(TspDocParser.COMMA);
+					this.state = 256;
 					this.firmwareEntry();
 					}
 					}
-					break;
-				default:
-					throw new NoViableAltException(this);
 				}
-				this.state = 257;
+				this.state = 261;
 				this._errHandler.sync(this);
 				_alt = this.interpreter.adaptivePredict(this._input, 33, this._ctx);
-			} while (_alt !== 2 && _alt !== ATN.INVALID_ALT_NUMBER);
+			}
+			this.state = 263;
+			this._errHandler.sync(this);
+			switch ( this.interpreter.adaptivePredict(this._input, 34, this._ctx) ) {
+			case 1:
+				{
+				this.state = 262;
+				this.match(TspDocParser.COMMA);
+				}
+				break;
+			}
 			}
 		}
 		catch (re) {
@@ -1636,54 +1646,34 @@ export class TspDocParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 263;
+			this.state = 269;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case TspDocParser.GT:
 				{
-				this.state = 259;
+				this.state = 265;
 				this.match(TspDocParser.GT);
 				}
 				break;
 			case TspDocParser.LTE:
 				{
-				this.state = 260;
+				this.state = 266;
 				this.match(TspDocParser.LTE);
 				}
 				break;
 			case TspDocParser.EQUALS:
 				{
-				this.state = 261;
+				this.state = 267;
 				this.match(TspDocParser.EQUALS);
-				this.state = 262;
+				this.state = 268;
 				this.match(TspDocParser.EQUALS);
 				}
 				break;
 			default:
 				throw new NoViableAltException(this);
 			}
-			this.state = 265;
+			this.state = 271;
 			this.match(TspDocParser.FIRMWARE);
-			this.state = 267;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 35, this._ctx) ) {
-			case 1:
-				{
-				this.state = 266;
-				this.match(TspDocParser.COMMA);
-				}
-				break;
-			}
-			this.state = 270;
-			this._errHandler.sync(this);
-			switch ( this.interpreter.adaptivePredict(this._input, 36, this._ctx) ) {
-			case 1:
-				{
-				this.state = 269;
-				this.docFirmware();
-				}
-				break;
-			}
 			}
 		}
 		catch (re) {
@@ -1706,23 +1696,23 @@ export class TspDocParser extends Parser {
 		this.enterRule(_localctx, 58, TspDocParser.RULE_docVersion);
 		let _la: number;
 		try {
-			this.state = 282;
+			this.state = 283;
 			this._errHandler.sync(this);
 			switch (this._input.LA(1)) {
 			case TspDocParser.TSPV1_TAG:
 				_localctx = new Version1Context(_localctx);
 				this.enterOuterAlt(_localctx, 1);
 				{
-				this.state = 272;
+				this.state = 273;
 				this.match(TspDocParser.TSPV1_TAG);
-				this.state = 275;
+				this.state = 276;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				if (_la === TspDocParser.V2_TAG) {
 					{
-					this.state = 273;
-					this.match(TspDocParser.V2_TAG);
 					this.state = 274;
+					this.match(TspDocParser.V2_TAG);
+					this.state = 275;
 					_la = this._input.LA(1);
 					if (!(_la === TspDocParser.NAMESPACE || _la === TspDocParser.NAME)) {
 					this._errHandler.recoverInline(this);
@@ -1743,16 +1733,16 @@ export class TspDocParser extends Parser {
 				_localctx = new Version2Context(_localctx);
 				this.enterOuterAlt(_localctx, 2);
 				{
-				this.state = 277;
+				this.state = 278;
 				this.match(TspDocParser.TSPV2_TAG);
-				this.state = 280;
+				this.state = 281;
 				this._errHandler.sync(this);
 				_la = this._input.LA(1);
 				if (_la === TspDocParser.V1_TAG) {
 					{
-					this.state = 278;
-					this.match(TspDocParser.V1_TAG);
 					this.state = 279;
+					this.match(TspDocParser.V1_TAG);
+					this.state = 280;
 					_la = this._input.LA(1);
 					if (!(_la === TspDocParser.NAMESPACE || _la === TspDocParser.NAME)) {
 					this._errHandler.recoverInline(this);
@@ -1789,7 +1779,7 @@ export class TspDocParser extends Parser {
 	}
 
 	public static readonly _serializedATN: string =
-		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03@\u011F\x04\x02" +
+		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03@\u0120\x04\x02" +
 		"\t\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x04\x06\t\x06\x04\x07" +
 		"\t\x07\x04\b\t\b\x04\t\t\t\x04\n\t\n\x04\v\t\v\x04\f\t\f\x04\r\t\r\x04" +
 		"\x0E\t\x0E\x04\x0F\t\x0F\x04\x10\t\x10\x04\x11\t\x11\x04\x12\t\x12\x04" +
@@ -1816,12 +1806,12 @@ export class TspDocParser extends Parser {
 		"\n\x17\x03\x18\x03\x18\x05\x18\xE7\n\x18\x03\x18\x03\x18\x05\x18\xEB\n" +
 		"\x18\x03\x19\x03\x19\x03\x19\x05\x19\xF0\n\x19\x03\x1A\x03\x1A\x03\x1A" +
 		"\x05\x1A\xF5\n\x1A\x03\x1B\x03\x1B\x03\x1B\x05\x1B\xFA\n\x1B\x03\x1C\x03" +
-		"\x1C\x05\x1C\xFE\n\x1C\x03\x1D\x03\x1D\x06\x1D\u0102\n\x1D\r\x1D\x0E\x1D" +
-		"\u0103\x03\x1E\x03\x1E\x03\x1E\x03\x1E\x05\x1E\u010A\n\x1E\x03\x1E\x03" +
-		"\x1E\x05\x1E\u010E\n\x1E\x03\x1E\x05\x1E\u0111\n\x1E\x03\x1F\x03\x1F\x03" +
-		"\x1F\x05\x1F\u0116\n\x1F\x03\x1F\x03\x1F\x03\x1F\x05\x1F\u011B\n\x1F\x05" +
-		"\x1F\u011D\n\x1F\x03\x1F\x02\x02\x02 \x02\x02\x04\x02\x06\x02\b\x02\n" +
-		"\x02\f\x02\x0E\x02\x10\x02\x12\x02\x14\x02\x16\x02\x18\x02\x1A\x02\x1C" +
+		"\x1C\x05\x1C\xFE\n\x1C\x03\x1D\x03\x1D\x03\x1D\x03\x1D\x07\x1D\u0104\n" +
+		"\x1D\f\x1D\x0E\x1D\u0107\v\x1D\x03\x1D\x05\x1D\u010A\n\x1D\x03\x1E\x03" +
+		"\x1E\x03\x1E\x03\x1E\x05\x1E\u0110\n\x1E\x03\x1E\x03\x1E\x03\x1F\x03\x1F" +
+		"\x03\x1F\x05\x1F\u0117\n\x1F\x03\x1F\x03\x1F\x03\x1F\x05\x1F\u011C\n\x1F" +
+		"\x05\x1F\u011E\n\x1F\x03\x1F\x02\x02\x02 \x02\x02\x04\x02\x06\x02\b\x02" +
+		"\n\x02\f\x02\x0E\x02\x10\x02\x12\x02\x14\x02\x16\x02\x18\x02\x1A\x02\x1C" +
 		"\x02\x1E\x02 \x02\"\x02$\x02&\x02(\x02*\x02,\x02.\x020\x022\x024\x026" +
 		"\x028\x02:\x02<\x02\x02\x06\x04\x02\x07\x17\"\"\x03\x028:\x03\x0267\x04" +
 		"\x02!!55\x02\u0145\x02>\x03\x02\x02\x02\x04S\x03\x02\x02\x02\x06V\x03" +
@@ -1832,8 +1822,8 @@ export class TspDocParser extends Parser {
 		"\x02\x02\x02\"\xBF\x03\x02\x02\x02$\xC1\x03\x02\x02\x02&\xCB\x03\x02\x02" +
 		"\x02(\xCF\x03\x02\x02\x02*\xD3\x03\x02\x02\x02,\xD8\x03\x02\x02\x02.\xE4" +
 		"\x03\x02\x02\x020\xEC\x03\x02\x02\x022\xF1\x03\x02\x02\x024\xF9\x03\x02" +
-		"\x02\x026\xFB\x03\x02\x02\x028\xFF\x03\x02\x02\x02:\u0109\x03\x02\x02" +
-		"\x02<\u011C\x03\x02\x02\x02>?\x07\x03\x02\x02?@\x05\x04\x03\x02@A\x07" +
+		"\x02\x026\xFB\x03\x02\x02\x028\xFF\x03\x02\x02\x02:\u010F\x03\x02\x02" +
+		"\x02<\u011D\x03\x02\x02\x02>?\x07\x03\x02\x02?@\x05\x04\x03\x02@A\x07" +
 		"\"\x02\x02A\x03\x03\x02\x02\x02BR\x05\x06\x04\x02CR\x05\b\x05\x02DR\x05" +
 		"\x0E\b\x02ER\x05$\x13\x02FR\x05&\x14\x02GR\x05(\x15\x02HR\x05*\x16\x02" +
 		"IR\x05,\x17\x02JR\x05.\x18\x02KR\x050\x19\x02LR\x052\x1A\x02MR\x056\x1C" +
@@ -1909,23 +1899,23 @@ export class TspDocParser extends Parser {
 		"\x05\f\x07\x02\xF9\xF6\x03\x02\x02\x02\xF9\xF7\x03\x02\x02\x02\xF9\xF8" +
 		"\x03\x02\x02\x02\xFA5\x03\x02\x02\x02\xFB\xFD\x07\x10\x02\x02\xFC\xFE" +
 		"\x05\n\x06\x02\xFD\xFC\x03\x02\x02\x02\xFD\xFE\x03\x02\x02\x02\xFE7\x03" +
-		"\x02\x02\x02\xFF\u0101\x07\n\x02\x02\u0100\u0102\x05:\x1E\x02\u0101\u0100" +
-		"\x03\x02\x02\x02\u0102\u0103\x03\x02\x02\x02\u0103\u0101\x03\x02\x02\x02" +
-		"\u0103\u0104\x03\x02\x02\x02\u01049\x03\x02\x02\x02\u0105\u010A\x07)\x02" +
-		"\x02\u0106\u010A\x07*\x02\x02\u0107\u0108\x07\'\x02\x02\u0108\u010A\x07" +
-		"\'\x02\x02\u0109\u0105\x03\x02\x02\x02\u0109\u0106\x03\x02\x02\x02\u0109" +
-		"\u0107\x03\x02\x02\x02\u010A\u010B\x03\x02\x02\x02\u010B\u010D\x07\x04" +
-		"\x02\x02\u010C\u010E\x07%\x02\x02\u010D\u010C\x03\x02\x02\x02\u010D\u010E" +
-		"\x03\x02\x02\x02\u010E\u0110\x03\x02\x02\x02\u010F\u0111\x058\x1D\x02" +
-		"\u0110\u010F\x03\x02\x02\x02\u0110\u0111\x03\x02\x02\x02\u0111;\x03\x02" +
-		"\x02\x02\u0112\u0115\x07\x11\x02\x02\u0113\u0114\x07\x16\x02\x02\u0114" +
-		"\u0116\t\x05\x02\x02\u0115\u0113\x03\x02\x02\x02\u0115\u0116\x03\x02\x02" +
-		"\x02\u0116\u011D\x03\x02\x02\x02\u0117\u011A\x07\x12\x02\x02\u0118\u0119" +
-		"\x07\x15\x02\x02\u0119\u011B\t\x05\x02\x02\u011A\u0118\x03\x02\x02\x02" +
-		"\u011A\u011B\x03\x02\x02\x02\u011B\u011D\x03\x02\x02\x02\u011C\u0112\x03" +
-		"\x02\x02\x02\u011C\u0117\x03\x02\x02\x02\u011D=\x03\x02\x02\x02*QSX_a" +
+		"\x02\x02\x02\xFF\u0100\x07\n\x02\x02\u0100\u0105\x05:\x1E\x02\u0101\u0102" +
+		"\x07%\x02\x02\u0102\u0104\x05:\x1E\x02\u0103\u0101\x03\x02\x02\x02\u0104" +
+		"\u0107\x03\x02\x02\x02\u0105\u0103\x03\x02\x02\x02\u0105\u0106\x03\x02" +
+		"\x02\x02\u0106\u0109\x03\x02\x02\x02\u0107\u0105\x03\x02\x02\x02\u0108" +
+		"\u010A\x07%\x02\x02\u0109\u0108\x03\x02\x02\x02\u0109\u010A\x03\x02\x02" +
+		"\x02\u010A9\x03\x02\x02\x02\u010B\u0110\x07)\x02\x02\u010C\u0110\x07*" +
+		"\x02\x02\u010D\u010E\x07\'\x02\x02\u010E\u0110\x07\'\x02\x02\u010F\u010B" +
+		"\x03\x02\x02\x02\u010F\u010C\x03\x02\x02\x02\u010F\u010D\x03\x02\x02\x02" +
+		"\u0110\u0111\x03\x02\x02\x02\u0111\u0112\x07\x04\x02\x02\u0112;\x03\x02" +
+		"\x02\x02\u0113\u0116\x07\x11\x02\x02\u0114\u0115\x07\x16\x02\x02\u0115" +
+		"\u0117\t\x05\x02\x02\u0116\u0114\x03\x02\x02\x02\u0116\u0117\x03\x02\x02" +
+		"\x02\u0117\u011E\x03\x02\x02\x02\u0118\u011B\x07\x12\x02\x02\u0119\u011A" +
+		"\x07\x15\x02\x02\u011A\u011C\t\x05\x02\x02\u011B\u0119\x03\x02\x02\x02" +
+		"\u011B\u011C\x03\x02\x02\x02\u011C\u011E\x03\x02\x02\x02\u011D\u0113\x03" +
+		"\x02\x02\x02\u011D\u0118\x03\x02\x02\x02\u011E=\x03\x02\x02\x02)QSX_a" +
 		"flpx\x7F\x82\x8B\x90\x98\x9F\xA3\xA7\xB0\xB6\xBB\xC6\xC9\xCD\xD1\xD6\xDD" +
-		"\xE2\xE6\xEA\xEF\xF4\xF9\xFD\u0103\u0109\u010D\u0110\u0115\u011A\u011C";
+		"\xE2\xE6\xEA\xEF\xF4\xF9\xFD\u0105\u0109\u010F\u0116\u011B\u011D";
 	public static __ATN: ATN;
 	public static get _ATN(): ATN {
 		if (!TspDocParser.__ATN) {
@@ -3230,6 +3220,15 @@ export class DocFirmwareContext extends ParserRuleContext {
 			return this.getRuleContext(i, FirmwareEntryContext);
 		}
 	}
+	public COMMA(): TerminalNode[];
+	public COMMA(i: number): TerminalNode;
+	public COMMA(i?: number): TerminalNode | TerminalNode[] {
+		if (i === undefined) {
+			return this.getTokens(TspDocParser.COMMA);
+		} else {
+			return this.getToken(TspDocParser.COMMA, i);
+		}
+	}
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
 	}
@@ -3262,10 +3261,6 @@ export class FirmwareEntryContext extends ParserRuleContext {
 		} else {
 			return this.getToken(TspDocParser.EQUALS, i);
 		}
-	}
-	public COMMA(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.COMMA, 0); }
-	public docFirmware(): DocFirmwareContext | undefined {
-		return this.tryGetRuleContext(0, DocFirmwareContext);
 	}
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
