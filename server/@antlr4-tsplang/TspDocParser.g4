@@ -144,7 +144,11 @@ docType
     : TYPE_TAG typeDeclaration docContent?;
 
 docTypedef
-    : TYPEDEF_TAG typeDeclaration? NAME docContent?;
+    : TYPEDEF_TAG CURLY_OPEN (
+        typeUnion
+        | FUNCTION
+        | TABLE
+    ) CURLY_CLOSE NAME docContent?;
 
 docField
     : FIELD_TAG typeDeclaration? nameDeclaration docContent?;

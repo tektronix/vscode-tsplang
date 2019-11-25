@@ -1,6 +1,6 @@
 
 --[[[
-    @typedef LoadstringReturnList
+    @typedef {table} LoadstringReturnList
     @index {function|nil} The chunk if loading was successful; nil otherwise.
     @index {string|nil} nil if loading was successful; an error message
         otherwise.
