@@ -156,7 +156,8 @@ docSee
     : SEE_TAG seeTarget docContent?;
 
 seeTarget
-    : NAME (DOT NAME)*
+    : NAME
+    | NAMESPACE
     | link
     ;
 
@@ -172,7 +173,6 @@ firmwareEntry
     : (GT | LTE | EQUALS EQUALS) FIRMWARE COMMA? docFirmware?;
 
 docVersion
-    // Using non-nilable NAMESPACE equivalent after version reference tag.
-    : TSPV1_TAG (V2_TAG NAME (DOT NAME)*)?  # Version1
-    | TSPV2_TAG (V1_TAG NAME (DOT NAME)*)?  # Version2
+    : TSPV1_TAG (V2_TAG (NAME | NAMESPACE))?    # Version1
+    | TSPV2_TAG (V1_TAG (NAME | NAMESPACE))?    # Version2
     ;
