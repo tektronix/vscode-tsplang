@@ -26,6 +26,7 @@ import {
     AnyTypeContext,
     BooleanTypeContext,
     DocContentContext,
+    DocReadonlyContext,
     DocstringContext,
     FunctionTypeContext,
     NameDeclarationContext,
@@ -429,15 +430,221 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docReadonly", function() {
-            it.skip("Can start with the @const tag")
+            it("Can start with the @const tag", function(done) {
+                const nonTrailingContext = `
+                @desc Content that I don't expect to be part of \\@const tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @const
+                    ${nonTrailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("Can start with the @constant tag")
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
-            it.skip("Can start with the @readonly tag")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(1)
+                        const contentChild = item.getChild(0)
+                        expect(contentChild).to.be.an.instanceOf(TerminalNode)
+                        expect(contentChild.text).to.equal("@const")
+                    },
+                    done
+                )
+            })
 
-            it.skip("Can start with the @readOnly tag")
+            it("Can start with the @const tag and have trailing content", function(done) {
+                const trailingContext = `
+                Content that I expect to be part of \\@const tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @desc Content that I don't expect to be part of \\@const tag.
+                    @const ${trailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("Supports trailing content")
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(2)
+                        const tagChild = item.getChild(0)
+                        expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                        expect(tagChild.text).to.equal("@const")
+
+                        const contentChild = item.getChild(1)
+                        expect(contentChild).to.be.an.instanceOf(DocContentContext)
+                        expect(contentChild.text).to.equal(dropWhitespace(trailingContext))
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @constant tag", function(done) {
+                const nonTrailingContext = `
+                @desc Content that I don't expect to be part of \\@constant tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @constant
+                    ${nonTrailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(1)
+                        const contentChild = item.getChild(0)
+                        expect(contentChild).to.be.an.instanceOf(TerminalNode)
+                        expect(contentChild.text).to.equal("@constant")
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @constant tag with trailing content", function(done) {
+                const trailingContext = `
+                Content that I expect to be part of \\@constant tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @desc Content that I don't expect to be part of \\@constant tag.
+                    @constant ${trailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(2)
+                        const tagChild = item.getChild(0)
+                        expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                        expect(tagChild.text).to.equal("@constant")
+
+                        const contentChild = item.getChild(1)
+                        expect(contentChild).to.be.an.instanceOf(DocContentContext)
+                        expect(contentChild.text).to.equal(dropWhitespace(trailingContext))
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @readonly tag", function(done) {
+                const nonTrailingContext = `
+                @desc Content that I don't expect to be part of \\@readonly tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @readonly
+                    ${nonTrailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(1)
+                        const contentChild = item.getChild(0)
+                        expect(contentChild).to.be.an.instanceOf(TerminalNode)
+                        expect(contentChild.text).to.equal("@readonly")
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @readonly tag with trailing content", function(done) {
+                const trailingContext = `
+                Content that I expect to be part of \\@readonly tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @desc Content that I don't expect to be part of \\@readonly tag.
+                    @readonly ${trailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(2)
+                        const tagChild = item.getChild(0)
+                        expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                        expect(tagChild.text).to.equal("@readonly")
+
+                        const contentChild = item.getChild(1)
+                        expect(contentChild).to.be.an.instanceOf(DocContentContext)
+                        expect(contentChild.text).to.equal(dropWhitespace(trailingContext))
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @readOnly tag", function(done) {
+                const nonTrailingContext = `
+                @desc Content that I don't expect to be part of \\@readOnly tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @readOnly
+                    ${nonTrailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(1)
+                        const contentChild = item.getChild(0)
+                        expect(contentChild).to.be.an.instanceOf(TerminalNode)
+                        expect(contentChild.text).to.equal("@readOnly")
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @readOnly tag with trailing content", function(done) {
+                const trailingContext = `
+                Content that I expect to be part of \\@readOnly tag.`
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @desc Content that I don't expect to be part of \\@readOnly tag.
+                    @readOnly ${trailingContext}
+                ]]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item).to.be.an.instanceOf(DocReadonlyContext)
+                        expect(item.childCount).to.equal(2)
+                        const tagChild = item.getChild(0)
+                        expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                        expect(tagChild.text).to.equal("@readOnly")
+
+                        const contentChild = item.getChild(1)
+                        expect(contentChild).to.be.an.instanceOf(DocContentContext)
+                        expect(contentChild.text).to.equal(dropWhitespace(trailingContext))
+                    },
+                    done
+                )
+            })
         })
 
         describe("docWriteonly", function() {
