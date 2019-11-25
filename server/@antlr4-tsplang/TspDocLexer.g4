@@ -171,6 +171,8 @@ PIPE
     : '|';
 RETURN_ARROW
     : '=>';
+SIGN
+    : [+-];
 SQUARE_OPEN
     : '[';
 SQUARE_CLOSE

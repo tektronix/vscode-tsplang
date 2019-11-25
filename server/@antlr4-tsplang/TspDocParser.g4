@@ -116,7 +116,7 @@ nameDeclaration
 nameValue
     : NIL
     | TRUE | FALSE
-    | num
+    | SIGN? num
     | str
     | NAME
     ;
