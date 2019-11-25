@@ -373,7 +373,7 @@ describe("antlr4-tsplang", function() {
 
             it("Can start with the @parameter tag", function(done) {
                 const context = contextFactory<DocstringContext>(`--[[[
-                    @parameter {string} arg The \\@parameter is an alias for the \\@param tag.
+                    @parameter {string} arg The \\@parameter tag is an alias for the \\@param tag.
                 ]]`)
                 context.root = context.parser.docstring()
 
@@ -414,9 +414,32 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it.skip("TODO more type declaration tests")
+            it("Requires a name declaration", function() {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @param {string}
+                ]]`)
+                expect(() => context.parser.docstring()).to.throw(Error)
+            })
 
-            it.skip("TODO name declaration tests")
+            it("Does not need trailing content", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @param arg
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
+                    },
+                    done
+                )
+            })
         })
 
         describe("docReturns", function() {
