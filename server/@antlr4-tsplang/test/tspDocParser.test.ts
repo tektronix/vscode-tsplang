@@ -451,11 +451,22 @@ describe("antlr4-tsplang", function() {
         describe("docReturns", function() {
             it.skip("Can start with the @return tag")
 
+            it.skip("Can start with the @return tag and have trailing content")
+
             it.skip("Can start with the @returns tag")
 
-            it.skip("TODO type declaration tests")
+            it.skip("Can start with the @returns tag and have trailing content")
 
-            it.skip("Supports trailing content")
+            // Differs from "typeDeclaration", since that parser rule is not referenced.
+            describe("Type Declaration", function() {
+                it.skip("Is not required")
+
+                it.skip("Accepts a single type")
+
+                it.skip("Accepts a type list")
+
+                it.skip("Accepts a type union")
+            })
         })
 
         describe("docReadonly", function() {
@@ -538,7 +549,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @constant tag with trailing content", function(done) {
+            it("Can start with the @constant tag and have trailing content", function(done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@constant tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -592,7 +603,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @readonly tag with trailing content", function(done) {
+            it("Can start with the @readonly tag and have trailing content", function(done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@readonly tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -646,7 +657,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @readOnly tag with trailing content", function(done) {
+            it("Can start with the @readOnly tag and have trailing content", function(done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@readOnly tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -679,27 +690,47 @@ describe("antlr4-tsplang", function() {
         describe("docWriteonly", function() {
             it.skip("Can start with the @writeonly tag")
 
+            it.skip("Can start with the @writeonly tag and have trailing content")
+
             it.skip("Can start with the @writeOnly tag")
 
-            it.skip("Supports trailing content")
+            it.skip("Can start with the @writeOnly tag and have trailing content")
         })
 
         describe("docType", function() {
-            it.skip("Starts with the @type tag")
+            it.skip("Can start with the @type tag")
 
-            it.skip("TODO type declaration tests")
+            it.skip("Can start with the @type tag and have trailing content")
 
-            it.skip("Supports trailing content")
+            // Try to parse a @type without a type declaration.
+            it.skip("Requires a type declaration")
         })
 
         describe("docTypedef", function() {
-            it.skip("Starts with the @typedef tag")
+            it.skip("Can start with the @typedef tag")
 
-            it.skip("TODO type declaration tests")
+            it.skip("Can start with the @typedef tag and have trailing content")
 
-            it.skip("Only accepts a NAME")
+            // Differs from "typeDeclaration", since that parser rule is not referenced.
+            describe("Type Declaration", function() {
+                // Try to parse a @typedef without a type declaration.
+                it.skip("Requires a type declaration")
 
-            it.skip("Supports trailing content")
+                it.skip("Accepts a type union")
+
+                it.skip("Accepts a FUNCTION type")
+
+                it.skip("Rejects a FUNCTION signature")
+
+                it.skip("Accepts a TABLE type")
+            })
+
+            // Differs from "nameDeclaration", since that parser rule is not referenced.
+            describe("NAME Declaration", function() {
+                it.skip("Accepts a NAME")
+
+                it.skip("Rejects a NAMESPACE")
+            })
         })
 
         describe("docField", function() {
@@ -843,19 +874,21 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docSee", function() {
-            it.skip("TODO")
+            it.skip("Starts with the @see tag")
+
+            describe("seeTarget", function() {
+                it.skip("Can be a NAME")
+
+                it.skip("Can be a NAMESPACE")
+
+                it.skip("Can be an inline link")
+            })
 
             it.skip("Supports trailing content")
         })
 
         describe("docTsplink", function() {
-            it.skip("Starts with the @see tag")
-
-            it.skip("Target can be a NAME")
-
-            it.skip("Target can be a NAMESPACE")
-
-            it.skip("Target can be an inline link")
+            it.skip("Starts with the @tsplink tag")
 
             it.skip("Supports trailing content")
         })
@@ -865,19 +898,21 @@ describe("antlr4-tsplang", function() {
 
             it.skip("Can start with the @firmware tag")
 
-            it.skip("Firmware versions are one or more integers separated with DOTs")
+            describe("firmwareEntry", function() {
+                it.skip("Firmware versions are one or more integers separated with DOTs")
 
-            it.skip('Firmware versions support the ">" prefix')
+                it.skip('Firmware versions support the ">" prefix')
 
-            it.skip('Firmware versions support the "<=" prefix')
+                it.skip('Firmware versions support the "<=" prefix')
 
-            it.skip('Firmware versions support the "==" prefix')
+                it.skip('Firmware versions support the "==" prefix')
 
-            it.skip("Requires one firmware version")
+                it.skip("Requires one firmware version")
 
-            it.skip("Supports multiple firmware versions separated by COMMAs")
+                it.skip("Supports multiple firmware versions separated by COMMAs")
 
-            it.skip("Supports trailing COMMAs")
+                it.skip("Supports trailing COMMAs")
+            })
 
             it.skip("Does not capture trailing content")
         })
@@ -887,7 +922,29 @@ describe("antlr4-tsplang", function() {
 
             it.skip("Can start with a @tsp-v2 tag")
 
-            it.skip("TODO optional trailing @v# tests")
+            describe("Version1", function() {
+                it.skip("Can have a @v2 tag")
+
+                it.skip("Rejects the @v1 tag")
+
+                it.skip("Requires the @v2 tag to be the next tag")
+
+                it.skip("Accepts a NAME after the @v2 tag")
+
+                it.skip("Accepts a NAMESPACE after the @v2 tag")
+            })
+
+            describe("Version2", function() {
+                it.skip("Can have a @v1 tag")
+
+                it.skip("Rejects the @v2 tag")
+
+                it.skip("Requires the @v1 tag to be the next tag")
+
+                it.skip("Accepts a NAME after the @v1 tag")
+
+                it.skip("Accepts a NAMESPACE after the @v1 tag")
+            })
 
             it.skip("Does not capture trailing content")
         })
