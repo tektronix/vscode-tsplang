@@ -26,6 +26,7 @@ import {
     AnyTypeContext,
     BooleanTypeContext,
     DocContentContext,
+    DocReadonlyContext,
     DocstringContext,
     FunctionTypeContext,
     NameDeclarationContext,
@@ -43,7 +44,6 @@ import {
     TypeListContext,
     TypeUnionContext,
     UserdataTypeContext,
-    DocReadonlyContext,
 } from "../out/TspDocParser.generated"
 
 import { ERROR_THROWER } from "./errorListener.fixture"
@@ -437,7 +437,7 @@ describe("antlr4-tsplang", function() {
                     @const
                     ${nonTrailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -455,7 +455,6 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-
             it("Can start with the @const tag and have trailing content", function(done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@const tag.`
@@ -463,7 +462,7 @@ describe("antlr4-tsplang", function() {
                     @desc Content that I don't expect to be part of \\@const tag.
                     @const ${trailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -475,7 +474,7 @@ describe("antlr4-tsplang", function() {
                         expect(item.childCount).to.equal(2)
                         const tagChild = item.getChild(0)
                         expect(tagChild).to.be.an.instanceOf(TerminalNode)
-                        expect(tagChild.text).to.equal("@const");
+                        expect(tagChild.text).to.equal("@const")
 
                         const contentChild = item.getChild(1)
                         expect(contentChild).to.be.an.instanceOf(DocContentContext)
@@ -492,7 +491,7 @@ describe("antlr4-tsplang", function() {
                     @constant
                     ${nonTrailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -508,7 +507,6 @@ describe("antlr4-tsplang", function() {
                     },
                     done
                 )
-
             })
 
             it("Can start with the @constant tag with trailing content", function(done) {
@@ -518,7 +516,7 @@ describe("antlr4-tsplang", function() {
                     @desc Content that I don't expect to be part of \\@constant tag.
                     @constant ${trailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -530,7 +528,7 @@ describe("antlr4-tsplang", function() {
                         expect(item.childCount).to.equal(2)
                         const tagChild = item.getChild(0)
                         expect(tagChild).to.be.an.instanceOf(TerminalNode)
-                        expect(tagChild.text).to.equal("@constant");
+                        expect(tagChild.text).to.equal("@constant")
 
                         const contentChild = item.getChild(1)
                         expect(contentChild).to.be.an.instanceOf(DocContentContext)
@@ -538,7 +536,6 @@ describe("antlr4-tsplang", function() {
                     },
                     done
                 )
-
             })
 
             it("Can start with the @readonly tag", function(done) {
@@ -548,7 +545,7 @@ describe("antlr4-tsplang", function() {
                     @readonly
                     ${nonTrailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -573,7 +570,7 @@ describe("antlr4-tsplang", function() {
                     @desc Content that I don't expect to be part of \\@readonly tag.
                     @readonly ${trailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -585,7 +582,7 @@ describe("antlr4-tsplang", function() {
                         expect(item.childCount).to.equal(2)
                         const tagChild = item.getChild(0)
                         expect(tagChild).to.be.an.instanceOf(TerminalNode)
-                        expect(tagChild.text).to.equal("@readonly");
+                        expect(tagChild.text).to.equal("@readonly")
 
                         const contentChild = item.getChild(1)
                         expect(contentChild).to.be.an.instanceOf(DocContentContext)
@@ -602,7 +599,7 @@ describe("antlr4-tsplang", function() {
                     @readOnly
                     ${nonTrailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -627,7 +624,7 @@ describe("antlr4-tsplang", function() {
                     @desc Content that I don't expect to be part of \\@readOnly tag.
                     @readOnly ${trailingContext}
                 ]]]`)
-                context.root = context.parser.docstring();
+                context.root = context.parser.docstring()
 
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
@@ -639,7 +636,7 @@ describe("antlr4-tsplang", function() {
                         expect(item.childCount).to.equal(2)
                         const tagChild = item.getChild(0)
                         expect(tagChild).to.be.an.instanceOf(TerminalNode)
-                        expect(tagChild.text).to.equal("@readOnly");
+                        expect(tagChild.text).to.equal("@readOnly")
 
                         const contentChild = item.getChild(1)
                         expect(contentChild).to.be.an.instanceOf(DocContentContext)
