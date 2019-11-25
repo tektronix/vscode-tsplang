@@ -43,6 +43,7 @@ import {
     TypeDeclarationContext,
     TypeEntryContext,
     TypeListContext,
+    TypeReturnEntryContext,
     TypeUnionContext,
     UserdataTypeContext,
 } from "../out/TspDocParser.generated"
@@ -128,6 +129,22 @@ function singleItemSetTestFixture(
     })
     // If done is called, then this error will be ignored.
     expect.fail()
+}
+
+/**
+ * Run the given test callback for each Set item.
+ */
+function multiItemSetTextFixture(
+    set: Set<ParseTree>,
+    expectedSetSize: number,
+    test: (item: ParseTree) => void | never
+): void | never {
+    let paranoidLoopCounter = 0
+    set.forEach(item => {
+        test(item)
+        expect(paranoidLoopCounter).to.be.lessThan(expectedSetSize)
+        paranoidLoopCounter++
+    })
 }
 
 describe("antlr4-tsplang", function() {
@@ -449,23 +466,200 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docReturns", function() {
-            it.skip("Can start with the @return tag")
+            it("Can start with the @return tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @return {number|nil} This \\@return tag declares the return type of
+                        some imaginary function to be either "number" or "nil".
+                ]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("Can start with the @return tag and have trailing content")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
-            it.skip("Can start with the @returns tag")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(5)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(2)).to.be.an.instanceOf(TypeReturnEntryContext)
+                        expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(4)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
 
-            it.skip("Can start with the @returns tag and have trailing content")
+            it("Can start with the @returns tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @returns {number|nil} The \\@returns tag (with an "s") is an alias
+                        for the \\@return tag (without an "s").
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(5)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(2)).to.be.an.instanceOf(TypeReturnEntryContext)
+                        expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(4)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
 
             // Differs from "typeDeclaration", since that parser rule is not referenced.
             describe("Type Declaration", function() {
-                it.skip("Is not required")
+                it("Is not required", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @return A \\@return declaration without a type is assumed to be the ANY type.
+                    ]]`)
+                    context.root = context.parser.docstring()
 
-                it.skip("Accepts a single type")
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
-                it.skip("Accepts a type list")
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(2)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
 
-                it.skip("Accepts a type union")
+                it("Accepts a single type", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @return {string}
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(4)
+
+                            // Check the tag.
+                            const tagChild = item.getChild(0)
+                            expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tagChild.text).to.equal("@return")
+
+                            // Check the type declaration.
+                            const typeReturnEntryChild = item.getChild(2)
+                            expect(typeReturnEntryChild).to.be.an.instanceOf(TypeReturnEntryContext)
+                            const typeListChild = (typeReturnEntryChild as TypeReturnEntryContext).typeList()
+                            expect(typeListChild).to.not.be.undefined
+                            const listTypes = (typeListChild as TypeListContext).type()
+                            expect(listTypes).to.have.lengthOf(1)
+                            expect(listTypes[0]).to.be.an.instanceOf(StringTypeContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a type list", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @returns {function, number, table}
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(4)
+
+                            // Check the tag.
+                            const tagChild = item.getChild(0)
+                            expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tagChild.text).to.equal("@returns")
+
+                            // Check the type declaration.
+                            const typeReturnEntryChild = item.getChild(2)
+                            expect(typeReturnEntryChild).to.be.an.instanceOf(TypeReturnEntryContext)
+                            const typeListChild = (typeReturnEntryChild as TypeReturnEntryContext).typeList()
+                            expect(typeListChild).to.not.be.undefined
+                            const listTypes = (typeListChild as TypeListContext).type()
+                            expect(listTypes).to.have.lengthOf(3)
+                            expect(listTypes[0]).to.be.an.instanceOf(FunctionTypeContext)
+                            expect(listTypes[1]).to.be.an.instanceOf(NumberTypeContext)
+                            expect(listTypes[2]).to.be.an.instanceOf(TableTypeContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a type union", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @return {smu.ON|smu.OFF|number|nil}
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(4)
+
+                            // Check the tag.
+                            const tagChild = item.getChild(0)
+                            expect(tagChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tagChild.text).to.equal("@return")
+
+                            // Check the type declaration.
+                            const typeReturnEntryChild = item.getChild(2)
+                            expect(typeReturnEntryChild).to.be.an.instanceOf(TypeReturnEntryContext)
+                            const typeUnionChild = (typeReturnEntryChild as TypeReturnEntryContext).typeUnion()
+                            expect(typeUnionChild).to.not.be.undefined
+                            const unionTypes = (typeUnionChild as TypeUnionContext).type()
+                            expect(unionTypes).to.have.lengthOf(4)
+                            expect(unionTypes[0]).to.be.an.instanceOf(NamespaceTypeContext)
+                            expect(unionTypes[1]).to.be.an.instanceOf(NamespaceTypeContext)
+                            expect(unionTypes[2]).to.be.an.instanceOf(NumberTypeContext)
+                            expect(unionTypes[3]).to.be.an.instanceOf(NilTypeContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects a type list containing a type union", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @return {function, userdata, number|nil, thread}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+            })
+
+            it("Does not need trailing content", function() {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @return
+                    @returns
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
+
+                const expectedSize = 2
+                expect(actual).to.have.lengthOf(expectedSize)
+                multiItemSetTextFixture(actual, expectedSize, item => {
+                    expect(item.childCount).to.equal(1)
+                    expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                })
             })
         })
 
