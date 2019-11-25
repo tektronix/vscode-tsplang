@@ -1102,6 +1102,15 @@ describe("antlr4-tsplang", function() {
                     expect(() => context2.parser.typeDeclaration()).to.throw(Error)
                 })
 
+                it("Rejects a signature with a return type list containing a type union", function() {
+                    let context = contextFactory<TypeDeclarationContext>("{function() => string|nil,}")
+                    expect(() => context.parser.typeDeclaration()).to.throw(Error)
+                    context = contextFactory<TypeDeclarationContext>(
+                        "{function(any) => userType, thread, smu.ON|beeper.beep, number}"
+                    )
+                    expect(() => context.parser.typeDeclaration()).to.throw(Error)
+                })
+
                 it("Accepts a signature with no parameters and one return type", function(done) {
                     const context = contextFactory<TypeDeclarationContext>("{function() => any}")
                     context.root = context.parser.typeDeclaration()

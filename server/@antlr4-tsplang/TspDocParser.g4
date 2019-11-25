@@ -102,8 +102,9 @@ typeList
     : type (COMMA type)* COMMA?;
 
 typeReturnEntry
-    : typeList
+    : (type COMMA)* typeUnion COMMA .*? {this.notifyErrorListeners("Type lists cannot contain type unions");}
     | typeUnion
+    | typeList
     ;
 
 // end typeDeclaration
