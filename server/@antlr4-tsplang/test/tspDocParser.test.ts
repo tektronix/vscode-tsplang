@@ -26,6 +26,7 @@ import {
     AnyTypeContext,
     BooleanTypeContext,
     DocContentContext,
+    DocIndexContext,
     DocReadonlyContext,
     DocstringContext,
     FunctionTypeContext,
@@ -440,6 +441,11 @@ describe("antlr4-tsplang", function() {
                     done
                 )
             })
+
+            /*
+             * Due to their similarity, any test additions should also be made to
+             *      docField
+             */
         })
 
         describe("docReturns", function() {
@@ -697,21 +703,143 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docField", function() {
-            it.skip("Starts with the @field tag")
+            it("Starts with the @field tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @field {number} item This \\@field tag declares a table element called "item"
+                        of type "number" for some imaginary table.
+                        The \\@field tag is only valid if it follows a \\@typedef tag that
+                        declares a table.
+                ]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("TODO type declaration tests")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
 
-            it.skip("TODO name declaration tests")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(4)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TypeDeclarationContext)
+                        expect(item.getChild(2)).to.be.an.instanceOf(NameDeclarationContext)
+                        expect(item.getChild(3)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
 
-            it.skip("Supports trailing content")
+            it("Does not need a type declaration", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @field item A \\@field declaration without a type is assumed to be the ANY type.
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(3)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
+                        expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
+
+            it("Requires a name declaration", function() {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @field {string}
+                ]]`)
+                expect(() => context.parser.docstring()).to.throw(Error)
+            })
+
+            it("Does not need trailing content", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @field item
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
+                    },
+                    done
+                )
+            })
+
+            /*
+             * Due to their similarity, any test additions should also be made to
+             *      docParameter
+             */
         })
 
         describe("docIndex", function() {
-            it.skip("Starts with the @index tag")
+            it("Starts with the @index tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @index {function} This \\@index tag declares an indexable element of
+                        type "function" for some imaginary table.
 
-            it.skip("TODO type declaration tests")
+                        The exact position of this element in the containing table changes
+                        based on the total number of preceeding \\@index tags. If there
+                        are no preceeding \\@index tags, then its position is "1".
 
-            it.skip("Supports trailing content")
+                        The \\@index tag is only valid if it follows a \\@typedef tag that
+                        declares a table.
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docIndex", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(3)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TypeDeclarationContext)
+                        expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
+
+            it("Requires a type declaration", function() {
+                const context = contextFactory<DocIndexContext>("@index")
+                expect(() => context.parser.docIndex()).to.throw(Error)
+            })
+
+            it("Cannot have a name declaration", function() {
+                expect(DocIndexContext).to.not.haveOwnProperty("nameDeclaration")
+            })
+
+            it("Does not need trailing content", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @index {string|number|nil}
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docIndex", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TypeDeclarationContext)
+                    },
+                    done
+                )
+            })
         })
 
         describe("docSee", function() {
