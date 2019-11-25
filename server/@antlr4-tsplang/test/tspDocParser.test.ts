@@ -981,5 +981,129 @@ describe("antlr4-tsplang", function() {
                 })
             })
         })
+
+        describe("nameDeclaration", function() {
+            it("Is a NAME", function() {
+                const NAMEDECLARATION_PATTERN = "<NAME>"
+
+                const context = contextFactory<NameDeclarationContext>("n")
+
+                context.docstringPattern = context.parser.compileParseTreePattern(
+                    NAMEDECLARATION_PATTERN,
+                    TspDocParser.RULE_nameDeclaration
+                )
+                context.root = context.parser.nameDeclaration()
+
+                return context.docstringPattern.then(pattern => {
+                    return expect(
+                        pattern.matches(context.root),
+                        `Expected the parse tree to match "${NAMEDECLARATION_PATTERN}"`
+                    ).to.be.true
+                })
+            })
+
+            interface NameOptionalTest {
+                title: string
+                pattern: string
+                value: string
+            }
+
+            new Array<NameOptionalTest>(
+                ...[
+                    {
+                        title: "Can be a NIL default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><NIL><SQUARE_CLOSE>",
+                        value: "nil",
+                    },
+                    {
+                        title: "Can be a TRUE default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><TRUE><SQUARE_CLOSE>",
+                        value: "true",
+                    },
+                    {
+                        title: "Can be a FALSE default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><FALSE><SQUARE_CLOSE>",
+                        value: "false",
+                    },
+                    {
+                        title: "Can be an INT default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><INT><SQUARE_CLOSE>",
+                        value: "3",
+                    },
+                    {
+                        title: "Can be a negative INT default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><SIGN><INT><SQUARE_CLOSE>",
+                        value: "-00",
+                    },
+                    {
+                        title: "Can be a positive INT default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><SIGN><INT><SQUARE_CLOSE>",
+                        value: "+217",
+                    },
+                    {
+                        title: "Can be a HEX default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><HEX><SQUARE_CLOSE>",
+                        value: "0xF",
+                    },
+                    {
+                        title: "Can be a negative HEX default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><SIGN><HEX><SQUARE_CLOSE>",
+                        value: "-0X0A",
+                    },
+                    {
+                        title: "Can be a positive HEX default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><SIGN><HEX><SQUARE_CLOSE>",
+                        value: "+0xBEEF",
+                    },
+                    {
+                        title: "Can be a FLOAT default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><FLOAT><SQUARE_CLOSE>",
+                        value: ".00217E+3",
+                    },
+                    {
+                        title: "Can be a negative FLOAT default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><SIGN><FLOAT><SQUARE_CLOSE>",
+                        value: "-0e5",
+                    },
+                    {
+                        title: "Can be a positive FLOAT default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><SIGN><FLOAT><SQUARE_CLOSE>",
+                        value: "+314.15e-2",
+                    },
+                    {
+                        title: "Can be a NORMALSTRING default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><NORMALSTRING><SQUARE_CLOSE>",
+                        value: '"\\t\\" is a\\r\\ndouble quote"',
+                    },
+                    {
+                        title: "Can be a CHARSTRING default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><CHARSTRING><SQUARE_CLOSE>",
+                        value: "'\\t\\' is a\\nsingle quote'",
+                    },
+                    {
+                        title: "Can be a NAME default value",
+                        pattern: "<SQUARE_OPEN><NAME><EQUALS><NAME><SQUARE_CLOSE>",
+                        value: "MyCustomType",
+                    },
+                ]
+            ).forEach(test => {
+                it(test.title, function() {
+                    const context = contextFactory<NameDeclarationContext>(`[n=${test.value}]`)
+
+                    context.docstringPattern = context.parser.compileParseTreePattern(
+                        test.pattern,
+                        TspDocParser.RULE_nameDeclaration
+                    )
+                    context.root = context.parser.nameDeclaration()
+
+                    return context.docstringPattern.then(pattern => {
+                        return expect(
+                            pattern.matches(context.root),
+                            `Expected the parse tree to match "${test.pattern}"`
+                        ).to.be.true
+                    })
+                })
+            })
+        })
     })
 })
