@@ -1015,29 +1015,233 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docTypedef", function() {
-            it.skip("Can start with the @typedef tag")
+            it("Starts with the @typedef tag", function(done) {
+                const type = "table"
+                const name = "NewTypeName"
 
-            it.skip("Can start with the @typedef tag and have trailing content")
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @typedef {${type}} ${name} The \\@typedef (or type definition) tag
+                        declares a complex type for use in other documentation strings.
+                        \\@typedef types *cannot* be used outside of documentation
+                        strings.
+
+                        Valid \\@typedef types include: tables, functions, and type
+                        unions.
+
+                        When the \\@typedef is declared to be a table, the \\@index and
+                        \\@field tags can used to describe its contents.
+
+                        When the \\@typedef is declared to be a function, the \\@param/
+                        \\@parameter and \\@return/\\@returns tags can be used to
+                        describe its signature.
+
+                        There are no special content-modifying tags when a \\@typedef is
+                        declared as a type union.
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(6)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                        const typeChild = item.getChild(2)
+                        expect(typeChild).to.be.an.instanceOf(TerminalNode)
+                        expect(typeChild.text).to.equal(type)
+                        expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                        const nameChild = item.getChild(4)
+                        expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                        expect(nameChild.text).to.equal(name)
+                        expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
 
             // Differs from "typeDeclaration", since that parser rule is not referenced.
             describe("Type Declaration", function() {
-                // Try to parse a @typedef without a type declaration.
-                it.skip("Requires a type declaration")
+                it("Requires a type declaration", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef MyNewType
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
 
-                it.skip("Accepts a type union")
+                it("Accepts a type union", function(done) {
+                    const type = "function|table"
+                    const name = "typeUnionName"
 
-                it.skip("Accepts a FUNCTION type")
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef {${type}} ${name} Can be a type union.
+                    ]]`)
+                    context.root = context.parser.docstring()
 
-                it.skip("Rejects a FUNCTION signature")
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
-                it.skip("Accepts a TABLE type")
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(6)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                            const typeChild = item.getChild(2)
+                            expect(typeChild).to.be.an.instanceOf(TypeUnionContext)
+                            expect(typeChild.text).to.equal(type)
+                            expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                            const nameChild = item.getChild(4)
+                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                            expect(nameChild.text).to.equal(name)
+                            expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a FUNCTION type", function(done) {
+                    const type = "function"
+                    const name = "FunctionTypeName"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef {${type}} ${name} Can be a function.
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(6)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                            const typeChild = item.getChild(2)
+                            expect(typeChild).to.be.an.instanceOf(TerminalNode)
+                            expect(typeChild.text).to.equal(type)
+                            expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                            const nameChild = item.getChild(4)
+                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                            expect(nameChild.text).to.equal(name)
+                            expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects a FUNCTION signature", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef {function() => any} badType Use the \\@param and
+                            \\@return tags for signature information.
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Accepts a TABLE type", function(done) {
+                    const type = "table"
+                    const name = "tableTypeName"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef {${type}} ${name} Can be a table.
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(6)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                            const typeChild = item.getChild(2)
+                            expect(typeChild).to.be.an.instanceOf(TerminalNode)
+                            expect(typeChild.text).to.equal(type)
+                            expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                            const nameChild = item.getChild(4)
+                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                            expect(nameChild.text).to.equal(name)
+                            expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
             })
 
             // Differs from "nameDeclaration", since that parser rule is not referenced.
             describe("NAME Declaration", function() {
-                it.skip("Accepts a NAME")
+                it("Accepts a NAME", function(done) {
+                    const type = "function"
+                    const name = "validLuaVariableName1"
 
-                it.skip("Rejects a NAMESPACE")
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef {${type}} ${name} NAME tokens only.
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(6)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                            const typeChild = item.getChild(2)
+                            expect(typeChild).to.be.an.instanceOf(TerminalNode)
+                            expect(typeChild.text).to.equal(type)
+                            expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                            const nameChild = item.getChild(4)
+                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                            expect(nameChild.text).to.equal(name)
+                            expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects a NAMESPACE", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @typedef {boolean|number} name.spaces Are not allowed.
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+            })
+
+            it("Does not need trailing content", function(done) {
+                const type = "function"
+                const name = "snakey_type_name"
+
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @typedef {${type}} ${name}
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(5)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                        const typeChild = item.getChild(2)
+                        expect(typeChild).to.be.an.instanceOf(TerminalNode)
+                        expect(typeChild.text).to.equal(type)
+                        expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
+                        const nameChild = item.getChild(4)
+                        expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                        expect(nameChild.text).to.equal(name)
+                    },
+                    done
+                )
             })
         })
 
