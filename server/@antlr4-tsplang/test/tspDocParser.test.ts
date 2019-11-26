@@ -29,6 +29,7 @@ import {
     DocIndexContext,
     DocReadonlyContext,
     DocstringContext,
+    DocTypeContext,
     FunctionTypeContext,
     NameDeclarationContext,
     NamespaceTypeContext,
@@ -923,12 +924,94 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docType", function() {
-            it.skip("Can start with the @type tag")
+            it("Starts with the @type tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @type {smu.ON|smu.OFF} The \\@type tag is used to declare the
+                        acceptable input types of a table field.
+                ]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("Can start with the @type tag and have trailing content")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docType", context.parser)
 
-            // Try to parse a @type without a type declaration.
-            it.skip("Requires a type declaration")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(3)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TypeDeclarationContext)
+                        expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
+
+            describe("typeDeclaration", function() {
+                it("Is required", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @type
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Rejects a function whose parameters contain a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @type {function(string|nil) => any}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @type {function(number, userdata|myType, nil) => any}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Rejects a function whose return list contains a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @type {function() => number|boolean,}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @type {function() => UserType,buffer.UNIT_VOLT|buffer.UNIT_AMP,table}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                /*
+                 * Due to their similarity, any test additions should also be made to
+                 *      docParameter
+                 *      docField
+                 *      docIndex
+                 */
+            })
+
+            it("Cannot have a name declaration", function() {
+                expect(DocTypeContext).to.not.haveOwnProperty("nameDeclaration")
+            })
+
+            it("Does not need trailing content", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @type {string|number|nil}
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docType", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(TypeDeclarationContext)
+                    },
+                    done
+                )
+            })
+
+            /*
+             * Due to their similarity, any test additions should also be made to
+             *      docIndex
+             */
         })
 
         describe("docTypedef", function() {
