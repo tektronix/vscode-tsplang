@@ -31,11 +31,13 @@ import {
     DocstringContext,
     DocTypeContext,
     FunctionTypeContext,
+    LinkContext,
     NameDeclarationContext,
     NamespaceTypeContext,
     NameTypeContext,
     NilTypeContext,
     NumberTypeContext,
+    SeeTargetContext,
     StringTypeContext,
     TableTypeContext,
     ThreadTypeContext,
@@ -1510,17 +1512,142 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docSee", function() {
-            it.skip("Starts with the @see tag")
+            it("Starts with the @see tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @see reference The \\@see tag is used to point the reader toward
+                        related information.
 
-            describe("seeTarget", function() {
-                it.skip("Can be a NAME")
+                        The reference target immediately follows the \\@see tag and is a
+                        symbol name in the current scope, a fully qualified namespace in
+                        the current scope, or an inline {\\@link} tag.
+                ]]`)
+                context.root = context.parser.docstring()
 
-                it.skip("Can be a NAMESPACE")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
 
-                it.skip("Can be an inline link")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(3)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(SeeTargetContext)
+                        expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
             })
 
-            it.skip("Supports trailing content")
+            describe("seeTarget", function() {
+                it("Accepts a NAME", function(done) {
+                    const target = "ValidLuaVariableName314"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @see ${target} Can be a name.
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            const targetChild = item.getChild(1)
+                            expect(targetChild).to.be.an.instanceOf(SeeTargetContext)
+                            expect(targetChild.childCount).to.equal(1)
+                            const nameChild = targetChild.getChild(0)
+                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                            expect(nameChild.text).to.equal(target)
+                            expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a NAMESPACE", function(done) {
+                    const target = "some.long.command.namespace"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @see ${target} Can be a namespace.
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            const targetChild = item.getChild(1)
+                            expect(targetChild).to.be.an.instanceOf(SeeTargetContext)
+                            expect(targetChild.childCount).to.equal(1)
+                            const nameChild = targetChild.getChild(0)
+                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                            expect(nameChild.text).to.equal(target)
+                            expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts an inline link", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @see {@link https://github.com/tektronix/vscode-tsplang
+                            | Project Home} Can be an inline link.
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            const targetChild = item.getChild(1)
+                            expect(targetChild).to.be.an.instanceOf(SeeTargetContext)
+                            expect(targetChild.childCount).to.equal(1)
+                            const nameChild = targetChild.getChild(0)
+                            expect(nameChild).to.be.an.instanceOf(LinkContext)
+                            expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects a raw URL", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @see https://github.com/tektronix/vscode-tsplang Raw URLs are bad.
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+            })
+
+            it("Does not need trailing content", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @see target
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(SeeTargetContext)
+                    },
+                    done
+                )
+            })
         })
 
         describe("docTsplink", function() {
