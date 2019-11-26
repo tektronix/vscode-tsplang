@@ -69,6 +69,16 @@ describe("antlr4-tsplang", function() {
                         content: "--[[[  \n  \t  \r\n]]",
                         tokenNames: ["OPEN", "HORIZONTAL_WS", "VERTICAL_WS", "HORIZONTAL_WS", "VERTICAL_WS", "CLOSE"],
                     },
+                    {
+                        name: "NORMALSTRINGs and CHARSTRINGs stop at vertical whitespace",
+                        content: `--[[["\r\n"'\n']]`,
+                        tokenNames: ["OPEN", "OTHER", "VERTICAL_WS", "OTHER", "OTHER", "VERTICAL_WS", "OTHER", "CLOSE"],
+                    },
+                    {
+                        name: "NORMALSTRINGs and CHARSTRINGs respect newline continuations",
+                        content: `--[[["\\\r\n"'\\\n']]`,
+                        tokenNames: ["OPEN", "NORMALSTRING", "CHARSTRING", "CLOSE"],
+                    },
                 ]
             ).forEach(test => {
                 it(test.name, () => {

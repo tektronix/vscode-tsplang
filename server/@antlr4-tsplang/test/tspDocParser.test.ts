@@ -304,8 +304,9 @@ describe("antlr4-tsplang", function() {
             it("Stops before the next valid tag", function(done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     This is some __very__ fake docstring content.
+                    This (") double-quote should't match the one below.
 
-                    @returns
+                    @returns "
                 ]]`)
                 context.root = context.parser.docstring()
 
@@ -325,7 +326,7 @@ describe("antlr4-tsplang", function() {
                 const context = contextFactory<DocstringContext>(`--[[[
                     \\@ Some random "content" with an \\@invalidtag thrown in for good measure
                     (and good testing). Here's a dinosaur: 🦖 \\@\\@\\@
-                    @returns {number} DocContent that belongs to the \\@returns tag.
+                    @returns {number} DocContent that belongs to the \\@returns tag. Surprise '
                 ]]`)
                 context.root = context.parser.docstring()
 

@@ -49,11 +49,11 @@ NAME
     ;
 
 NORMALSTRING
-    : '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+    : '"' ( EscapeSequence | ~('\\'|'"'|'\r'|'\n') )* '"'
     ;
 
 CHARSTRING
-    : '\'' ( EscapeSequence | ~('\''|'\\') )* '\''
+    : '\'' ( EscapeSequence | ~('\\'|'\''|'\r'|'\n') )* '\''
     ;
 
 INT
