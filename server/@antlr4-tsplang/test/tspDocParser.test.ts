@@ -1524,9 +1524,45 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docTsplink", function() {
-            it.skip("Starts with the @tsplink tag")
+            it("Starts with the @tsplink tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @tsplink The \\@tsplink tag indicates that the associated command is
+                        available over TSP-Link.
+                ]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("Supports trailing content")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docTsplink", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
+
+            it("Does not need trailing content", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @tsplink
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "/docstring/docblock/docTsplink", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(1)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                    },
+                    done
+                )
+            })
         })
 
         describe("docFirmware", function() {
