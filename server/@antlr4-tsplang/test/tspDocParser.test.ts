@@ -411,25 +411,56 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Does not need a type declaration", function(done) {
-                const context = contextFactory<DocstringContext>(`--[[[
-                    @param arg A \\@param declaration without a type is assumed to be the ANY type.
-                ]]`)
-                context.root = context.parser.docstring()
+            describe("typeDeclaration", function() {
+                it("Is not required", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @param arg A \\@param declaration without a type is assumed to be the ANY type.
+                    ]]`)
+                    context.root = context.parser.docstring()
 
-                const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
 
-                expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
-                    actual,
-                    item => {
-                        expect(item.childCount).to.equal(3)
-                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
-                        expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
-                        expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
-                    },
-                    done
-                )
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
+                            expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects a function whose parameters contain a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @param {function(string|nil) => any} p
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @param {function(number, userdata|myType, nil) => any} p
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Rejects a function whose return list contains a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @param {function() => number|boolean,} p
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @param {function() => UserType,buffer.UNIT_VOLT|buffer.UNIT_AMP,table} p
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                /*
+                 * Due to their similarity, any test additions should also be made to
+                 *      docType
+                 *      docField
+                 *      docIndex
+                 */
             })
 
             it("Requires a name declaration", function() {
@@ -953,25 +984,56 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Does not need a type declaration", function(done) {
-                const context = contextFactory<DocstringContext>(`--[[[
-                    @field item A \\@field declaration without a type is assumed to be the ANY type.
-                ]]`)
-                context.root = context.parser.docstring()
+            describe("typeDeclaration", function() {
+                it("Is not required", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @field item A \\@field declaration without a type is assumed to be the ANY type.
+                    ]]`)
+                    context.root = context.parser.docstring()
 
-                const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
 
-                expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
-                    actual,
-                    item => {
-                        expect(item.childCount).to.equal(3)
-                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
-                        expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
-                        expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
-                    },
-                    done
-                )
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(NameDeclarationContext)
+                            expect(item.getChild(2)).to.be.an.instanceOf(DocContentContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects a function whose parameters contain a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @field {function(string|nil) => any} f
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @field {function(number, userdata|myType, nil) => any} f
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Rejects a function whose return list contains a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @field {function() => number|boolean,} f
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @field {function() => UserType,buffer.UNIT_VOLT|buffer.UNIT_AMP,table} f
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                /*
+                 * Due to their similarity, any test additions should also be made to
+                 *      docParameter
+                 *      docType
+                 *      docIndex
+                 */
             })
 
             it("Requires a name declaration", function() {
@@ -1037,9 +1099,42 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Requires a type declaration", function() {
-                const context = contextFactory<DocIndexContext>("@index")
-                expect(() => context.parser.docIndex()).to.throw(Error)
+            describe("typeDeclaration", function() {
+                it("Is required", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @index
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Rejects a function whose parameters contain a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @index {function(string|nil) => any}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @index {function(number, userdata|myType, nil) => any}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Rejects a function whose return list contains a type union", function() {
+                    let context = contextFactory<DocstringContext>(`--[[[
+                        @index {function() => number|boolean,}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                    context = contextFactory<DocstringContext>(`--[[[
+                        @index {function() => UserType,buffer.UNIT_VOLT|buffer.UNIT_AMP,table}
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                /*
+                 * Due to their similarity, any test additions should also be made to
+                 *      docParameter
+                 *      docType
+                 *      docField
+                 */
             })
 
             it("Cannot have a name declaration", function() {
@@ -1065,6 +1160,12 @@ describe("antlr4-tsplang", function() {
                     done
                 )
             })
+
+            /*
+             * Due to their similarity, any test additions should also be made to
+             *      docType
+             *      docIndex
+             */
         })
 
         describe("docSee", function() {
