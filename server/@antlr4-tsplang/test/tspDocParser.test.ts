@@ -30,6 +30,7 @@ import {
     DocReadonlyContext,
     DocstringContext,
     DocTypeContext,
+    FirmwareEntryContext,
     FunctionTypeContext,
     LinkContext,
     NameDeclarationContext,
@@ -1694,27 +1695,223 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docFirmware", function() {
-            it.skip("Can start with the @fw tag")
+            it("Can start with the @fw tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    The \\@fw tag indicates the instrument firmware versions in which
+                    the associated command is available.
 
-            it.skip("Can start with the @firmware tag")
+                    @fw >0.0.0
+                ]]`)
+                context.root = context.parser.docstring()
 
-            describe("firmwareEntry", function() {
-                it.skip("Firmware versions are one or more integers separated with DOTs")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
-                it.skip('Firmware versions support the ">" prefix')
-
-                it.skip('Firmware versions support the "<=" prefix')
-
-                it.skip('Firmware versions support the "==" prefix')
-
-                it.skip("Requires one firmware version")
-
-                it.skip("Supports multiple firmware versions separated by COMMAs")
-
-                it.skip("Supports trailing COMMAs")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
+                    },
+                    done
+                )
             })
 
-            it.skip("Does not capture trailing content")
+            it("Can start with the @firmware tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    The \\@firmware tag is an alias for the \\@fw tag.
+
+                    @firmware >0.0.0
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
+                    },
+                    done
+                )
+            })
+
+            describe("firmwareEntry", function() {
+                it("Is required", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @fw
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it('Accepts the ">" prefix', function(done) {
+                    const operator = ">"
+                    const firmware = "3.14.159"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @fw ${operator}${firmware}
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(2)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            const firmwareEntryChild = item.getChild(1)
+                            expect(firmwareEntryChild).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(firmwareEntryChild.childCount).to.equal(2)
+                            const operatorChild = firmwareEntryChild.getChild(0)
+                            expect(operatorChild).to.be.an.instanceOf(TerminalNode)
+                            expect(operatorChild.text).to.equal(operator)
+                            const firmwareChild = firmwareEntryChild.getChild(1)
+                            expect(firmwareChild).to.be.an.instanceOf(TerminalNode)
+                            expect(firmwareChild.text).to.equal(firmware)
+                        },
+                        done
+                    )
+                })
+
+                it('Accepts the "<=" prefix', function(done) {
+                    const operator = "<="
+                    const firmware = "271.8.28"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @fw ${operator}${firmware}
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(2)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            const firmwareEntryChild = item.getChild(1)
+                            expect(firmwareEntryChild).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(firmwareEntryChild.childCount).to.equal(2)
+                            const operatorChild = firmwareEntryChild.getChild(0)
+                            expect(operatorChild).to.be.an.instanceOf(TerminalNode)
+                            expect(operatorChild.text).to.equal(operator)
+                            const firmwareChild = firmwareEntryChild.getChild(1)
+                            expect(firmwareChild).to.be.an.instanceOf(TerminalNode)
+                            expect(firmwareChild.text).to.equal(firmware)
+                        },
+                        done
+                    )
+                })
+
+                it('Accepts the "==" prefix', function(done) {
+                    const operator = "=="
+                    const firmware = "01.01.1970"
+
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @fw ${operator}${firmware}
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(2)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            const firmwareEntryChild = item.getChild(1)
+                            expect(firmwareEntryChild).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(firmwareEntryChild.childCount).to.equal(3)
+                            const operatorChild1 = firmwareEntryChild.getChild(0)
+                            expect(operatorChild1).to.be.an.instanceOf(TerminalNode)
+                            expect(operatorChild1.text).to.equal(operator[0])
+                            const operatorChild2 = firmwareEntryChild.getChild(1)
+                            expect(operatorChild2).to.be.an.instanceOf(TerminalNode)
+                            expect(operatorChild2.text).to.equal(operator[1])
+                            const firmwareChild = firmwareEntryChild.getChild(2)
+                            expect(firmwareChild).to.be.an.instanceOf(TerminalNode)
+                            expect(firmwareChild.text).to.equal(firmware)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts multiple entries separated by COMMAs", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @fw >0.0.0, <=1.0.0, ==2.0.0
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(6)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(item.getChild(2)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(3)).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(item.getChild(4)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(5)).to.be.an.instanceOf(FirmwareEntryContext)
+                        },
+                        done
+                    )
+                })
+
+                it("Supports trailing COMMAs", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @fw >1.23.456, <=7890.12345.678901, ==2345678.90123456.789012345,
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(7)
+                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(item.getChild(2)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(3)).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(item.getChild(4)).to.be.an.instanceOf(TerminalNode)
+                            expect(item.getChild(5)).to.be.an.instanceOf(FirmwareEntryContext)
+                            expect(item.getChild(6)).to.be.an.instanceOf(TerminalNode)
+                        },
+                        done
+                    )
+                })
+            })
+
+            it("Does not capture trailing content", function() {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @fw >0.0.0 Trailing content isn't included with the firmware rule.
+
+                    @firmware <=1.0.0 More trailing content that isn't captured.
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
+
+                const expectedSize = 2
+                expect(actual).to.have.lengthOf(expectedSize)
+                multiItemSetTextFixture(actual, expectedSize, item => {
+                    expect(item.childCount).to.equal(2)
+                    expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                    expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
+                })
+            })
         })
 
         describe("docVersion", function() {
