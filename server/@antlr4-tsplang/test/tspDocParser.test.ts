@@ -914,13 +914,67 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docWriteonly", function() {
-            it.skip("Can start with the @writeonly tag")
+            it("Can start with the @writeonly tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @writeonly The \\@writeonly tag indicates that the associated symbol
+                        can be written to, but not read from.
 
-            it.skip("Can start with the @writeonly tag and have trailing content")
+                        This tag exists to service the \`localnode.password\` command,
+                        but may be used elsewhere.
+                ]]`)
+                context.root = context.parser.docstring()
 
-            it.skip("Can start with the @writeOnly tag")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docWriteonly", context.parser)
 
-            it.skip("Can start with the @writeOnly tag and have trailing content")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
+
+            it("Can start with the @writeOnly tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @writeOnly The \\@writeOnly tag (with a capital "o") is an alias for
+                        the \\@writeonly tag (with a lowercase "o").
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docWriteonly", context.parser)
+
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(2)
+                        expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                        expect(item.getChild(1)).to.be.an.instanceOf(DocContentContext)
+                    },
+                    done
+                )
+            })
+
+            it("Does not need trailing content", function() {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @writeonly
+                    @writeOnly
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docWriteonly", context.parser)
+
+                const expectedSize = 2
+                expect(actual).to.have.lengthOf(expectedSize)
+                multiItemSetTextFixture(actual, expectedSize, item => {
+                    expect(item.childCount).to.equal(1)
+                    expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                })
+            })
         })
 
         describe("docType", function() {
