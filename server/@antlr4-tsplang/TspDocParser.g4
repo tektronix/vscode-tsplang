@@ -161,7 +161,14 @@ docSee
     : SEE_TAG seeTarget docContent?;
 
 seeTarget
-    : NAME
+@init {const startingIndex = this.currentToken.tokenIndex;}
+    // Indentation is tabs to match generated code style.
+    : NAME {
+		// Indirectly check for whitespace between NAME and the next token.
+		if (this.currentToken.tokenIndex - startingIndex === 1) {
+			// Throw an error if there was no whitespace.
+			this.notifyErrorListeners("invalid see target");
+		}}
     | NAMESPACE
     | link
     ;
