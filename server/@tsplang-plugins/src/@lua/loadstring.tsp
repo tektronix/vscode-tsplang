@@ -15,7 +15,7 @@
     ```
 
     @param {string} chunkString The string to load.
-    @param {string|nil} chunkName Optional name to use in error messages and
+    @param {string|nil} [chunkName=nil] Optional name to use in error messages and
         debug information.
 
     @returns {LoadstringReturnList} If loaded successfully, then only the

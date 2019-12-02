@@ -6,7 +6,7 @@
     limit is absent, it defaults to zero (thus forcing a garbage-collection
     cycle).
 
-    @param {number} limit Garbage collection threshold in kilobytes.
+    @param {number} [limit=0] Garbage collection threshold in kilobytes.
 ]]
 function collectgarbage(limit)
 end
