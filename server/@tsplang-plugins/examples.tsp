@@ -129,6 +129,24 @@
 
     ---
 
+    @index {type} Quisque fringilla est.
+
+    @index {
+        nil|
+        buffer.UNIT_AMP
+        |table
+    } Quisque fringilla est.
+
+    @index {
+        function( userdata ) => any
+    } Quisque fringilla est.
+
+    @index Quisque fringilla est.
+
+    @index Quisque fringilla est.
+
+    ---
+
     @readonly
 
     @readonly Nullam id risus ex.

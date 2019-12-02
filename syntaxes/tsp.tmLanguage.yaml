@@ -284,7 +284,7 @@ repository:
               "5": {name: invalid.illegal.syntax.tspdoc}
 
       # @tag {type}
-      - begin: ((@)(?:returns?|type))\s+(?={)
+      - begin: ((@)(?:index|returns?|type))\s+(?={)
         beginCaptures:
           "1": {name: storage.type.class.tspdoc}
           "2": {name: punctuation.definition.block.tag.tspdoc}
@@ -339,6 +339,7 @@ repository:
               const|constant|
               deprecated|desc|description|
               field|firmware|fw|
+              index|
               param|parameter|
               read[oO]nly|returns?|
               see|
