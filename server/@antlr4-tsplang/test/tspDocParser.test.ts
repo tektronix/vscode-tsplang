@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ANTLRInputStream, CommonTokenStream, ParserRuleContext } from "antlr4ts"
+import { ANTLRInputStream, CommonToken, CommonTokenStream, ParserRuleContext } from "antlr4ts"
 import { ParseTree, TerminalNode } from "antlr4ts/tree"
 import { ParseTreePattern } from "antlr4ts/tree/pattern"
 import { XPath } from "antlr4ts/tree/xpath"
@@ -1915,35 +1915,336 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docVersion", function() {
-            it.skip("Can start with a @tsp-v1 tag")
+            it("Can start with a @tsp-v1 tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    The \\@tsp-v1 tag indicates the associated command is specific to
+                    TSP version 1.
 
-            it.skip("Can start with a @tsp-v2 tag")
+                    TSP version 1 instruments have the "smuA" namespace, while TSP
+                    version 2 instruments favor the "smu" namespace.
 
-            describe("Version1", function() {
-                it.skip("Can have a @v2 tag")
+                    @tsp-v1
+                ]]`)
+                context.root = context.parser.docstring()
 
-                it.skip("Rejects the @v1 tag")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
-                it.skip("Requires the @v2 tag to be the next tag")
-
-                it.skip("Accepts a NAME after the @v2 tag")
-
-                it.skip("Accepts a NAMESPACE after the @v2 tag")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(1)
+                        const tspVersionChild = item.getChild(0)
+                        expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                        expect(tspVersionChild.text).to.equal("@tsp-v1")
+                    },
+                    done
+                )
             })
 
-            describe("Version2", function() {
-                it.skip("Can have a @v1 tag")
+            it("Can start with a @tsp-v2 tag", function(done) {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    The \\@tsp-v2 tag indicates the associated command is specific to
+                    TSP version 2.
 
-                it.skip("Rejects the @v2 tag")
+                    TSP version 2 instruments have the "smu" namespace, while TSP
+                    version 1 instruments favor the "smuA" namespace.
 
-                it.skip("Requires the @v1 tag to be the next tag")
+                    @tsp-v2
+                ]]`)
+                context.root = context.parser.docstring()
 
-                it.skip("Accepts a NAME after the @v1 tag")
+                const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
-                it.skip("Accepts a NAMESPACE after the @v1 tag")
+                expect(actual).to.have.lengthOf(1)
+                singleItemSetTestFixture(
+                    actual,
+                    item => {
+                        expect(item.childCount).to.equal(1)
+                        const tspVersionChild = item.getChild(0)
+                        expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                        expect(tspVersionChild.text).to.equal("@tsp-v2")
+                    },
+                    done
+                )
             })
 
-            it.skip("Does not capture trailing content")
+            describe("Version 1", function() {
+                it("Can have a @v2 tag", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        The \\@v2 tag is a special reference tag that associates symbols
+                        between TSP versions. For example, the "smuA" symbol in TSP
+                        version 1 is equivalent to the "smu" symbol in TSP version 2.
+
+                        It must follow a \\@tsp-v1 tag.
+
+                        @tsp-v1
+                        @v2 smu
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            // Check the TSP version tag.
+                            const tspVersionChild = item.getChild(0)
+                            expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tspVersionChild.text).to.equal("@tsp-v1")
+                            // Check the association tag.
+                            const associationChild = item.getChild(1)
+                            expect(associationChild).to.be.an.instanceOf(TerminalNode)
+                            expect(associationChild.text).to.equal("@v2")
+                            // Check the associated reference target.
+                            const referenceChild = item.getChild(2)
+                            expect(referenceChild).to.be.an.instanceOf(TerminalNode)
+                            expect(referenceChild.text).to.equal("smu")
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects the @v1 tag", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v1
+                        @v1 smuA
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Requires the @v2 tag to be the next tag", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v1
+                        @readonly
+                        @v2 smu
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Accepts a NAME after the @v2 tag", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v1
+                        @v2 version2UniqueName
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            // Check the TSP version tag.
+                            const tspVersionChild = item.getChild(0)
+                            expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tspVersionChild.text).to.equal("@tsp-v1")
+                            // Check the association tag.
+                            const associationChild = item.getChild(1)
+                            expect(associationChild).to.be.an.instanceOf(TerminalNode)
+                            expect(associationChild.text).to.equal("@v2")
+                            // Check the associated reference target.
+                            const referenceChild = item.getChild(2)
+                            expect(referenceChild).to.be.an.instanceOf(TerminalNode)
+                            expect(referenceChild.text).to.equal("version2UniqueName")
+                            // Check the token type.
+                            const referencePayload = referenceChild.payload
+                            expect(referencePayload).to.be.an.instanceOf(CommonToken)
+                            expect((referencePayload as CommonToken).type).to.equal(TspDocParser.NAME)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a NAMESPACE after the @v2 tag", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v1
+                        @v2 version_2.unique.namespace
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            // Check the TSP version tag.
+                            const tspVersionChild = item.getChild(0)
+                            expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tspVersionChild.text).to.equal("@tsp-v1")
+                            // Check the association tag.
+                            const associationChild = item.getChild(1)
+                            expect(associationChild).to.be.an.instanceOf(TerminalNode)
+                            expect(associationChild.text).to.equal("@v2")
+                            // Check the associated reference target.
+                            const referenceChild = item.getChild(2)
+                            expect(referenceChild).to.be.an.instanceOf(TerminalNode)
+                            expect(referenceChild.text).to.equal("version_2.unique.namespace")
+                            // Check the token type.
+                            const referencePayload = referenceChild.payload
+                            expect(referencePayload).to.be.an.instanceOf(CommonToken)
+                            expect((referencePayload as CommonToken).type).to.equal(TspDocParser.NAMESPACE)
+                        },
+                        done
+                    )
+                })
+            })
+
+            describe("Version 2", function() {
+                it("Can have a @v1 tag", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        The \\@v1 tag is a special reference tag that associates symbols
+                        between TSP versions. For example, the "smu" symbol in TSP
+                        version 2 is equivalent to the "smuA" symbol in TSP version 1.
+
+                        It must follow a \\@tsp-v2 tag.
+
+                        @tsp-v2
+                        @v1 smuA
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            // Check the TSP version tag.
+                            const tspVersionChild = item.getChild(0)
+                            expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tspVersionChild.text).to.equal("@tsp-v2")
+                            // Check the association tag.
+                            const associationChild = item.getChild(1)
+                            expect(associationChild).to.be.an.instanceOf(TerminalNode)
+                            expect(associationChild.text).to.equal("@v1")
+                            // Check the associated reference target.
+                            const referenceChild = item.getChild(2)
+                            expect(referenceChild).to.be.an.instanceOf(TerminalNode)
+                            expect(referenceChild.text).to.equal("smuA")
+                        },
+                        done
+                    )
+                })
+
+                it("Rejects the @v2 tag", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v2
+                        @v2 smu
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Requires the @v1 tag to be the next tag", function() {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v2
+                        @tsplink
+                        @v1 smu
+                    ]]`)
+                    expect(() => context.parser.docstring()).to.throw(Error)
+                })
+
+                it("Accepts a NAME after the @v1 tag", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v2
+                        @v1 version1_unique_name
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            // Check the TSP version tag.
+                            const tspVersionChild = item.getChild(0)
+                            expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tspVersionChild.text).to.equal("@tsp-v2")
+                            // Check the association tag.
+                            const associationChild = item.getChild(1)
+                            expect(associationChild).to.be.an.instanceOf(TerminalNode)
+                            expect(associationChild.text).to.equal("@v1")
+                            // Check the associated reference target.
+                            const referenceChild = item.getChild(2)
+                            expect(referenceChild).to.be.an.instanceOf(TerminalNode)
+                            expect(referenceChild.text).to.equal("version1_unique_name")
+                            // Check the token type.
+                            const referencePayload = referenceChild.payload
+                            expect(referencePayload).to.be.an.instanceOf(CommonToken)
+                            expect((referencePayload as CommonToken).type).to.equal(TspDocParser.NAME)
+                        },
+                        done
+                    )
+                })
+
+                it("Accepts a NAMESPACE after the @v1 tag", function(done) {
+                    const context = contextFactory<DocstringContext>(`--[[[
+                        @tsp-v2
+                        @v1 Version1.Unique.Namespace
+                    ]]`)
+                    context.root = context.parser.docstring()
+
+                    const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                    expect(actual).to.have.lengthOf(1)
+                    singleItemSetTestFixture(
+                        actual,
+                        item => {
+                            expect(item.childCount).to.equal(3)
+                            // Check the TSP version tag.
+                            const tspVersionChild = item.getChild(0)
+                            expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                            expect(tspVersionChild.text).to.equal("@tsp-v2")
+                            // Check the association tag.
+                            const associationChild = item.getChild(1)
+                            expect(associationChild).to.be.an.instanceOf(TerminalNode)
+                            expect(associationChild.text).to.equal("@v1")
+                            // Check the associated reference target.
+                            const referenceChild = item.getChild(2)
+                            expect(referenceChild).to.be.an.instanceOf(TerminalNode)
+                            expect(referenceChild.text).to.equal("Version1.Unique.Namespace")
+                            // Check the token type.
+                            const referencePayload = referenceChild.payload
+                            expect(referencePayload).to.be.an.instanceOf(CommonToken)
+                            expect((referencePayload as CommonToken).type).to.equal(TspDocParser.NAMESPACE)
+                        },
+                        done
+                    )
+                })
+            })
+
+            it("Does not capture trailing content", function() {
+                const context = contextFactory<DocstringContext>(`--[[[
+                    @tsp-v1 This is some trailing content that should not be captured.
+                    @tsp-v2 Additional content that should not be captured.
+                ]]`)
+                context.root = context.parser.docstring()
+
+                const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
+
+                const expectedSize = 2
+                expect(actual).to.have.lengthOf(expectedSize)
+                multiItemSetTextFixture(actual, expectedSize, item => {
+                    expect(item.childCount).to.equal(1)
+                    const tspVersionChild = item.getChild(0)
+                    expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
+                    switch (tspVersionChild.text) {
+                        case "@tsp-v1":
+                        case "@tsp-v2":
+                            break
+                        default:
+                            expect.fail(tspVersionChild.text, '"@tsp-v1" or "@tsp-v2"', "unexpected version tag value")
+                    }
+                })
+            })
         })
 
         describe("typeDeclaration", function() {
