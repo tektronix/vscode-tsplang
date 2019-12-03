@@ -45,6 +45,7 @@ import {
     TspDocParser,
     TypeContext,
     TypeDeclarationContext,
+    TypedefTypeUnionContext,
     TypeEntryContext,
     TypeListContext,
     TypeReturnEntryContext,
@@ -1129,35 +1130,78 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.docstring()).to.throw(Error)
                 })
 
-                it("Accepts a type union", function(done) {
-                    const type = "function|table"
-                    const name = "typeUnionName"
+                describe("Type Union", function() {
+                    function validateTypedefTypeUnion(expected: string, actual: ParseTree) {
+                        expect(actual).to.be.an.instanceOf(TypedefTypeUnionContext)
+                        // Check pipes.
+                        const pipeCount = (expected.match(/[|]/g) || []).length
+                        expect((actual as TypedefTypeUnionContext).PIPE()).to.have.lengthOf(pipeCount)
+                        // Check members.
+                        const expectedUnionMembers = expected
+                            .split("|")
+                            .filter(value => value.length > 0)
+                            .map(value => value.trim())
+                        const actualUnionMembers = (actual as TypedefTypeUnionContext).children
+                            .filter(value => value.text !== "|")
+                            .map(value => value.text)
+                        expect(actualUnionMembers).to.deep.equal(expectedUnionMembers)
+                    }
 
-                    const context = contextFactory<DocstringContext>(`--[[[
-                        @typedef {${type}} ${name} Can be a type union.
-                    ]]`)
-                    context.root = context.parser.docstring()
+                    new Array<{ title: string; type: string; name: string }>(
+                        ...[
+                            {
+                                title: "Accepts a type union containing only types",
+                                type: "function |table",
+                                name: "typeUnionName",
+                            },
+                            {
+                                title: "Accepts a type union containing boolean literals",
+                                type: "true | string | false",
+                                name: "TrueAndStringAndFalse",
+                            },
+                            {
+                                title: "Accepts a type union containing numeric literals",
+                                type: "userdata | +0.00 |function|-3141592e-6",
+                                name: "userdata_zero_function_negativepi",
+                            },
+                            {
+                                title: "Accepts a type union containing string literals",
+                                type: `nil|'\\'charstring\\''|boolean|"a double quote looks like \\""|`,
+                                name: "nilCharstringBooleanNormalstring",
+                            },
+                            {
+                                title: "Accepts a type union containing only literals",
+                                type: `true|1|"true"|false|-0x00|'false'`,
+                                name: "true_One1_charTrue_false_Zero0_normalFALSE",
+                            },
+                        ]
+                    ).forEach(test => {
+                        it(test.title, function(done) {
+                            const context = contextFactory<DocstringContext>(`--[[[
+                                @typedef {${test.type}} ${test.name} Can be a type union.
+                            ]]`)
+                            context.root = context.parser.docstring()
 
-                    const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
+                            const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
-                    expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
-                        actual,
-                        item => {
-                            expect(item.childCount).to.equal(6)
-                            expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
-                            expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
-                            const typeChild = item.getChild(2)
-                            expect(typeChild).to.be.an.instanceOf(TypeUnionContext)
-                            expect(typeChild.text).to.equal(type)
-                            expect(item.getChild(3)).to.be.an.instanceOf(TerminalNode)
-                            const nameChild = item.getChild(4)
-                            expect(nameChild).to.be.an.instanceOf(TerminalNode)
-                            expect(nameChild.text).to.equal(name)
-                            expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
-                        },
-                        done
-                    )
+                            expect(actual).to.have.lengthOf(1)
+                            singleItemSetTestFixture(
+                                actual,
+                                item => {
+                                    expect(item.childCount).to.equal(6)
+                                    expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
+                                    expect(item.getChild(1)).to.be.an.instanceOf(TerminalNode)
+                                    const typeChild = item.getChild(2)
+                                    validateTypedefTypeUnion(test.type, typeChild)
+                                    const nameChild = item.getChild(4)
+                                    expect(nameChild).to.be.an.instanceOf(TerminalNode)
+                                    expect(nameChild.text).to.equal(test.name)
+                                    expect(item.getChild(5)).to.be.an.instanceOf(DocContentContext)
+                                },
+                                done
+                            )
+                        })
+                    })
                 })
 
                 it("Accepts a FUNCTION type", function(done) {

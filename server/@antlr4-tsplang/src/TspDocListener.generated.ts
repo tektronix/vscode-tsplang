@@ -40,6 +40,8 @@ import { DocReadonlyContext } from "./TspDocParser.generated";
 import { DocWriteonlyContext } from "./TspDocParser.generated";
 import { DocTypeContext } from "./TspDocParser.generated";
 import { DocTypedefContext } from "./TspDocParser.generated";
+import { TypedefTypeUnionContext } from "./TspDocParser.generated";
+import { TypedefTypeUnionValueContext } from "./TspDocParser.generated";
 import { DocFieldContext } from "./TspDocParser.generated";
 import { DocIndexContext } from "./TspDocParser.generated";
 import { DocSeeContext } from "./TspDocParser.generated";
@@ -491,6 +493,28 @@ export interface TspDocListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitDocTypedef?: (ctx: DocTypedefContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.typedefTypeUnion`.
+	 * @param ctx the parse tree
+	 */
+	enterTypedefTypeUnion?: (ctx: TypedefTypeUnionContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.typedefTypeUnion`.
+	 * @param ctx the parse tree
+	 */
+	exitTypedefTypeUnion?: (ctx: TypedefTypeUnionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspDocParser.typedefTypeUnionValue`.
+	 * @param ctx the parse tree
+	 */
+	enterTypedefTypeUnionValue?: (ctx: TypedefTypeUnionValueContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspDocParser.typedefTypeUnionValue`.
+	 * @param ctx the parse tree
+	 */
+	exitTypedefTypeUnionValue?: (ctx: TypedefTypeUnionValueContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspDocParser.docField`.

@@ -146,10 +146,24 @@ docType
 
 docTypedef
     : TYPEDEF_TAG CURLY_OPEN (
-        typeUnion
+        typedefTypeUnion
         | FUNCTION
         | TABLE
-    ) CURLY_CLOSE NAME docContent?;
+    ) CURLY_CLOSE NAME docContent?
+    | TYPEDEF_TAG CURLY_OPEN FUNCTION PAREN_OPEN typeList? PAREN_CLOSE (RETURN_ARROW typeReturnEntry)? CURLY_CLOSE NAME docContent?
+        {this.notifyErrorListeners("Typedefs cannot contain function signatures");}
+    ;
+
+typedefTypeUnion
+    : (type | typedefTypeUnionValue) (PIPE (type | typedefTypeUnionValue))+ PIPE?;
+
+typedefTypeUnionValue
+    : TRUE | FALSE
+    | SIGN? num
+    | str
+    ;
+
+// end docTypedef
 
 docField
     : FIELD_TAG typeDeclaration? nameDeclaration docContent?;
