@@ -1,9 +1,9 @@
 
 --[[[
     @typedef {table} NextReturn
-    @index {any|nil} The key of the associated value returned from the "next"
-        function. nil if the value returned is also nil.
-    @index {any} The value of the key returned from the "next" function.
+    @index {any|nil} The key of the associated value returned from the
+        {@link next} function. nil if the value returned is also nil.
+    @index {any} The value of the key returned from the {@link next} function.
 ]]
 
 --[[[

@@ -12,7 +12,7 @@
     @typedef {function} IteratorFunction
     @param {table} table The table to traverse.
     @param {number|nil} index The previous index or nil. If nil, then the
-        first index and its associated value is returned.
+        first index and its associated value are returned.
     @returns {IteratorReturn} The next index-value pair from the given table.
     @see {@link next}
 ]]
@@ -21,7 +21,7 @@
     @typedef {table} IPairsReturn
     @index {IteratorFunction} The function used to iterate through the
         returned table.
-    @index {table} The table passed to the "ipairs" function.
+    @index {table} The table passed to the {@link ipairs} function.
     @index {number} The number 0.
 ]]
 

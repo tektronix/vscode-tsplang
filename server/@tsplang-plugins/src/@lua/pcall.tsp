@@ -3,12 +3,12 @@
     @typedef {table} PCallReturn
     @index {boolean} The function exit code. true if no Lua runtime error was
         caught; false otherwise.
-    @index {any} The return values of the function passed to "pcall" if the
-        exit code is true; otherwise an error message.
+    @index {any} The return values of the function passed to {@link pcall} if
+        the exit code is true; otherwise an error message.
 ]]
 
 --[[[
-    Calls the function "f" with the given arguments in protected mode.
+    Calls the given function with the given arguments in protected mode.
 
     In protected mode, Lua runtime errors are caught and do not propagate
     outside of the given function.

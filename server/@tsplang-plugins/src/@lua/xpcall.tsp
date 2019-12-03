@@ -9,9 +9,9 @@
     @typedef {table} XPCallReturn
     @index {boolean} The function exit code. true if no Lua runtime error was
         caught; false otherwise.
-    @index {any} The return values of the primary function passed to "xpcall"
-        if the exit code is true; otherwise the return values of the error
-        handler function.
+    @index {any} The return values of the primary function passed to
+        {@link xpcall} if the exit code is true; otherwise the return values
+        of the error handler function.
 ]]
 
 --[[[
