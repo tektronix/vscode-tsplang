@@ -481,7 +481,7 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @returns tag with a nilable type",
+                        name: "Tokenizes @returns tag with a type union",
                         content: `--[[[
                             @returns {
                                 nil|
@@ -897,7 +897,7 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @index tag with a nilable type",
+                        name: "Tokenizes @index tag with a type union",
                         content: `--[[[
                             @index {
                                 nil|
@@ -1031,7 +1031,7 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Tokenizes @type tag with a nilable type",
+                        name: "Tokenizes @type tag with a type union",
                         content: `--[[[
                             @type {
                                 nil|
