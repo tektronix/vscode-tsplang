@@ -1,5 +1,11 @@
 require("../math")
 
---[[[TODO]]
+--[[[
+    Calculate the absolute value of a number.
+
+    @param {number} x
+
+    @returns {number}
+]]
 math.abs = function(x)
 end

@@ -7,7 +7,10 @@ require("../math")
     ```
     Unless _a_ is ±0 and _n_ is nonzero, in which case _q_ is 0.
 
-    TODO
+    @param {number} dividend
+    @param {number} divisor
+
+    @returns {number}
 ]]
 math.mod = function(dividend, divisor)
 end
