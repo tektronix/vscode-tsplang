@@ -1,4 +1,4 @@
-given a lookup table in the server
+given a document lookup table in the server
 
 incoming document open
 router can't resolve URI from lookup table

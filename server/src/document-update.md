@@ -1,5 +1,4 @@
 
-
 IF CHANGE ARRAY LENGTH IS 1 AND rangeLength IS 0:
     get the leading trivia position of the narrowest edited statement context
     adjust the ending trivia position of the edited statement context by the delta defined in the update event
