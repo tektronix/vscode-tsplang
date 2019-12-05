@@ -13,16 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-'use strict'
+"use strict"
 
+import {
+    ANTLRInputStream,
+    ChunkContext,
+    CommonTokenStream,
+    TspLexer,
+    TspParser,
+} from "antlr4-tsplang"
+import * as jsonrpc from "vscode-jsonrpc"
 import {
     createConnection,
     IConnection,
+    InitializeResult,
     IPCMessageReader,
-    IPCMessageWriter
-} from 'vscode-languageserver'
-
-import { ProcessManager } from './processManager'
+    IPCMessageWriter,
+    Range,
+    TextDocumentItem,
+    TextDocumentSyncKind,
+} from "vscode-languageserver"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
 const connection: IConnection = createConnection(
@@ -30,40 +40,73 @@ const connection: IConnection = createConnection(
     new IPCMessageWriter(process)
 )
 
-const manager = new ProcessManager(connection)
+interface TokenSpans {
+    fullSpan: Range
+    span: Range
+}
+const DocumentAreaNotification = new jsonrpc.NotificationType<
+    { arr: TokenSpans[] },
+    void
+>("DocAreaNotification")
+const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem, void>(
+    "ParseDocNotification"
+)
 
-// After the server has started the client sends an initialize request. The server receives in the
-// passed params the rootPath of the workspace plus the client capabilities.
-connection.onInitialize(manager.initialize.bind(manager))
+connection.onInitialize(
+    (): InitializeResult => {
+        return {
+            capabilities: {
+                textDocumentSync: {
+                    change: TextDocumentSyncKind.None,
+                    openClose: true,
+                },
+            },
+        }
+    }
+)
 
-connection.onInitialized(manager.initialized.bind(manager))
+declare type HRTime = [number, number]
+let count = 0
+connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) => {
+    const inputStream = new ANTLRInputStream(param.text)
+    inputStream.name = param.uri
+    const lexer = new TspLexer(inputStream)
+    const tokenStream = new CommonTokenStream(lexer)
+    const parser = new TspParser(tokenStream)
 
-connection.onDidOpenTextDocument(manager.documentOpen.bind(manager))
+    const time: HRTime = process.hrtime()
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    const root: ChunkContext = parser.chunk()
+    const done: HRTime = process.hrtime(time)
 
-connection.onDidChangeTextDocument(manager.documentChange.bind(manager))
+    console.log(`${count}> parsed ${param.uri}`)
 
-connection.onDidCloseTextDocument(manager.documentClose.bind(manager))
+    // Format and print elapsed time.
+    let seconds = done[0].toString()
+    while (seconds.length < 3) {
+        seconds = " " + seconds
+    }
+    let milli = (done[1] / 1000000).toString()
+    while (milli.indexOf(".") < 3) {
+        milli = " " + milli
+    }
+    while (milli.length < 9) {
+        milli = milli.concat("0")
+    }
+    console.log(`${count}> elapsed time: ${seconds}s ${milli}ms`)
 
-// This handler provides the initial list of completion items.
-connection.onCompletion(manager.completion.bind(manager))
+    // Notify client of all Token ranges.
+    connection.sendNotification(DocumentAreaNotification, {
+        arr: tokenStream.getTokens().map(t => {
+            return {
+                fullSpan: t.fullSpan,
+                span: t.span,
+            }
+        }),
+    })
 
-// This handler resolves additional information for the item selected in the completion list.
-connection.onCompletionResolve(manager.completionResolve.bind(manager))
-
-connection.onDefinition(manager.definition.bind(manager))
-
-connection.onDidChangeConfiguration(manager.settingsChange.bind(manager))
-
-connection.onDocumentSymbol(manager.symbol.bind(manager))
-
-connection.onHover(manager.hover.bind(manager))
-
-connection.onReferences(manager.references.bind(manager))
-
-connection.onSignatureHelp(manager.signature.bind(manager))
-
-connection.onShutdown(manager.dispose.bind(manager))
-connection.onExit(manager.dispose.bind(manager))
+    count++
+})
 
 // Listen on the connection
 connection.listen()

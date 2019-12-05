@@ -1,0 +1,23 @@
+{
+    "name": "antlr4-tsplang",
+    "version": "1.0.0",
+    "description": "ANTLR4 facilities for TSP.",
+    "main": "./out/index.js",
+    "types": "./out/index.d.ts",
+    "license": "Apache-2.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
+    },
+    "dependencies": {
+        "antlr4ts": "^0.5.0-alpha.3",
+        "vscode-languageserver": "^5.2.1"
+    },
+    "devDependencies": {
+        "antlr4ts-cli": "^0.5.0-alpha.3"
+    },
+    "scripts": {
+        "build": "cd scripts && node ./build.js && cd ..",
+        "postbuild": "cd scripts && node ./postbuild.js && cd .."
+    }
+}

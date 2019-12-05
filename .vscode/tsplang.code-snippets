@@ -18,33 +18,5 @@
             " */"
         ],
         "prefix": "header"
-    },
-    "Mocha Describe": {
-        "body": [
-            "describe('$1', () => {",
-            "\t${2:expect.fail()}",
-            "})$0"
-        ],
-        "prefix": "describe",
-        "scope": "typescript"
-    },
-    "Test Imports": {
-        "body": [
-            "// tslint:disable:no-implicit-dependencies no-unused-expression",
-            "import { expect } from 'chai'",
-            "// tslint:disable-next-line:no-import-side-effect",
-            "import 'mocha'",
-            "// tslint:enable:no-implicit-dependencies"
-        ],
-        "prefix": "test imports"
-    },
-    "Mocha It": {
-        "body": [
-            "it('$1', () => {",
-            "\t${2:expect.fail()}",
-            "})$0"
-        ],
-        "prefix": "it",
-        "scope": "typescript"
     }
 }

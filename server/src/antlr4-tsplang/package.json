@@ -1,8 +1,0 @@
-{
-    "name": "antlr4-tsplang",
-    "version": "1.0.0",
-    "description": "ANTLR4 generated files for the TSP language.",
-    "main": "index.js",
-    "license": "Apache-2.0",
-    "scripts": {}
-}

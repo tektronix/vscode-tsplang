@@ -1,0 +1,60 @@
+{
+    "root": true,
+    "reportUnusedDisableDirectives": true,
+    "plugins": ["@typescript-eslint", "import", "jsdoc", "prettier"],
+
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 6,
+        "project": [
+            "./tsconfig.json",
+            "./client/tsconfig.json",
+            "./client/tsconfig.test.json",
+            "./server/@antlr4-tsplang/tsconfig.json",
+            "./server/@antlr4-tsplang/tsconfig.test.json",
+            "./server/@tsplang-plugins/tsconfig.json",
+            "./server/@tsplang-plugins/tsconfig.test.json",
+            "./server/tsconfig.json",
+            "./server/tsconfig.test.json"
+        ],
+        "sourceType": "module"
+    },
+
+    "env": {
+        "browser": false,
+        "node": true,
+        "es6": true
+    },
+
+    "extends": [
+        "eslint:recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:prettier/recommended",
+        "prettier",
+        "prettier/@typescript-eslint"
+    ],
+    "rules": {
+        // typescript
+        "@typescript-eslint/no-namespace": "off",
+        "semi": "off",
+        "@typescript-eslint/semi": "off",
+        "@typescript-eslint/unified-signatures": "warn",
+
+        // eslint-plugin-import
+        "sort-imports": ["warn", {
+            "ignoreCase": true,
+            "ignoreDeclarationSort": true
+        }],
+        "import/order": "error",
+
+        // eslint-plugin-jsdoc
+        "jsdoc/check-alignment": "error",
+
+        // eslint-plugin-pretter
+        "prettier/prettier": ["error", {}, {
+            "usePrettierrc": true
+        }]
+    }
+}

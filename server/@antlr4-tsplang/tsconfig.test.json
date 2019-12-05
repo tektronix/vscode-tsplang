@@ -1,0 +1,18 @@
+/**
+ * This tsconfig is NOT part of the main build system.
+ *
+ * It is needed by ESLint to properly parse test files,
+ * since they live alongside the src/ directory rather
+ * than in it.
+*/
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "tsBuildInfoFile": ".tsbuildinfo.test",
+        "outDir": "out",
+        "rootDir": "."
+    },
+    "include": [
+        "test/**/*"
+    ]
+}

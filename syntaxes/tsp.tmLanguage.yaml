@@ -1,0 +1,667 @@
+copyright: >
+  This file is adapted by Tektronix from lua.tmLanguage.json at commit
+      74c270e8878ceeed9a85e11b2621779eaa525bac
+  available at {https://github.com/microsoft/vscode/tree/74c270e8878ceeed9a85e11b2621779eaa525bac/extensions/lua/syntaxes}.
+
+  It includes content for docstring highlighting adapted by Tektronix from
+  JavaScript.tmLanguage.json at commit
+      56d3f0acf27ac43140164ded85266d017b568027
+  available at {https://github.com/microsoft/vscode/tree/56d3f0acf27ac43140164ded85266d017b568027/extensions/javascript/syntaxes}.
+
+  Except as otherwise noted, the content of this file is licensed under the
+  MIT license. The text of the MIT license is reproduced below.
+
+  ----------------------------------------------------------------------------
+
+  MIT License
+
+  Copyright (c) 2015 - 2018 Microsoft Corporation
+  Copyright (c) 2019 Tektronix Inc.
+
+  All rights reserved.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+version: https://github.com/microsoft/vscode/commit/74c270e8878ceeed9a85e11b2621779eaa525bac
+name: tsp
+scopeName: source.tsp
+
+patterns:
+  - include: "#function_declaration"
+  - include: "#function_call"
+  - include: "#hex"
+  - include: "#float"
+  - include: "#int"
+  - include: "#char_string"
+  - include: "#normal_string"
+  - include: "#long_string"
+  - include: "#shebang"
+  - include: "#comment"
+  - include: "#control_keywords"
+  - include: "#constant"
+  - include: "#builtins"
+  - include: "#operators"
+  - include: "#identifier"
+
+#### Recipes
+#
+# This is a catalog of common patterns found throughout this document.
+# Read over these before writing your match pattern so you don't end up
+# reinventing the wheel.
+#
+# The grave/backtick character is invalid in Lua/TSP and has no special
+# meaning in the Oniguruma regular expression library used by the TextMate
+# grammar[1]. In this recipe list, we use it to denote a regular expression
+# without string escape sequences.
+#
+# [1]: https://macromates.com/manual/en/regular_expressions
+#
+#### Fixed-width namespace/accessor
+#
+# For use in look-behind operations.
+#
+#   `[^.]\.|:`
+#
+#### Name
+#
+#   `[a-zA-Z_][a-zA-Z0-9_]*`
+#
+#### First character following a function name
+#
+# Consumes whitespace before matching either
+# 1. an open parenthesis, curly bracket, double-quote, or single-quote
+# or 2. the beginning of a long-string.
+#
+#   `\s*(?:[({"']|\[\[)`
+#
+
+repository:
+  function_declaration:
+    begin: >
+      (?x)
+        \b
+        (?:(local)\s+)?
+        (function)\s*
+        (?:
+          \s+
+          (
+            [a-zA-Z_][a-zA-Z0-9_]*              # Root function name.
+            (?:([\.:])[a-zA-Z_][a-zA-Z0-9_]*)?  # Optional namespace accessor.
+          )
+          \s*   # Optional spacing between the function name and its opening parenthesis.
+        )?      # Optional function name. Allows for anonymous functions.
+        (\()
+    beginCaptures:
+      "1": {name: storage.modifier.local.tsp}
+      "2": {name: keyword.control.tsp}
+      "3": {name: entity.name.function.tsp}
+      "4": {name: punctuation.separator.parameter.tsp}
+      "5": {name: punctuation.definition.parameters.begin.tsp}
+    end: \)
+    endCaptures:
+      "0": {name: punctuation.definition.parameters.end.tsp}
+    name: meta.function.tsp
+    patterns:
+      - match: >
+          (?x)
+            (?<![^.]\.|:) # Do not match when used as part of an accessor.
+            \b(self)\b
+        name: variable.language.self.tsp
+
+      - match: >
+          (?x)
+            (?<![^.]\.|:) # Do not match when used as part of an accessor.
+            # Vararg
+            (?<=[,(\s])   # Must be preceeded by a comma, open parenthesis, or whitespace.
+            \.{3}         # Is exactly three full-stop characters.
+            (?!\.)        # Cannot be followed by a full-stop.
+        name: keyword.operator.rest.tsp
+
+      - {match: "[a-zA-Z_][a-zA-Z0-9_]*", name: variable.parameter.function.tsp}
+
+      - {match: ",", name: punctuation.separator.arguments.tsp}
+
+  function_call:
+    match: \b([a-zA-Z_][a-zA-Z0-9_]*)\b(?=\s*(?:[({"']|\[\[))
+    name: support.function.any-method.tsp
+
+  docblock:
+    patterns:
+      - match: >
+          (?x)
+            ((@)author)
+            \s+
+            (
+              [^@\s<>\]]
+              (?:[^@<>\]]|\][^\]])*
+            )
+            (?:
+              \s*
+              (<)
+              ([^>\s]+)
+              (>)
+            )?
+        captures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+          "3": {name: entity.name.type.instance.tspdoc}
+          "4": {name: punctuation.definition.bracket.angle.begin.tspdoc}
+          "5": {name: constant.other.email.link.underline.tspdoc}
+          "6": {name: punctuation.definition.bracket.angle.end.tspdoc}
+
+      - name: meta.example.tspdoc
+        begin: ((@)example)\s+
+        beginCaptures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+        end: (?=@|\]\])
+        patterns:
+          - match: ^\s+
+
+          - match: >
+              (?x)[^\s@\]](?:[^\]]|\][^\]])*
+            captures:
+              "0": {name: source.embedded.tsp}
+
+      # @tag URL
+      # @tag Object
+      - match: >
+          (?x)
+            ((@)see)
+            \s+
+            (?:
+              # URL
+              (
+                (?=https?://)
+                (?:[^\s\],]|\][^\]])+
+              )
+              |
+              # Namespace
+              (
+                (?!
+                  # Avoid matching bare URIs (also acceptable as links)
+                  https?://
+                  |
+                  # Avoid matching {@inline tags}; we match those below
+                  \{\@(?:link)\b
+                )
+                # Matched namepath
+                (?:[a-zA-Z_][a-zA-Z0-9_]*|[.])+
+              )
+            )
+        captures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+          "3": {name: variable.other.link.underline.tspdoc}
+          "4": {name: entity.name.type.instance.tspdoc}
+
+      # @tag name
+      - match: >
+          (?x)
+            ((@)(?:field|param|parameter))
+            \s+
+            ([a-zA-Z_][a-zA-Z0-9_]*)
+        captures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+          "3": {name: variable.other.tspdoc}
+
+      # @tag NewEntity
+      # @tag {type} NewEntity
+      - begin: ((@)typedef)\s+(?={)
+        beginCaptures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+        end: (?=\s|\]\]|[^{}\[\]a-zA-Z_])
+        patterns:
+          - include: "#tspdoctype"
+
+          - match: (?:[a-zA-Z_][a-zA-Z0-9_]*|\][^\]])+
+            name: entity.name.type.instance.tspdoc
+
+      # @tag {type} name
+      # @tag {type} [name=]
+      # @tag {type} [name="\"double\" quoted"]
+      # @tag {type} [name='\'single\' quoted']
+      # @tag {type} [name=everything else]
+      # @tag [name=]
+      # @tag [name="\"double\" quoted"]
+      # @tag [name='\'single\' quoted']
+      # @tag [name=everything else]
+      - begin: ((@)(?:field|param|parameter))\s+(?={|\[)
+        beginCaptures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+        end: (?=\s|\]\]|[^{}\[\]a-zA-Z_])
+        patterns:
+          - include: "#tspdoctype"
+
+          - match: ([a-zA-Z_][a-zA-Z0-9_]*)
+            name: variable.other.tspdoc
+
+          - name: variable.other.tspdoc
+            match: >
+              (?x)
+                (\[)
+                \s*
+                [a-zA-Z_][a-zA-Z0-9_]*
+                (?:
+                  \s*(=)\s* # [foo=]
+                  (
+                    (?>
+                      # Strings won't stop on their respective escape characters.
+                      \"(?: \\\" | . )*?\" |  # [foo="bar"]
+                      \'(?: \\\' | . )*?\' |  # [foo='bar']
+                        (?: [^\[\]] )*  # [foo=bar.baz] Catch everything before the ]
+                    )*
+                  )
+                )?
+                \s*
+                (?:
+                  (\])((?:[^\s])+)? | (?=\]\])
+                )
+            captures:
+              "1": {name: punctuation.definition.optional-value.begin.bracket.square.tspdoc}
+              "2": {name: keyword.operator.assignment.tspdoc}
+              "3": {name: source.embedded.tsp}
+              "4": {name: punctuation.definition.optional-value.end.bracket.square.tspdoc}
+              "5": {name: invalid.illegal.syntax.tspdoc}
+
+      # @tag {type}
+      - begin: ((@)(?:index|returns?|type))\s+(?={)
+        beginCaptures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+        end: (?=\s|\]\]|[^{}\[\]a-zA-Z_.])
+        patterns:
+          - include: "#tspdoctype"
+
+      # @tag Object
+      - match: >
+          (?x)
+            ( (@)(?:see|typedef|v1|v2) )
+            \s+
+            ( (?:[a-zA-Z_][a-zA-Z0-9_]*|[.])+ )
+        captures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+          "3": {name: entity.name.type.instance.tspdoc}
+
+      # - match: >
+      #     (?x)
+      #       ( (@)(?:fw|firmware) )
+      #       \s+
+      #       ( [ ><=,.0-9]+ )
+      #   captures:
+      #     "1": {name: storage.type.class.tspdoc}
+      #     "2": {name: punctuation.definition.block.tag.tspdoc}
+      #     "3": {name: $self}
+      - begin: ((@)(?:fw|firmware))\s+?
+        beginCaptures:
+          "1": {name: storage.type.class.tspdoc}
+          "2": {name: punctuation.definition.block.tag.tspdoc}
+        end: (?:[\{\}@\s] | \]\])
+        patterns:
+          - match: (>|<=|==)(?=\d)
+            name: keyword.operator.tspdoc
+
+          - match: \d+
+            name: constant.numeric.integer.tspdoc
+
+          - match: (?<=\d)\.(?=\d)
+            name: punctuation.separator.version.tspdoc
+
+          - match: \,
+            name:  punctuation.separator.comma.tspdoc
+
+      # Valid tags should always be highlighted correctly if they exist.
+      - name: storage.type.class.tspdoc
+        match: >
+          (?x)
+            (@)
+            (?:
+              const|constant|
+              deprecated|desc|description|
+              field|firmware|fw|
+              index|
+              param|parameter|
+              read[oO]nly|returns?|
+              see|
+              tsp-v1|tsp-v2|tsplink|type|typedef|
+              v1|v2|
+              write[oO]nly
+            )
+            \b
+        captures:
+          "1": {name: punctuation.definition.block.tag.tspdoc}
+
+      - include: "#inline_tags"
+
+  inline_tags:
+    patterns:
+      - name: entity.name.type.instance.tspdoc
+        begin: (\{)((@)(?:link))\s*
+        beginCaptures:
+          "1": {name: punctuation.definition.bracket.curly.begin.tspdoc}
+          "2": {name: storage.type.class.tspdoc}
+          "3": {name: punctuation.definition.inline.tag.tspdoc}
+        end: \}|(?=\]\])
+        endCaptures:
+          "0": {name: punctuation.definition.bracket.curly.end.tspdoc}
+        patterns:
+          - match: \G((?=https?://)(?:[^}|\s,]|\][\]])+)(\|)?
+            captures:
+              "1": {name: variable.other.link.underline.tspdoc}
+              "2": {name: punctuation.separator.pipe.tspdoc}
+          - match: \G((?:[^{}@\s|]|\][^\]])+)(\|)?
+            captures:
+              "1": {name: variable.other.description.tspdoc}
+              "2": {name: punctuation.separator.pipe.tspdoc}
+
+  # TOKENS
+
+  hex:
+    match: >
+      (?x)
+        (?<![\w\d:]) # Do not match when preceeded by alphanumerics or an accessor.
+        0[xX]\h+
+    name: constant.numeric.integer.hexadecimal.tsp
+
+  float:
+    match: >
+      (?x)
+        (?<![\w:]) # Do not match when used as part of a word or accessor.
+        (
+          \d+\.\d*([eE][+-]?\d+)?
+          |
+          (?<![\d\.])\.\d+([eE][+-]?\d+)?
+          |
+          \d+[eE][+-]?\d+
+        )
+    name: constant.numeric.float.tsp
+
+  int:
+    match: >
+      (?x)
+        (?<![\w.:]) # Do not match when used as part of a word or accessor.
+        \d+
+    name: constant.numeric.integer.tsp
+
+  char_string:
+    begin: "'"
+    beginCaptures:
+      "0": {name: punctuation.definition.string.begin.tsp}
+    end: "'"
+    endCaptures:
+      "0": {name: punctuation.definition.string.end.tsp}
+    name: string.quoted.single.tsp
+    patterns:
+      - include: "#escape_sequence"
+
+  normal_string:
+    begin: '"'
+    beginCaptures:
+      "0": {name: punctuation.definition.string.begin.tsp}
+    end: '"'
+    endCaptures:
+      "0": {name: punctuation.definition.string.end.tsp}
+    name: string.quoted.double.tsp
+    patterns:
+      - include: "#escape_sequence"
+
+  long_string:
+    begin: >
+      (?x)
+        (?<![\-]{2})  # Do not match when preceeded by two hyphen-minus characters.
+        \[\[
+    beginCaptures:
+      "0": {name: punctuation.definition.string.begin.tsp}
+    end: \]\]
+    endCaptures:
+      "0": {name: punctuation.definition.string.end.tsp}
+    name: string.quoted.other.multiline.tsp
+
+  shebang:
+    match: \A(#!).*$
+    name: comment.line.shebang.tsp
+
+  comment:
+    begin: (^[ \t]+)?(?=--)
+    beginCaptures:
+      "1": {name: punctuation.whitespace.comment.leading.tsp}
+    end: (?!\G)((?<!^)[ \t]+$)?
+    endCaptures:
+      "1": {name: punctuation.whitespace.comment.trailing.tsp}
+    patterns:
+      - begin: --\[\[\[
+        beginCaptures:
+          "0": {name: punctuation.definition.comment.begin.tsp}
+        end: \]\]
+        endCaptures:
+          "0": {name: punctuation.definition.comment.end.tsp}
+        name: comment.block.documentation.tsp
+        patterns:
+          - include: "#docblock"
+
+      - begin: --\[\[(?!\[)
+        beginCaptures:
+          "0": {name: punctuation.definition.comment.begin.tsp}
+        end: \]\]
+        endCaptures:
+          "0": {name: punctuation.definition.comment.end.tsp}
+        name: comment.block.tsp
+
+      - begin: --
+        beginCaptures:
+          "0": {name: punctuation.definition.comment.begin.tsp}
+        end: $
+        endCaptures:
+          "0": {name: punctuation.definition.comment.end.tsp}
+        name: comment.line.double-dash.tsp
+
+  control_keywords:
+    match: >
+      (?x)
+        \b
+        (
+          break|
+          do|
+          else|elseif|end|
+          for|function|
+          if|in|
+          local|
+          repeat|return|
+          then|
+          until|
+          while
+        )
+        \b
+    name: keyword.control.tsp
+
+  constant:
+    match: >
+      (?x)
+        (?<![^.]\.|:) # Do not match when used as part of an accessor.
+        \b
+        (
+          _G|_VERSION|
+          nil|
+          true|false|
+          math\.(pi|huge)
+        )
+        \b
+    name: constant.language.tsp
+
+  builtins:
+    patterns:
+      - match: >
+          (?x)
+            (?<![^.]\.|:)           # Do not match when used as part of an accessor.
+            \b
+            (
+              assert|
+              collectgarbage|
+              dofile|
+              error|
+              gcinfo|getfenv|getmetatable|
+              ipairs|
+              loadfile|loadstring|
+              next|
+              pairs|pcall|print|
+              rawequal|rawget|rawset|require|
+              setfenv|setmetatable|
+              tonumber|tostring|type|
+              unpack|
+              xpcall
+            )
+            \b
+            (?=\s*(?:[({"']|\[\[))  # Must be followed by a valid parameter starting character.
+        name: support.function.tsp
+      - match: >
+          (?x)
+            (?<![^.]\.|:)           # Do not match when used as part of an accessor.
+            \b
+            (
+              coroutine\.(create|resume|status|wrap|yield)|
+              string\.(
+                byte|
+                char|
+                dump|
+                find|format|
+                gsub|
+                len|lower|
+                rep|
+                sub|
+                upper
+              )|
+              table\.(concat|insert|remove|sort)|
+              math\.(
+                abs|acos|asin|atan2?|
+                ceil|cos|
+                deg|
+                exp|
+                floor|frexp|
+                ldexp|log|log10|
+                max|min|
+                pow|
+                rad|random|randomseed|
+                sin|sqrt|
+                tan
+              )|
+              io\.(close|flush|input|open|output|read|type|write)|
+              os\.(
+                clock|
+                date|difftime|
+                execute|exit|
+                getenv|
+                remove|rename|
+                setlocale|
+                time|tmpname
+              )|
+              debug\.(
+                debug|
+                getinfo|
+                [gs]ethook|
+                [gs]etlocal|
+                [gs]etupvalue|
+                traceback
+              )
+            )
+            \b
+            (?=\s*(?:[({"']|\[\[))  # Must be followed by a valid parameter starting character.
+        name: support.function.library.tsp
+
+  operators:
+    patterns:
+      - match: \b(and|or|not)\b
+        name: keyword.operator.tsp
+
+      - match: >
+          (?x)
+            \+ |
+            \- |
+            \* |
+            \/ |
+            \^\^? |
+            (?<![~!<>])==? |
+            ~= |
+            \!=? |
+            <( < | = )? |
+            \>( > | = )? |
+            \| |
+            \& |>=
+            (?<!\.)\.{2}(?!\.)
+        name: keyword.operator.tsp
+
+  identifier:
+    match: >
+      (?x)
+        (?<=[^.]\.|:) # Match when used as part of an accessor.
+        \b
+        ([a-zA-Z_][a-zA-Z0-9_]*)
+    name: variable.other.tsp
+
+  tspdoctype:
+    patterns:
+      - contentName: entity.name.type.instance.tspdoc
+        begin: \G(\{)
+        beginCaptures:
+          "0": {name: entity.name.type.instance.tspdoc}
+          "1": {name: punctuation.definition.bracket.curly.begin.tspdoc}
+        end: ((\}))\s*|(?=\]\])
+        endCaptures:
+          "1": {name: entity.name.type.instance.tspdoc}
+          "2": {name: punctuation.definition.bracket.curly.end.tspdoc}
+        patterns:
+          - include: "#brackets"
+
+  # TOKEN FRAGMENTS
+
+  brackets:
+    patterns:
+      - begin: \{
+        end: \}|(?=\]\])
+        patterns:
+          - match: \r?\n
+
+          - include: "#brackets"
+
+      - begin: \(
+        end: \)|(?=\]\])
+        patterns:
+          - match: \r?\n
+
+          - include: "#brackets"
+
+  escape_sequence:
+    patterns:
+      - match: \\[abfnrtv"'\[\]\\]
+        name: constant.character.escape.tsp
+
+      - match: \\[0-2]?\d{1,2}
+        name: constant.character.escape.byte.tsp
+
+      - match: \\x\h{1,2}
+        name: constant.character.escape.byte.tsp
+
+      - match: \\\r?\n
+        name: punctuation.separator.continuation.tsp
+
+      - match: \\\.
+        name: invalid.illegal.character.escape.tsp

@@ -1,0 +1,23 @@
+{
+    "id": "lua",
+    "license": "MIT",
+    "aliases": [],
+    "extends": [],
+    "keywords": [
+        "break",
+        "do",
+        "else",
+        "elseif",
+        "end",
+        "for",
+        "function",
+        "if",
+        "in",
+        "local",
+        "repeat",
+        "return",
+        "then",
+        "until",
+        "while"
+    ]
+}

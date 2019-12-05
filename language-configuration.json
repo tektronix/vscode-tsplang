@@ -1,30 +1,71 @@
+/*
+ * This language configuration file is adapted by Tektronix from language-configuration.json at commit
+ *      1f78721e1dd6b00744167fff3a1c448357e0e67f
+ * available at https://github.com/microsoft/vscode/tree/1f78721e1dd6b00744167fff3a1c448357e0e67f/extensions/lua.
+ *
+ * Except as otherwise noted, the content of this file is licensed under the
+ * MIT license. The text of the MIT license is reproduced below.
+ *
+ * ----------------------------------------------------------------------------
+ *
+ * MIT License
+ *
+ * Copyright (c) 2015 - 2019 Microsoft Corporation
+ * Copyright (c) 2018 - 2019 Tektronix Inc.
+ *
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 {
     "comments": {
-        // symbol used for single line comment. Remove this entry if your language does not support line comments
+        // Symbol used for single line comment.
         "lineComment": "--",
-        // symbols used for start and end a block comment. Remove this entry if your language does not support block comments
+        // Symbols used for start and end a block comment.
         "blockComment": [ "--[[", "]]" ]
     },
-    // symbols used as brackets
+    // Symbols used as brackets.
     "brackets": [
         ["{", "}"],
         ["[", "]"],
         ["(", ")"]
     ],
-    // symbols that are auto closed when typing
+    // Symbols that are auto closed when typing.
     "autoClosingPairs": [
-        ["{", "}"],
-        ["[", "]"],
-        ["(", ")"],
-        ["\"", "\""],
-        ["'", "'"]
+        { "open": "{", "close": "}" },
+        { "open": "[", "close": "]" },
+        { "open": "(", "close": ")" },
+        { "open": "\"", "close": "\"", "notIn": ["string"] },
+        { "open": "'", "close": "'", "notIn": ["string", "comment"] },
+        { "open": "--[[[", "close": "", "notIn": ["string"] }
     ],
-    // symbols that that can be used to surround a selection
+    // Symbols that that can be used to surround a selection.
     "surroundingPairs": [
         ["{", "}"],
         ["[", "]"],
         ["(", ")"],
         ["\"", "\""],
         ["'", "'"]
-    ]
+    ],
+    // Symbols that control automatic indent and dedent.
+    "indentationRules": {
+        "increaseIndentPattern": "^((?!(\\-\\-)).)*((\\b(else|function|then|do|repeat)\\b((?!\\b(end|until)\\b).)*)|(\\{\\s*))$",
+        "decreaseIndentPattern": "^\\s*((\\b(elseif|else|end|until)\\b)|(\\})|(\\)))"
+    }
 }

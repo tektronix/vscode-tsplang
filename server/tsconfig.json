@@ -1,17 +1,22 @@
 {
     "compilerOptions": {
-        "target": "es6",
         "module": "commonjs",
-        "moduleResolution": "node",
-        "sourceMap": true,
+        "target": "es6",
+        "lib": [ "es6" ],
+        "tsBuildInfoFile": ".tsbuildinfo",
         "outDir": "out",
         "rootDir": "src",
-        "lib": [ "es6" ]
+        "composite": true,
+        "sourceMap": true
     },
-    "include": [ "src" ],
+    "include": [
+        "src/**/*"
+    ],
     "exclude": [
-        "node_modules",
-        ".vscode-test",
-        "src/antlr4-tsplang"
+        "node_modules"
+    ],
+    "references": [
+        { "path": "./@antlr4-tsplang" },
+        { "path": "./@tsplang-plugins" }
     ]
 }

@@ -1,20 +1,20 @@
-
 {
+    "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
     "clean": true,
     "extension": [
-        ".ts",
-        ".tsx"
+        ".ts"
     ],
     "include": [
-        "client/src/",
-        "server/src"
+        "client/**",
+        "server/**"
     ],
     "exclude": [
-        "server/src/antlr4-tsplang",
-        "server/src/instrument/6500",
-        "server/src/instrument/provider/test",
-        "server/src/test"
+        "**/*.d.ts",
+        "**/*.generated.ts",
+        "**/.antlr/**",
+        "**/scripts/**",
+        "**/test/**"
     ],
     "reporter": [
         "json",

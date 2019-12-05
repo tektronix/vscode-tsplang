@@ -39,7 +39,7 @@ Performs linting on all source files. Also performed during the `test` and `prep
 
 Executes unit tests located in [`test`](/test). Also performed during the `prepackage` script.
 
-### Coverage Mapping: `npm run test:coverage`
+### Coverage Mapping: `npm run cover`
 
 Runs unit tests and outputs a coverage map.
 
@@ -89,7 +89,7 @@ Watches Server files in [`server`](/server) and compiles any changes.
     * Run `npm run test`.
         * Ensure no linting errors are present.
         * All unit tests must pass.
-    * Run `npm run test:coverage`.
+    * Run `npm run cover`.
         * Coverage should be the same or better than when you started.
 * Commit your changes.
     * Each commit should be as limited in scope as possible.
