@@ -22,7 +22,7 @@ import {
     TspLexer,
     TspParser,
 } from "antlr4-tsplang"
-import * as jsonrpc from "vscode-jsonrpc"
+import { RequestType } from "vscode-jsonrpc"
 import {
     createConnection,
     IConnection,
@@ -44,13 +44,12 @@ interface TokenSpans {
     fullSpan: Range
     span: Range
 }
-const DocumentAreaNotification = new jsonrpc.NotificationType<
-    { arr: TokenSpans[] },
+const ColorizeTokensRequest = new RequestType<
+    TextDocumentItem,
+    Array<TokenSpans>,
+    Error,
     void
->("DocAreaNotification")
-const ParseDocumentNotification = new jsonrpc.NotificationType<TextDocumentItem, void>(
-    "ParseDocNotification"
-)
+>("ColorizeTokensRequest")
 
 connection.onInitialize(
     (): InitializeResult => {
@@ -67,7 +66,7 @@ connection.onInitialize(
 
 declare type HRTime = [number, number]
 let count = 0
-connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) => {
+connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpans[] => {
     const inputStream = new ANTLRInputStream(param.text)
     inputStream.name = param.uri
     const lexer = new TspLexer(inputStream)
@@ -95,17 +94,15 @@ connection.onNotification(ParseDocumentNotification, (param: TextDocumentItem) =
     }
     console.log(`${count}> elapsed time: ${seconds}s ${milli}ms`)
 
-    // Notify client of all Token ranges.
-    connection.sendNotification(DocumentAreaNotification, {
-        arr: tokenStream.getTokens().map(t => {
-            return {
-                fullSpan: t.fullSpan,
-                span: t.span,
-            }
-        }),
-    })
-
     count++
+
+    // Notify client of all Token ranges.
+    return tokenStream.getTokens().map(t => {
+        return {
+            fullSpan: t.fullSpan,
+            span: t.span,
+        }
+    })
 })
 
 // Listen on the connection
