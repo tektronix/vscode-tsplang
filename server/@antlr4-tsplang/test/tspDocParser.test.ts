@@ -1131,7 +1131,7 @@ describe("antlr4-tsplang", function() {
                 })
 
                 describe("Type Union", function() {
-                    function validateTypedefTypeUnion(expected: string, actual: ParseTree) {
+                    function validateTypedefTypeUnion(expected: string, actual: ParseTree): void | never {
                         expect(actual).to.be.an.instanceOf(TypedefTypeUnionContext)
                         // Check pipes.
                         const pipeCount = (expected.match(/[|]/g) || []).length
