@@ -62,7 +62,10 @@ export function activate(context: ExtensionContext): void {
         true
     )
 
+    /* Transient Features */
     initializingExtensionMessage.register(langclient)
+
+    /* Normal Features */
     commandFeatureController.register(langclient)
 
     // Push the disposable to the context's subscriptions so that the client can be
