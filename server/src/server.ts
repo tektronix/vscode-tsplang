@@ -22,7 +22,7 @@ import {
     TspLexer,
     TspParser,
 } from "antlr4-tsplang"
-import { RequestType } from "vscode-jsonrpc"
+import { NotificationType, RequestType } from "vscode-jsonrpc"
 import {
     createConnection,
     IConnection,
@@ -50,6 +50,10 @@ const ColorizeTokensRequest = new RequestType<
     Error,
     void
 >("ColorizeTokensRequest")
+
+const ServerReadyNotification = new NotificationType<undefined, void>(
+    "ServerReadyNotification"
+)
 
 connection.onInitialize(
     (): InitializeResult => {
@@ -107,3 +111,5 @@ connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpan
 
 // Listen on the connection
 connection.listen()
+
+connection.sendNotification(ServerReadyNotification, undefined)

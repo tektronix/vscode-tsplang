@@ -17,6 +17,14 @@ import { Disposable } from "vscode"
 import { LanguageClient } from "vscode-languageclient"
 
 /**
+ * Transient features control their own lifecycle and typically dispose
+ * themselves when an event is received.
+ */
+export interface TransientFeatureInterface extends Disposable {
+    register: (client: LanguageClient) => void
+}
+
+/**
  * A "normal" feature whose lifecycle is tied to the extension itself.
  */
 export interface FeatureInterface {

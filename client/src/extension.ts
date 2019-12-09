@@ -18,6 +18,7 @@ import { ExtensionContext, workspace } from "vscode"
 import { LanguageClient, TransportKind } from "vscode-languageclient"
 
 import { commandFeatureController } from "./command"
+import { initializingExtensionMessage } from "./statusBar"
 
 export const language = "tsp"
 export const id = "tsplang"
@@ -61,6 +62,7 @@ export function activate(context: ExtensionContext): void {
         true
     )
 
+    initializingExtensionMessage.register(langclient)
     commandFeatureController.register(langclient)
 
     // Push the disposable to the context's subscriptions so that the client can be
