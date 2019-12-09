@@ -13,23 +13,26 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { LanguageClient } from "vscode-languageclient"
 import { Disposable } from "vscode"
+import { LanguageClient } from "vscode-languageclient"
 
-import { colorizeTokens } from "./commands/colorizeTokens"
-
-export interface CommandFeature {
-    readonly ID: string
-    register: (client: LanguageClient, ...args) => Disposable
+/**
+ * A "normal" feature whose lifecycle is tied to the extension itself.
+ */
+export interface FeatureInterface {
+    register: (client: LanguageClient) => Disposable
 }
 
-class CommandProvider implements Disposable {
-    private readonly _features: Array<CommandFeature>
-    private readonly _disposables: Disposable[]
+/**
+ * Controls the lifecycle of "normal" features.
+ */
+export class BaseFeatureController implements Disposable {
+    protected readonly _features: FeatureInterface[]
+    protected readonly _disposables: Disposable[]
 
     constructor() {
-        this._features = [colorizeTokens]
         this._disposables = []
+        this._features = []
     }
 
     register(client: LanguageClient): void {
@@ -46,5 +49,3 @@ class CommandProvider implements Disposable {
         this._disposables.forEach(value => value.dispose())
     }
 }
-
-export const commandProvider = new CommandProvider()

@@ -13,11 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { commands, Range, window } from "vscode"
-import { Disposable, RequestType } from "vscode-jsonrpc"
+import { commands, Disposable, Range, window } from "vscode"
+import { RequestType } from "vscode-jsonrpc"
 import { LanguageClient, TextDocumentItem } from "vscode-languageclient"
 
-import { CommandFeature } from "../commandProvider"
+import { CommandFeatureInterface } from "."
 
 interface TokenSpans {
     fullSpan: Range
@@ -35,7 +35,7 @@ interface ColorPair {
     tint: string
 }
 
-class ColorizeTokensFeature implements CommandFeature {
+class ColorizeTokensFeature implements CommandFeatureInterface {
     readonly ID = "tsplang.debug.colorizeTokens"
     readonly ColorPairs: ColorPair[] = [
         {
