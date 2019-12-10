@@ -64,7 +64,7 @@ jobs:
           CI: true
 
       - name: coverage export
-        if: matrix.os == 'ubuntu-latest' # && (github.ref == 'master' || github.ref == 'dev' || github.ref == 'bugfix/esarver-codecov-action' ) #|| github.event_name == 'pull_request')
+        if: runner.os == 'Linux' && ( github.ref == 'master' || github.ref == 'dev' || github.ref == 'bugfix/esarver-codecov-action' || github.event_name == 'pull_request')
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV }}
