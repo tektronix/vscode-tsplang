@@ -1,6 +1,6 @@
 # TSPLang
 
-[![](https://github.com/tektronix/vscode-tsplang/workflows/.github/workflows/code_ext.yml/badge.svg)]
+[![](https://github.com/tektronix/vscode-tsplang/workflows/.github/workflows/code_ext.yml/badge.svg)](https://github.com/tektronix/vscode-tsplang/actions)
 [![codecov](https://codecov.io/gh/tektronix/vscode-tsplang/branch/dev/graph/badge.svg)](https://codecov.io/gh/tektronix/vscode-tsplang)
 
 The TSP language extension for [Visual Studio Code](https://code.visualstudio.com/) provides command completions for [supported](#supported-instruments) TSP-enabled Keithley Instruments.
