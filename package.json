@@ -109,6 +109,19 @@
                 }
             }
         },
+        "grammars": [
+            {
+                "language": "tsp",
+                "scopeName": "source.tsp",
+                "path": "./syntaxes/tsp.tmLanguage.json"
+            }
+        ],
+        "jsonValidation": [
+            {
+                "fileMatch": "tsplang.plugin",
+                "url": "./server/@tsplang-plugins/tsplang.plugin.schema.json"
+            }
+        ],
         "languages": [
             {
                 "id": "tsp",
@@ -121,13 +134,10 @@
                     ".tspa"
                 ],
                 "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
+            },
             {
-                "language": "tsp",
-                "scopeName": "source.tsp",
-                "path": "./syntaxes/tsp.tmLanguage.json"
+                "id": "json",
+                "filenames": ["tsplang.plugin"]
             }
         ]
     },

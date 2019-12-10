@@ -1,8 +1,6 @@
 {
-    "id": "lua",
+    "name": "lua",
     "license": "MIT",
-    "aliases": [],
-    "extends": [],
     "keywords": [
         "break",
         "do",

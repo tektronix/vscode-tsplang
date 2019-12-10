@@ -1,0 +1,99 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://www.tek.com/keithley/tspconfig.json",
+    "type": "object",
+    "description": "Configures the current directory as a TSPLang extension plugin.",
+    "readOnly": true,
+    "writeOnly": false,
+    "required": [
+        "name"
+    ],
+    "definitions": {
+        "name": {
+            "$id": "#/definitions/name",
+            "type": "string",
+            "description": "The name of this TSPLang plugin. Must not contain square brackets nor semicolons.",
+            "readOnly": true,
+            "writeOnly": false,
+            "pattern": "^([^\\[\\];]*)$"
+        },
+        "extendsObject": {
+            "$id": "#/definitions/extendsObject",
+            "type": "object",
+            "description": "",
+            "readOnly": true,
+            "writeOnly": false,
+            "required": ["plugin"],
+            "properties": {
+                "plugin": { "$ref": "#/definitions/name" },
+                "include": {
+                    "default": ["*"],
+                    "type": "array",
+                    "readOnly": true,
+                    "writeOnly": false,
+                    "items": {
+                        "type": "string",
+                        "readOnly": true,
+                        "writeOnly": false,
+                        "pattern": "^(.*)$"
+                    }
+                },
+                "exclude": {
+                    "default": [],
+                    "type": "array",
+                    "readOnly": true,
+                    "writeOnly": false,
+                    "items": {
+                        "type": "string",
+                        "readOnly": true,
+                        "writeOnly": false,
+                        "pattern": "^(.*)$"
+                    }
+                }
+            }
+        }
+    },
+    "properties": {
+        "name": { "$ref": "#/definitions/name" },
+        "license": {
+            "$id": "#/properties/license",
+            "type": "string",
+            "description": "The license that applies to this plugin.",
+            "readOnly": true,
+            "writeOnly": false,
+            "pattern": "^(.*)$"
+        },
+        "extends": {
+            "$id": "#/properties/extends",
+            "type": "array",
+            "description": "One or more existing plugins that should be loaded with this plugin.",
+            "readOnly": true,
+            "writeOnly": false,
+            "items": {
+                "$id": "#/properties/extends/items",
+                "description": "The name of the plugin to extend or an object",
+                "readOnly": true,
+                "writeOnly": false,
+                "anyOf": [
+                    { "$ref": "#/definitions/name" },
+                    { "$ref": "#/definitions/extendsObject" }
+                ]
+            }
+        },
+        "keywords": {
+            "$id": "#/properties/keywords",
+            "type": "array",
+            "description": "An array of reserved words for this plugin.",
+            "readOnly": true,
+            "writeOnly": false,
+            "items": {
+                "$id": "#/properties/keywords/items",
+                "type": "string",
+                "description": "A valid Lua name.",
+                "readOnly": true,
+                "writeOnly": false,
+                "pattern": "^([a-zA-Z_][a-zA-Z_0-9]*)$"
+            }
+        }
+    }
+}
