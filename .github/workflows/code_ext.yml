@@ -63,6 +63,13 @@ jobs:
         env:
           CI: true
 
+      - name: Action Debugging
+        env:
+          GITHUB_REF: ${{ github.ref }}
+          RUNNER_OS: ${{ runner.os }} 
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: echo "Ref - $GITHUB_REF | Runner - $RUNNER_OS | Event Name - $GITHUB_EVENT_NAME"
+
       - name: coverage export
         if: runner.os == 'Linux' && ( github.ref == 'master' || github.ref == 'dev' || github.ref == 'bugfix/esarver-codecov-action' || github.event_name == 'pull_request')
         uses: codecov/codecov-action@v1
