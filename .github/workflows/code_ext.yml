@@ -1,4 +1,4 @@
-name: Code Extention CI
+name: CI
 
 on:
   push:
