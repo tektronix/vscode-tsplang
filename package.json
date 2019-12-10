@@ -39,8 +39,9 @@
     "contributes": {
         "commands": [
             {
-                "command": "tsplang.parse",
-                "title": "Parse Document"
+                "command": "tsplang.debug.colorizeTokens",
+                "title": "Colorize TSP Document Tokens",
+                "category": "Developer"
             }
         ],
         "configuration": {
