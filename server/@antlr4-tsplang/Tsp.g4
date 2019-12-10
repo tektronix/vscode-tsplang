@@ -242,6 +242,10 @@ LONGCOMMENT
     : '--[' NestedString ']' -> channel(HIDDEN)
     ;
 
+DOC_COMMENT
+    : '--[[' NestedString ']' -> channel(HIDDEN)
+    ;
+
 LINE_COMMENT
     : '--' .*? (VERTICAL_WS|EOF) -> channel(HIDDEN)
     ;
