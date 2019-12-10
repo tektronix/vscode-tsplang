@@ -69,6 +69,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV }}
           yml: ./codecov.yml
+          file: ./coverage/lcov.info
           # file?
         env:
           CI: true
