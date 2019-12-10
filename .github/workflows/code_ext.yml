@@ -64,9 +64,12 @@ jobs:
           CI: true
 
       - name: coverage export
-        if: matrix.os == 'ubuntu-latest' && (github.ref == 'master' || github.ref == 'dev' || github.event_name == 'pull_request')
-        run: |
-          bash <(curl -s https://codecov.io/bash)
+        if: runner.os == 'Linux' && ( github.ref == 'refs/heads/master' || github.ref == 'refs/heads/dev' || github.event_name == 'pull_request')
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV }}
+          yml: ./codecov.yml
+          file: ./coverage/lcov.info
         env:
           CI: true
 
