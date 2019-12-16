@@ -78,17 +78,19 @@ class ColorizeTokensFeature implements CommandFeatureInterface {
 
     register(client: LanguageClient): Disposable {
         return commands.registerCommand(this.ID, () => {
-            client
-                .sendRequest(
-                    ColorizeTokensRequest,
-                    TextDocumentItem.create(
-                        window.activeTextEditor.document.uri.toString(),
-                        window.activeTextEditor.document.languageId,
-                        window.activeTextEditor.document.version,
-                        window.activeTextEditor.document.getText()
+            if (window.activeTextEditor) {
+                client
+                    .sendRequest(
+                        ColorizeTokensRequest,
+                        TextDocumentItem.create(
+                            window.activeTextEditor.document.uri.toString(),
+                            window.activeTextEditor.document.languageId,
+                            window.activeTextEditor.document.version,
+                            window.activeTextEditor.document.getText()
+                        )
                     )
-                )
-                .then(this.onResponse.bind(this))
+                    .then(this.onResponse.bind(this))
+            }
         })
     }
 
