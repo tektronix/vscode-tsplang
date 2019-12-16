@@ -1,6 +1,21 @@
 #!/usr/bin/env node
+const child_process = require("child_process")
 const fs = require("fs")
 const yaml = require("js-yaml")
+
+child_process.exec("npm run precompile", { cwd: "../server/@tsplang-plugins" }, (error, stdout, stderr) => {
+    if (error) {
+        throw error
+    }
+
+    if (stdout !== "") {
+        console.log(stdout)
+    }
+
+    if (stderr !== "") {
+        console.error(stderr)
+    }
+})
 
 try {
     fs.writeFileSync(

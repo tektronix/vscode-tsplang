@@ -12,6 +12,10 @@
     "dependencies": {
         "vscode-jsonrpc": "^5.2.1"
     },
-    "devDependencies": {},
-    "scripts": {}
+    "devDependencies": {
+        "json-schema-to-typescript": "^8.0.0"
+    },
+    "scripts": {
+        "precompile": "cd scripts && node ./precompile.js && cd .."
+    }
 }
