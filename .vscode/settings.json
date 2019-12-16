@@ -12,6 +12,7 @@
     "javascript.preferences.quoteStyle": "double",
     "json.format.enable": true,
     "typescript.format.enable": false,
+    "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
     "typescript.tsdk": "node_modules/typescript/lib",
 
     // Contributed File Associations
