@@ -16,7 +16,7 @@
 // ANTLR4 Exports
 export { ANTLRInputStream } from "antlr4ts"
 
-// ANTLR4 Overrides
+// Overrides
 export { ExtendedTspDocLexer as TspDocLexer } from "./extendedTspDocLexer"
 export { ExtendedTspLexer as TspLexer } from "./extendedTspLexer"
 export { TspCommonToken as CommonToken } from "./tspCommonToken"
