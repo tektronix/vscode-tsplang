@@ -9,7 +9,13 @@
         "type": "git",
         "url": "https://github.com/tektronix/vscode-tsplang/tree/dev"
     },
-    "dependencies": {},
+    "dependencies": {
+        "@types/klaw": "^3.0.0",
+        "@types/through2": "^2.0.34",
+        "klaw": "^3.0.0",
+        "through2": "^3.0.1",
+        "vscode-uri": "^2.1.1"
+    },
     "devDependencies": {
         "@types/fs-extra": "^8.0.1",
         "ajv": "^6.10.2",
