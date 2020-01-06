@@ -65,6 +65,7 @@
         },
         "aliases": {
             "$id": "#/properties/aliases",
+            "default": [],
             "type": "array",
             "description": "Alternative names for this plugin.",
             "readOnly": true,
