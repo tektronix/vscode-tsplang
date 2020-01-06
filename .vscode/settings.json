@@ -9,6 +9,16 @@
     },
 
     // Languages
+    "[javascript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": false
+        },
+    },
+    "[typescript]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll.eslint": false
+        }
+    },
     "javascript.preferences.quoteStyle": "double",
     "json.format.enable": true,
     "typescript.format.enable": false,
@@ -21,16 +31,6 @@
     },
 
     // Recommended Plugins
-    "eslint.validate": [
-        {
-            "language": "javascript",
-            "autoFix": false
-        },
-        {
-            "language": "typescript",
-            "autoFix": false
-        }
-    ],
     "mocha.coverage": {
         // Use `npm run cover` for more accurate coverage results.
         "enable": false,
