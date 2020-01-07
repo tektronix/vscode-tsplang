@@ -4,6 +4,7 @@
 
 * All plugin folders must start with "@" so that plugins are grouped together
 and float above/below implementation folders when viewed in the filesystem.
+* Files and folders contained within a plugin folder must not start with "@".
 
 ## Configuration Files
 
