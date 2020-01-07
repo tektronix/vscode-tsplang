@@ -30,9 +30,9 @@
                     "description": "The plugin to extend."
                 },
                 "include": {
-                    "default": ["*"],
+                    "default": [],
                     "type": "array",
-                    "description": "An array of glob patterns to include.",
+                    "description": "An array of symbols to include. Includes all symbols if left empty.",
                     "readOnly": true,
                     "writeOnly": false,
                     "items": {
@@ -45,7 +45,7 @@
                 "exclude": {
                     "default": [],
                     "type": "array",
-                    "description": "An array of glob patterns to exclude.",
+                    "description": "An array of symbols to exclude. Excludes no symbols if left empty.",
                     "readOnly": true,
                     "writeOnly": false,
                     "items": {

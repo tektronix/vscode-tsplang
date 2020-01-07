@@ -40,11 +40,11 @@ export interface PluginExtensionObject {
      */
     plugin: string
     /**
-     * An array of glob patterns to include.
+     * An array of symbols to include. Includes all symbols if left empty.
      */
     include?: string[]
     /**
-     * An array of glob patterns to exclude.
+     * An array of symbols to exclude. Excludes no symbols if left empty.
      */
     exclude?: string[]
 }
