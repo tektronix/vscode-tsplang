@@ -14,8 +14,7 @@ This will be useful when the user-defined TSPLang plugin directory changes.
 
 #### Loading
 
-1. Cache a plugin's associated TSP files.
-1. Accept plugin aliases.
+1. Protect against circular extends dependencies.
 
 ### Configuration Files
 
