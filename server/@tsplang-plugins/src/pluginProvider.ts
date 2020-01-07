@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { EventEmitter } from "events"
 import * as path from "path"
 
 import { ValidateFunction } from "ajv"
@@ -24,10 +23,15 @@ import * as klaw from "klaw"
 import * as through2 from "through2"
 
 import { InternalPlugin, TsplangPlugin } from "./plugin"
-import { TsplangPluginSettings } from "./tsplang.plugin.generated"
+import {
+    PluginExtensionObject,
+    TsplangPluginSettings,
+} from "./tsplang.plugin.generated"
+import { ProviderErrorEmitter } from "./pluginProviderEmitter"
 
 const CONFIG_FILENAME = "tsplang.plugin"
 const SCHEMA_FILEPATH = path.join("..", "tsplang.plugin.schema.json")
+const TSP_FILE_EXTENSION = ".tsp"
 
 const PLUGIN_DIR_FILTER = through2.obj(function(
     item: klaw.Item,
@@ -44,71 +48,189 @@ const PLUGIN_DIR_FILTER = through2.obj(function(
     next()
 })
 
-export class PluginProvider {
-    protected static CONFIG_READ_ERROR = "ConfigReadError"
-    protected static CONFLICTING_NAME_ERROR = "ConflictingNameError"
-    protected static INVALID_SCHEMA_ERROR = "InvalidSchemaError"
+const TSP_FILE_FILTER = through2.obj(function(
+    item: klaw.Item,
+    encoding: string,
+    next: through2.TransformCallback
+) {
+    if (item.stats.isFile() && path.extname(item.path) === TSP_FILE_EXTENSION) {
+        this.push(item)
+    }
+    next()
+})
 
+export class PluginProvider extends ProviderErrorEmitter {
     protected directories: URI[]
-    protected eventDirector: EventEmitter
     protected plugins: Map<string, InternalPlugin>
     protected validateSettings: ValidateFunction
 
     constructor() {
-        this.eventDirector = new EventEmitter()
+        super()
         this.validateSettings = new ajv({
             allErrors: true,
         }).compile(
             JSON.parse(fsExtra.readFileSync(SCHEMA_FILEPATH, { encoding: "utf-8" }))
         )
-        this.findDirectories()
-    }
-
-    // TODO
-    // get(plugin: string): TsplangPlugin | undefined {
-
-    // }
-
-    dispose(): void {
-        this.eventDirector.removeAllListeners()
-    }
-
-    findDirectories(): void {
         this.directories = []
         klaw(__dirname)
             .pipe(PLUGIN_DIR_FILTER)
             .on("data", (item: klaw.Item) => this.directories.push(URI.file(item.path)))
     }
 
-    onConfigReadError(listener: (reason: Error) => void): void {
-        this.eventDirector.on(PluginProvider.INVALID_SCHEMA_ERROR, listener)
+    get(plugin: string): TsplangPlugin | undefined {
+        if (this.plugins === undefined) {
+            this.loadAllPluginConfigs()
+        }
+
+        const internalPlugin = this.plugins.get(plugin)
+
+        if (internalPlugin === undefined) {
+            return
+        }
+
+        if (internalPlugin.cache !== undefined) {
+            return internalPlugin.cache
+        }
+
+        let dependencies: TsplangPlugin = {
+            files: new Set(),
+            keywords: new Set(),
+            licenses: new Map(),
+        }
+
+        // Resolve extends dependencies.
+        const extensions = internalPlugin.settings.extends ?? []
+        for (let i = 0; i < extensions.length; i++) {
+            // Convert strings to a PluginExtensionObject.
+            const extensionObject: PluginExtensionObject =
+                typeof extensions[i] === "string"
+                    ? { plugin: extensions[i] as string }
+                    : (extensions[i] as PluginExtensionObject)
+            // Create definite filters to avoid checks later.
+            extensionObject.include = extensionObject.include ?? []
+            extensionObject.exclude = extensionObject.exclude ?? []
+
+            // Recurse to request this plugin's extension dependency.
+            const extendedPlugin = this.get(extensionObject.plugin)
+
+            // Emit an error if we were unable to resolve a plugin name.
+            if (extendedPlugin === undefined) {
+                this.sendExtendsUnknownPluginError(
+                    internalPlugin.configUri.toString(),
+                    extensionObject.plugin
+                )
+                // Do not attempt to load a partial plugin.
+                return
+            }
+
+            // Merge the filtered plugin into this plugin's dependencies.
+            dependencies = TsplangPlugin.merge(
+                dependencies,
+                this.filter(
+                    extendedPlugin,
+                    extensionObject.include,
+                    extensionObject.exclude
+                )
+            )
+        }
+
+        // Recursively collect all TSP files in this plugin folder.
+        const files = new Set<string>()
+        klaw(path.dirname(internalPlugin.configUri.fsPath), { depthLimit: 10 })
+            .pipe(TSP_FILE_FILTER)
+            .on("data", (item: klaw.Item) => files.add(URI.file(item.path).toString()))
+
+        // Cache the resolved plugin.
+        internalPlugin.cache = TsplangPlugin.merge(
+            dependencies,
+            InternalPlugin.toExternal(internalPlugin)
+        )
+
+        return internalPlugin.cache
     }
 
-    onConflictingNameError(
-        listener: (
-            existingPlugin: string,
-            newPlugin: string,
-            conflictingName: string,
-            alias: boolean
-        ) => void
-    ): void {
-        this.eventDirector.on(PluginProvider.CONFLICTING_NAME_ERROR, listener)
+    protected filter(
+        plugin: TsplangPlugin,
+        include: string[],
+        exclude: string[]
+    ): TsplangPlugin {
+        let files: string[] = [...plugin.files.values()]
+
+        if (include.length > 0) {
+            files = files.filter((uri: string) => {
+                for (let i = 0; i < include.length; i++) {
+                    // String values are valid `file:///` URIs and we need to operate
+                    // on a valid filesystem path.
+                    const filepath = URI.parse(uri).fsPath
+                    // Get the index of the first path separator to the right
+                    // of the last "@" character.
+                    const start = filepath.indexOf(path.sep, filepath.lastIndexOf("@"))
+
+                    // Convert the include symbol into a partial filesystem path
+                    // and try to find it in the current filepath.
+                    if (filepath.includes(path.join(...include[i].split(".")), start)) {
+                        return true
+                    }
+                }
+                return false
+            })
+        }
+
+        if (exclude.length > 0) {
+            files = files.filter((uri: string) => {
+                for (let i = 0; i < exclude.length; i++) {
+                    // See previous for-loop's line comments still apply,
+                    // but for exludes.
+
+                    const filepath = URI.parse(uri).fsPath
+                    const start = filepath.indexOf(path.sep, filepath.lastIndexOf("@"))
+
+                    if (filepath.includes(path.join(...exclude[i].split(".")), start)) {
+                        return false
+                    }
+                }
+                return true
+            })
+        }
+
+        return {
+            files: new Set(files),
+            keywords: new Set([...plugin.keywords]),
+            licenses: new Map([...plugin.licenses]),
+        }
     }
 
-    onInvalidSchemaError(listener: (reasons: ajv.ErrorObject[] | null) => void): void {
-        this.eventDirector.on(PluginProvider.INVALID_SCHEMA_ERROR, listener)
+    protected loadAllPluginConfigs(): void {
+        this.plugins = new Map()
+        for (let i = 0; i < this.directories.length; i++) {
+            const directoryUri = this.directories[i]
+            const configUri = URI.file(path.join(directoryUri.fsPath, CONFIG_FILENAME))
+
+            let data: string
+            try {
+                data = fsExtra.readFileSync(configUri.fsPath, "utf-8")
+            } catch (err) {
+                this.sendConfigReadError(err)
+                return
+            }
+
+            if (!this.validateSettings(data, configUri.fsPath)) {
+                this.sendInvalidConfigError(this.validateSettings.errors ?? null)
+            } else {
+                this.populatePluginMap(directoryUri, JSON.parse(data))
+            }
+        }
     }
 
-    protected populatePluginMap(uri: string, settings: TsplangPluginSettings): void {
-        const result: InternalPlugin = { settings, uri }
+    protected populatePluginMap(uri: URI, settings: TsplangPluginSettings): void {
+        const result: InternalPlugin = { settings, configUri: uri }
 
         // Try to add a key for the default name.
         let collision = this.plugins.get(settings.name)
         if (collision !== undefined) {
-            this.eventDirector.emit(
-                PluginProvider.CONFLICTING_NAME_ERROR,
-                collision.uri,
-                uri,
+            this.sendConflictingNameError(
+                collision.configUri.toString(),
+                uri.toString(),
                 settings.name,
                 false
             )
@@ -120,10 +242,9 @@ export class PluginProvider {
         settings.aliases?.forEach(alias => {
             collision = this.plugins.get(alias)
             if (collision !== undefined) {
-                this.eventDirector.emit(
-                    PluginProvider.CONFLICTING_NAME_ERROR,
-                    collision.uri,
-                    uri,
+                this.sendConflictingNameError(
+                    collision.configUri.toString(),
+                    uri.toString(),
                     alias,
                     true
                 )
@@ -131,29 +252,5 @@ export class PluginProvider {
             }
             this.plugins.set(alias, result)
         })
-    }
-
-    protected loadAllPluginConfigs(): void {
-        this.plugins = new Map()
-        for (let i = 0; i < this.directories.length; i++) {
-            const uri = this.directories[i]
-            fsExtra
-                .readFile(uri.fsPath, "utf-8")
-                .then(data => {
-                    if (!this.validateSettings(data, uri.fsPath)) {
-                        this.eventDirector.emit(
-                            PluginProvider.INVALID_SCHEMA_ERROR,
-                            this.validateSettings.errors
-                        )
-                        return
-                    }
-
-                    this.populatePluginMap(uri.toString(), JSON.parse(data))
-                    return
-                })
-                .catch((reason: Error) => {
-                    this.eventDirector.emit(PluginProvider.CONFIG_READ_ERROR, reason)
-                })
-        }
     }
 }

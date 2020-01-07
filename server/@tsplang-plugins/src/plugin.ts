@@ -13,17 +13,60 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import * as path from "path"
+
+import * as fsExtra from "fs-extra"
 import { URI } from "vscode-uri"
 
 import { TsplangPluginSettings } from "./tsplang.plugin.generated"
 
 export interface InternalPlugin {
-    uri: string
+    cache?: TsplangPlugin
+    configUri: URI
     settings: TsplangPluginSettings
+}
+export namespace InternalPlugin {
+    export const toExternal = function(plugin: InternalPlugin): TsplangPlugin {
+        const license = URI.file(
+            path.join(path.dirname(plugin.configUri.fsPath), "LICENSE")
+        )
+        const licenseMap = new Map()
+        // If this plugin has a license file, then populate the URI lookup table.
+        if (fsExtra.pathExistsSync(license.fsPath)) {
+            const licenseString = license.toString()
+            // Name
+            licenseMap.set(plugin.settings.name, licenseString)
+            // Aliases
+            plugin.settings.aliases?.forEach(alias => {
+                licenseMap.set(alias, licenseString)
+            })
+        }
+
+        return {
+            files: new Set(),
+            keywords: new Set(plugin.settings.keywords),
+            licenses: licenseMap,
+        }
+    }
 }
 
 export interface TsplangPlugin {
-    keywords: string[]
-    files: URI[]
-    license: URI
+    files: ReadonlySet<string>
+    keywords: ReadonlySet<string>
+    /** Plugin name/alias to license URI lookup table. */
+    licenses: ReadonlyMap<string, string>
+}
+export namespace TsplangPlugin {
+    /**
+     * Merge two TsplangPlugin objects.
+     *
+     * Entries from `b` will overwrite those from `a`.
+     * */
+    export const merge = function(a: TsplangPlugin, b: TsplangPlugin): TsplangPlugin {
+        return {
+            files: new Set([...a.files, ...b.files]),
+            keywords: new Set([...a.keywords, ...b.keywords]),
+            licenses: new Map([...a.licenses, ...b.licenses]),
+        }
+    }
 }
