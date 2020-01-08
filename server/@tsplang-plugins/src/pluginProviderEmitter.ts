@@ -19,13 +19,15 @@ import { ErrorObject } from "ajv"
 
 import { Disposable } from "./disposable"
 
-const CONFIG_READ_ERROR = "ConfigReadError"
-const CONFLICTING_NAME_ERROR = "ConflictingNameError"
-const EXTENDS_UNKNOWN_PLUGIN_ERROR = "ExtendsUnknownPluginError"
-const INVALID_CONFIG_ERROR = "InvalidConfigError"
+export namespace ErrorEvents {
+    export const CONFIG_READ_ERROR = "ConfigReadError"
+    export const CONFLICTING_NAME_ERROR = "ConflictingNameError"
+    export const EXTENDS_UNKNOWN_PLUGIN_ERROR = "ExtendsUnknownPluginError"
+    export const INVALID_CONFIG_ERROR = "InvalidConfigError"
+}
 
 const ConfigReadError = function(reason: Error): void {
-    ;(this.emitter as EventEmitter).emit(CONFIG_READ_ERROR, reason)
+    ;(this.emitter as EventEmitter).emit(ErrorEvents.CONFIG_READ_ERROR, reason)
 }
 const ConflictingNameError = function(
     existingPlugin: string,
@@ -34,7 +36,7 @@ const ConflictingNameError = function(
     alias: boolean
 ): void {
     ;(this.emitter as EventEmitter).emit(
-        CONFLICTING_NAME_ERROR,
+        ErrorEvents.CONFLICTING_NAME_ERROR,
         existingPlugin,
         thisPlugin,
         conflictingName,
@@ -46,7 +48,7 @@ const ExtendsUnknownPluginError = function(
     unknownPlugin: string
 ): void {
     ;(this.emitter as EventEmitter).emit(
-        EXTENDS_UNKNOWN_PLUGIN_ERROR,
+        ErrorEvents.EXTENDS_UNKNOWN_PLUGIN_ERROR,
         thisPlugin,
         unknownPlugin
     )
@@ -56,7 +58,7 @@ const ExtendsUnknownPluginError = function(
  * no errors.
  */
 const InvalidConfigError = function(reasons: ErrorObject[] | null): void {
-    ;(this.emitter as EventEmitter).emit(INVALID_CONFIG_ERROR, reasons)
+    ;(this.emitter as EventEmitter).emit(ErrorEvents.INVALID_CONFIG_ERROR, reasons)
 }
 
 export class ProviderErrorEmitter implements Disposable {
@@ -79,18 +81,18 @@ export class ProviderErrorEmitter implements Disposable {
     }
 
     onConfigReadError(listener: typeof ConfigReadError): void {
-        this.emitter.on(CONFIG_READ_ERROR, listener)
+        this.emitter.on(ErrorEvents.CONFIG_READ_ERROR, listener)
     }
 
     onConflictingNameError(listener: typeof ConflictingNameError): void {
-        this.emitter.on(CONFLICTING_NAME_ERROR, listener)
+        this.emitter.on(ErrorEvents.CONFLICTING_NAME_ERROR, listener)
     }
 
     onExtendsUnknownPluginError(listener: typeof ExtendsUnknownPluginError): void {
-        this.emitter.on(EXTENDS_UNKNOWN_PLUGIN_ERROR, listener)
+        this.emitter.on(ErrorEvents.EXTENDS_UNKNOWN_PLUGIN_ERROR, listener)
     }
 
     onInvalidConfigError(listener: typeof InvalidConfigError): void {
-        this.emitter.on(INVALID_CONFIG_ERROR, listener)
+        this.emitter.on(ErrorEvents.INVALID_CONFIG_ERROR, listener)
     }
 }
