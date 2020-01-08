@@ -200,7 +200,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docDeprecated", function() {
-            it("Supports inlining", function(done) {
+            it("Supports inlining", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>("--[[[@deprecated]]")
                 context.root = context.parser.docstring()
 
@@ -217,7 +217,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Supports trailing content", function(done) {
+            it("Supports trailing content", function(done: Mocha.Done) {
                 const trailingContent = "It's for the best. ⚰"
                 const context = contextFactory<DocstringContext>(`--[[[
                     @deprecated ${trailingContent}
@@ -241,7 +241,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docDescription", function() {
-            it("Can start with the @desc tag", function(done) {
+            it("Can start with the @desc tag", function(done: Mocha.Done) {
                 const trailingContent = `
                     It's helpful to have deprecation notices come before anything
                     else, but it means that the description can no longer be inferred
@@ -268,7 +268,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @description tag", function(done) {
+            it("Can start with the @description tag", function(done: Mocha.Done) {
                 const trailingContent = "The \\@description tag is an alias for the \\@desc tag."
                 const context = contextFactory<DocstringContext>(`--[[[
                     @deprecated Content that belongs to the \\@deprecated tag.
@@ -303,7 +303,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docContent", function() {
-            it("Stops before the next valid tag", function(done) {
+            it("Stops before the next valid tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     This is some __very__ fake docstring content.
                     This (") double-quote should't match the one below.
@@ -324,7 +324,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Consumes escaped TAG_DELIMITERs", function(done) {
+            it("Consumes escaped TAG_DELIMITERs", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     \\@ Some random "content" with an \\@invalidtag thrown in for good measure
                     (and good testing). Here's a dinosaur: 🦖 \\@\\@\\@
@@ -344,7 +344,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Consumes inline links", function(done) {
+            it("Consumes inline links", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     {@link here} are various
                     {@link https://github.com/jsdoc/jsdoc.github.io/blob/master/tags-inline-link.html
@@ -372,7 +372,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docParameter", function() {
-            it("Can start with the @param tag", function(done) {
+            it("Can start with the @param tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @param {string} arg This \\@param tag declares a parameter called "arg"
                         of type "string" for some imaginary function.
@@ -395,7 +395,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @parameter tag", function(done) {
+            it("Can start with the @parameter tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @parameter {string} arg The \\@parameter tag is an alias for the \\@param tag.
                 ]]`)
@@ -418,7 +418,7 @@ describe("antlr4-tsplang", function() {
             })
 
             describe("typeDeclaration", function() {
-                it("Is not required", function(done) {
+                it("Is not required", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @param arg A \\@param declaration without a type is assumed to be the ANY type.
                     ]]`)
@@ -476,7 +476,7 @@ describe("antlr4-tsplang", function() {
                 expect(() => context.parser.docstring()).to.throw(Error)
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @param arg
                 ]]`)
@@ -503,7 +503,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docReturns", function() {
-            it("Can start with the @return tag", function(done) {
+            it("Can start with the @return tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @return {number|nil} This \\@return tag declares the return type of
                         some imaginary function to be either "number" or "nil".
@@ -527,7 +527,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @returns tag", function(done) {
+            it("Can start with the @returns tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @returns {number|nil} The \\@returns tag (with an "s") is an alias
                         for the \\@return tag (without an "s").
@@ -553,7 +553,7 @@ describe("antlr4-tsplang", function() {
 
             // Differs from "typeDeclaration", since that parser rule is not referenced.
             describe("Type Declaration", function() {
-                it("Is not required", function(done) {
+                it("Is not required", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @return A \\@return declaration without a type is assumed to be the ANY type.
                     ]]`)
@@ -573,7 +573,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a single type", function(done) {
+                it("Accepts a single type", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @return {string}
                     ]]`)
@@ -605,7 +605,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a type list", function(done) {
+                it("Accepts a type list", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @returns {function, number, table}
                     ]]`)
@@ -639,7 +639,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a type union", function(done) {
+                it("Accepts a type union", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @return {smu.ON|smu.OFF|number|nil}
                     ]]`)
@@ -701,7 +701,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docReadonly", function() {
-            it("Can start with the @const tag", function(done) {
+            it("Can start with the @const tag", function(done: Mocha.Done) {
                 const nonTrailingContext = `
                 @desc Content that I don't expect to be part of \\@const tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -726,7 +726,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @const tag and have trailing content", function(done) {
+            it("Can start with the @const tag and have trailing content", function(done: Mocha.Done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@const tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -755,7 +755,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @constant tag", function(done) {
+            it("Can start with the @constant tag", function(done: Mocha.Done) {
                 const nonTrailingContext = `
                 @desc Content that I don't expect to be part of \\@constant tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -780,7 +780,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @constant tag and have trailing content", function(done) {
+            it("Can start with the @constant tag and have trailing content", function(done: Mocha.Done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@constant tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -809,7 +809,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @readonly tag", function(done) {
+            it("Can start with the @readonly tag", function(done: Mocha.Done) {
                 const nonTrailingContext = `
                 @desc Content that I don't expect to be part of \\@readonly tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -834,7 +834,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @readonly tag and have trailing content", function(done) {
+            it("Can start with the @readonly tag and have trailing content", function(done: Mocha.Done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@readonly tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -863,7 +863,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @readOnly tag", function(done) {
+            it("Can start with the @readOnly tag", function(done: Mocha.Done) {
                 const nonTrailingContext = `
                 @desc Content that I don't expect to be part of \\@readOnly tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -888,7 +888,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @readOnly tag and have trailing content", function(done) {
+            it("Can start with the @readOnly tag and have trailing content", function(done: Mocha.Done) {
                 const trailingContext = `
                 Content that I expect to be part of \\@readOnly tag.`
                 const context = contextFactory<DocstringContext>(`--[[[
@@ -919,7 +919,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docWriteonly", function() {
-            it("Can start with the @writeonly tag", function(done) {
+            it("Can start with the @writeonly tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @writeonly The \\@writeonly tag indicates that the associated symbol
                         can be written to, but not read from.
@@ -943,7 +943,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @writeOnly tag", function(done) {
+            it("Can start with the @writeOnly tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @writeOnly The \\@writeOnly tag (with a capital "o") is an alias for
                         the \\@writeonly tag (with a lowercase "o").
@@ -983,7 +983,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docType", function() {
-            it("Starts with the @type tag", function(done) {
+            it("Starts with the @type tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @type {smu.ON|smu.OFF} The \\@type tag is used to declare the
                         acceptable input types of a table field.
@@ -1047,7 +1047,7 @@ describe("antlr4-tsplang", function() {
                 expect(DocTypeContext).to.not.haveOwnProperty("nameDeclaration")
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @type {string|number|nil}
                 ]]`)
@@ -1074,7 +1074,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docTypedef", function() {
-            it("Starts with the @typedef tag", function(done) {
+            it("Starts with the @typedef tag", function(done: Mocha.Done) {
                 const type = "table"
                 const name = "NewTypeName"
 
@@ -1176,7 +1176,7 @@ describe("antlr4-tsplang", function() {
                             },
                         ]
                     ).forEach(test => {
-                        it(test.title, function(done) {
+                        it(test.title, function(done: Mocha.Done) {
                             const context = contextFactory<DocstringContext>(`--[[[
                                 @typedef {${test.type}} ${test.name} Can be a type union.
                             ]]`)
@@ -1204,7 +1204,7 @@ describe("antlr4-tsplang", function() {
                     })
                 })
 
-                it("Accepts a FUNCTION type", function(done) {
+                it("Accepts a FUNCTION type", function(done: Mocha.Done) {
                     const type = "function"
                     const name = "FunctionTypeName"
 
@@ -1243,7 +1243,7 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.docstring()).to.throw(Error)
                 })
 
-                it("Accepts a TABLE type", function(done) {
+                it("Accepts a TABLE type", function(done: Mocha.Done) {
                     const type = "table"
                     const name = "tableTypeName"
 
@@ -1277,7 +1277,7 @@ describe("antlr4-tsplang", function() {
 
             // Differs from "nameDeclaration", since that parser rule is not referenced.
             describe("NAME Declaration", function() {
-                it("Accepts a NAME", function(done) {
+                it("Accepts a NAME", function(done: Mocha.Done) {
                     const type = "function"
                     const name = "validLuaVariableName1"
 
@@ -1316,7 +1316,7 @@ describe("antlr4-tsplang", function() {
                 })
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const type = "function"
                 const name = "snakey_type_name"
 
@@ -1348,7 +1348,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docField", function() {
-            it("Starts with the @field tag", function(done) {
+            it("Starts with the @field tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @field {number} item This \\@field tag declares a table element called "item"
                         of type "number" for some imaginary table.
@@ -1374,7 +1374,7 @@ describe("antlr4-tsplang", function() {
             })
 
             describe("typeDeclaration", function() {
-                it("Is not required", function(done) {
+                it("Is not required", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @field item A \\@field declaration without a type is assumed to be the ANY type.
                     ]]`)
@@ -1432,7 +1432,7 @@ describe("antlr4-tsplang", function() {
                 expect(() => context.parser.docstring()).to.throw(Error)
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @field item
                 ]]`)
@@ -1459,7 +1459,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docIndex", function() {
-            it("Starts with the @index tag", function(done) {
+            it("Starts with the @index tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @index {function} This \\@index tag declares an indexable element of
                         type "function" for some imaginary table.
@@ -1530,7 +1530,7 @@ describe("antlr4-tsplang", function() {
                 expect(DocIndexContext).to.not.haveOwnProperty("nameDeclaration")
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @index {string|number|nil}
                 ]]`)
@@ -1558,7 +1558,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docSee", function() {
-            it("Starts with the @see tag", function(done) {
+            it("Starts with the @see tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @see reference The \\@see tag is used to point the reader toward
                         related information.
@@ -1585,7 +1585,7 @@ describe("antlr4-tsplang", function() {
             })
 
             describe("seeTarget", function() {
-                it("Accepts a NAME", function(done) {
+                it("Accepts a NAME", function(done: Mocha.Done) {
                     const target = "ValidLuaVariableName314"
 
                     const context = contextFactory<DocstringContext>(`--[[[
@@ -1613,7 +1613,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a NAMESPACE", function(done) {
+                it("Accepts a NAMESPACE", function(done: Mocha.Done) {
                     const target = "some.long.command.namespace"
 
                     const context = contextFactory<DocstringContext>(`--[[[
@@ -1641,7 +1641,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts an inline link", function(done) {
+                it("Accepts an inline link", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @see {@link https://github.com/tektronix/vscode-tsplang
                             | Project Home} Can be an inline link.
@@ -1675,7 +1675,7 @@ describe("antlr4-tsplang", function() {
                 })
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @see target
                 ]]`)
@@ -1697,7 +1697,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docTsplink", function() {
-            it("Starts with the @tsplink tag", function(done) {
+            it("Starts with the @tsplink tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @tsplink The \\@tsplink tag indicates that the associated command is
                         available over TSP-Link.
@@ -1718,7 +1718,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Does not need trailing content", function(done) {
+            it("Does not need trailing content", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     @tsplink
                 ]]`)
@@ -1739,7 +1739,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docFirmware", function() {
-            it("Can start with the @fw tag", function(done) {
+            it("Can start with the @fw tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     The \\@fw tag indicates the instrument firmware versions in which
                     the associated command is available.
@@ -1762,7 +1762,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with the @firmware tag", function(done) {
+            it("Can start with the @firmware tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     The \\@firmware tag is an alias for the \\@fw tag.
 
@@ -1792,7 +1792,7 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.docstring()).to.throw(Error)
                 })
 
-                it('Accepts the ">" prefix', function(done) {
+                it('Accepts the ">" prefix', function(done: Mocha.Done) {
                     const operator = ">"
                     const firmware = "3.14.159"
 
@@ -1823,7 +1823,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it('Accepts the "<=" prefix', function(done) {
+                it('Accepts the "<=" prefix', function(done: Mocha.Done) {
                     const operator = "<="
                     const firmware = "271.8.28"
 
@@ -1854,7 +1854,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it('Accepts the "==" prefix', function(done) {
+                it('Accepts the "==" prefix', function(done: Mocha.Done) {
                     const operator = "=="
                     const firmware = "01.01.1970"
 
@@ -1888,7 +1888,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts multiple entries separated by COMMAs", function(done) {
+                it("Accepts multiple entries separated by COMMAs", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @fw >0.0.0, <=1.0.0, ==2.0.0
                     ]]`)
@@ -1912,7 +1912,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Supports trailing COMMAs", function(done) {
+                it("Supports trailing COMMAs", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @fw >1.23.456, <=7890.12345.678901, ==2345678.90123456.789012345,
                     ]]`)
@@ -1959,7 +1959,7 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("docVersion", function() {
-            it("Can start with a @tsp-v1 tag", function(done) {
+            it("Can start with a @tsp-v1 tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     The \\@tsp-v1 tag indicates the associated command is specific to
                     TSP version 1.
@@ -1986,7 +1986,7 @@ describe("antlr4-tsplang", function() {
                 )
             })
 
-            it("Can start with a @tsp-v2 tag", function(done) {
+            it("Can start with a @tsp-v2 tag", function(done: Mocha.Done) {
                 const context = contextFactory<DocstringContext>(`--[[[
                     The \\@tsp-v2 tag indicates the associated command is specific to
                     TSP version 2.
@@ -2014,7 +2014,7 @@ describe("antlr4-tsplang", function() {
             })
 
             describe("Version 1", function() {
-                it("Can have a @v2 tag", function(done) {
+                it("Can have a @v2 tag", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         The \\@v2 tag is a special reference tag that associates symbols
                         between TSP versions. For example, the "smuA" symbol in TSP
@@ -2068,7 +2068,7 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.docstring()).to.throw(Error)
                 })
 
-                it("Accepts a NAME after the @v2 tag", function(done) {
+                it("Accepts a NAME after the @v2 tag", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @tsp-v1
                         @v2 version2UniqueName
@@ -2103,7 +2103,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a NAMESPACE after the @v2 tag", function(done) {
+                it("Accepts a NAMESPACE after the @v2 tag", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @tsp-v1
                         @v2 version_2.unique.namespace
@@ -2140,7 +2140,7 @@ describe("antlr4-tsplang", function() {
             })
 
             describe("Version 2", function() {
-                it("Can have a @v1 tag", function(done) {
+                it("Can have a @v1 tag", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         The \\@v1 tag is a special reference tag that associates symbols
                         between TSP versions. For example, the "smu" symbol in TSP
@@ -2194,7 +2194,7 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.docstring()).to.throw(Error)
                 })
 
-                it("Accepts a NAME after the @v1 tag", function(done) {
+                it("Accepts a NAME after the @v1 tag", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @tsp-v2
                         @v1 version1_unique_name
@@ -2229,7 +2229,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a NAMESPACE after the @v1 tag", function(done) {
+                it("Accepts a NAMESPACE after the @v1 tag", function(done: Mocha.Done) {
                     const context = contextFactory<DocstringContext>(`--[[[
                         @tsp-v2
                         @v1 Version1.Unique.Namespace
@@ -2323,7 +2323,7 @@ describe("antlr4-tsplang", function() {
                         { title: "Accepts a NAME", value: "userDefinedType5", type: NameTypeContext },
                     ]
                 ).forEach(test => {
-                    it(test.title, function(done) {
+                    it(test.title, function(done: Mocha.Done) {
                         const context = contextFactory<TypeDeclarationContext>(`{${test.value}}`)
                         context.root = context.parser.typeDeclaration()
 
@@ -2349,7 +2349,7 @@ describe("antlr4-tsplang", function() {
             })
 
             describe("Type Union", function() {
-                it("Is two types delimited by a PIPE", function(done) {
+                it("Is two types delimited by a PIPE", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>(
                         "{awesomeType1|function(function(function()=>any)=>any)=>any}"
                     )
@@ -2375,7 +2375,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts more than two types delimited by PIPEs", function(done) {
+                it("Accepts more than two types delimited by PIPEs", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>(
                         "{trigger.timer.start.fractionalseconds|string|table|nil}"
                     )
@@ -2408,7 +2408,7 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.typeUnion()).to.throw(Error)
                 })
 
-                it("Supports trailing PIPEs", function(done) {
+                it("Supports trailing PIPEs", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{string|number|}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2453,7 +2453,7 @@ describe("antlr4-tsplang", function() {
                     expect(() => context.parser.typeDeclaration()).to.throw(Error)
                 })
 
-                it("Accepts a signature with no parameters and one return type", function(done) {
+                it("Accepts a signature with no parameters and one return type", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function() => any}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2483,7 +2483,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with a COMMA trailing the return type", function(done) {
+                it("Accepts a signature with a COMMA trailing the return type", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function() => number,}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2508,7 +2508,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with one parameter and one return type", function(done) {
+                it("Accepts a signature with one parameter and one return type", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function(string) => any}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2541,7 +2541,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with a COMMA trailing one parameter type", function(done) {
+                it("Accepts a signature with a COMMA trailing one parameter type", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function(string,) => any}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2566,7 +2566,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with multiple parameter types", function(done) {
+                it("Accepts a signature with multiple parameter types", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>(
                         "{function(userdata, thread, number) => any}"
                     )
@@ -2595,7 +2595,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with a COMMA trailing multiple parameter types", function(done) {
+                it("Accepts a signature with a COMMA trailing multiple parameter types", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>(
                         "{function(userdata, thread, number,) => any}"
                     )
@@ -2622,7 +2622,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with one param and a return type union", function(done) {
+                it("Accepts a signature with one param and a return type union", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function(any) => boolean|string|nil}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2651,7 +2651,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with a PIPE trailing a return type union", function(done) {
+                it("Accepts a signature with a PIPE trailing a return type union", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function(any) => snakey_type|userdata|}")
                     context.root = context.parser.typeDeclaration()
 
@@ -2676,7 +2676,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with multiple params and a return type union", function(done) {
+                it("Accepts a signature with multiple params and a return type union", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>(
                         "{function(myType, table, smu.FUNC_DC_CURRENT) => any | UserListType | function()=>function }"
                     )
@@ -2717,7 +2717,7 @@ describe("antlr4-tsplang", function() {
                     )
                 })
 
-                it("Accepts a signature with one param and a return type list", function(done) {
+                it("Accepts a signature with one param and a return type list", function(done: Mocha.Done) {
                     const context = contextFactory<TypeDeclarationContext>("{function(any) => function, number, table}")
                     context.root = context.parser.typeDeclaration()
 

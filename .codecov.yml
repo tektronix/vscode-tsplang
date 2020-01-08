@@ -15,11 +15,11 @@ coverage:
         threshold: 2%
         branches:
           - master
-      dev:
-        target: 75%
-        threshold: 10%
-        branches:
-          - dev
+      # dev:
+      #   target: 75%
+      #   threshold: 10%
+      #   branches:
+      #     - dev
     patch:
       default:
         target: 90%
