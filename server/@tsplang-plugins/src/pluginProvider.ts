@@ -27,7 +27,7 @@ import {
     PluginExtensionObject,
     TsplangPluginSettings,
 } from "./tsplang.plugin.generated"
-import { ProviderErrorEmitter } from "./pluginProviderEmitter"
+import { ProviderErrorEmitter } from "./providerErrorEmitter"
 
 const CONFIG_FILENAME = "tsplang.plugin"
 const SCHEMA_FILEPATH = path.join("..", "tsplang.plugin.schema.json")
