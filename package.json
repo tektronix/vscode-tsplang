@@ -185,7 +185,7 @@
         "test:antlr4-tsplang": "mocha --config server/@antlr4-tsplang/.mocharc.json",
         "test:tsplang-plugins": "mocha --config server/@tsplang-plugins/.mocharc.json",
         "test:server": "mocha --config server/.mocharc.json",
-        "cover": "npm run cover:client && npm run cover:antlr4-tsplang && npm run test:tsplang-plugins && npm run cover:server && npm run cover:report",
+        "cover": "npm run cover:client && npm run cover:antlr4-tsplang && npm run cover:tsplang-plugins && npm run cover:server && npm run cover:report",
         "cover:client": "nyc --silent npm run test:client",
         "cover:antlr4-tsplang": "nyc --silent --no-clean npm run test:antlr4-tsplang",
         "cover:tsplang-plugins": "nyc --silent --no-clean npm run test:tsplang-plugins",
