@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 // ANTLR4 Exports
-export { ANTLRInputStream } from "antlr4ts"
+export { ANTLRInputStream, TokenStream } from "antlr4ts"
 
 // Overrides
 export { ExtendedTspDocLexer as TspDocLexer } from "./extendedTspDocLexer"
