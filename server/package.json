@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "antlr4-tsplang": "file:@antlr4-tsplang",
+        "tsplang-plugins": "file:@tsplang-plugins",
         "vscode-jsonrpc": "^4.0.0",
         "vscode-languageserver": "^5.2.1"
     },
