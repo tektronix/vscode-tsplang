@@ -10,17 +10,9 @@
         "server/**"
     ],
     "exclude": [
-        "**/*.d.ts",
         "**/*.generated.ts",
         "**/.antlr/**",
         "**/scripts/**",
         "**/test/**"
-    ],
-    "reporter": [
-        "json",
-        "html",
-        "lcov",
-        "mocha",
-        "text"
     ]
 }
