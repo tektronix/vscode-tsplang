@@ -268,5 +268,22 @@ describe("tsplang-plugins", function() {
                 expect(actual).to.deep.equal(expected)
             })
         })
+
+        describe("dispose", function() {
+            it("Removes all listeners", function() {
+                const Emitter = new ProviderErrorEmitter()
+
+                // Add some event listeners.
+                Emitter.onConfigReadError((...args: unknown[]) => expect(args))
+                Emitter.onConflictingNameError((...args: unknown[]) => expect(args))
+                Emitter.onExtendsUnknownPluginError((...args: unknown[]) => expect(args))
+                Emitter.onInvalidConfigError((...args: unknown[]) => expect(args))
+                // Verify that we have more than 0 events with registered listeners.
+                expect(Emitter["emitter"].eventNames()).to.not.be.empty
+
+                Emitter.dispose()
+                expect(Emitter["emitter"].eventNames()).to.be.empty
+            })
+        })
     })
 })
