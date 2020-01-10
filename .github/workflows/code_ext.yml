@@ -33,7 +33,7 @@ jobs:
         run: |
           npm ci --ignore-scripts
           cd client
-          npm ci
+          npm ci --ignore-scripts
           cd ..
           cd server
           npm ci --ignore-scripts
