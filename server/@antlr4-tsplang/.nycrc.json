@@ -1,13 +1,13 @@
 {
-    "extends": "@istanbuljs/nyc-config-typescript",
     "all": true,
-    "clean": true,
+    "cache": false,
+    "clean": false,
+    "silent": true,
     "extension": [
         ".ts"
     ],
     "include": [
-        "client/**",
-        "server/**"
+        "server/@antlr4-tsplang/**"
     ],
     "exclude": [
         "**/*.generated.ts",

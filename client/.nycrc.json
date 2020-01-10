@@ -1,0 +1,17 @@
+{
+    "all": true,
+    "cache": false,
+    "clean": true,
+    "silent": true,
+    "extension": [
+        ".ts"
+    ],
+    "include": [
+        "client/**"
+    ],
+    "exclude": [
+        "**/*.generated.ts",
+        "**/scripts/**",
+        "**/test/**"
+    ]
+}
