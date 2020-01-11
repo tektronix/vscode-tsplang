@@ -194,6 +194,18 @@ describe("tsplang-plugins", function() {
         describe("populatePluginMap", function() {
             let provider: PluginProvider
 
+            function internalPluginsEquivalent(
+                expected: InternalPlugin,
+                actual: InternalPlugin | undefined
+            ): void | never {
+                expect(actual?.cache).to.deep.equal(expected.cache)
+                expect(actual?.configUri.toString()).to.equal(expected.configUri.toString())
+                expect(actual?.localFiles.map(uri => uri.toString())).to.deep.equal(
+                    expected.localFiles.map(uri => uri.toString())
+                )
+                expect(actual?.settings).to.deep.equal(expected.settings)
+            }
+
             const setupProvider = function(): void {
                 provider = new PluginProvider()
 
@@ -207,21 +219,36 @@ describe("tsplang-plugins", function() {
             it("Loads the given settings into the plugin lookup table", function() {
                 const expectedKey = "uniqueName"
                 const expectedInternalPlugin: InternalPlugin = {
-                    configUri: URI.file(path.join(getFakePluginDirectory(), "fake", "config")),
+                    // URI#fsPath makes the drive letter lowercase in Windows.
+                    // If we don't create a URI from the fsPath of another URI, then our expected
+                    // configUri object will have an upper-case drive letter while the actual
+                    // configUri will be lower-case.
+                    configUri: URI.file(
+                        URI.file(path.join(getFakePluginDirectory(), "@fake", PluginProvider["configFilename"])).fsPath
+                    ),
                     localFiles: [],
                     settings: {
                         name: expectedKey,
                     },
                 }
 
-                provider["populatePluginMap"](expectedInternalPlugin.configUri, expectedInternalPlugin.settings)
+                provider["populatePluginMap"](
+                    URI.file(path.dirname(expectedInternalPlugin.configUri.fsPath)),
+                    expectedInternalPlugin.settings
+                )
 
-                expect(provider["plugins"].get(expectedKey)).to.deep.equal(expectedInternalPlugin)
+                internalPluginsEquivalent(expectedInternalPlugin, provider["plugins"].get(expectedKey))
             })
 
             it("Loads aliases into the plugin lookup table", function() {
                 const expectedInternalPlugin: InternalPlugin = {
-                    configUri: URI.file(path.join(getFakePluginDirectory(), "fake", "config")),
+                    // URI#fsPath makes the drive letter lowercase in Windows.
+                    // If we don't create a URI from the fsPath of another URI, then our expected
+                    // configUri object will have an upper-case drive letter while the actual
+                    // configUri will be lower-case.
+                    configUri: URI.file(
+                        URI.file(path.join(getFakePluginDirectory(), "@fake", PluginProvider["configFilename"])).fsPath
+                    ),
                     localFiles: [],
                     settings: {
                         name: "uniqueName",
@@ -229,10 +256,13 @@ describe("tsplang-plugins", function() {
                     },
                 }
 
-                provider["populatePluginMap"](expectedInternalPlugin.configUri, expectedInternalPlugin.settings)
+                provider["populatePluginMap"](
+                    URI.file(path.dirname(expectedInternalPlugin.configUri.fsPath)),
+                    expectedInternalPlugin.settings
+                )
 
                 expectedInternalPlugin.settings.aliases.forEach(alias => {
-                    expect(provider["plugins"].get(alias)).to.deep.equal(expectedInternalPlugin)
+                    internalPluginsEquivalent(expectedInternalPlugin, provider["plugins"].get(alias))
                 })
             })
 
@@ -241,7 +271,13 @@ describe("tsplang-plugins", function() {
                 const originalValue = provider["plugins"].get(expectedConflict)
 
                 const expectedInternalPlugin: InternalPlugin = {
-                    configUri: URI.file(path.join(getFakePluginDirectory(), "fake", "config")),
+                    // URI#fsPath makes the drive letter lowercase in Windows.
+                    // If we don't create a URI from the fsPath of another URI, then our expected
+                    // configUri object will have an upper-case drive letter while the actual
+                    // configUri will be lower-case.
+                    configUri: URI.file(
+                        URI.file(path.join(getFakePluginDirectory(), "@fake", PluginProvider["configFilename"])).fsPath
+                    ),
                     localFiles: [],
                     settings: {
                         name: "uniqueName",
@@ -249,17 +285,25 @@ describe("tsplang-plugins", function() {
                     },
                 }
 
-                provider["populatePluginMap"](expectedInternalPlugin.configUri, expectedInternalPlugin.settings)
+                provider["populatePluginMap"](
+                    URI.file(path.dirname(expectedInternalPlugin.configUri.fsPath)),
+                    expectedInternalPlugin.settings
+                )
 
                 expectedInternalPlugin.settings.aliases.forEach(alias => {
-                    expect(provider["plugins"].get(alias)).to.deep.equal(
-                        alias === expectedConflict ? originalValue : expectedInternalPlugin
+                    internalPluginsEquivalent(
+                        alias === expectedConflict ? originalValue : expectedInternalPlugin,
+                        provider["plugins"].get(alias)
                     )
                 })
             })
 
             it("Emits a ConflictingNameError when a plugin name already exists", function(done: Mocha.Done) {
-                const expectedUri = URI.file(path.join(getFakePluginDirectory(), "fake", "config"))
+                // URI#fsPath makes the drive letter lowercase in Windows.
+                // If we don't create a URI from the fsPath of another URI, then our expectedUri
+                // object will have an upper-case drive letter while the thisPlugin object will
+                // be lower-case.
+                const expectedUri = URI.file(URI.file(path.join(getFakePluginDirectory(), "@fake")).fsPath)
                 // Get the name of a loaded plugin.
                 const expectedConflict = Array.from(provider["plugins"].values())[0].settings.name
                 const originalValue = provider["plugins"].get(expectedConflict)
@@ -273,7 +317,7 @@ describe("tsplang-plugins", function() {
                         expect(alias).to.be.false
 
                         // Verify the existing settings were not overwritten
-                        expect(provider["plugins"].get(expectedConflict)).to.deep.equal(originalValue)
+                        internalPluginsEquivalent(originalValue, provider["plugins"].get(expectedConflict))
 
                         done()
                     }
@@ -286,7 +330,11 @@ describe("tsplang-plugins", function() {
             })
 
             it("Emits a ConflictingNameError when an alias already exists", function(done: Mocha.Done) {
-                const expectedUri = URI.file(path.join(getFakePluginDirectory(), "fake", "config"))
+                // URI#fsPath makes the drive letter lowercase in Windows.
+                // If we don't create a URI from the fsPath of another URI, then our expectedUri
+                // object will have an upper-case drive letter while the thisPlugin object will
+                // be lower-case.
+                const expectedPluginDirUri = URI.file(URI.file(path.join(getFakePluginDirectory(), "@fake")).fsPath)
                 const expectedConflict = "2450"
                 const originalValue = provider["plugins"].get(expectedConflict)
 
@@ -294,12 +342,12 @@ describe("tsplang-plugins", function() {
                     (existingPlugin: string, thisPlugin: string, conflictingName: string, alias: boolean) => {
                         // Validate error contents
                         expect(existingPlugin).to.have.string(expectedConflict)
-                        expect(thisPlugin).to.equal(expectedUri.toString())
+                        expect(thisPlugin).to.equal(expectedPluginDirUri.toString())
                         expect(conflictingName).to.equal(expectedConflict)
                         expect(alias).to.be.true
 
                         // Verify the existing settings were not overwritten
-                        expect(provider["plugins"].get(expectedConflict)).to.deep.equal(originalValue)
+                        internalPluginsEquivalent(originalValue, provider["plugins"].get(expectedConflict))
 
                         done()
                     }
@@ -309,7 +357,7 @@ describe("tsplang-plugins", function() {
                     name: "uniqueName",
                     aliases: [expectedConflict],
                 }
-                provider["populatePluginMap"](expectedUri, settings)
+                provider["populatePluginMap"](expectedPluginDirUri, settings)
             })
         })
     })

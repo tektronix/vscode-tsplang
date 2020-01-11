@@ -163,15 +163,24 @@ export class PluginProvider extends ProviderErrorEmitter {
         }
     }
 
-    protected populatePluginMap(uri: URI, settings: TsplangPluginSettings): void {
-        const result: InternalPlugin = { settings, configUri: uri, localFiles: [] }
+    protected populatePluginMap(
+        pluginDirUri: URI,
+        settings: TsplangPluginSettings
+    ): void {
+        const result: InternalPlugin = {
+            settings,
+            configUri: URI.file(
+                path.join(pluginDirUri.fsPath, PluginProvider.configFilename)
+            ),
+            localFiles: [],
+        }
 
         // Try to add a key for the default name.
         let collision = this.plugins.get(settings.name)
         if (collision !== undefined) {
             this.sendConflictingNameError(
                 collision.configUri.toString(),
-                uri.toString(),
+                pluginDirUri.toString(),
                 settings.name,
                 false
             )
@@ -185,7 +194,7 @@ export class PluginProvider extends ProviderErrorEmitter {
             if (collision !== undefined) {
                 this.sendConflictingNameError(
                     collision.configUri.toString(),
-                    uri.toString(),
+                    pluginDirUri.toString(),
                     alias,
                     true
                 )
