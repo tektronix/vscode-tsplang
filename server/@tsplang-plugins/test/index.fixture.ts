@@ -17,6 +17,21 @@ import * as fs from "fs"
 import * as path from "path"
 import * as Ajv from "ajv"
 
+export function formatValidationErrors(
+    errors: Ajv.ErrorObject[] | null
+): string | undefined {
+    if (!errors) {
+        return
+    }
+
+    let message = ""
+    errors.forEach(value => {
+        message += value.message
+        message += "\n"
+    })
+    return message.trim()
+}
+
 export const getPluginConfigPath = (function(): (plugin: string) => string {
     const targetRoot = path.join(path.dirname(__filename), "../out")
     const targetFile = "tsplang.plugin"
@@ -35,21 +50,6 @@ export const getSchemaFilepath = (function(): () => string {
         return result
     }
 })()
-
-export function getValidationError(
-    validator: Ajv.ValidateFunction
-): string | undefined {
-    if (!validator.errors || validator.errors.length === 0) {
-        return
-    }
-
-    let message = ""
-    validator.errors.forEach(value => {
-        message += value.message
-        message += "\n"
-    })
-    return message.trim()
-}
 
 export function makeSchemaValidator(): Ajv.ValidateFunction {
     return new Ajv().compile(JSON.parse(fs.readFileSync(getSchemaFilepath(), "utf-8")))
