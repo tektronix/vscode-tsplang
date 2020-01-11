@@ -24,14 +24,13 @@ import { InternalPlugin } from "../out/plugin"
 import { PluginProvider } from "../out/pluginProvider"
 import { TsplangPluginSettings } from "../out/tsplang.plugin.generated"
 
-import { formatValidationErrors } from "./index.fixture"
+import { formatValidationErrors, getFakePluginDirectory } from "./index.fixture"
 
 // Record the default configuration file name.
 const CONFIG_FILENAME = PluginProvider["configFilename"]
 
 // Point the builtins directory toward a special unit-test plugin directory.
-const fakePlugins = path.join(__dirname, "plugins")
-PluginProvider["builtinsDir"] = fakePlugins
+PluginProvider["builtinsDir"] = getFakePluginDirectory()
 
 describe("tsplang-plugins", function() {
     describe("PluginProvider", function() {
@@ -48,9 +47,9 @@ describe("tsplang-plugins", function() {
 
             it("Populates all valid plugin directories", function() {
                 const expectedDirs: string[] = [
-                    URI.file(path.join(fakePlugins, "@lua")).fsPath,
-                    URI.file(path.join(fakePlugins, "@smu2450")).fsPath,
-                    URI.file(path.join(fakePlugins, "@smu2461")).fsPath,
+                    URI.file(path.join(getFakePluginDirectory(), "@lua")).fsPath,
+                    URI.file(path.join(getFakePluginDirectory(), "@smu2450")).fsPath,
+                    URI.file(path.join(getFakePluginDirectory(), "@smu2461")).fsPath,
                 ]
                 expect(provider["directories"].map(uri => uri.fsPath)).to.deep.equal(expectedDirs)
             })
@@ -135,7 +134,7 @@ describe("tsplang-plugins", function() {
 
                     // Replace valid plugin directories with one containing invalid
                     // configuration files.
-                    provider["directories"] = [URI.file(path.join(fakePlugins, "badConfigs"))]
+                    provider["directories"] = [URI.file(path.join(getFakePluginDirectory(), "badConfigs"))]
                 }
 
                 this.beforeAll(setupProvider)
@@ -208,7 +207,7 @@ describe("tsplang-plugins", function() {
             it("Loads the given settings into the plugin lookup table", function() {
                 const expectedKey = "uniqueName"
                 const expectedInternalPlugin: InternalPlugin = {
-                    configUri: URI.file(path.join(fakePlugins, "fake", "config")),
+                    configUri: URI.file(path.join(getFakePluginDirectory(), "fake", "config")),
                     localFiles: [],
                     settings: {
                         name: expectedKey,
@@ -222,7 +221,7 @@ describe("tsplang-plugins", function() {
 
             it("Loads aliases into the plugin lookup table", function() {
                 const expectedInternalPlugin: InternalPlugin = {
-                    configUri: URI.file(path.join(fakePlugins, "fake", "config")),
+                    configUri: URI.file(path.join(getFakePluginDirectory(), "fake", "config")),
                     localFiles: [],
                     settings: {
                         name: "uniqueName",
@@ -242,7 +241,7 @@ describe("tsplang-plugins", function() {
                 const originalValue = provider["plugins"].get(expectedConflict)
 
                 const expectedInternalPlugin: InternalPlugin = {
-                    configUri: URI.file(path.join(fakePlugins, "fake", "config")),
+                    configUri: URI.file(path.join(getFakePluginDirectory(), "fake", "config")),
                     localFiles: [],
                     settings: {
                         name: "uniqueName",
@@ -260,7 +259,7 @@ describe("tsplang-plugins", function() {
             })
 
             it("Emits a ConflictingNameError when a plugin name already exists", function(done: Mocha.Done) {
-                const expectedUri = URI.file(path.join(fakePlugins, "fake", "config"))
+                const expectedUri = URI.file(path.join(getFakePluginDirectory(), "fake", "config"))
                 // Get the name of a loaded plugin.
                 const expectedConflict = Array.from(provider["plugins"].values())[0].settings.name
                 const originalValue = provider["plugins"].get(expectedConflict)
@@ -287,7 +286,7 @@ describe("tsplang-plugins", function() {
             })
 
             it("Emits a ConflictingNameError when an alias already exists", function(done: Mocha.Done) {
-                const expectedUri = URI.file(path.join(fakePlugins, "fake", "config"))
+                const expectedUri = URI.file(path.join(getFakePluginDirectory(), "fake", "config"))
                 const expectedConflict = "2450"
                 const originalValue = provider["plugins"].get(expectedConflict)
 

@@ -32,6 +32,14 @@ export function formatValidationErrors(
     return message.trim()
 }
 
+export const getFakePluginDirectory = (function(): () => string {
+    const fakePluginPath = path.join(__dirname, "plugins")
+
+    return function(): string {
+        return fakePluginPath
+    }
+})()
+
 export const getPluginConfigPath = (function(): (plugin: string) => string {
     const targetRoot = path.join(path.dirname(__filename), "../out")
     const targetFile = "tsplang.plugin"
