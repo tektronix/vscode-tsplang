@@ -124,7 +124,7 @@ export class PluginProvider extends ProviderErrorEmitter {
                 depthLimit: 10,
                 filter: PluginProvider.tspFileFilter,
             }
-        ).map((dir: klawSync.Item) => URI.file(dir.path))
+        ).map((tspFile: klawSync.Item) => URI.file(tspFile.path))
 
         // Cache the resolved plugin.
         internalPlugin.cache = TsplangPlugin.merge(
