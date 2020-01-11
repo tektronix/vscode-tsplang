@@ -28,16 +28,15 @@ import {
 } from "./tsplang.plugin.generated"
 import { ProviderErrorEmitter } from "./providerErrorEmitter"
 
-const SCHEMA_FILEPATH = path.resolve(__dirname, "..", "tsplang.plugin.schema.json")
-const TSP_FILE_EXTENSION = ".tsp"
-
-const TSP_FILE_FILTER = function(item: klawSync.Item): boolean {
-    return item.stats.isFile() && path.extname(item.path) === TSP_FILE_EXTENSION
-}
-
 export class PluginProvider extends ProviderErrorEmitter {
     protected static builtinsDir = __dirname
     protected static configFilename = "tsplang.plugin"
+    protected static schemaFilepath = path.resolve(
+        __dirname,
+        "..",
+        "tsplang.plugin.schema.json"
+    )
+    protected static tspFileExtension = ".tsp"
 
     protected directories: URI[]
     protected plugins: Map<string, InternalPlugin>
@@ -48,7 +47,11 @@ export class PluginProvider extends ProviderErrorEmitter {
         this.validateSettings = new ajv({
             allErrors: true,
         }).compile(
-            JSON.parse(fsExtra.readFileSync(SCHEMA_FILEPATH, { encoding: "utf-8" }))
+            JSON.parse(
+                fsExtra.readFileSync(PluginProvider.schemaFilepath, {
+                    encoding: "utf-8",
+                })
+            )
         )
         this.directories = klawSync(PluginProvider.builtinsDir, {
             depthLimit: 0,
@@ -119,7 +122,7 @@ export class PluginProvider extends ProviderErrorEmitter {
             path.dirname(internalPlugin.configUri.fsPath),
             {
                 depthLimit: 10,
-                filter: TSP_FILE_FILTER,
+                filter: PluginProvider.tspFileFilter,
             }
         ).map((dir: klawSync.Item) => URI.file(dir.path))
 
@@ -248,6 +251,13 @@ export class PluginProvider extends ProviderErrorEmitter {
             item.stats.isDirectory() &&
             path.basename(item.path).startsWith("@") &&
             fsExtra.pathExistsSync(path.join(item.path, PluginProvider.configFilename))
+        )
+    }
+
+    protected static tspFileFilter = function(item: klawSync.Item): boolean {
+        return (
+            item.stats.isFile() &&
+            path.extname(item.path) === PluginProvider.tspFileExtension
         )
     }
 }
