@@ -23,6 +23,7 @@ import { TsplangPluginSettings } from "./tsplang.plugin.generated"
 export interface InternalPlugin {
     cache?: TsplangPlugin
     configUri: URI
+    localFiles: URI[]
     settings: TsplangPluginSettings
 }
 export namespace InternalPlugin {
@@ -43,7 +44,7 @@ export namespace InternalPlugin {
         }
 
         return {
-            files: new Set(),
+            files: new Set(plugin.localFiles.map(uri => uri.toString())),
             keywords: new Set(plugin.settings.keywords),
             licenses: licenseMap,
         }

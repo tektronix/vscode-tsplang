@@ -19,8 +19,7 @@ import { ValidateFunction } from "ajv"
 import { URI } from "vscode-uri"
 import * as ajv from "ajv"
 import * as fsExtra from "fs-extra"
-import * as klaw from "klaw"
-import * as through2 from "through2"
+import * as klawSync from "klaw-sync"
 
 import { InternalPlugin, TsplangPlugin } from "./plugin"
 import {
@@ -29,37 +28,17 @@ import {
 } from "./tsplang.plugin.generated"
 import { ProviderErrorEmitter } from "./providerErrorEmitter"
 
-const CONFIG_FILENAME = "tsplang.plugin"
-const SCHEMA_FILEPATH = path.join("..", "tsplang.plugin.schema.json")
+const SCHEMA_FILEPATH = path.resolve(__dirname, "..", "tsplang.plugin.schema.json")
 const TSP_FILE_EXTENSION = ".tsp"
 
-const PLUGIN_DIR_FILTER = through2.obj(function(
-    item: klaw.Item,
-    encoding: string,
-    next: through2.TransformCallback
-) {
-    if (
-        item.stats.isDirectory() &&
-        path.basename(item.path).startsWith("@") &&
-        fsExtra.pathExistsSync(path.join(item.path, CONFIG_FILENAME))
-    ) {
-        this.push(item)
-    }
-    next()
-})
-
-const TSP_FILE_FILTER = through2.obj(function(
-    item: klaw.Item,
-    encoding: string,
-    next: through2.TransformCallback
-) {
-    if (item.stats.isFile() && path.extname(item.path) === TSP_FILE_EXTENSION) {
-        this.push(item)
-    }
-    next()
-})
+const TSP_FILE_FILTER = function(item: klawSync.Item): boolean {
+    return item.stats.isFile() && path.extname(item.path) === TSP_FILE_EXTENSION
+}
 
 export class PluginProvider extends ProviderErrorEmitter {
+    protected static builtinsDir = __dirname
+    protected static configFilename = "tsplang.plugin"
+
     protected directories: URI[]
     protected plugins: Map<string, InternalPlugin>
     protected validateSettings: ValidateFunction
@@ -71,10 +50,11 @@ export class PluginProvider extends ProviderErrorEmitter {
         }).compile(
             JSON.parse(fsExtra.readFileSync(SCHEMA_FILEPATH, { encoding: "utf-8" }))
         )
-        this.directories = []
-        klaw(__dirname)
-            .pipe(PLUGIN_DIR_FILTER)
-            .on("data", (item: klaw.Item) => this.directories.push(URI.file(item.path)))
+        this.directories = klawSync(PluginProvider.builtinsDir, {
+            depthLimit: 0,
+            filter: PluginProvider.pluginDirFilter,
+            nofile: true,
+        }).map((dir: klawSync.Item) => URI.file(dir.path))
     }
 
     get(plugin: string): TsplangPlugin | undefined {
@@ -126,7 +106,7 @@ export class PluginProvider extends ProviderErrorEmitter {
             // Merge the filtered plugin into this plugin's dependencies.
             dependencies = TsplangPlugin.merge(
                 dependencies,
-                this.filter(
+                PluginProvider.filter(
                     extendedPlugin,
                     extensionObject.include,
                     extensionObject.exclude
@@ -135,10 +115,13 @@ export class PluginProvider extends ProviderErrorEmitter {
         }
 
         // Recursively collect all TSP files in this plugin folder.
-        const files = new Set<string>()
-        klaw(path.dirname(internalPlugin.configUri.fsPath), { depthLimit: 10 })
-            .pipe(TSP_FILE_FILTER)
-            .on("data", (item: klaw.Item) => files.add(URI.file(item.path).toString()))
+        internalPlugin.localFiles = klawSync(
+            path.dirname(internalPlugin.configUri.fsPath),
+            {
+                depthLimit: 10,
+                filter: TSP_FILE_FILTER,
+            }
+        ).map((dir: klawSync.Item) => URI.file(dir.path))
 
         // Cache the resolved plugin.
         internalPlugin.cache = TsplangPlugin.merge(
@@ -149,7 +132,67 @@ export class PluginProvider extends ProviderErrorEmitter {
         return internalPlugin.cache
     }
 
-    protected filter(
+    protected loadAllPluginConfigs(): void {
+        this.plugins = new Map()
+        for (let i = 0; i < this.directories.length; i++) {
+            const directoryUri = this.directories[i]
+            const configUri = URI.file(
+                path.join(directoryUri.fsPath, PluginProvider.configFilename)
+            )
+
+            let data: string
+            try {
+                data = fsExtra.readFileSync(configUri.fsPath, "utf-8")
+            } catch (err) {
+                this.sendConfigReadError(err)
+                return
+            }
+
+            const parsedData: unknown = JSON.parse(data)
+            if (!this.validateSettings(parsedData, configUri.fsPath)) {
+                this.sendInvalidConfigError(this.validateSettings.errors ?? null)
+            } else {
+                this.populatePluginMap(
+                    directoryUri,
+                    parsedData as TsplangPluginSettings
+                )
+            }
+        }
+    }
+
+    protected populatePluginMap(uri: URI, settings: TsplangPluginSettings): void {
+        const result: InternalPlugin = { settings, configUri: uri, localFiles: [] }
+
+        // Try to add a key for the default name.
+        let collision = this.plugins.get(settings.name)
+        if (collision !== undefined) {
+            this.sendConflictingNameError(
+                collision.configUri.toString(),
+                uri.toString(),
+                settings.name,
+                false
+            )
+            return
+        }
+        this.plugins.set(result.settings.name, result)
+
+        // Try to add a key for each alias.
+        settings.aliases?.forEach(alias => {
+            collision = this.plugins.get(alias)
+            if (collision !== undefined) {
+                this.sendConflictingNameError(
+                    collision.configUri.toString(),
+                    uri.toString(),
+                    alias,
+                    true
+                )
+                return
+            }
+            this.plugins.set(alias, result)
+        })
+    }
+
+    protected static filter(
         plugin: TsplangPlugin,
         include: string[],
         exclude: string[]
@@ -200,57 +243,11 @@ export class PluginProvider extends ProviderErrorEmitter {
         }
     }
 
-    protected loadAllPluginConfigs(): void {
-        this.plugins = new Map()
-        for (let i = 0; i < this.directories.length; i++) {
-            const directoryUri = this.directories[i]
-            const configUri = URI.file(path.join(directoryUri.fsPath, CONFIG_FILENAME))
-
-            let data: string
-            try {
-                data = fsExtra.readFileSync(configUri.fsPath, "utf-8")
-            } catch (err) {
-                this.sendConfigReadError(err)
-                return
-            }
-
-            if (!this.validateSettings(data, configUri.fsPath)) {
-                this.sendInvalidConfigError(this.validateSettings.errors ?? null)
-            } else {
-                this.populatePluginMap(directoryUri, JSON.parse(data))
-            }
-        }
-    }
-
-    protected populatePluginMap(uri: URI, settings: TsplangPluginSettings): void {
-        const result: InternalPlugin = { settings, configUri: uri }
-
-        // Try to add a key for the default name.
-        let collision = this.plugins.get(settings.name)
-        if (collision !== undefined) {
-            this.sendConflictingNameError(
-                collision.configUri.toString(),
-                uri.toString(),
-                settings.name,
-                false
-            )
-            return
-        }
-        this.plugins.set(result.settings.name, result)
-
-        // Try to add a key for each alias.
-        settings.aliases?.forEach(alias => {
-            collision = this.plugins.get(alias)
-            if (collision !== undefined) {
-                this.sendConflictingNameError(
-                    collision.configUri.toString(),
-                    uri.toString(),
-                    alias,
-                    true
-                )
-                return
-            }
-            this.plugins.set(alias, result)
-        })
+    protected static pluginDirFilter = function(item: klawSync.Item): boolean {
+        return (
+            item.stats.isDirectory() &&
+            path.basename(item.path).startsWith("@") &&
+            fsExtra.pathExistsSync(path.join(item.path, PluginProvider.configFilename))
+        )
     }
 }

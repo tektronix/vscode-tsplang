@@ -11,12 +11,10 @@
     },
     "dependencies": {
         "@types/fs-extra": "^8.0.1",
-        "@types/klaw": "^3.0.0",
-        "@types/through2": "^2.0.34",
+        "@types/klaw-sync": "^6.0.0",
         "ajv": "^6.10.2",
         "fs-extra": "^8.1.0",
-        "klaw": "^3.0.0",
-        "through2": "^3.0.1",
+        "klaw-sync": "^6.0.0",
         "vscode-uri": "^2.1.1"
     },
     "devDependencies": {
