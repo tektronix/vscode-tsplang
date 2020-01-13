@@ -129,7 +129,7 @@ export class PluginProvider extends ProviderErrorEmitter {
         // Cache the resolved plugin.
         internalPlugin.cache = TsplangPlugin.merge(
             dependencies,
-            InternalPlugin.toExternal(internalPlugin)
+            TsplangPlugin.from(internalPlugin)
         )
 
         return internalPlugin.cache

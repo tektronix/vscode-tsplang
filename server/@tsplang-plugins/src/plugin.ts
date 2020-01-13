@@ -26,30 +26,6 @@ export interface InternalPlugin {
     localFiles: URI[]
     settings: TsplangPluginSettings
 }
-export namespace InternalPlugin {
-    export const toExternal = function(plugin: InternalPlugin): TsplangPlugin {
-        const license = URI.file(
-            path.join(path.dirname(plugin.configUri.fsPath), "LICENSE")
-        )
-        const licenseMap = new Map()
-        // If this plugin has a license file, then populate the URI lookup table.
-        if (fsExtra.pathExistsSync(license.fsPath)) {
-            const licenseString = license.toString()
-            // Name
-            licenseMap.set(plugin.settings.name, licenseString)
-            // Aliases
-            plugin.settings.aliases?.forEach(alias => {
-                licenseMap.set(alias, licenseString)
-            })
-        }
-
-        return {
-            files: new Set(plugin.localFiles.map(uri => uri.toString())),
-            keywords: new Set(plugin.settings.keywords),
-            licenses: licenseMap,
-        }
-    }
-}
 
 export interface TsplangPlugin {
     files: ReadonlySet<string>
@@ -58,6 +34,29 @@ export interface TsplangPlugin {
     licenses: ReadonlyMap<string, string>
 }
 export namespace TsplangPlugin {
+    export const from = function(internal: InternalPlugin): TsplangPlugin {
+        const license = URI.file(
+            path.join(path.dirname(internal.configUri.fsPath), "LICENSE")
+        )
+        const licenseMap = new Map()
+        // If this plugin has a license file, then populate the URI lookup table.
+        if (fsExtra.pathExistsSync(license.fsPath)) {
+            const licenseString = license.toString()
+            // Name
+            licenseMap.set(internal.settings.name, licenseString)
+            // Aliases
+            internal.settings.aliases?.forEach(alias => {
+                licenseMap.set(alias, licenseString)
+            })
+        }
+
+        return {
+            files: new Set(internal.localFiles.map(uri => uri.toString())),
+            keywords: new Set(internal.settings.keywords),
+            licenses: licenseMap,
+        }
+    }
+
     /**
      * Merge two TsplangPlugin objects.
      *

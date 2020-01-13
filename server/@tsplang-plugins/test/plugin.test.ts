@@ -30,8 +30,8 @@ import { getFakePluginDirectory } from "./index.fixture"
 PluginProvider["builtinsDir"] = getFakePluginDirectory()
 
 describe("tsplang-plugins", function() {
-    describe("InternalPlugin", function() {
-        describe(".toExternal", function() {
+    describe("TsplangPlugin", function() {
+        describe(".from", function() {
             let provider: PluginProvider
 
             let inputWithKeywords: InternalPlugin
@@ -122,7 +122,7 @@ describe("tsplang-plugins", function() {
             })
 
             it("All InteralPlugin local files are converted to file URI strings", function() {
-                const output = InternalPlugin.toExternal(inputWithLocalFiles)
+                const output = TsplangPlugin.from(inputWithLocalFiles)
 
                 Array.from(output.files.values()).forEach(uriString => {
                     if (!uriString.startsWith("file:///")) {
@@ -138,25 +138,25 @@ describe("tsplang-plugins", function() {
             })
 
             it("Creates an empty files set if InternalPlugin has no local files", function() {
-                const output = InternalPlugin.toExternal(inputWithoutLocalFiles)
+                const output = TsplangPlugin.from(inputWithoutLocalFiles)
 
                 expect(output.files).to.be.empty
             })
 
             it("Copies InternalPlugin keywords to result", function() {
-                const output = InternalPlugin.toExternal(inputWithKeywords)
+                const output = TsplangPlugin.from(inputWithKeywords)
 
                 expect(Array.from(output.keywords.values())).to.deep.equal(inputWithKeywords.settings.keywords)
             })
 
             it("Creates an empty keywords set if InternalPlugin has no keywords", function() {
-                const output = InternalPlugin.toExternal(inputWithoutKeywords)
+                const output = TsplangPlugin.from(inputWithoutKeywords)
 
                 expect(output.keywords).to.be.empty
             })
 
             it("Adds a valid URI string to the license lookup table for the plugin name", function() {
-                const output = InternalPlugin.toExternal(inputWithLicense)
+                const output = TsplangPlugin.from(inputWithLicense)
 
                 expect(output.licenses).to.include.keys(inputWithLicense.settings.name)
                 Array.from(output.licenses.values()).forEach(uriString => {
@@ -178,7 +178,7 @@ describe("tsplang-plugins", function() {
                     inputWithLicense.settings.aliases = ["uniqueAlias1", "uniqueAlias2"]
                 }
 
-                const output = InternalPlugin.toExternal(inputWithLicense)
+                const output = TsplangPlugin.from(inputWithLicense)
 
                 expect(output.licenses).to.have.keys(
                     inputWithLicense.settings.name,
@@ -198,14 +198,12 @@ describe("tsplang-plugins", function() {
             })
 
             it("Creates an empty license lookup table if no license file exists", function() {
-                const output = InternalPlugin.toExternal(inputWithoutLicense)
+                const output = TsplangPlugin.from(inputWithoutLicense)
 
                 expect(output.licenses).to.be.empty
             })
         })
-    })
 
-    describe("TsplangPlugin", function() {
         describe(".merge", function() {
             it("Combines both file sets", function() {
                 const left: TsplangPlugin = {
