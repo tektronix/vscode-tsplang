@@ -61,8 +61,9 @@ describe("tsplang-plugins", function() {
                     // Create input objects for local file tests.
                     const localFiles = klawSync(path.dirname(candidate.configUri.fsPath), {
                         depthLimit: 10,
-                        filter: PluginProvider["tspFileFilter"],
-                    }).map((dir: klawSync.Item) => URI.file(dir.path))
+                    })
+                        .filter(PluginProvider["tspFileFilter"])
+                        .map((dir: klawSync.Item) => URI.file(dir.path))
 
                     if (localFiles.length > 0) {
                         inputWithLocalFiles = candidate

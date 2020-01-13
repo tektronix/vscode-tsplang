@@ -120,11 +120,10 @@ export class PluginProvider extends ProviderErrorEmitter {
         // Recursively collect all TSP files in this plugin folder.
         internalPlugin.localFiles = klawSync(
             path.dirname(internalPlugin.configUri.fsPath),
-            {
-                depthLimit: 10,
-                filter: PluginProvider.tspFileFilter,
-            }
-        ).map((tspFile: klawSync.Item) => URI.file(tspFile.path))
+            { depthLimit: 10 }
+        )
+            .filter(PluginProvider.tspFileFilter)
+            .map((tspFile: klawSync.Item) => URI.file(tspFile.path))
 
         // Cache the resolved plugin.
         internalPlugin.cache = TsplangPlugin.merge(
