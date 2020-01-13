@@ -18,9 +18,10 @@ import * as path from "path"
 import { expect } from "chai"
 import { URI } from "vscode-uri"
 import * as ajv from "ajv"
+import * as klawSync from "klaw-sync"
 import "mocha"
 
-import { InternalPlugin } from "../out/plugin"
+import { InternalPlugin, TsplangPlugin } from "../out/plugin"
 import { PluginProvider } from "../out/pluginProvider"
 import { TsplangPluginSettings } from "../out/tsplang.plugin.generated"
 
@@ -358,6 +359,242 @@ describe("tsplang-plugins", function() {
                     aliases: [expectedConflict],
                 }
                 provider["populatePluginMap"](expectedPluginDirUri, settings)
+            })
+        })
+
+        describe(".filter", function() {
+            const emptyPlugin: TsplangPlugin = {
+                files: new Set(),
+                keywords: new Set(),
+                licenses: new Map(),
+            }
+
+            let provider: PluginProvider
+            let luaFsPluginDir: string
+            let luaPlugin: TsplangPlugin
+            let smu2461FsPluginDir: string
+            let smu2461Plugin: TsplangPlugin
+
+            this.beforeAll(function() {
+                provider = new PluginProvider()
+                // Load valid plugins from our plugin sandbox.
+                provider["loadAllPluginConfigs"]()
+
+                const internalLuaPlugin = provider["plugins"].get("lua")
+                luaFsPluginDir = path.dirname(internalLuaPlugin.configUri.fsPath)
+
+                const internal2461Plugin = provider["plugins"].get("2461")
+                smu2461FsPluginDir = path.dirname(internal2461Plugin.configUri.fsPath)
+
+                // Grab all available .tsp files.
+                internalLuaPlugin.localFiles = klawSync(luaFsPluginDir, {
+                    depthLimit: 10,
+                })
+                    .filter(PluginProvider["tspFileFilter"])
+                    .map((tspFile: klawSync.Item) => URI.file(tspFile.path))
+
+                internal2461Plugin.localFiles = klawSync(smu2461FsPluginDir, {
+                    depthLimit: 10,
+                })
+                    .filter(PluginProvider["tspFileFilter"])
+                    .map((tspFile: klawSync.Item) => URI.file(tspFile.path))
+
+                // Create and verify an external plugin.
+                luaPlugin = TsplangPlugin.from(internalLuaPlugin)
+                expect(luaPlugin.files).to.not.be.empty
+                expect(luaPlugin.keywords).to.not.be.empty
+                expect(luaPlugin.licenses).to.not.be.empty
+
+                smu2461Plugin = TsplangPlugin.from(internal2461Plugin)
+                expect(smu2461Plugin.files).to.not.be.empty
+                expect(smu2461Plugin.keywords).to.be.empty
+                expect(smu2461Plugin.licenses).to.be.empty
+            })
+
+            it("Returns an empty plugin if given an empty plugin", function() {
+                const actual = PluginProvider["filter"](emptyPlugin, [], [])
+
+                expect(actual).to.deep.equal(emptyPlugin)
+            })
+
+            it("Ignores all filters if given an empty plugin", function() {
+                const actual = PluginProvider["filter"](emptyPlugin, ["random", "includes"], ["random", "excludes"])
+
+                expect(actual).to.deep.equal(emptyPlugin)
+            })
+
+            it("Includes everything and excludes nothing if filters are empty", function() {
+                const actual = PluginProvider["filter"](luaPlugin, [], [])
+
+                expect(actual).to.deep.equal(luaPlugin)
+            })
+
+            it("Returned plugin does not share object pointers with the given plugin", function() {
+                const actual = PluginProvider["filter"](luaPlugin, [], [])
+
+                // Triple-equals on objects compares object reference.
+                expect(actual).to.not.equal(luaPlugin)
+                expect(actual.files).to.not.equal(luaPlugin.files)
+                expect(actual.keywords).to.not.equal(luaPlugin.keywords)
+                expect(actual.licenses).to.not.equal(luaPlugin.licenses)
+            })
+
+            it("Does not modify keywords", function() {
+                const actual = PluginProvider["filter"](luaPlugin, ["math"], ["math.pi"])
+
+                expect(actual.keywords).to.deep.equal(luaPlugin.keywords)
+            })
+
+            it("Does not modify the license lookup table", function() {
+                const actual = PluginProvider["filter"](luaPlugin, ["os"], ["os.clock"])
+
+                expect(actual.licenses).to.deep.equal(luaPlugin.licenses)
+            })
+
+            describe("Top-Level TSP Commands", function() {
+                it("Includes any file that matches an include filter", function() {
+                    const include = ["assert", "print", "require", "tostring"]
+                    const expectedFiles = new Set<string>()
+                    include.forEach(name => {
+                        expectedFiles.add(
+                            URI.file(path.join(luaFsPluginDir, name + PluginProvider["tspFileExtension"])).toString()
+                        )
+                    })
+
+                    const actual = PluginProvider["filter"](luaPlugin, include, [])
+
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                })
+
+                it("Excludes any included file that matches an exclude filter", function() {
+                    const include = []
+                    const exclude = ["tostring"]
+                    const expectedFiles = new Set<string>(luaPlugin.files.values())
+                    expectedFiles.delete(
+                        URI.file(path.join(luaFsPluginDir, "tostring" + PluginProvider["tspFileExtension"])).toString()
+                    )
+
+                    const actual = PluginProvider["filter"](luaPlugin, include, exclude)
+
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                })
+
+                it("Only includes the top-level command if a nested command has the same name", function() {
+                    const include = ["read"]
+                    const expectedFiles = new Set<string>()
+                    include.forEach(name => {
+                        expectedFiles.add(
+                            URI.file(
+                                path.join(smu2461FsPluginDir, name + PluginProvider["tspFileExtension"])
+                            ).toString()
+                        )
+                    })
+
+                    const actual = PluginProvider["filter"](smu2461Plugin, include, [])
+
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                })
+            })
+
+            describe("TSP Command Tables", function() {
+                it("Supports automatic inclusion of table members", function() {
+                    // Filter can be a root-level command table...
+                    const luaInclude: string[] = ["math", "os"]
+                    // ...or a subcommand table.
+                    const smu2461Include: string[] = ["smu.digitize"]
+
+                    // Collect expected files from the filesystem.
+                    const expectedFiles = new Set<string>()
+                    luaInclude.forEach(name => {
+                        // Add the command file.
+                        expectedFiles.add(
+                            URI.file(path.join(luaFsPluginDir, name + PluginProvider["tspFileExtension"])).toString()
+                        )
+                        // Add files the command directory.
+                        klawSync(path.join(luaFsPluginDir, ...name.split(".")))
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map(item => item.path)
+                            .forEach(file => expectedFiles.add(URI.file(file).toString()))
+                    })
+                    smu2461Include.forEach(name => {
+                        // Include the command file.
+                        expectedFiles.add(
+                            URI.file(
+                                path.join(
+                                    smu2461FsPluginDir,
+                                    name.replace(".", path.sep) + PluginProvider["tspFileExtension"]
+                                )
+                            ).toString()
+                        )
+                        // Include files from the command directory.
+                        klawSync(path.join(smu2461FsPluginDir, ...name.split(".")))
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map(item => item.path)
+                            .forEach(file => expectedFiles.add(URI.file(file).toString()))
+                    })
+
+                    const actual = PluginProvider["filter"](
+                        TsplangPlugin.merge(luaPlugin, smu2461Plugin),
+                        [...luaInclude, ...smu2461Include],
+                        []
+                    )
+
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                })
+
+                it("Supports inclusion of individual table fields")
+
+                it("Supports automatic exclusion of table members", function() {
+                    // Filter can be a root-level command table...
+                    const luaExclude: string[] = ["os"]
+                    // ...or a subcommand table.
+                    const smu2461Exclude: string[] = ["smu.digitize"]
+
+                    // Collect all files from both plugins.
+                    const expectedFiles = new Set<string>([
+                        ...Array.from(luaPlugin.files.keys()),
+                        ...Array.from(smu2461Plugin.files.keys()),
+                    ])
+
+                    // Discover and exclude files from the filesystem.
+                    luaExclude.forEach(name => {
+                        // Exclude the command file.
+                        expectedFiles.delete(
+                            URI.file(path.join(luaFsPluginDir, name + PluginProvider["tspFileExtension"])).toString()
+                        )
+                        // Exclude files from the command directory.
+                        klawSync(path.join(luaFsPluginDir, ...name.split(".")))
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map(item => item.path)
+                            .forEach(file => expectedFiles.delete(URI.file(file).toString()))
+                    })
+                    smu2461Exclude.forEach(name => {
+                        // Exclude the command file.
+                        expectedFiles.delete(
+                            URI.file(
+                                path.join(
+                                    smu2461FsPluginDir,
+                                    name.replace(".", path.sep) + PluginProvider["tspFileExtension"]
+                                )
+                            ).toString()
+                        )
+                        // Exclude files from the command directory.
+                        klawSync(path.join(smu2461FsPluginDir, ...name.split(".")))
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map(item => item.path)
+                            .forEach(file => expectedFiles.delete(URI.file(file).toString()))
+                    })
+
+                    const actual = PluginProvider["filter"](
+                        TsplangPlugin.merge(luaPlugin, smu2461Plugin),
+                        [],
+                        [...luaExclude, ...smu2461Exclude]
+                    )
+
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                })
+
+                it("Supports exclusion of individual table fields")
             })
         })
     })
