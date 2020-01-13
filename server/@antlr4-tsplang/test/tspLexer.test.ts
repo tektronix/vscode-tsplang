@@ -111,31 +111,31 @@ describe("antlr4-tsplang", function() {
         })
 
         // Test against tokens on the default channel
-        describe("default channels", function() {
-            new Array<LexTest>(
-                ...[
-                    {
-                        name: "",
-                        content: "",
-                        tokenNames: [""],
-                        tsp1: false,
-                    },
-                ]
-            ).forEach(test => {
-                it(test.name, () => {
-                    const inputStream = new ANTLRInputStream(test.content)
-                    const lexer = new TspLexer(inputStream)
-                    lexer.addErrorListener(ERROR_THROWER)
+        // describe("default channels", function() {
+        //     new Array<LexTest>(
+        //         ...[
+        //             {
+        //                 name: "",
+        //                 content: "",
+        //                 tokenNames: [""],
+        //                 tsp1: false,
+        //             },
+        //         ]
+        //     ).forEach(test => {
+        //         it(test.name, () => {
+        //             const inputStream = new ANTLRInputStream(test.content)
+        //             const lexer = new TspLexer(inputStream)
+        //             lexer.addErrorListener(ERROR_THROWER)
 
-                    const expected = flatten(test.tokenNames)
-                    const actual = lexer
-                        .getAllTokens()
-                        .map(typeExtractor)
-                        .map(nameExtractor.bind(lexer))
+        //             const expected = flatten(test.tokenNames)
+        //             const actual = lexer
+        //                 .getAllTokens()
+        //                 .map(typeExtractor)
+        //                 .map(nameExtractor.bind(lexer))
 
-                    expect(actual).deep.equals(expected)
-                })
-            })
-        })
+        //             expect(actual).deep.equals(expected)
+        //         })
+        //     })
+        // })
     })
 })
