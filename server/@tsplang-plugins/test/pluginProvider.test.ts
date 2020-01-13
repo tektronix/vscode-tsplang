@@ -59,7 +59,7 @@ describe("tsplang-plugins", function() {
             })
         })
 
-        describe("loadAllPluginConfigs", function() {
+        describe("#loadAllPluginConfigs", function() {
             let provider: PluginProvider
 
             const setupProvider = function(): void {
@@ -191,7 +191,7 @@ describe("tsplang-plugins", function() {
             })
         })
 
-        describe("populatePluginMap", function() {
+        describe("#populatePluginMap", function() {
             let provider: PluginProvider
 
             function internalPluginsEquivalent(
