@@ -120,6 +120,7 @@ export class PluginProvider extends ProviderErrorEmitter {
         // Recursively collect all TSP files in this plugin folder.
         internalPlugin.localFiles = klawSync(
             path.dirname(internalPlugin.configUri.fsPath),
+            // FIXME: convert into a user setting.
             { depthLimit: 10 }
         )
             .filter(PluginProvider.tspFileFilter)
@@ -208,6 +209,27 @@ export class PluginProvider extends ProviderErrorEmitter {
         include: string[],
         exclude: string[]
     ): TsplangPlugin {
+        /**
+         * FIXME:
+         *
+         * 1. The current filtering method is only smart enough to filter
+         * symbols that exist as TSP files in the filesystem. For example, for
+         * SMU2450 commands, we can filter on "buffer" but not
+         * "buffer.DIGIT_3_5".
+         *
+         * WORKAROUND:
+         *
+         * A. If we want to include only the "buffer.DIGIT_3_5" symbol, we
+         * would include "buffer" since all command tables have an associated
+         * file. In our extending plugin, we would create our own "buffer.tsp"
+         * file and set all undesired fields of the buffer table to nil.
+         *
+         * B. If we want to exclude only the "buffer.DIGIT_3_5" symbol, we
+         * would include "buffer" since all command tables have an associated
+         * file. In our extending plugin, we would create our own "buffer.tsp"
+         * file and set the "DIGIT_3_5" field of the buffer table to nil.
+         */
+
         let files: string[] = [...plugin.files.values()]
 
         if (include.length > 0) {
