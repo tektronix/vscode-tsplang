@@ -216,13 +216,50 @@ export class PluginProvider extends ProviderErrorEmitter {
                     // String values are valid `file:///` URIs and we need to operate
                     // on a valid filesystem path.
                     const filepath = URI.parse(uri).fsPath
-                    // Get the index of the first path separator to the right
-                    // of the last "@" character.
+
+                    /**
+                     * Get the index of the first path separator to the right
+                     * of the last "@" character.
+                     *
+                     * ```text
+                     *                           target index
+                     *                                 v
+                     *file:///path/to/plugins/@myPlugin/example/command.tsp
+                     * ```
+                     */
                     const start = filepath.indexOf(path.sep, filepath.lastIndexOf("@"))
 
                     // Convert the include symbol into a partial filesystem path
-                    // and try to find it in the current filepath.
-                    if (filepath.includes(path.join(...include[i].split(".")), start)) {
+                    // and try to match it against the start of the path after the
+                    // plugin directory.
+                    if (
+                        filepath
+
+                            /**
+                             * Get the path after the plugin folder.
+                             *
+                             * ```
+                             * -> example/command.tsp
+                             * ```
+                             */
+                            .slice(start + 1)
+
+                            /**
+                             * Convert the Lua symbol into a path.
+                             * ```
+                             * "command" => "command"
+                             * "example.command" => "example/command"
+                             * ```
+                             *
+                             * True if the sliced path starts with the converted path.
+                             * ```
+                             * "example/command.tsp" starts with
+                             *      "command" => false
+                             *      "example/command" => true
+                             * ```
+                             */
+                            .startsWith(path.join(...include[i].split(".")))
+                    ) {
                         return true
                     }
                 }
@@ -233,13 +270,17 @@ export class PluginProvider extends ProviderErrorEmitter {
         if (exclude.length > 0) {
             files = files.filter((uri: string) => {
                 for (let i = 0; i < exclude.length; i++) {
-                    // See previous for-loop's line comments still apply,
-                    // but for exludes.
+                    // Previous for-loop's comments still apply, but the
+                    // returned boolean is inverted.
 
                     const filepath = URI.parse(uri).fsPath
                     const start = filepath.indexOf(path.sep, filepath.lastIndexOf("@"))
 
-                    if (filepath.includes(path.join(...exclude[i].split(".")), start)) {
+                    if (
+                        filepath
+                            .slice(start + 1)
+                            .startsWith(path.join(...exclude[i].split(".")))
+                    ) {
                         return false
                     }
                 }
