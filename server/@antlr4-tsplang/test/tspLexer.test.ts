@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ANTLRInputStream, CommonToken, ANTLRErrorListener } from "antlr4ts"
+import { ANTLRInputStream, CommonToken } from "antlr4ts"
 import { expect } from "chai"
 import "mocha"
 
