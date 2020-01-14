@@ -725,5 +725,433 @@ describe("tsplang-plugins", function() {
                 })
             })
         })
+
+        describe("#get", function() {
+            it("Returns undefined if the given plugin does not exist", function() {
+                const provider = new PluginProvider()
+                const actual = provider.get("notAValidPlugin")
+
+                expect(actual).to.be.undefined
+            })
+
+            it("Returns a cached plugin if available", function() {
+                const preBakedKey = "PreCachedPlugin"
+                const expected: TsplangPlugin = {
+                    files: new Set(),
+                    keywords: new Set(),
+                    licenses: new Map(),
+                }
+
+                const provider = new PluginProvider()
+                provider["plugins"] = new Map()
+                // Create a fake plugin with a pre-cached result.
+                provider["plugins"].set(preBakedKey, {
+                    cache: expected,
+                    configUri: URI.file(PluginProvider["builtinsDir"]),
+                    localFiles: [],
+                    settings: {
+                        name: preBakedKey,
+                    },
+                })
+
+                const actual = provider.get(preBakedKey)
+
+                expect(actual).to.deep.equal(expected)
+            })
+
+            it("Saves the result in the requested plugin's cache", function() {
+                const targetKey = "lua"
+
+                const provider = new PluginProvider()
+                // Populate the plugin Map.
+                provider["loadAllPluginConfigs"]()
+                // Delete our entry's cache.
+                provider["plugins"].get(targetKey).cache = undefined
+                // Request our entry.
+                provider.get(targetKey)
+
+                expect(provider["plugins"].get(targetKey).cache).to.not.be.undefined
+            })
+
+            it("Does not merge result with dependencies if there are none", function() {
+                const targetKey = "lua"
+
+                const provider = new PluginProvider()
+                const actual = provider.get(targetKey)
+                const expected = TsplangPlugin.from(provider["plugins"].get(targetKey))
+
+                expect(actual).to.deep.equal(expected)
+            })
+
+            describe("Dependency Resolution", function() {
+                const smu2450Settings: TsplangPluginSettings = {
+                    name: "2450",
+                    aliases: ["SMU2450", "SMU 2450", "Smu2450", "Smu 2450", "smu2450", "smu 2450"],
+                    extends: ["lua"],
+                    keywords: [
+                        "abort",
+                        "endflash",
+                        "endscript",
+                        "flash",
+                        "loadscript",
+                        "loadandrunscript",
+                        "login",
+                        "logout",
+                        "prevflash",
+                    ],
+                    license: undefined,
+                }
+                const smu2461Settings: TsplangPluginSettings = {
+                    name: "2461",
+                    aliases: ["SMU2461", "SMU 2461", "Smu2461", "Smu 2461", "smu2461", "smu 2461"],
+                    extends: ["2450", "lua"],
+                    keywords: [
+                        "abort",
+                        "bit",
+                        "createconfigscript",
+                        "endflash",
+                        "endscript",
+                        "flash",
+                        "fs",
+                        "io",
+                        "loadscript",
+                        "loadandrunscript",
+                        "login",
+                        "logout",
+                        "node",
+                        "opc",
+                        "prevflash",
+                        "printbuffer",
+                        "printnumber",
+                        "scpi",
+                        "table",
+                        "waitcomplete",
+                    ],
+                    license: undefined,
+                }
+
+                it("Merges plugin dependencies into the result", function() {
+                    const smu2450Extends = ["lua"]
+                    const smu2461Extends = ["lua", "2450"]
+
+                    // Create a local copy of the plugin settings declared in the
+                    // test suite so we can apply our own extends array.
+                    const localSmu2450Settings: TsplangPluginSettings = {
+                        name: smu2450Settings.name,
+                        aliases: [...smu2450Settings.aliases],
+                        extends: smu2450Extends,
+                        keywords: [...smu2450Settings.keywords],
+                        license: smu2450Settings.license,
+                    }
+                    const localSmu2461Settings: TsplangPluginSettings = {
+                        name: smu2461Settings.name,
+                        aliases: [...smu2461Settings.aliases],
+                        extends: smu2461Extends,
+                        keywords: [...smu2461Settings.keywords],
+                        license: smu2461Settings.license,
+                    }
+
+                    const provider = new PluginProvider()
+                    // Listen for errors so we can fail is they occur.
+                    provider.onConfigReadError(reason => {
+                        expect.fail(reason)
+                    })
+                    provider.onConflictingNameError((existingPlugin, thisPlugin, conflictingName, alias) => {
+                        expect.fail([existingPlugin, thisPlugin, conflictingName, alias])
+                    })
+                    provider.onExtendsUnknownPluginError((blameConfig, unknownPlugin) => {
+                        expect.fail([blameConfig, unknownPlugin])
+                    })
+                    provider.onInvalidConfigError(reasons => {
+                        expect.fail(formatValidationErrors(reasons))
+                    })
+
+                    provider["loadAllPluginConfigs"]()
+                    // Add meaningful configuration content to the 2450.
+                    const smu2450DirUri = URI.file(path.dirname(provider["plugins"].get("2450").configUri.fsPath))
+                    provider["plugins"].delete("2450")
+                    provider["populatePluginMap"](smu2450DirUri, localSmu2450Settings)
+                    // Add meaningful configuration content to the 2461.
+                    const smu2461DirUri = URI.file(path.dirname(provider["plugins"].get("2461").configUri.fsPath))
+                    provider["plugins"].delete("2461")
+                    provider["populatePluginMap"](smu2461DirUri, localSmu2461Settings)
+
+                    // Collect files for all plugins.
+                    const expectedFiles = new Set<string>([
+                        // Lua
+                        ...klawSync(path.dirname(provider["plugins"].get("lua").configUri.fsPath), {
+                            depthLimit: 10,
+                        })
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map((tspFile: klawSync.Item) => URI.file(tspFile.path).toString()),
+
+                        // 2450
+                        ...klawSync(smu2450DirUri.fsPath, {
+                            depthLimit: 10,
+                        })
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map((tspFile: klawSync.Item) => URI.file(tspFile.path).toString()),
+
+                        // 2461
+                        ...klawSync(smu2461DirUri.fsPath, {
+                            depthLimit: 10,
+                        })
+                            .filter(PluginProvider["tspFileFilter"])
+                            .map((tspFile: klawSync.Item) => URI.file(tspFile.path).toString()),
+                    ])
+                    // Collect keywords for all plugins.
+                    const expectedKeywords = new Set<string>([
+                        // Lua
+                        ...provider["plugins"].get("lua").settings.keywords,
+
+                        // 2450
+                        ...provider["plugins"].get("2450").settings.keywords,
+
+                        // 2461
+                        ...provider["plugins"].get("2461").settings.keywords,
+                    ])
+                    // Collect licenses for all plugins.
+                    const expectedLicenses = new Map<string, string>([
+                        // Lua
+                        ...Array.from(TsplangPlugin.from(provider["plugins"].get("lua")).licenses.entries()),
+
+                        // 2450
+                        ...Array.from(TsplangPlugin.from(provider["plugins"].get("2450")).licenses.entries()),
+
+                        // 2461
+                        ...Array.from(TsplangPlugin.from(provider["plugins"].get("2461")).licenses.entries()),
+                    ])
+
+                    const actual = provider.get("SMU 2461")
+
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                    expect(actual.keywords).to.have.all.keys(Array.from(expectedKeywords.keys()))
+                    expect(actual.licenses).to.deep.equal(expectedLicenses)
+                })
+
+                // it("Merges plugin dependencies according to filter rules", function() {
+                //     const smu2450Extends: PluginExtensionObject[] = [
+                //         {
+                //             plugin: "lua",
+                //             include: ["print", "math"],
+                //             exclude: ["math.tan"],
+                //         },
+                //     ]
+                //     const smu2461Extends: PluginExtensionObject[] = [
+                //         {
+                //             plugin: "lua",
+                //             include: ["os", "require", "math"],
+                //             exclude: ["require", "math.pi"],
+                //         },
+                //         {
+                //             plugin: "2450",
+                //             include: ["beeper", "smu.source", "smu.measure.math.mxb", "exit", "print", "math"],
+                //             exclude: ["beeper.beep", "os", "math.pi"],
+                //         },
+                //     ]
+
+                //     // Create a local copy of the plugin settings declared in the
+                //     // test suite so we can apply our own extends array.
+                //     const localSmu2450Settings: TsplangPluginSettings = {
+                //         name: smu2450Settings.name,
+                //         aliases: [...smu2450Settings.aliases],
+                //         extends: smu2450Extends,
+                //         keywords: [...smu2450Settings.keywords],
+                //         license: smu2450Settings.license,
+                //     }
+                //     const localSmu2461Settings: TsplangPluginSettings = {
+                //         name: smu2461Settings.name,
+                //         aliases: [...smu2461Settings.aliases],
+                //         extends: smu2461Extends,
+                //         keywords: [...smu2461Settings.keywords],
+                //         license: smu2461Settings.license,
+                //     }
+
+                //     const provider = new PluginProvider()
+                //     // Listen for errors so we can fail is they occur.
+                //     provider.onConfigReadError(reason => {
+                //         expect.fail(reason)
+                //     })
+                //     provider.onConflictingNameError((existingPlugin, thisPlugin, conflictingName, alias) => {
+                //         expect.fail([existingPlugin, thisPlugin, conflictingName, alias])
+                //     })
+                //     provider.onExtendsUnknownPluginError((blameConfig, unknownPlugin) => {
+                //         expect.fail([blameConfig, unknownPlugin])
+                //     })
+                //     provider.onInvalidConfigError(reasons => {
+                //         expect.fail(formatValidationErrors(reasons))
+                //     })
+
+                //     provider["loadAllPluginConfigs"]()
+                //     // Add meaningful configuration content to the 2450.
+                //     const smu2450DirUri = URI.file(path.dirname(provider["plugins"].get("2450").configUri.fsPath))
+                //     provider["plugins"].delete("2450")
+                //     provider["populatePluginMap"](smu2450DirUri, localSmu2450Settings)
+                //     // Add meaningful configuration content to the 2461.
+                //     const smu2461DirUri = URI.file(path.dirname(provider["plugins"].get("2461").configUri.fsPath))
+                //     provider["plugins"].delete("2461")
+                //     provider["populatePluginMap"](smu2461DirUri, localSmu2461Settings)
+
+                //     // Collect files for all plugins.
+                //     const expectedFiles = new Set<string>()
+                //     // EXPECTED FILES
+                //     ///* 2461 Extends 1 */
+                //     //// LUA
+                //     //// INCLUDE
+                //     //// +lua/os/clock.tsp
+                //     //// +lua/os/date.tsp
+                //     //// +lua/os/time.tsp
+                //     //// +lua/os.tsp
+                //     //// +lua/require.tsp
+                //     //// +lua/math/cos.tsp
+                //     //// +lua/math/pi.tsp
+                //     //// +lua/math/sin.tsp
+                //     //// +lua/math/tan.tsp
+                //     //// +lua/math.tsp
+                //     ////
+                //     //// EXCLUDE
+                //     //// -lua/require.tsp
+                //     //// -lua/math/pi.tsp
+                //     //
+                //     ///* 2461 Extends 2 */
+                //     //// 2450
+                //     /////* 2450 Extends */
+                //     ////// LUA
+                //     ////// INCLUDE
+                //     ////// +lua/print.tsp
+                //     ////// +lua/math/cos.tsp
+                //     ////// +lua/math/pi.tsp
+                //     ////// +lua/math/sin.tsp
+                //     ////// +lua/math/tan.tsp
+                //     ////// +lua/math.tsp
+                //     //////
+                //     ////// EXCLUDE
+                //     ////// -lua/math/tan.tsp
+                //     /////
+                //     //// INCLUDE
+                //     //// +2450/beeper.tsp
+                //     //// +2450/beeper/beep.tsp
+                //     //// +2450/smu/source.tsp
+                //     //// +2450/smu.tsp
+                //     //// +2450/smu/measure/math/mxb.tsp
+                //     //// +2450/smu/measure/math.tsp
+                //     //// +2450/smu/measure.tsp
+                //     //// +2450/exit.tsp
+                //     //// +lua/print.tsp
+                //     //// +lua/math/cos.tsp
+                //     //// +lua/math/pi.tsp
+                //     //// +lua/math/sin.tsp
+                //     //// +lua/math.tsp
+                //     ////
+                //     //// EXCLUDE
+                //     //// -2450/beeper/beep.tsp
+                //     //// -lua/math/pi.tsp
+                //     ///
+                //     // @lua/math/cos.tsp
+                //     // @lua/math/sin.tsp
+                //     // @lua/math/tan.tsp
+                //     // @lua/math.tsp
+                //     // @lua/os/clock.tsp
+                //     // @lua/os/date.tsp
+                //     // @lua/os/time.tsp
+                //     // @lua/os.tsp
+                //     // @lua/print.tsp
+                //     // @2450/beeper.tsp
+                //     // @2450/exit.tsp
+                //     // @2450/smu/measure/math/mxb.tsp
+                //     // @2450/smu/source.tsp
+                //     // @2450/smu/measure/math.tsp
+                //     // @2450/smu/measure.tsp
+                //     // @2450/smu.tsp
+                //     // @2461/delay.tsp
+                //     // @2461/read.tsp
+                //     // @2461/smu/digitize/range.tsp
+                //     // @2461/smu/digitize/read.tsp
+                //     // @2461/smu/digitize.tsp
+                //     // @2461/smu/measure/read.tsp
+                //     // @2461/smu/measure.tsp
+                //     // @2461/smu.tsp
+                //     // TODO: decide whether or not this is the correct behavior
+
+                //     // Collect keywords for all plugins.
+                //     const expectedKeywords = new Set<string>([
+                //         // Lua
+                //         ...provider["plugins"].get("lua").settings.keywords,
+
+                //         // 2450
+                //         ...provider["plugins"].get("2450").settings.keywords,
+
+                //         // 2461
+                //         ...provider["plugins"].get("2461").settings.keywords,
+                //     ])
+                //     // Collect licenses for all plugins.
+                //     const expectedLicenses = new Map<string, string>([
+                //         // Lua
+                //         ...Array.from(TsplangPlugin.from(provider["plugins"].get("lua")).licenses.entries()),
+
+                //         // 2450
+                //         ...Array.from(TsplangPlugin.from(provider["plugins"].get("2450")).licenses.entries()),
+
+                //         // 2461
+                //         ...Array.from(TsplangPlugin.from(provider["plugins"].get("2461")).licenses.entries()),
+                //     ])
+
+                //     // const lua = provider.get("lua")
+                //     // console.dir(lua.files)
+
+                //     // const smu2450 = provider.get("2450")
+                //     // console.dir(smu2450.files)
+
+                //     const actual = provider.get("SMU 2461")
+
+                //     console.dir(actual.files)
+
+                //     expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                //     expect(actual.keywords).to.have.all.keys(Array.from(expectedKeywords.keys()))
+                //     expect(actual.licenses).to.deep.equal(expectedLicenses)
+                // })
+
+                it("Emits an ExtendsUnknownPluginError when a dependency is unavailable", function(done: Mocha.Done) {
+                    const targetKey = "2450"
+                    const expectedUnknown = "unknown"
+
+                    const provider = new PluginProvider()
+                    provider["loadAllPluginConfigs"]()
+
+                    // Get the expected plugin directory URI from the plugin itself.
+                    const expectedConfigUri = provider["plugins"].get(targetKey).configUri
+                    // Attach our listener/validator.
+                    provider.onExtendsUnknownPluginError((actualConfig: string, actualUnknown: string) => {
+                        expect(actualConfig).to.be.equal(expectedConfigUri.toString())
+                        expect(actualUnknown).to.be.equal(expectedUnknown)
+                        done()
+                    })
+
+                    // Add the bad dependency to the target plugin.
+                    provider["plugins"].get(targetKey).settings.extends = [expectedUnknown]
+
+                    // Trigger the error.
+                    provider.get(targetKey)
+                })
+
+                it("Returns undefined when a dependency is unavailable", function() {
+                    const targetKey = "2461"
+
+                    const provider = new PluginProvider()
+                    provider["loadAllPluginConfigs"]()
+
+                    // Ensure we can get the plugin before our edit.
+                    expect(provider.get(targetKey)).to.not.be.undefined
+
+                    const target = provider["plugins"].get(targetKey)
+                    // Delete the cached result.
+                    target.cache = undefined
+                    // Add some bad dependency to the target plugin.
+                    target.settings.extends = ["A Very Invalid Plugin"]
+
+                    expect(provider.get(targetKey)).to.be.undefined
+                })
+            })
+        })
     })
 })
