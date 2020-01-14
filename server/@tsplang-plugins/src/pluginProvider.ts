@@ -290,62 +290,61 @@ export class PluginProvider extends ProviderErrorEmitter {
 
         const filteredFiles = new Set<string>(files)
 
-        // TODO
-        // if (include.length > 0) {
-        //     /**
-        //      * Here we try to auto-magically add all implicitly required files
-        //      * which the include filter may have missed.
-        //      *
-        //      * This is necessary to keep the filter lists from exploding in
-        //      * size under certain use-cases.
-        //      *
-        //      * Consider what would happen to the filters in the following case
-        //      * if implicitly required files were not added:
-        //      *
-        //      * ```jsonc
-        //      * "extends": [
-        //      *   {
-        //      *     "plugin": "2450",
-        //      *     "include": ["smu.measure.math"],
-        //      *     "exclude": []
-        //      *   }
-        //      * ]
-        //      * ```
-        //      *
-        //      * We would be forced to add "smu" and "smu.measure" to the include
-        //      * list since those files declare the parent tables of
-        //      * "smu.measure.math". The filter's inclusion behavior means that
-        //      * all symbols contained in the "smu" and "smu.measure" tables will
-        //      * be added to the file list. To prevent this, we would have to add
-        //      * EVERY file under the "smu" and "smu/measure" directories to our
-        //      * exclude list.
-        //      */
+        if (include.length > 0) {
+            /**
+             * Here we try to auto-magically add all implicitly required files
+             * which the include filter may have missed.
+             *
+             * This is necessary to keep the filter lists from exploding in
+             * size under certain use-cases.
+             *
+             * Consider what would happen to the filters in the following case
+             * if implicitly required files were not added:
+             *
+             * ```jsonc
+             * "extends": [
+             *   {
+             *     "plugin": "2450",
+             *     "include": ["smu.measure.math"],
+             *     "exclude": []
+             *   }
+             * ]
+             * ```
+             *
+             * We would be forced to add "smu" and "smu.measure" to the include
+             * list since those files declare the parent tables of
+             * "smu.measure.math". The filter's inclusion behavior means that
+             * all symbols contained in the "smu" and "smu.measure" tables will
+             * be added to the file list. To prevent this, we would have to add
+             * EVERY file under the "smu" and "smu/measure" directories to our
+             * exclude list.
+             */
 
-        //     // We might edit the Set so we cannot loop on it.
-        //     Array.from(filteredFiles.keys()).forEach((uri: string) => {
-        //         const filepath = URI.parse(uri).fsPath
-        //         let parentDir = path.dirname(filepath)
-        //         while (!parentDir.startsWith("@")) {
-        //             const parentFile = parentDir + PluginProvider.tspFileExtension
-        //             const parentFileUri = URI.file(parentFile).toString()
-        //             if (!filteredFiles.has(parentFileUri)) {
-        //                 try {
-        //                     if (
-        //                         fsExtra.pathExistsSync(parentDir) &&
-        //                         fsExtra.pathExistsSync(parentFile) &&
-        //                         fsExtra.statSync(parentDir).isDirectory() &&
-        //                         fsExtra.statSync(parentFile).isFile()
-        //                     ) {
-        //                         filteredFiles.add(parentFileUri)
-        //                     }
-        //                 } catch (err) {
-        //                     console.error(err)
-        //                 }
-        //             }
-        //             parentDir = path.dirname(filepath)
-        //         }
-        //     })
-        // }
+            // We might edit the Set so we cannot loop on it.
+            Array.from(filteredFiles.keys()).forEach((uri: string) => {
+                const filepath = URI.parse(uri).fsPath
+                let parentDir = path.dirname(filepath)
+                while (!path.basename(parentDir).startsWith("@")) {
+                    const parentFile = parentDir + PluginProvider.tspFileExtension
+                    const parentFileUri = URI.file(parentFile).toString()
+                    if (!filteredFiles.has(parentFileUri)) {
+                        try {
+                            if (
+                                fsExtra.pathExistsSync(parentDir) &&
+                                fsExtra.pathExistsSync(parentFile) &&
+                                fsExtra.statSync(parentDir).isDirectory() &&
+                                fsExtra.statSync(parentFile).isFile()
+                            ) {
+                                filteredFiles.add(parentFileUri)
+                            }
+                        } catch (err) {
+                            console.error(err)
+                        }
+                    }
+                    parentDir = path.dirname(parentDir)
+                }
+            })
+        }
 
         return {
             files: filteredFiles,
