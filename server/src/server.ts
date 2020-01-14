@@ -19,7 +19,6 @@ import {
     ANTLRInputStream,
     ChunkContext,
     CommonTokenStream,
-    TokenStream,
     TspLexer,
     TspParser,
 } from "antlr4-tsplang"
@@ -76,7 +75,7 @@ connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpan
     inputStream.name = param.uri
     const lexer = new TspLexer(inputStream)
     const tokenStream = new CommonTokenStream(lexer)
-    const parser = new TspParser(tokenStream as TokenStream)
+    const parser = new TspParser(tokenStream)
 
     const time: HRTime = process.hrtime()
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
