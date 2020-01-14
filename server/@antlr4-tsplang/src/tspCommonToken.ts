@@ -135,17 +135,13 @@ export class TspCommonToken extends CommonToken {
 
         /** PROPERTIES */
 
-        // @ts-ignore
-        token.leadingTrivia = []
-        // @ts-ignore
-        token.trailingTrivia = []
+        token["leadingTrivia"] = []
+        token["trailingTrivia"] = []
 
         /** FUNCTIONS */
 
-        // @ts-ignore
-        token.resetFullSpan = TspCommonToken.prototype.resetFullSpan.bind(token)
-        // @ts-ignore
-        token.resetSpan = TspCommonToken.prototype.resetSpan.bind(token)
+        token["resetFullSpan"] = TspCommonToken.prototype.resetFullSpan.bind(token)
+        token["resetSpan"] = TspCommonToken.prototype.resetSpan.bind(token)
 
         /** PROPERTY DESCRIPTORS */
 
