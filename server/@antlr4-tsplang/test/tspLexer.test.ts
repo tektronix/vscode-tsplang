@@ -84,6 +84,103 @@ describe("antlr4-tsplang", function() {
                         tokenNames: ["NAME", "HORIZONTAL_WS", "NE", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
+                    {
+                        name: `Tokenizes the "|" (bitwise OR) operator`,
+                        content: "x | y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_OR", "HORIZONTAL_WS", "NAME"],
+                        tsp1: false,
+                    },
+                    {
+                        name: `Tokenizes the "^^" (bitwise XOR) operator`,
+                        content: "x ^^ y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_XOR", "HORIZONTAL_WS", "NAME"],
+                        tsp1: false,
+                    },
+                    {
+                        name: `Tokenizes the "&" (bitwise AND) operator`,
+                        content: "x & y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_AND", "HORIZONTAL_WS", "NAME"],
+                        tsp1: false,
+                    },
+                    {
+                        name: `Tokenizes the "<<" (bitwise left shift) operator`,
+                        content: "x << y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_LS", "HORIZONTAL_WS", "NAME"],
+                        tsp1: false,
+                    },
+                    {
+                        name: `Tokenizes the ">>" (bitwise right shift) operator`,
+                        content: "x >> y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_RS", "HORIZONTAL_WS", "NAME"],
+                        tsp1: false,
+                    },
+                    {
+                        name: `Tokenizes the "!" (logical NOT) operator`,
+                        content: "!x",
+                        tokenNames: ["LOGICAL_NOT", "NAME"],
+                        tsp1: false,
+                    },
+                    {
+                        name: `Tokenizes boolean "true"`,
+                        content: "true",
+                        tokenNames: ["BOOLEAN"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes boolean "false"`,
+                        content: "false",
+                        tokenNames: ["BOOLEAN"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes "local" keyword`,
+                        content: "local x",
+                        tokenNames: ["LOCAL", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes "..." (vararg) keyword`,
+                        content: "...",
+                        tokenNames: ["VARARG"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes long strings (surrounded by "[[...]]")`,
+                        content: `[[String with
+                        some newlines and
+                        such]]`,
+                        tokenNames: ["LONGSTRING"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes long commments (surrounded by "--[[...]]")`,
+                        content: `--[[String with
+                        some newlines and
+                        such]]`,
+                        tokenNames: ["LONGCOMMENT"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes documentation commments (surrounded by "--[[[...]]")`,
+                        content: `--[[[String with
+                        some newlines and
+                        such]]`,
+                        tokenNames: ["DOC_COMMENT"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes line commments (started by "--...")`,
+                        content: `--Single line comment
+                        `,
+                        tokenNames: ["LINE_COMMENT", "HORIZONTAL_WS"],
+                        tsp1: true,
+                    },
+                    {
+                        name: `Tokenizes shebang line (started by "#!")`,
+                        content: `#!shebang text`,
+                        tokenNames: ["SHEBANG"],
+                        tsp1: true,
+                    },
                 ]
             ).forEach(test => {
                 it(test.name, (done: Mocha.Done) => {
@@ -94,6 +191,7 @@ describe("antlr4-tsplang", function() {
                     lexer.tsp1 = test.tsp1
                     // assume we're gonna fail
                     lexer.addErrorListener(ERROR_THROWER)
+                    // TODO: make error listener that works when we are expecting an error
                     // lexer.addErrorListener((): ANTLRErrorListener<number> => {
                     //     return new ANTLRErrorListener<any>
                     // })
@@ -109,33 +207,5 @@ describe("antlr4-tsplang", function() {
                 })
             })
         })
-
-        // Test against tokens on the default channel
-        // describe("default channels", function() {
-        //     new Array<LexTest>(
-        //         ...[
-        //             {
-        //                 name: "",
-        //                 content: "",
-        //                 tokenNames: [""],
-        //                 tsp1: false,
-        //             },
-        //         ]
-        //     ).forEach(test => {
-        //         it(test.name, () => {
-        //             const inputStream = new ANTLRInputStream(test.content)
-        //             const lexer = new TspLexer(inputStream)
-        //             lexer.addErrorListener(ERROR_THROWER)
-
-        //             const expected = flatten(test.tokenNames)
-        //             const actual = lexer
-        //                 .getAllTokens()
-        //                 .map(typeExtractor)
-        //                 .map(nameExtractor.bind(lexer))
-
-        //             expect(actual).deep.equals(expected)
-        //         })
-        //     })
-        // })
     })
 })
