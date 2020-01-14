@@ -36,6 +36,11 @@
         "prettier/@typescript-eslint"
     ],
     "rules": {
+        // eslint
+        "quotes": ["error", "double", {
+            "allowTemplateLiterals": false
+        }],
+
         // typescript
         "@typescript-eslint/no-namespace": "off",
         "semi": "off",
