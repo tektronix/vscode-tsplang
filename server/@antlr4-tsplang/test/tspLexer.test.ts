@@ -159,7 +159,7 @@ describe("antlr4-tsplang", function() {
                     {
                         name: "Tokenizes line commments (started by '--...')",
                         content: "--Single line comment\n",
-                        tokenNames: ["LINE_COMMENT", "HORIZONTAL_WS"],
+                        tokenNames: ["LINE_COMMENT"],
                         tsp1: true,
                     },
                     {
