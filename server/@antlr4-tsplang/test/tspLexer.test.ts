@@ -61,132 +61,120 @@ describe("antlr4-tsplang", function() {
             new Array<LexTest>(
                 ...[
                     {
-                        name: `Tokenizes the "or" keyword`,
+                        name: "Tokenizes the 'or' keyword",
                         content: "x or y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "OR", "HORIZONTAL_WS", "NAME"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes the "and" keyword`,
+                        name: "Tokenizes the 'and' keyword",
                         content: "x and y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "AND", "HORIZONTAL_WS", "NAME"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes the "~=" operator`,
+                        name: "Tokenizes the '~=' operator",
                         content: "x ~= y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "NE", "HORIZONTAL_WS", "NAME"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes the "!=" operator`,
+                        name: "Tokenizes the '!=' operator",
                         content: "x != y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "NE", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes the "|" (bitwise OR) operator`,
+                        name: "Tokenizes the '|' (bitwise OR) operator",
                         content: "x | y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_OR", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes the "^^" (bitwise XOR) operator`,
+                        name: "Tokenizes the '^^' (bitwise XOR) operator",
                         content: "x ^^ y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_XOR", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes the "&" (bitwise AND) operator`,
+                        name: "Tokenizes the '&' (bitwise AND) operator",
                         content: "x & y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_AND", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes the "<<" (bitwise left shift) operator`,
+                        name: "Tokenizes the '<<' (bitwise left shift) operator",
                         content: "x << y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_LS", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes the ">>" (bitwise right shift) operator`,
+                        name: "Tokenizes the '>>' (bitwise right shift) operator",
                         content: "x >> y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_RS", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes the "!" (logical NOT) operator`,
+                        name: "Tokenizes the '!' (logical NOT) operator",
                         content: "!x",
                         tokenNames: ["LOGICAL_NOT", "NAME"],
                         tsp1: false,
                     },
                     {
-                        name: `Tokenizes boolean "true"`,
+                        name: "Tokenizes boolean 'true'",
                         content: "true",
                         tokenNames: ["BOOLEAN"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes boolean "false"`,
+                        name: "Tokenizes boolean 'false'",
                         content: "false",
                         tokenNames: ["BOOLEAN"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes "local" keyword`,
+                        name: "Tokenizes 'local' keyword",
                         content: "local x",
                         tokenNames: ["LOCAL", "HORIZONTAL_WS", "NAME"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes "..." (vararg) keyword`,
+                        name: "Tokenizes '...' (vararg) keyword",
                         content: "...",
                         tokenNames: ["VARARG"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes long strings (surrounded by "[[...]]")`,
-                        content: `[[String with
-                        some newlines and
-                        such]]`,
+                        name: "Tokenizes long strings (surrounded by '[[...]]')",
+                        content: "[[String with some\nnewlines and\nsuch]]",
                         tokenNames: ["LONGSTRING"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes long commments (surrounded by "--[[...]]")`,
-                        content: `--[[String with
-                        some newlines and
-                        such]]`,
+                        name: "Tokenizes long commments (surrounded by '--[[...]]')",
+                        content: "--[[String with\nsome newlines and\nsuch]]",
                         tokenNames: ["LONGCOMMENT"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes line commments (started by "--...")`,
-                        content: `--Single line comment
-                        `,
+                        name: "Tokenizes line commments (started by '--...')",
+                        content: "--Single line comment\n",
                         tokenNames: ["LINE_COMMENT", "HORIZONTAL_WS"],
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes shebang line (started by "#!")`,
-                        content: `#!shebang text`,
+                        name: "Tokenizes shebang line (started by '#!')",
+                        content: "#!shebang text",
                         tokenNames: ["SHEBANG"],
                         tsp1: true,
                     },
                 ]
             ).forEach(test => {
                 it(test.name, (done: Mocha.Done) => {
-                    // test string === "1 | 2"
-                    //    (assume tsp1=== true and we just used a bitwise char)
                     const inputStream = new ANTLRInputStream(test.content)
                     const lexer = new TspLexer(inputStream)
                     lexer.tsp1 = test.tsp1
-                    // assume we're gonna fail
                     lexer.addErrorListener(ERROR_THROWER)
-                    // TODO: make error listener that works when we are expecting an error
-                    // lexer.addErrorListener((): ANTLRErrorListener<number> => {
-                    //     return new ANTLRErrorListener<any>
-                    // })
 
                     const expected = flatten(test.tokenNames)
                     const actual = lexer
