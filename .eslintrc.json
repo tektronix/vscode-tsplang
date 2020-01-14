@@ -1,6 +1,6 @@
 {
     "root": true,
-    "reportUnusedDisableDirectives": true,
+    "reportUnusedDisableDirectives": false,
     "plugins": ["@typescript-eslint", "import", "jsdoc", "prettier"],
 
     "parser": "@typescript-eslint/parser",
@@ -38,6 +38,7 @@
     "rules": {
         // eslint
         "quotes": ["error", "double", {
+            "avoidEscape": true,
             "allowTemplateLiterals": false
         }],
 
