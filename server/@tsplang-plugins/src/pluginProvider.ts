@@ -31,7 +31,6 @@ import { ProviderErrorEmitter } from "./providerErrorEmitter"
 export class PluginProvider extends ProviderErrorEmitter {
     protected static builtinsDir = __dirname
     protected static configFilename = "tsplang.plugin"
-    protected static namespaceRegexp = new RegExp(/^([a-zA-Z_][a-zA-Z_0-9.]*)$/)
     protected static schemaFilepath = path.resolve(
         __dirname,
         "..",
@@ -214,11 +213,6 @@ export class PluginProvider extends ProviderErrorEmitter {
         if (include.length > 0) {
             files = files.filter((uri: string) => {
                 for (let i = 0; i < include.length; i++) {
-                    // Filters MUST be a valid Lua namespace.
-                    if (!PluginProvider.namespaceRegexp.test(include[i])) {
-                        return false
-                    }
-
                     // String values are valid `file:///` URIs and we need to operate
                     // on a valid filesystem path.
                     const filepath = URI.parse(uri).fsPath
@@ -278,10 +272,6 @@ export class PluginProvider extends ProviderErrorEmitter {
                 for (let i = 0; i < exclude.length; i++) {
                     // Previous for-loop's comments still apply, but the
                     // returned boolean is inverted.
-
-                    if (!PluginProvider.namespaceRegexp.test(include[i])) {
-                        return false
-                    }
 
                     const filepath = URI.parse(uri).fsPath
                     const start = filepath.indexOf(path.sep, filepath.lastIndexOf("@"))
