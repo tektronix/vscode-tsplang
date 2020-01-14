@@ -60,138 +60,6 @@ describe("tsplang-plugins", function() {
             })
         })
 
-        describe("#loadAllPluginConfigs", function() {
-            let provider: PluginProvider
-
-            const setupProvider = function(): void {
-                provider = new PluginProvider()
-
-                expect(provider["directories"]).to.not.be.empty
-            }
-
-            this.beforeAll(setupProvider)
-            this.afterEach(setupProvider)
-
-            it("Instantiates the plugin lookup table", function() {
-                // Run on an empty directory array.
-                const cache = provider["directories"]
-                provider["directories"] = []
-
-                provider["loadAllPluginConfigs"]()
-
-                // Restore the directory array.
-                provider["directories"] = cache
-
-                expect(provider["plugins"]).to.not.be.undefined
-            })
-
-            it("Loads all available plugin configuration files", function() {
-                provider.onConfigReadError((reason: Error) => {
-                    expect.fail(`(ConfigReadError) ${reason.message}`)
-                })
-                provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
-                    expect.fail(`(InvalidConfigError) ${formatValidationErrors(reasons)}`)
-                })
-
-                const expectedNames: string[] = ["lua", "2450", "2461"]
-
-                provider["loadAllPluginConfigs"]()
-                expect(Array.from(provider["plugins"].keys())).to.deep.equal(expectedNames)
-            })
-
-            it("Emits a ConfigReadError event on config read error", function(done: Mocha.Done) {
-                provider.onConfigReadError((reason: Error) => {
-                    expect(reason.message).to.have.string("badconfig")
-                    done()
-                })
-
-                // Change the default configuration file name to generate a read error.
-                PluginProvider["configFilename"] = "badconfig"
-
-                try {
-                    provider["loadAllPluginConfigs"]()
-                } finally {
-                    PluginProvider["configFilename"] = CONFIG_FILENAME
-                }
-            })
-
-            describe("InvalidConfigError", function() {
-                let provider: PluginProvider
-
-                const configSwitcher = function(target: string): void {
-                    // Change our read target.
-                    PluginProvider["configFilename"] = target
-
-                    try {
-                        provider["loadAllPluginConfigs"]()
-                    } finally {
-                        // Restore our read target.
-                        PluginProvider["configFilename"] = CONFIG_FILENAME
-                    }
-                }
-
-                const setupProvider = function(): void {
-                    provider = new PluginProvider()
-
-                    // Replace valid plugin directories with one containing invalid
-                    // configuration files.
-                    provider["directories"] = [URI.file(path.join(getFakePluginDirectory(), "badConfigs"))]
-                }
-
-                this.beforeAll(setupProvider)
-                this.afterEach(setupProvider)
-
-                it("Emits on config validation failure", function(done: Mocha.Done) {
-                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
-                        expect(reasons).to.have.lengthOf(1)
-                        expect(reasons[0].keyword).to.equal("required")
-                        expect(reasons[0].message).to.have.string("name")
-                        done()
-                    })
-                    configSwitcher("empty.json")
-                })
-
-                it("Emits if name missing", function(done: Mocha.Done) {
-                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
-                        expect(reasons).to.have.lengthOf(1)
-                        expect(reasons[0].keyword).to.equal("required")
-                        expect(reasons[0].message).to.have.string("name")
-                        done()
-                    })
-                    configSwitcher("nameMissing.json")
-                })
-
-                it("Emits if name contains an open bracket ( [ )", function(done: Mocha.Done) {
-                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
-                        expect(reasons).to.have.lengthOf(1)
-                        expect(reasons[0].keyword).to.have.string("pattern")
-                        done()
-                    })
-                    configSwitcher("nameHasOpenBracket.json")
-                })
-
-                it("Emits if name contains a close bracket ( ] )", function(done: Mocha.Done) {
-                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
-                        expect(reasons).to.have.lengthOf(1)
-                        expect(reasons[0].keyword).to.have.string("pattern")
-                        done()
-                    })
-                    configSwitcher("nameHasCloseBracket.json")
-                })
-
-                it("Emits if name contains a semicolon ( ; )", function(done: Mocha.Done) {
-                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
-                        expect(reasons).to.have.lengthOf(1)
-                        expect(reasons[0].keyword).to.have.string("pattern")
-                        done()
-                    })
-                    configSwitcher("nameHasSemicolon.json")
-                })
-
-                it("TODO: add more JSON schema tests")
-            })
-        })
-
         describe("#populatePluginMap", function() {
             let provider: PluginProvider
 
@@ -359,6 +227,138 @@ describe("tsplang-plugins", function() {
                     aliases: [expectedConflict],
                 }
                 provider["populatePluginMap"](expectedPluginDirUri, settings)
+            })
+        })
+
+        describe("#loadAllPluginConfigs", function() {
+            let provider: PluginProvider
+
+            const setupProvider = function(): void {
+                provider = new PluginProvider()
+
+                expect(provider["directories"]).to.not.be.empty
+            }
+
+            this.beforeAll(setupProvider)
+            this.afterEach(setupProvider)
+
+            it("Instantiates the plugin lookup table", function() {
+                // Run on an empty directory array.
+                const cache = provider["directories"]
+                provider["directories"] = []
+
+                provider["loadAllPluginConfigs"]()
+
+                // Restore the directory array.
+                provider["directories"] = cache
+
+                expect(provider["plugins"]).to.not.be.undefined
+            })
+
+            it("Loads all available plugin configuration files", function() {
+                provider.onConfigReadError((reason: Error) => {
+                    expect.fail(`(ConfigReadError) ${reason.message}`)
+                })
+                provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                    expect.fail(`(InvalidConfigError) ${formatValidationErrors(reasons)}`)
+                })
+
+                const expectedNames: string[] = ["lua", "2450", "2461"]
+
+                provider["loadAllPluginConfigs"]()
+                expect(Array.from(provider["plugins"].keys())).to.deep.equal(expectedNames)
+            })
+
+            it("Emits a ConfigReadError event on config read error", function(done: Mocha.Done) {
+                provider.onConfigReadError((reason: Error) => {
+                    expect(reason.message).to.have.string("badconfig")
+                    done()
+                })
+
+                // Change the default configuration file name to generate a read error.
+                PluginProvider["configFilename"] = "badconfig"
+
+                try {
+                    provider["loadAllPluginConfigs"]()
+                } finally {
+                    PluginProvider["configFilename"] = CONFIG_FILENAME
+                }
+            })
+
+            describe("InvalidConfigError", function() {
+                let provider: PluginProvider
+
+                const configSwitcher = function(target: string): void {
+                    // Change our read target.
+                    PluginProvider["configFilename"] = target
+
+                    try {
+                        provider["loadAllPluginConfigs"]()
+                    } finally {
+                        // Restore our read target.
+                        PluginProvider["configFilename"] = CONFIG_FILENAME
+                    }
+                }
+
+                const setupProvider = function(): void {
+                    provider = new PluginProvider()
+
+                    // Replace valid plugin directories with one containing invalid
+                    // configuration files.
+                    provider["directories"] = [URI.file(path.join(getFakePluginDirectory(), "badConfigs"))]
+                }
+
+                this.beforeAll(setupProvider)
+                this.afterEach(setupProvider)
+
+                it("Emits on config validation failure", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.equal("required")
+                        expect(reasons[0].message).to.have.string("name")
+                        done()
+                    })
+                    configSwitcher("empty.json")
+                })
+
+                it("Emits if name missing", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.equal("required")
+                        expect(reasons[0].message).to.have.string("name")
+                        done()
+                    })
+                    configSwitcher("nameMissing.json")
+                })
+
+                it("Emits if name contains an open bracket ( [ )", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasOpenBracket.json")
+                })
+
+                it("Emits if name contains a close bracket ( ] )", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasCloseBracket.json")
+                })
+
+                it("Emits if name contains a semicolon ( ; )", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasSemicolon.json")
+                })
+
+                it("TODO: add more JSON schema tests")
             })
         })
 
