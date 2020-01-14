@@ -16,6 +16,27 @@ This will be useful when the user-defined TSPLang plugin directory changes.
 
 1. Protect against circular extends dependencies.
 
+#### VSCode Configuration
+
+1. Adjust maximum scan depth of plugin folders.
+<br/>
+Currently hard-coded to 10.
+
+#### `extends` Filtering
+
+1. The current filtering method is only smart enough to filter
+symbols that exist as TSP files in the filesystem. For example, for
+SMU2450 commands, we can filter on "buffer" but not
+"buffer.DIGIT_3_5".
+   1. WORKAROUND: If we want to include only the "buffer.DIGIT_3_5" symbol, we
+   would include "buffer" since all command tables have an associated
+   file. In our extending plugin, we would create our own "buffer.tsp"
+   file and set all undesired fields of the buffer table to nil.
+   1. WORKAROUND: If we want to exclude only the "buffer.DIGIT_3_5" symbol, we
+   would include "buffer" since all command tables have an associated
+   file. In our extending plugin, we would create our own "buffer.tsp"
+   file and set the "DIGIT_3_5" field of the buffer table to nil.
+
 ### Configuration Files
 
 1. Toggle keyword inheritance.
