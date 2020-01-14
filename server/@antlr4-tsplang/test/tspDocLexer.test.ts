@@ -71,12 +71,12 @@ describe("antlr4-tsplang", function() {
                     },
                     {
                         name: "NORMALSTRINGs and CHARSTRINGs stop at vertical whitespace",
-                        content: `--[[["\r\n"'\n']]`,
+                        content: "--[[[\"\r\n\"'\n']]",
                         tokenNames: ["OPEN", "OTHER", "VERTICAL_WS", "OTHER", "OTHER", "VERTICAL_WS", "OTHER", "CLOSE"],
                     },
                     {
                         name: "NORMALSTRINGs and CHARSTRINGs respect newline continuations",
-                        content: `--[[["\\\r\n"'\\\n']]`,
+                        content: "--[[[\"\\\r\n\"'\\\n']]",
                         tokenNames: ["OPEN", "NORMALSTRING", "CHARSTRING", "CLOSE"],
                     },
                 ]
