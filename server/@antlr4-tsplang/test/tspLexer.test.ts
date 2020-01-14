@@ -161,14 +161,6 @@ describe("antlr4-tsplang", function() {
                         tsp1: true,
                     },
                     {
-                        name: `Tokenizes documentation commments (surrounded by "--[[[...]]")`,
-                        content: `--[[[String with
-                        some newlines and
-                        such]]`,
-                        tokenNames: ["DOC_COMMENT"],
-                        tsp1: true,
-                    },
-                    {
                         name: `Tokenizes line commments (started by "--...")`,
                         content: `--Single line comment
                         `,
