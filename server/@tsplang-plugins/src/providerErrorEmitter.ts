@@ -44,12 +44,12 @@ const ConflictingNameError = function(
     )
 }
 const ExtendsUnknownPluginError = function(
-    thisPlugin: string,
+    blameConfig: string,
     unknownPlugin: string
 ): void {
     ;(this.emitter as EventEmitter).emit(
         ErrorEvents.EXTENDS_UNKNOWN_PLUGIN_ERROR,
-        thisPlugin,
+        blameConfig,
         unknownPlugin
     )
 }
