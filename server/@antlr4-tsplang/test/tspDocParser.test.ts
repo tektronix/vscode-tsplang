@@ -597,6 +597,7 @@ describe("antlr4-tsplang", function() {
                             expect(typeReturnEntryChild).to.be.an.instanceOf(TypeReturnEntryContext)
                             const typeListChild = (typeReturnEntryChild as TypeReturnEntryContext).typeList()
                             expect(typeListChild).to.not.be.undefined
+                            /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */
                             const listTypes = (typeListChild as TypeListContext).type()
                             expect(listTypes).to.have.lengthOf(1)
                             expect(listTypes[0]).to.be.an.instanceOf(StringTypeContext)
@@ -629,6 +630,7 @@ describe("antlr4-tsplang", function() {
                             expect(typeReturnEntryChild).to.be.an.instanceOf(TypeReturnEntryContext)
                             const typeListChild = (typeReturnEntryChild as TypeReturnEntryContext).typeList()
                             expect(typeListChild).to.not.be.undefined
+                            /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */
                             const listTypes = (typeListChild as TypeListContext).type()
                             expect(listTypes).to.have.lengthOf(3)
                             expect(listTypes[0]).to.be.an.instanceOf(FunctionTypeContext)
@@ -663,6 +665,7 @@ describe("antlr4-tsplang", function() {
                             expect(typeReturnEntryChild).to.be.an.instanceOf(TypeReturnEntryContext)
                             const typeUnionChild = (typeReturnEntryChild as TypeReturnEntryContext).typeUnion()
                             expect(typeUnionChild).to.not.be.undefined
+                            /* eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion */
                             const unionTypes = (typeUnionChild as TypeUnionContext).type()
                             expect(unionTypes).to.have.lengthOf(4)
                             expect(unionTypes[0]).to.be.an.instanceOf(NamespaceTypeContext)
@@ -1166,12 +1169,12 @@ describe("antlr4-tsplang", function() {
                             },
                             {
                                 title: "Accepts a type union containing string literals",
-                                type: `nil|'\\'charstring\\''|boolean|"a double quote looks like \\""|`,
+                                type: "nil|'\\'charstring\\''|boolean|\"a double quote looks like \\\"\"|",
                                 name: "nilCharstringBooleanNormalstring",
                             },
                             {
                                 title: "Accepts a type union containing only literals",
-                                type: `true|1|"true"|false|-0x00|'false'`,
+                                type: "true|1|\"true\"|false|-0x00|'false'",
                                 name: "true_One1_charTrue_false_Zero0_normalFALSE",
                             },
                         ]
