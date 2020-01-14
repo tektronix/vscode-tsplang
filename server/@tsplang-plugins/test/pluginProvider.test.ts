@@ -358,6 +358,28 @@ describe("tsplang-plugins", function() {
                     configSwitcher("nameHasSemicolon.json")
                 })
 
+                it("Emits if include filter is not a valid Lua Namespace", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        reasons.forEach(reason => {
+                            if (reason.keyword === "pattern") {
+                                done()
+                            }
+                        })
+                    })
+                    configSwitcher("maliciousIncludeFilter.json")
+                })
+
+                it("Emits if exclude filter is not a valid Lua Namespace", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        reasons.forEach(reason => {
+                            if (reason.keyword === "pattern") {
+                                done()
+                            }
+                        })
+                    })
+                    configSwitcher("maliciousExcludeFilter.json")
+                })
+
                 it("TODO: add more JSON schema tests")
             })
         })
