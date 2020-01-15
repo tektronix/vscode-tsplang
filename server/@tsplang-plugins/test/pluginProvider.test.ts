@@ -591,7 +591,7 @@ describe("tsplang-plugins", function() {
                     // Basic test.
                     const luaInclude: string[] = ["math.pi", "os.time"]
                     // Advanced test.
-                    const smu2450Include: string[] = ["smu.measure.math.mxb"]
+                    const smu2450Include: string[] = ["gpib.address", "smu.measure.math.mxb"]
 
                     // Collect expected files from the filesystem.
                     const expectedFiles = new Set<string>()
@@ -601,6 +601,11 @@ describe("tsplang-plugins", function() {
                     )
                     expectedFiles.add(
                         URI.file(path.join(luaFsPluginDir, "os" + PluginProvider["tspFileExtension"])).toString()
+                    )
+                    expectedFiles.add(
+                        URI.file(
+                            path.join(smu2450FsPluginDir, "gpib", "address" + PluginProvider["tspFileExtension"])
+                        ).toString()
                     )
                     expectedFiles.add(
                         URI.file(path.join(smu2450FsPluginDir, "smu" + PluginProvider["tspFileExtension"])).toString()
