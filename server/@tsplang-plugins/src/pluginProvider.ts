@@ -208,10 +208,11 @@ export class PluginProvider extends ProviderErrorEmitter {
         include: string[],
         exclude: string[]
     ): TsplangPlugin {
-        let files: string[] = [...plugin.files.values()]
+        const files = new Set<string>([...plugin.files.values()])
 
         if (include.length > 0) {
-            files = files.filter((uri: string) => {
+            // Editing an iterable inside its forEach causes undefined behavior.
+            Array.from(files.keys()).forEach((uri: string) => {
                 for (let i = 0; i < include.length; i++) {
                     // String values are valid `file:///` URIs and we need to operate
                     // on a valid filesystem path.
@@ -260,15 +261,20 @@ export class PluginProvider extends ProviderErrorEmitter {
                              */
                             .startsWith(path.join(...include[i].split(".")))
                     ) {
-                        return true
+                        // We found an include filter match,
+                        // so keep the URI in the Set and continue to the next URI.
+                        return
                     }
                 }
-                return false
+                // There was no include filter match,
+                // so remove the URI from the Set.
+                files.delete(uri)
             })
         }
 
         if (exclude.length > 0) {
-            files = files.filter((uri: string) => {
+            // Editing an iterable inside its forEach causes undefined behavior.
+            Array.from(files.keys()).forEach((uri: string) => {
                 for (let i = 0; i < exclude.length; i++) {
                     // Previous for-loop's comments still apply, but the
                     // returned boolean is inverted.
@@ -281,14 +287,16 @@ export class PluginProvider extends ProviderErrorEmitter {
                             .slice(start + 1)
                             .startsWith(path.join(...exclude[i].split(".")))
                     ) {
-                        return false
+                        // We found an exclude filter match,
+                        // so remove the URI from the Set and continue to the next URI.
+                        files.delete(uri)
+                        return
                     }
                 }
-                return true
+                // There was no exclude filter match,
+                // so keep the URI in the Set and continue to the next URI.
             })
         }
-
-        const filteredFiles = new Set<string>(files)
 
         if (include.length > 0) {
             /**
@@ -320,14 +328,14 @@ export class PluginProvider extends ProviderErrorEmitter {
              * exclude list.
              */
 
-            // We might edit the Set so we cannot loop on it.
-            Array.from(filteredFiles.keys()).forEach((uri: string) => {
+            // Editing an iterable inside its forEach causes undefined behavior.
+            Array.from(files.keys()).forEach((uri: string) => {
                 const filepath = URI.parse(uri).fsPath
                 let parentDir = path.dirname(filepath)
                 while (!path.basename(parentDir).startsWith("@")) {
                     const parentFile = parentDir + PluginProvider.tspFileExtension
                     const parentFileUri = URI.file(parentFile).toString()
-                    if (!filteredFiles.has(parentFileUri)) {
+                    if (!files.has(parentFileUri)) {
                         try {
                             if (
                                 fsExtra.pathExistsSync(parentDir) &&
@@ -335,7 +343,7 @@ export class PluginProvider extends ProviderErrorEmitter {
                                 fsExtra.statSync(parentDir).isDirectory() &&
                                 fsExtra.statSync(parentFile).isFile()
                             ) {
-                                filteredFiles.add(parentFileUri)
+                                files.add(parentFileUri)
                             }
                         } catch (err) {
                             console.error(err)
@@ -347,7 +355,7 @@ export class PluginProvider extends ProviderErrorEmitter {
         }
 
         return {
-            files: filteredFiles,
+            files,
             keywords: new Set([...plugin.keywords]),
             licenses: new Map([...plugin.licenses]),
         }
