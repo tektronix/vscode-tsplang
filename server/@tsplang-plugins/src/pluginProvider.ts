@@ -42,6 +42,14 @@ export class PluginProvider extends ProviderErrorEmitter {
     protected plugins: Map<string, InternalPlugin>
     protected validateSettings: ValidateFunction
 
+    /**
+     * Manages plugin discovery, configuration validation, and dependency
+     * resolution.
+     *
+     * Except during construction, all errors are reported via event
+     * subscriptions. Errors occurring during construction are not caught and
+     * should be handled by the caller.
+     */
     constructor() {
         super()
         this.validateSettings = new ajv({
@@ -60,6 +68,15 @@ export class PluginProvider extends ProviderErrorEmitter {
         }).map((dir: klawSync.Item) => URI.file(dir.path))
     }
 
+    /**
+     * Get a plugin.
+     *
+     * @param plugin The name or alias of an available plugin. This is usually
+     * a shebang substring.
+     * @returns If no such plugin exists or an error occurs, then undefined;
+     * otherwise a `TsplangPlugin` object containing information about the
+     * requested plugin and any plugin it extends.
+     */
     get(plugin: string): TsplangPlugin | undefined {
         if (this.plugins === undefined) {
             this.loadAllPluginConfigs()

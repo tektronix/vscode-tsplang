@@ -28,9 +28,21 @@ export interface InternalPlugin {
 }
 
 export interface TsplangPlugin {
+    /**
+     * A collection of unique file URI strings.
+     *
+     * Each item can be converted into a URI object by passing it to the
+     * `URI.file` function provided by the `vscode-uri` package.
+     */
     files: ReadonlySet<string>
+    /**
+     * A collection of keywords that must never be used as variable names.
+     */
     keywords: ReadonlySet<string>
-    /** Plugin name/alias to license URI lookup table. */
+    /**
+     * A lookup table that pairs plugin names (and aliases) with the URI string
+     * of its LICENSE file, if such a file exists.
+     */
     licenses: ReadonlyMap<string, string>
 }
 export namespace TsplangPlugin {
