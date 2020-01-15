@@ -23,7 +23,7 @@ import "mocha"
 
 import { InternalPlugin, TsplangPlugin } from "../out/plugin"
 import { PluginProvider } from "../out/pluginProvider"
-import { TsplangPluginSettings } from "../out/tsplang.plugin.generated"
+import { PluginExtensionObject, TsplangPluginSettings } from "../out/tsplang.plugin.generated"
 
 import { formatValidationErrors, getFakePluginDirectory } from "./index.fixture"
 
@@ -929,187 +929,134 @@ describe("tsplang-plugins", function() {
                     expect(actual.licenses).to.deep.equal(expectedLicenses)
                 })
 
-                // it("Merges plugin dependencies according to filter rules", function() {
-                //     const smu2450Extends: PluginExtensionObject[] = [
-                //         {
-                //             plugin: "lua",
-                //             include: ["print", "math"],
-                //             exclude: ["math.tan"],
-                //         },
-                //     ]
-                //     const smu2461Extends: PluginExtensionObject[] = [
-                //         {
-                //             plugin: "lua",
-                //             include: ["os", "require", "math"],
-                //             exclude: ["require", "math.pi"],
-                //         },
-                //         {
-                //             plugin: "2450",
-                //             include: ["beeper", "smu.source", "smu.measure.math.mxb", "exit", "print", "math"],
-                //             exclude: ["beeper.beep", "os", "math.pi"],
-                //         },
-                //     ]
+                it("Merges plugin dependencies according to filter rules", function() {
+                    /* Sorry if this test broke because you added files! */
 
-                //     // Create a local copy of the plugin settings declared in the
-                //     // test suite so we can apply our own extends array.
-                //     const localSmu2450Settings: TsplangPluginSettings = {
-                //         name: smu2450Settings.name,
-                //         aliases: [...smu2450Settings.aliases],
-                //         extends: smu2450Extends,
-                //         keywords: [...smu2450Settings.keywords],
-                //         license: smu2450Settings.license,
-                //     }
-                //     const localSmu2461Settings: TsplangPluginSettings = {
-                //         name: smu2461Settings.name,
-                //         aliases: [...smu2461Settings.aliases],
-                //         extends: smu2461Extends,
-                //         keywords: [...smu2461Settings.keywords],
-                //         license: smu2461Settings.license,
-                //     }
+                    const smu2450Extends: PluginExtensionObject[] = [
+                        {
+                            plugin: "lua",
+                            include: ["print", "math"],
+                            exclude: ["math.tan"],
+                        },
+                    ]
+                    const smu2461Extends: PluginExtensionObject[] = [
+                        {
+                            plugin: "lua",
+                            include: ["os", "require", "math"],
+                            exclude: ["require", "math.pi"],
+                        },
+                        {
+                            plugin: "2450",
+                            include: ["beeper", "smu.source", "smu.measure.math.mxb", "exit", "print", "math"],
+                            exclude: ["beeper.beep", "os", "math.pi"],
+                        },
+                    ]
 
-                //     const provider = new PluginProvider()
-                //     // Listen for errors so we can fail is they occur.
-                //     provider.onConfigReadError(reason => {
-                //         expect.fail(reason)
-                //     })
-                //     provider.onConflictingNameError((existingPlugin, thisPlugin, conflictingName, alias) => {
-                //         expect.fail([existingPlugin, thisPlugin, conflictingName, alias])
-                //     })
-                //     provider.onExtendsUnknownPluginError((blameConfig, unknownPlugin) => {
-                //         expect.fail([blameConfig, unknownPlugin])
-                //     })
-                //     provider.onInvalidConfigError(reasons => {
-                //         expect.fail(formatValidationErrors(reasons))
-                //     })
+                    // Create a local copy of the plugin settings declared in the
+                    // test suite so we can apply our own extends array.
+                    const localSmu2450Settings: TsplangPluginSettings = {
+                        name: smu2450Settings.name,
+                        aliases: [...smu2450Settings.aliases],
+                        extends: smu2450Extends,
+                        keywords: [...smu2450Settings.keywords],
+                        license: smu2450Settings.license,
+                    }
+                    const localSmu2461Settings: TsplangPluginSettings = {
+                        name: smu2461Settings.name,
+                        aliases: [...smu2461Settings.aliases],
+                        extends: smu2461Extends,
+                        keywords: [...smu2461Settings.keywords],
+                        license: smu2461Settings.license,
+                    }
 
-                //     provider["loadAllPluginConfigs"]()
-                //     // Add meaningful configuration content to the 2450.
-                //     const smu2450DirUri = URI.file(path.dirname(provider["plugins"].get("2450").configUri.fsPath))
-                //     provider["plugins"].delete("2450")
-                //     provider["populatePluginMap"](smu2450DirUri, localSmu2450Settings)
-                //     // Add meaningful configuration content to the 2461.
-                //     const smu2461DirUri = URI.file(path.dirname(provider["plugins"].get("2461").configUri.fsPath))
-                //     provider["plugins"].delete("2461")
-                //     provider["populatePluginMap"](smu2461DirUri, localSmu2461Settings)
+                    const provider = new PluginProvider()
+                    // Listen for errors so we can fail is they occur.
+                    provider.onConfigReadError(reason => {
+                        expect.fail(reason)
+                    })
+                    provider.onConflictingNameError((existingPlugin, thisPlugin, conflictingName, alias) => {
+                        expect.fail([existingPlugin, thisPlugin, conflictingName, alias])
+                    })
+                    provider.onExtendsUnknownPluginError((blameConfig, unknownPlugin) => {
+                        expect.fail([blameConfig, unknownPlugin])
+                    })
+                    provider.onInvalidConfigError(reasons => {
+                        expect.fail(formatValidationErrors(reasons))
+                    })
 
-                //     // Collect files for all plugins.
-                //     const expectedFiles = new Set<string>()
-                //     // EXPECTED FILES
-                //     ///* 2461 Extends 1 */
-                //     //// LUA
-                //     //// INCLUDE
-                //     //// +lua/os/clock.tsp
-                //     //// +lua/os/date.tsp
-                //     //// +lua/os/time.tsp
-                //     //// +lua/os.tsp
-                //     //// +lua/require.tsp
-                //     //// +lua/math/cos.tsp
-                //     //// +lua/math/pi.tsp
-                //     //// +lua/math/sin.tsp
-                //     //// +lua/math/tan.tsp
-                //     //// +lua/math.tsp
-                //     ////
-                //     //// EXCLUDE
-                //     //// -lua/require.tsp
-                //     //// -lua/math/pi.tsp
-                //     //
-                //     ///* 2461 Extends 2 */
-                //     //// 2450
-                //     /////* 2450 Extends */
-                //     ////// LUA
-                //     ////// INCLUDE
-                //     ////// +lua/print.tsp
-                //     ////// +lua/math/cos.tsp
-                //     ////// +lua/math/pi.tsp
-                //     ////// +lua/math/sin.tsp
-                //     ////// +lua/math/tan.tsp
-                //     ////// +lua/math.tsp
-                //     //////
-                //     ////// EXCLUDE
-                //     ////// -lua/math/tan.tsp
-                //     /////
-                //     //// INCLUDE
-                //     //// +2450/beeper.tsp
-                //     //// +2450/beeper/beep.tsp
-                //     //// +2450/smu/source.tsp
-                //     //// +2450/smu.tsp
-                //     //// +2450/smu/measure/math/mxb.tsp
-                //     //// +2450/smu/measure/math.tsp
-                //     //// +2450/smu/measure.tsp
-                //     //// +2450/exit.tsp
-                //     //// +lua/print.tsp
-                //     //// +lua/math/cos.tsp
-                //     //// +lua/math/pi.tsp
-                //     //// +lua/math/sin.tsp
-                //     //// +lua/math.tsp
-                //     ////
-                //     //// EXCLUDE
-                //     //// -2450/beeper/beep.tsp
-                //     //// -lua/math/pi.tsp
-                //     ///
-                //     // @lua/math/cos.tsp
-                //     // @lua/math/sin.tsp
-                //     // @lua/math/tan.tsp
-                //     // @lua/math.tsp
-                //     // @lua/os/clock.tsp
-                //     // @lua/os/date.tsp
-                //     // @lua/os/time.tsp
-                //     // @lua/os.tsp
-                //     // @lua/print.tsp
-                //     // @2450/beeper.tsp
-                //     // @2450/exit.tsp
-                //     // @2450/smu/measure/math/mxb.tsp
-                //     // @2450/smu/source.tsp
-                //     // @2450/smu/measure/math.tsp
-                //     // @2450/smu/measure.tsp
-                //     // @2450/smu.tsp
-                //     // @2461/delay.tsp
-                //     // @2461/read.tsp
-                //     // @2461/smu/digitize/range.tsp
-                //     // @2461/smu/digitize/read.tsp
-                //     // @2461/smu/digitize.tsp
-                //     // @2461/smu/measure/read.tsp
-                //     // @2461/smu/measure.tsp
-                //     // @2461/smu.tsp
-                //     // TODO: decide whether or not this is the correct behavior
+                    provider["loadAllPluginConfigs"]()
+                    const luaDirUri = URI.file(path.dirname(provider["plugins"].get("lua").configUri.fsPath))
+                    // Add meaningful configuration content to the 2450.
+                    const smu2450DirUri = URI.file(path.dirname(provider["plugins"].get("2450").configUri.fsPath))
+                    provider["plugins"].delete("2450")
+                    provider["populatePluginMap"](smu2450DirUri, localSmu2450Settings)
+                    // Add meaningful configuration content to the 2461.
+                    const smu2461DirUri = URI.file(path.dirname(provider["plugins"].get("2461").configUri.fsPath))
+                    provider["plugins"].delete("2461")
+                    provider["populatePluginMap"](smu2461DirUri, localSmu2461Settings)
 
-                //     // Collect keywords for all plugins.
-                //     const expectedKeywords = new Set<string>([
-                //         // Lua
-                //         ...provider["plugins"].get("lua").settings.keywords,
+                    // Collect files for all plugins.
+                    const expectedFiles = new Set<string>([
+                        // Lua
+                        URI.file(path.join(luaDirUri.fsPath, "math", "cos.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "math", "sin.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "math", "tan.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "math.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "os", "clock.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "os", "date.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "os", "time.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "os.tsp")).toString(),
+                        URI.file(path.join(luaDirUri.fsPath, "print.tsp")).toString(),
 
-                //         // 2450
-                //         ...provider["plugins"].get("2450").settings.keywords,
+                        // 2450
+                        URI.file(path.join(smu2450DirUri.fsPath, "beeper.tsp")).toString(),
+                        URI.file(path.join(smu2450DirUri.fsPath, "exit.tsp")).toString(),
+                        URI.file(path.join(smu2450DirUri.fsPath, "smu", "measure", "math", "mxb.tsp")).toString(),
+                        URI.file(path.join(smu2450DirUri.fsPath, "smu", "source.tsp")).toString(),
+                        URI.file(path.join(smu2450DirUri.fsPath, "smu", "measure", "math.tsp")).toString(),
+                        URI.file(path.join(smu2450DirUri.fsPath, "smu", "measure.tsp")).toString(),
+                        URI.file(path.join(smu2450DirUri.fsPath, "smu.tsp")).toString(),
 
-                //         // 2461
-                //         ...provider["plugins"].get("2461").settings.keywords,
-                //     ])
-                //     // Collect licenses for all plugins.
-                //     const expectedLicenses = new Map<string, string>([
-                //         // Lua
-                //         ...Array.from(TsplangPlugin.from(provider["plugins"].get("lua")).licenses.entries()),
+                        // 2461
+                        URI.file(path.join(smu2461DirUri.fsPath, "delay.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "read.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "smu", "digitize", "range.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "smu", "digitize", "read.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "smu", "digitize.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "smu", "measure", "read.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "smu", "measure.tsp")).toString(),
+                        URI.file(path.join(smu2461DirUri.fsPath, "smu.tsp")).toString(),
+                    ])
 
-                //         // 2450
-                //         ...Array.from(TsplangPlugin.from(provider["plugins"].get("2450")).licenses.entries()),
+                    // Collect keywords for all plugins.
+                    const expectedKeywords = new Set<string>([
+                        // Lua
+                        ...provider["plugins"].get("lua").settings.keywords,
 
-                //         // 2461
-                //         ...Array.from(TsplangPlugin.from(provider["plugins"].get("2461")).licenses.entries()),
-                //     ])
+                        // 2450
+                        ...provider["plugins"].get("2450").settings.keywords,
 
-                //     // const lua = provider.get("lua")
-                //     // console.dir(lua.files)
+                        // 2461
+                        ...provider["plugins"].get("2461").settings.keywords,
+                    ])
+                    // Collect licenses for all plugins.
+                    const expectedLicenses = new Map<string, string>([
+                        // Lua
+                        ...Array.from(TsplangPlugin.from(provider["plugins"].get("lua")).licenses.entries()),
 
-                //     // const smu2450 = provider.get("2450")
-                //     // console.dir(smu2450.files)
+                        // 2450
+                        ...Array.from(TsplangPlugin.from(provider["plugins"].get("2450")).licenses.entries()),
 
-                //     const actual = provider.get("SMU 2461")
+                        // 2461
+                        ...Array.from(TsplangPlugin.from(provider["plugins"].get("2461")).licenses.entries()),
+                    ])
 
-                //     console.dir(actual.files)
+                    const actual = provider.get("SMU 2461")
 
-                //     expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
-                //     expect(actual.keywords).to.have.all.keys(Array.from(expectedKeywords.keys()))
-                //     expect(actual.licenses).to.deep.equal(expectedLicenses)
-                // })
+                    expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
+                    expect(actual.keywords).to.have.all.keys(Array.from(expectedKeywords.keys()))
+                    expect(actual.licenses).to.deep.equal(expectedLicenses)
+                })
 
                 it("Emits an ExtendsUnknownPluginError when a dependency is unavailable", function(done: Mocha.Done) {
                     const targetKey = "2450"
