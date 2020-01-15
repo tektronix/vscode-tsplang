@@ -346,7 +346,10 @@ export class PluginProvider extends ProviderErrorEmitter {
                                 files.add(parentFileUri)
                             }
                         } catch (err) {
-                            console.error(err)
+                            /**
+                             * Suppress any filesystem errors thrown
+                             * when attempting to stat a path.
+                             */
                         }
                     }
                     parentDir = path.dirname(parentDir)
