@@ -1,0 +1,17 @@
+{
+    "all": true,
+    "cache": false,
+    "clean": false,
+    "silent": true,
+    "extension": [
+        ".ts"
+    ],
+    "include": [
+        "server/@tsplang-plugins/**"
+    ],
+    "exclude": [
+        "**/*.generated.ts",
+        "**/scripts/**",
+        "**/test/**"
+    ]
+}

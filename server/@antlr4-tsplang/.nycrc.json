@@ -1,0 +1,18 @@
+{
+    "all": true,
+    "cache": false,
+    "clean": false,
+    "silent": true,
+    "extension": [
+        ".ts"
+    ],
+    "include": [
+        "server/@antlr4-tsplang/**"
+    ],
+    "exclude": [
+        "**/*.generated.ts",
+        "**/.antlr/**",
+        "**/scripts/**",
+        "**/test/**"
+    ]
+}

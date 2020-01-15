@@ -32,16 +32,18 @@ jobs:
       - name: npm install
         run: |
           npm ci --ignore-scripts
+
           cd client
           npm ci --ignore-scripts
-          cd ..
-          cd server
+
+          cd ../server/@antlr4-tsplang
           npm ci --ignore-scripts
-          cd @antlr4-tsplang
-          npm ci --ignore-scripts
+
           cd ../@tsplang-plugins
           npm ci --ignore-scripts
-          cd ../..
+
+          cd ..
+          npm ci --ignore-scripts
         env:
           CI: true
 

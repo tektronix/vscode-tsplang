@@ -17,7 +17,7 @@ import * as fs from "fs"
 import { expect } from "chai"
 import "mocha"
 
-import { getPluginConfigPath, getValidationError, makeSchemaValidator } from "../index.fixture"
+import { formatValidationErrors, getPluginConfigPath, makeSchemaValidator } from "../index.fixture"
 
 const validator = makeSchemaValidator()
 
@@ -26,7 +26,7 @@ describe("tsplang-plugins", function() {
         describe("tsplang.plugin", function() {
             it("Adheres to the plugin configuration schema", function() {
                 const schema = JSON.parse(fs.readFileSync(getPluginConfigPath("lua"), "utf-8"))
-                expect(validator(schema), getValidationError(validator)).to.be.true
+                expect(validator(schema), formatValidationErrors(validator.errors)).to.be.true
             })
         })
     })

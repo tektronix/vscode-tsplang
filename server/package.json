@@ -15,11 +15,12 @@
     },
     "dependencies": {
         "antlr4-tsplang": "file:@antlr4-tsplang",
+        "tsplang-plugins": "file:@tsplang-plugins",
         "vscode-jsonrpc": "^4.0.0",
         "vscode-languageserver": "^5.2.1"
     },
     "scripts": {
-        "postinstall": "cd @antlr4-tsplang && npm install && cd .."
+        "postinstall": "cd @antlr4-tsplang && npm install && cd .. && cd @tsplang-plugins && npm install && cd .. "
     },
     "devDependencies": {}
 }

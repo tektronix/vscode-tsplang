@@ -14,6 +14,8 @@
  *  limitations under the License.
  */
 
+export { TsplangPlugin } from "./plugin"
+export { PluginProvider } from "./pluginProvider"
 export {
     PluginExtensionObject,
     TsplangPluginSettings,

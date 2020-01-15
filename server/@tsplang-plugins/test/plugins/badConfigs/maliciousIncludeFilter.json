@@ -1,0 +1,11 @@
+{
+    "name": "Evil Include Filter",
+    "extends": [
+        {
+            "plugin": "victim",
+            "include": [
+                "../../escaping/victim/plugin"
+            ]
+        }
+    ]
+}
