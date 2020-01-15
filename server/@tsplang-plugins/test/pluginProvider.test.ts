@@ -537,7 +537,7 @@ describe("tsplang-plugins", function() {
             })
 
             describe("TSP Command Tables", function() {
-                it("Supports automatic inclusion of command table members", function() {
+                it("Includes all fields of a given command table", function() {
                     // Filter can be a root-level command table...
                     const luaInclude: string[] = ["math", "os"]
                     // ...or a subcommand table.
@@ -648,7 +648,7 @@ describe("tsplang-plugins", function() {
                     expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
                 })
 
-                it("Supports automatic exclusion of command subtables", function() {
+                it("Excludes all fields of a given command table", function() {
                     // Filter can be a root-level command table...
                     const luaExclude: string[] = ["os"]
                     // ...or a subcommand table.
