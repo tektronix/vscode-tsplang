@@ -313,6 +313,50 @@ describe("tsplang-plugins", function() {
                 this.beforeAll(setupProvider)
                 this.afterEach(setupProvider)
 
+                it("Event argument is null if AJV.ValidateFunction#errors is null", function(done: Mocha.Done) {
+                    // Create a fixture that never validates and
+                    // returns null for the errors property.
+                    provider["validateSettings"] = (function(): ajv.ValidateFunction {
+                        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+                        const callable = function(data: unknown, dataPath?: string): boolean {
+                            return false
+                        }
+                        Object.defineProperty(callable, "errors", {
+                            get: () => null,
+                        })
+
+                        return callable
+                    })()
+
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[] | null) => {
+                        expect(reasons).to.be.null
+                        done()
+                    })
+                    configSwitcher("empty.json")
+                })
+
+                it("Event argument is null if AJV.ValidateFunction#errors is undefined", function(done: Mocha.Done) {
+                    // Create a fixture that never validates and
+                    // returns undefined for the errors property.
+                    provider["validateSettings"] = (function(): ajv.ValidateFunction {
+                        /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+                        const callable = function(data: unknown, dataPath?: string): boolean {
+                            return false
+                        }
+                        Object.defineProperty(callable, "errors", {
+                            get: () => undefined,
+                        })
+
+                        return callable
+                    })()
+
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[] | null) => {
+                        expect(reasons).to.be.null
+                        done()
+                    })
+                    configSwitcher("empty.json")
+                })
+
                 it("Emits on config validation failure", function(done: Mocha.Done) {
                     provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
                         expect(reasons).to.have.lengthOf(1)
