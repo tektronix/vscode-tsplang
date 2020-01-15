@@ -6,6 +6,12 @@ A running list of nice-to-have features.
 
 ### Plugin Provider
 
+#### Available Plugins
+
+1. Expose a method that returns all available plugin names.
+<br/>
+The list of available plugins MUST NOT include aliases.
+
 #### Updates
 
 1. Use an event model to notify when plugins need refreshing.
