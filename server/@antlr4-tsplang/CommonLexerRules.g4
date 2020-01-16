@@ -98,6 +98,7 @@ HexDigit
 /* NOTICE! any updates to this rule should also be made to the following:
  *      TspDocLexer::LINK_TAG_TARGET
  *      TspDocLexer::OTHER
+ *      TspShebang::HORIZONTAL_WS
  */
 HORIZONTAL_WS
     : [ \t\u000C]+ -> channel(HIDDEN)
