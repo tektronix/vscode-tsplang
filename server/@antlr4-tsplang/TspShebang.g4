@@ -59,12 +59,7 @@ PLUGIN
 NODE: 'node';
 BRACKET_OPEN: '[';
 BRACKET_CLOSE: ']';
-NODE_NUMBER
-    // Indentation is tabs to match generated code style.
-    : {(
-		// Previous character was "[".
-		this._input.LA(-1) === 91
-	)}? '+-'? [0-9]+;
+NODE_NUMBER: '+-'? [0-9]+;
 EQUALS: '=';
 
 /* Copied from CommonLexerRules::HORIZONTAL_WS */
