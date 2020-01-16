@@ -79,6 +79,7 @@ export class TspShebangParser extends Parser {
 	public shebang(): ShebangContext {
 		let _localctx: ShebangContext = new ShebangContext(this._ctx, this.state);
 		this.enterRule(_localctx, 0, TspShebangParser.RULE_shebang);
+		let _la: number;
 		try {
 			let _alt: number;
 			this.enterOuterAlt(_localctx, 1);
@@ -105,6 +106,16 @@ export class TspShebangParser extends Parser {
 				this._errHandler.sync(this);
 				_alt = this.interpreter.adaptivePredict(this._input, 0, this._ctx);
 			}
+			this.state = 18;
+			this._errHandler.sync(this);
+			_la = this._input.LA(1);
+			if (_la === TspShebangParser.CLOSE) {
+				{
+				this.state = 17;
+				this.match(TspShebangParser.CLOSE);
+				}
+			}
+
 			}
 		}
 		catch (re) {
@@ -128,17 +139,17 @@ export class TspShebangParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 17;
-			this.match(TspShebangParser.NODE);
-			this.state = 18;
-			this.match(TspShebangParser.BRACKET_OPEN);
-			this.state = 19;
-			this.nodeNumber();
 			this.state = 20;
-			this.match(TspShebangParser.BRACKET_CLOSE);
+			this.match(TspShebangParser.NODE);
 			this.state = 21;
-			this.match(TspShebangParser.EQUALS);
+			this.match(TspShebangParser.BRACKET_OPEN);
 			this.state = 22;
+			this.nodeNumber();
+			this.state = 23;
+			this.match(TspShebangParser.BRACKET_CLOSE);
+			this.state = 24;
+			this.match(TspShebangParser.EQUALS);
+			this.state = 25;
 			this.nodePlugin();
 			}
 		}
@@ -163,7 +174,7 @@ export class TspShebangParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 24;
+			this.state = 27;
 			this.match(TspShebangParser.NODE_NUMBER);
 
 			// Node number must be in the interval [1, 64].
@@ -193,7 +204,7 @@ export class TspShebangParser extends Parser {
 		try {
 			this.enterOuterAlt(_localctx, 1);
 			{
-			this.state = 27;
+			this.state = 30;
 			this.match(TspShebangParser.PLUGIN);
 			}
 		}
@@ -213,20 +224,22 @@ export class TspShebangParser extends Parser {
 	}
 
 	public static readonly _serializedATN: string =
-		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03\f \x04\x02\t" +
+		"\x03\uC91D\uCABA\u058D\uAFBA\u4F53\u0607\uEA8B\uC241\x03\f#\x04\x02\t" +
 		"\x02\x04\x03\t\x03\x04\x04\t\x04\x04\x05\t\x05\x03\x02\x03\x02\x03\x02" +
-		"\x03\x02\x07\x02\x0F\n\x02\f\x02\x0E\x02\x12\v\x02\x03\x03\x03\x03\x03" +
-		"\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x04\x03\x04\x03\x04\x03\x05\x03" +
-		"\x05\x03\x05\x03\x10\x02\x02\x06\x02\x02\x04\x02\x06\x02\b\x02\x02\x02" +
-		"\x02\x1C\x02\n\x03\x02\x02\x02\x04\x13\x03\x02\x02\x02\x06\x1A\x03\x02" +
-		"\x02\x02\b\x1D\x03\x02\x02\x02\n\v\x07\x03\x02\x02\v\x10\x07\x06\x02\x02" +
-		"\f\r\x07\x05\x02\x02\r\x0F\x05\x04\x03\x02\x0E\f\x03\x02\x02\x02\x0F\x12" +
-		"\x03\x02\x02\x02\x10\x11\x03\x02\x02\x02\x10\x0E\x03\x02\x02\x02\x11\x03" +
-		"\x03\x02\x02\x02\x12\x10\x03\x02\x02\x02\x13\x14\x07\x07\x02\x02\x14\x15" +
-		"\x07\b\x02\x02\x15\x16\x05\x06\x04\x02\x16\x17\x07\t\x02\x02\x17\x18\x07" +
-		"\v\x02\x02\x18\x19\x05\b\x05\x02\x19\x05\x03\x02\x02\x02\x1A\x1B\x07\n" +
-		"\x02\x02\x1B\x1C\b\x04\x01\x02\x1C\x07\x03\x02\x02\x02\x1D\x1E\x07\x06" +
-		"\x02\x02\x1E\t\x03\x02\x02\x02\x03\x10";
+		"\x03\x02\x07\x02\x0F\n\x02\f\x02\x0E\x02\x12\v\x02\x03\x02\x05\x02\x15" +
+		"\n\x02\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x03\x04" +
+		"\x03\x04\x03\x04\x03\x05\x03\x05\x03\x05\x03\x10\x02\x02\x06\x02\x02\x04" +
+		"\x02\x06\x02\b\x02\x02\x02\x02 \x02\n\x03\x02\x02\x02\x04\x16\x03\x02" +
+		"\x02\x02\x06\x1D\x03\x02\x02\x02\b \x03\x02\x02\x02\n\v\x07\x03\x02\x02" +
+		"\v\x10\x07\x06\x02\x02\f\r\x07\x05\x02\x02\r\x0F\x05\x04\x03\x02\x0E\f" +
+		"\x03\x02\x02\x02\x0F\x12\x03\x02\x02\x02\x10\x11\x03\x02\x02\x02\x10\x0E" +
+		"\x03\x02\x02\x02\x11\x14\x03\x02\x02\x02\x12\x10\x03\x02\x02\x02\x13\x15" +
+		"\x07\x04\x02\x02\x14\x13\x03\x02\x02\x02\x14\x15\x03\x02\x02\x02\x15\x03" +
+		"\x03\x02\x02\x02\x16\x17\x07\x07\x02\x02\x17\x18\x07\b\x02\x02\x18\x19" +
+		"\x05\x06\x04\x02\x19\x1A\x07\t\x02\x02\x1A\x1B\x07\v\x02\x02\x1B\x1C\x05" +
+		"\b\x05\x02\x1C\x05\x03\x02\x02\x02\x1D\x1E\x07\n\x02\x02\x1E\x1F\b\x04" +
+		"\x01\x02\x1F\x07\x03\x02\x02\x02 !\x07\x06\x02\x02!\t\x03\x02\x02\x02" +
+		"\x04\x10\x14";
 	public static __ATN: ATN;
 	public static get _ATN(): ATN {
 		if (!TspShebangParser.__ATN) {
@@ -259,6 +272,7 @@ export class ShebangContext extends ParserRuleContext {
 			return this.getRuleContext(i, NodeContext);
 		}
 	}
+	public CLOSE(): TerminalNode | undefined { return this.tryGetToken(TspShebangParser.CLOSE, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
 	}

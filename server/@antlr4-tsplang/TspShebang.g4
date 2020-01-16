@@ -18,7 +18,7 @@ grammar TspShebang;
 // Parser
 
 shebang
-    : OPEN PLUGIN (SEMICOLON node)*?
+    : OPEN PLUGIN (SEMICOLON node)*? CLOSE?
     ;
 
 node
