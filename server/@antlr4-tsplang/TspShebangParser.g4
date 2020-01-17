@@ -17,10 +17,8 @@ parser grammar TspShebangParser;
 
 options { tokenVocab=TspShebangLexer; }
 
-// Parser
-
 shebang
-    : OPEN plugin (SEMICOLON node)*? CLOSE?
+    : OPEN (plugin (SEMICOLON node)*? SEMICOLON?)? CLOSE?
     ;
 
 plugin
@@ -30,8 +28,6 @@ plugin
 node
     : NODE NODE_INDEX_OPEN nodeNumber NODE_INDEX_CLOSE NODE_EQUALS plugin
     ;
-
-// These simple node sub-rules exist only for convenience.
 
 nodeNumber
     : NODE_NUMBER {
