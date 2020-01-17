@@ -1,12 +1,12 @@
-// Generated from ./TspShebang.g4 by ANTLR 4.7.3-SNAPSHOT
+// Generated from ./TspShebangParser.g4 by ANTLR 4.7.3-SNAPSHOT
 
 
 import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
 
 import { ShebangContext } from "./TspShebangParser.generated";
+import { PluginContext } from "./TspShebangParser.generated";
 import { NodeContext } from "./TspShebangParser.generated";
 import { NodeNumberContext } from "./TspShebangParser.generated";
-import { NodePluginContext } from "./TspShebangParser.generated";
 
 
 /**
@@ -24,6 +24,17 @@ export interface TspShebangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitShebang?: (ctx: ShebangContext) => void;
+
+	/**
+	 * Enter a parse tree produced by `TspShebangParser.plugin`.
+	 * @param ctx the parse tree
+	 */
+	enterPlugin?: (ctx: PluginContext) => void;
+	/**
+	 * Exit a parse tree produced by `TspShebangParser.plugin`.
+	 * @param ctx the parse tree
+	 */
+	exitPlugin?: (ctx: PluginContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspShebangParser.node`.
@@ -46,16 +57,5 @@ export interface TspShebangListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitNodeNumber?: (ctx: NodeNumberContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `TspShebangParser.nodePlugin`.
-	 * @param ctx the parse tree
-	 */
-	enterNodePlugin?: (ctx: NodePluginContext) => void;
-	/**
-	 * Exit a parse tree produced by `TspShebangParser.nodePlugin`.
-	 * @param ctx the parse tree
-	 */
-	exitNodePlugin?: (ctx: NodePluginContext) => void;
 }
 

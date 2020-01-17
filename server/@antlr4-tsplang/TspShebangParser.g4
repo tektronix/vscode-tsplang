@@ -13,16 +13,22 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-grammar TspShebang;
+parser grammar TspShebangParser;
+
+options { tokenVocab=TspShebangLexer; }
 
 // Parser
 
 shebang
-    : OPEN PLUGIN (SEMICOLON node)*? CLOSE?
+    : OPEN plugin (SEMICOLON node)*? CLOSE?
+    ;
+
+plugin
+    : PLUGIN (PLUGIN_FIRMWARE_START FIRMWARE)?
     ;
 
 node
-    : NODE BRACKET_OPEN nodeNumber BRACKET_CLOSE EQUALS nodePlugin
+    : NODE NODE_INDEX_OPEN nodeNumber NODE_INDEX_CLOSE NODE_EQUALS plugin
     ;
 
 // These simple node sub-rules exist only for convenience.
@@ -34,33 +40,3 @@ const num = Number(this.currentToken.text);
 if (num < 1) this.notifyErrorListeners("Node number must be greater than 0");
 if (num > 64) this.notifyErrorListeners("Node number must be less than 65");}
     ;
-
-nodePlugin
-    : PLUGIN
-    ;
-
-// Lexer
-
-OPEN: '#!';
-
-CLOSE: ('\r\n'|'\r'|'\n');
-
-SEMICOLON: ';';
-
-PLUGIN
-    // Indentation is tabs to match generated code style.
-    : {(
-		// Previous two characters were "#!"...
-		(this._input.LA(-2) === 35 && this._input.LA(-1) === 33)
-		// ...OR previous character was "=".
-		|| this._input.LA(-1) === 61
-	)}? ~('['|']'|';')+;
-
-NODE: 'node';
-BRACKET_OPEN: '[';
-BRACKET_CLOSE: ']';
-NODE_NUMBER: '+-'? [0-9]+;
-EQUALS: '=';
-
-/* Copied from CommonLexerRules::HORIZONTAL_WS */
-HORIZONTAL_WS: [ \t\u000C]+ -> channel(HIDDEN);

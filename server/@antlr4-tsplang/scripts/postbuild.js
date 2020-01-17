@@ -40,6 +40,10 @@ const recipe = {
         {
             source: "TspDocParserListener",
             destination: "TspDocListener"
+        },
+        {
+            source: "TspShebangParserListener",
+            destination: "TspShebangListener"
         }
     ],
     edits: [

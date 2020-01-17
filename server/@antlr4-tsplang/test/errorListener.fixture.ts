@@ -14,15 +14,38 @@
  *  limitations under the License.
  */
 import { ANTLRErrorListener } from "antlr4ts"
+import "chai"
+import "mocha"
 
 /**
  * Throws an error when called by the Lexer or Parser.
  */
-/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-class ErrorThrower implements ANTLRErrorListener<any> {
+class ErrorThrower implements ANTLRErrorListener<unknown> {
     /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
     syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e): never {
         throw Error(`line ${line}:${charPositionInLine} ${msg}`)
     }
 }
 export const ERROR_THROWER = new ErrorThrower()
+
+/**
+ * Invokes a `Mocha.Done` callback on Lexer or Parser error.
+ * Optionally invokes a callback to verify the arguments of the
+ * triggered `syntaxError` method.
+ */
+export class ErrorValidator implements ANTLRErrorListener<unknown> {
+    constructor(
+        private done: Mocha.Done,
+        private verify?: (
+            line: unknown,
+            charPositionInLine: unknown,
+            msg: unknown
+        ) => void | never
+    ) {}
+
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e): void {
+        this.verify?.(line, charPositionInLine, msg)
+        this.done()
+    }
+}
