@@ -17,8 +17,7 @@ import { ANTLRInputStream, CommonToken, CommonTokenStream, ParserRuleContext } f
 import { ParseTree, TerminalNode } from "antlr4ts/tree"
 import { ParseTreePattern } from "antlr4ts/tree/pattern"
 import { XPath } from "antlr4ts/tree/xpath"
-import Chai = require("chai")
-const expect = Chai.expect
+import { expect } from "chai"
 import "mocha"
 
 import { TspDocLexer } from "../out/TspDocLexer.generated"
