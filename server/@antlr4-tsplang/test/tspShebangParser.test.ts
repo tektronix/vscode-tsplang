@@ -22,7 +22,6 @@ import { ShebangContext, TspShebangParser } from "../out/TspShebangParser.genera
 
 import { ERROR_THROWER } from "./errorListener.fixture"
 import { contextFactoryConstructor, TestContext } from "./parser.fixture"
-import { XPath } from "antlr4ts/tree/xpath"
 
 declare type ShebangTestContext<N extends ParserRuleContext> = TestContext<
     TspShebangLexer,
