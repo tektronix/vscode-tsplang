@@ -92,7 +92,7 @@ export function singleItemXPathSetTestFixture(
 /**
  * Run the given test callback for each Set item.
  */
-export function multiItemXPathSetTextFixture(
+export function multiItemXPathSetTestFixture(
     set: Set<ParseTree>,
     expectedSetSize: number,
     test: (item: ParseTree) => void | never

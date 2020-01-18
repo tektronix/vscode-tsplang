@@ -15,7 +15,6 @@
  */
 import { ANTLRInputStream, CommonToken, CommonTokenStream, ParserRuleContext } from "antlr4ts"
 import { ParseTree, TerminalNode } from "antlr4ts/tree"
-import { ParseTreePattern } from "antlr4ts/tree/pattern"
 import { XPath } from "antlr4ts/tree/xpath"
 import { expect } from "chai"
 import "mocha"
@@ -54,7 +53,7 @@ import {
 
 import {
     contextFactoryConstructor,
-    multiItemXPathSetTextFixture,
+    multiItemXPathSetTestFixture,
     singleItemXPathSetTestFixture,
     TestContext,
 } from "./parser.fixture"
@@ -653,7 +652,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemXPathSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(1)
                     expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
                 })
@@ -935,7 +934,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemXPathSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(1)
                     expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
                 })
@@ -1910,7 +1909,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemXPathSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(2)
                     expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
                     expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
@@ -2236,7 +2235,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemXPathSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(1)
                     const tspVersionChild = item.getChild(0)
                     expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
