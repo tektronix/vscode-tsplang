@@ -102,22 +102,22 @@ describe("antlr4-tsplang", function() {
                         ],
                     },
                     {
-                        name: "Handles whitespace around a SEMICOLON following a PLUGIN",
-                        content: "#!plugin \t;   ",
+                        name: "Handles whitespace around a DELIMITER following a PLUGIN",
+                        content: "#!plugin \t,   ",
                         tokenNames: [
                             "OPEN",
                             // Plugin Mode
                             [
                                 "PLUGIN",
                                 "HORIZONTAL_WS",
-                                "SEMICOLON",
+                                "DELIMITER",
                                 // Node Mode
                                 ["HORIZONTAL_WS"],
                             ],
                         ],
                     },
                     {
-                        name: "Handles whitespace around a SEMICOLON following a FIRMWARE",
+                        name: "Handles whitespace around a DELIMITER following a FIRMWARE",
                         content: "#!plugin@1.2.3 ;\n\r\r\n",
                         tokenNames: [
                             "OPEN",
@@ -128,7 +128,7 @@ describe("antlr4-tsplang", function() {
                                 // Firmware Mode
                                 ["FIRMWARE"],
                                 "HORIZONTAL_WS",
-                                "SEMICOLON",
+                                "DELIMITER",
                                 // Node Mode
                                 ["CLOSE"],
                                 "CLOSE",
@@ -171,35 +171,35 @@ describe("antlr4-tsplang", function() {
                     {
                         name: "Tokenizes node plugin assignments",
                         content:
-                            "#! TSPLinkMaster@3.1.4 ; NODE [ 1 ] = TSPSlave1@1.1.2 ;\tNoDe\t[\t64\t]\t=\ttspSlave2\t;",
+                            "#! TSPLinkMaster@3.1.4 ; NODE [ 1 ] = TSPSlave1@1.1.2 ,\tNoDe\t[\t64\t]\t=\ttspSlave2\t;",
                         tokenNames: [
                             "OPEN",
                             [
                                 "PLUGIN",
                                 "PLUGIN_FIRMWARE_START",
                                 ["FIRMWARE"],
-                                "SEMICOLON",
+                                "DELIMITER",
                                 ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
                                 "PLUGIN",
                                 "PLUGIN_FIRMWARE_START",
                                 ["FIRMWARE"],
-                                "SEMICOLON",
+                                "DELIMITER",
                                 ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
                                 "PLUGIN",
-                                "SEMICOLON",
+                                "DELIMITER",
                             ],
                         ],
                     },
                     {
                         name: "Does not check the value of NODE_NUMBER",
-                        content: "#!;nodE[-1]=a;nODe[+65]=b",
+                        content: "#!,nodE[-1]=a,nODe[+65]=b",
                         tokenNames: [
                             "OPEN",
                             [
-                                "SEMICOLON",
+                                "DELIMITER",
                                 ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
                                 "PLUGIN",
-                                "SEMICOLON",
+                                "DELIMITER",
                                 ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
                                 "PLUGIN",
                             ],

@@ -22,20 +22,20 @@ OPEN: '#!' -> pushMode(PLUGIN_MODE);
 
 CLOSE: ('\r\n'|'\r'|'\n');
 
-SEMICOLON: ';';
+DELIMITER: (','|';');
 
 HORIZONTAL_WS: HorizontalWhitespace+ -> channel(HIDDEN);
 
 /* Plugin Mode */
 mode PLUGIN_MODE;
 
-PLUGIN_SEMICOLON: SEMICOLON -> type(SEMICOLON), pushMode(NODE_MODE);
+PLUGIN_SEMICOLON: DELIMITER -> type(DELIMITER), pushMode(NODE_MODE);
 PLUGIN_CLOSE: CLOSE -> type(CLOSE), popMode;
 
 PLUGIN_FIRMWARE_START: '@' -> pushMode(FIRMWARE_MODE);
 
 /* Part of the character group is inlined from CommonLexerRules::HORIZONTAL_WS */
-PLUGIN: ~[@[\];\r\n \t\u000C]+;
+PLUGIN: ~[@[\],;\r\n \t\u000C]+;
 
 PLUGIN_HORIZONTAL_WS: HorizontalWhitespace+ -> type(HORIZONTAL_WS), channel(HIDDEN);
 

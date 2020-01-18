@@ -15,7 +15,7 @@
             "type": "string",
             "readOnly": true,
             "writeOnly": false,
-            "pattern": "^([^@\\[\\]; \t\u000C]*)$"
+            "pattern": "^([^@\\[\\],; \t\u000C]*)$"
         },
         "pluginExtensionObject": {
             "$id": "#/definitions/pluginExtensionObject",
@@ -61,7 +61,7 @@
     "properties": {
         "name": {
             "$ref": "#/definitions/shebangName",
-            "description": "The name of this TSPLang plugin. Must not contain \"@\", square-brackets, semicolons, or whitespace."
+            "description": "The name of this TSPLang plugin. Must not contain the characters `@ [ ] , ;` or whitespace."
         },
         "aliases": {
             "$id": "#/properties/aliases",
@@ -72,7 +72,7 @@
             "writeOnly": false,
             "items": {
                 "$ref": "#/definitions/shebangName",
-                "description": "An alternative name for this plugin. Must not contain \"@\", square-brackets, semicolons, or whitespace."
+                "description": "An alternative name for this plugin. Must not contain the characters `@ [ ] , ;` or whitespace."
             }
         },
         "license": {

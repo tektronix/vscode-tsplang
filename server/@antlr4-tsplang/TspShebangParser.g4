@@ -18,7 +18,7 @@ parser grammar TspShebangParser;
 options { tokenVocab=TspShebangLexer; }
 
 shebang
-    : OPEN (plugin (SEMICOLON node)*? SEMICOLON?)? CLOSE?
+    : OPEN (plugin (DELIMITER node)*? DELIMITER?)? CLOSE?
     ;
 
 plugin

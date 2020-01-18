@@ -404,6 +404,15 @@ describe("tsplang-plugins", function() {
                     configSwitcher("nameHasCloseBracket.json")
                 })
 
+                it("Emits if name contains a comma ( , )", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasComma.json")
+                })
+
                 it("Emits if name contains a semicolon ( ; )", function(done: Mocha.Done) {
                     provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
                         expect(reasons).to.have.lengthOf(1)
