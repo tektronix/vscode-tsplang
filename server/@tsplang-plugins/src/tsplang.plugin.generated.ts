@@ -11,7 +11,7 @@ export type ShebangName = string
  */
 export interface TsplangPluginSettings {
     /**
-     * The name of this TSPLang plugin. Must not contain square-brackets, semicolons.
+     * The name of this TSPLang plugin. Must not contain "@", square-brackets, semicolons, or whitespace.
      */
     name: string
     /**
