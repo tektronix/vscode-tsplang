@@ -195,9 +195,17 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("nodeNumber", function() {
-            it("MUST be a number greater than 0")
+            it("MUST be a number greater than 0", function() {
+                const context = contextFactory<ShebangContext>("#!.;node[-1]=some-plugin")
 
-            it("MUST be a number less than 65")
+                expect(() => context.parser.shebang()).to.throw(Error, /must be greater than 0/)
+            })
+
+            it("MUST be a number less than 65", function() {
+                const context = contextFactory<ShebangContext>("#!.;node[65]=some-plugin")
+
+                expect(() => context.parser.shebang()).to.throw(Error, /must be less than 65/)
+            })
         })
     })
 })
