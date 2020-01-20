@@ -35,6 +35,10 @@ PLUGIN_CLOSE: CLOSE -> type(CLOSE), popMode;
 PLUGIN_FIRMWARE_START: '@' -> pushMode(FIRMWARE_MODE);
 
 /* Part of the character group is inlined from CommonLexerRules::HORIZONTAL_WS */
+/*
+ * Any changes must also be made to:
+ *   ../@tsplang-plugins/tsplang.plugin.schema.json#/definitions/shebangName
+ */
 PLUGIN: ~[@[\],;\r\n \t\u000C]+;
 
 PLUGIN_HORIZONTAL_WS: HorizontalWhitespace+ -> type(HORIZONTAL_WS), channel(HIDDEN);
