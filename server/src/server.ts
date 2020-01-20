@@ -18,9 +18,13 @@
 import {
     ANTLRInputStream,
     ChunkContext,
+    CommonToken,
     CommonTokenStream,
+    TspCommonTokenStream,
     TspLexer,
     TspParser,
+    TspShebangLexer,
+    TspShebangParser,
 } from "antlr4-tsplang"
 import { NotificationType, RequestType } from "vscode-jsonrpc"
 import {
@@ -69,44 +73,102 @@ connection.onInitialize(
 )
 
 declare type HRTime = [number, number]
-let count = 0
-connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpans[] => {
-    const inputStream = new ANTLRInputStream(param.text)
-    inputStream.name = param.uri
-    const lexer = new TspLexer(inputStream)
-    const tokenStream = new CommonTokenStream(lexer)
-    const parser = new TspParser(tokenStream)
 
-    const time: HRTime = process.hrtime()
-    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
-    const root: ChunkContext = parser.chunk()
-    const done: HRTime = process.hrtime(time)
-
-    console.log(`${count}> parsed ${param.uri}`)
-
+function printParseTime(
+    target: string,
+    type: string,
+    stop: HRTime,
+    count: number
+): void {
+    console.log(`${count}> parsed ${target}`)
     // Format and print elapsed time.
-    let seconds = done[0].toString()
+    let seconds = stop[0].toString()
     while (seconds.length < 3) {
         seconds = " " + seconds
     }
-    let milli = (done[1] / 1000000).toString()
+    let milli = (stop[1] / 1000000).toString()
     while (milli.indexOf(".") < 3) {
         milli = " " + milli
     }
     while (milli.length < 9) {
         milli = milli.concat("0")
     }
-    console.log(`${count}> elapsed time: ${seconds}s ${milli}ms`)
+    console.log(`${count}> ${type} elapsed time: ${seconds}s ${milli}ms`)
+}
 
-    count++
+let count = 0
+connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpans[] => {
+    const inputStream = new ANTLRInputStream(param.text)
+    inputStream.name = param.uri
+    const lexer = new TspLexer(inputStream)
+    const tokenStream = new TspCommonTokenStream(lexer)
+    const parser = new TspParser(tokenStream)
 
-    // Notify client of all Token ranges.
-    return tokenStream.getTokens().map(t => {
+    const start: HRTime = process.hrtime()
+    const root: ChunkContext = parser.chunk()
+    const done: HRTime = process.hrtime(start)
+
+    printParseTime(param.uri, "TSP", done, count)
+
+    // Extract Token ranges.
+    const ranges = tokenStream.getTokens().map(t => {
         return {
             fullSpan: t.fullSpan,
             span: t.span,
         }
     })
+
+    // Parse the shebang
+    {
+        let child = root.getChild(0)
+        while (child.childCount !== 0) {
+            child = child.getChild(0)
+        }
+        if (child["symbol"]?.["leadingTrivia"]?.length > 0) {
+            const firstTrivia = child["symbol"]["leadingTrivia"][0] as CommonToken
+            if (firstTrivia.type === TspLexer.SHEBANG) {
+                console.log(`parsing shebang: ${firstTrivia.text}`)
+                const inputStream = new ANTLRInputStream(firstTrivia.text ?? "")
+                const lexer = new TspShebangLexer(inputStream)
+                const tokenStream = new CommonTokenStream(lexer)
+                const parser = new TspShebangParser(tokenStream)
+
+                const start: HRTime = process.hrtime()
+                parser.shebang()
+                const done: HRTime = process.hrtime(start)
+
+                printParseTime(firstTrivia.text ?? "", "Shebang", done, count)
+
+                // Extract Token ranges.
+                ranges.push(
+                    ...tokenStream.getTokens().map(
+                        (t: CommonToken): TokenSpans => {
+                            const range: Range = {
+                                end: {
+                                    character:
+                                        t.charPositionInLine + (t.text ?? "").length,
+                                    line: t.line - 1,
+                                },
+                                start: {
+                                    character: t.charPositionInLine,
+                                    line: t.line - 1,
+                                },
+                            }
+                            return {
+                                fullSpan: range,
+                                span: range,
+                            }
+                        }
+                    )
+                )
+            }
+        }
+    }
+
+    count++
+
+    // Notify client of all Token ranges.
+    return ranges
 })
 
 // Listen on the connection

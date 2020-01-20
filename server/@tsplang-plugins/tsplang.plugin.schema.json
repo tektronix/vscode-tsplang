@@ -15,7 +15,9 @@
             "type": "string",
             "readOnly": true,
             "writeOnly": false,
-            "pattern": "^([^\\[\\];]*)$"
+
+            "$comment": "Any changes must also be made to ../@antlr4-tsplang/TspShebangLexer.g4#PLUGIN, #/properties/name/description, and #/properties/aliases/items/description.",
+            "pattern": "^([^@\\[\\],; \t\u000C]*)$"
         },
         "pluginExtensionObject": {
             "$id": "#/definitions/pluginExtensionObject",
@@ -61,7 +63,7 @@
     "properties": {
         "name": {
             "$ref": "#/definitions/shebangName",
-            "description": "The name of this TSPLang plugin. Must not contain square-brackets, semicolons."
+            "description": "The name of this TSPLang plugin. Must not contain the characters `@ [ ] , ;` or whitespace."
         },
         "aliases": {
             "$id": "#/properties/aliases",
@@ -72,7 +74,7 @@
             "writeOnly": false,
             "items": {
                 "$ref": "#/definitions/shebangName",
-                "description": "An alternative name for this plugin. Must not contain square-brackets, semicolons."
+                "description": "An alternative name for this plugin. Must not contain the characters `@ [ ] , ;` or whitespace."
             }
         },
         "license": {

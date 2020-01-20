@@ -1,5 +1,5 @@
 {
-    "name": "Evil Include Filter",
+    "name": "EvilIncludeFilter",
     "extends": [
         {
             "plugin": "victim",

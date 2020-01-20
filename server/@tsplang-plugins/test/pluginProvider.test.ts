@@ -377,6 +377,15 @@ describe("tsplang-plugins", function() {
                     configSwitcher("nameMissing.json")
                 })
 
+                it('Emits if name contains an "@"', function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasAtSymbol.json")
+                })
+
                 it("Emits if name contains an open bracket ( [ )", function(done: Mocha.Done) {
                     provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
                         expect(reasons).to.have.lengthOf(1)
@@ -395,6 +404,15 @@ describe("tsplang-plugins", function() {
                     configSwitcher("nameHasCloseBracket.json")
                 })
 
+                it("Emits if name contains a comma ( , )", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasComma.json")
+                })
+
                 it("Emits if name contains a semicolon ( ; )", function(done: Mocha.Done) {
                     provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
                         expect(reasons).to.have.lengthOf(1)
@@ -402,6 +420,24 @@ describe("tsplang-plugins", function() {
                         done()
                     })
                     configSwitcher("nameHasSemicolon.json")
+                })
+
+                it("Emits if name contains a space ( )", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasSpace.json")
+                })
+
+                it("Emits if name contains a tab (\t)", function(done: Mocha.Done) {
+                    provider.onInvalidConfigError((reasons: ajv.ErrorObject[]) => {
+                        expect(reasons).to.have.lengthOf(1)
+                        expect(reasons[0].keyword).to.have.string("pattern")
+                        done()
+                    })
+                    configSwitcher("nameHasTab.json")
                 })
 
                 it("Emits if include filter is not a valid Lua Namespace", function(done: Mocha.Done) {
@@ -835,7 +871,7 @@ describe("tsplang-plugins", function() {
             describe("Dependency Resolution", function() {
                 const smu2450Settings: TsplangPluginSettings = {
                     name: "2450",
-                    aliases: ["SMU2450", "SMU 2450", "Smu2450", "Smu 2450", "smu2450", "smu 2450"],
+                    aliases: ["SMU2450", "SMU-2450", "Smu2450", "Smu-2450", "smu2450", "smu-2450"],
                     extends: ["lua"],
                     keywords: [
                         "abort",
@@ -852,7 +888,7 @@ describe("tsplang-plugins", function() {
                 }
                 const smu2461Settings: TsplangPluginSettings = {
                     name: "2461",
-                    aliases: ["SMU2461", "SMU 2461", "Smu2461", "Smu 2461", "smu2461", "smu 2461"],
+                    aliases: ["SMU2461", "SMU-2461", "Smu2461", "Smu-2461", "smu2461", "smu-2461"],
                     extends: ["2450", "lua"],
                     keywords: [
                         "abort",
@@ -971,7 +1007,7 @@ describe("tsplang-plugins", function() {
                         ...Array.from(TsplangPlugin.from(provider["plugins"].get("2461")).licenses.entries()),
                     ])
 
-                    const actual = provider.get("SMU 2461")
+                    const actual = provider.get("SMU-2461")
 
                     expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
                     expect(actual.keywords).to.have.all.keys(Array.from(expectedKeywords.keys()))
@@ -1100,7 +1136,7 @@ describe("tsplang-plugins", function() {
                         ...Array.from(TsplangPlugin.from(provider["plugins"].get("2461")).licenses.entries()),
                     ])
 
-                    const actual = provider.get("SMU 2461")
+                    const actual = provider.get("SMU-2461")
 
                     expect(actual.files).to.have.all.keys(Array.from(expectedFiles.keys()))
                     expect(actual.keywords).to.have.all.keys(Array.from(expectedKeywords.keys()))

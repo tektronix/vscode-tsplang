@@ -2551,6 +2551,7 @@ export class TspParser extends Parser {
 
 }
 
+/* istanbul ignore next */
 export class ChunkContext extends ParserRuleContext {
 	public EOF(): TerminalNode { return this.getToken(TspParser.EOF, 0); }
 	public statement(): StatementContext[];
@@ -2582,6 +2583,7 @@ export class ChunkContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class StatementContext extends ParserRuleContext {
 	public assignment(): AssignmentContext | undefined {
 		return this.tryGetRuleContext(0, AssignmentContext);
@@ -2638,6 +2640,7 @@ export class StatementContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class AssignmentContext extends ParserRuleContext {
 	public variable(): VariableContext[];
 	public variable(i: number): VariableContext;
@@ -2677,6 +2680,7 @@ export class AssignmentContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class ValueContext extends ParserRuleContext {
 	public NIL(): TerminalNode | undefined { return this.tryGetToken(TspParser.NIL, 0); }
 	public BOOLEAN(): TerminalNode | undefined { return this.tryGetToken(TspParser.BOOLEAN, 0); }
@@ -2718,6 +2722,7 @@ export class ValueContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class ExpressionContext extends ParserRuleContext {
 	public value(): ValueContext | undefined {
 		return this.tryGetRuleContext(0, ValueContext);
@@ -2800,6 +2805,7 @@ export class ExpressionContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class PrefixContext extends ParserRuleContext {
 	public expression(): ExpressionContext | undefined {
 		return this.tryGetRuleContext(0, ExpressionContext);
@@ -2825,6 +2831,7 @@ export class PrefixContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class SuffixContext extends ParserRuleContext {
 	public args(): ArgsContext | undefined {
 		return this.tryGetRuleContext(0, ArgsContext);
@@ -2853,6 +2860,7 @@ export class SuffixContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class IndexContext extends ParserRuleContext {
 	public expression(): ExpressionContext | undefined {
 		return this.tryGetRuleContext(0, ExpressionContext);
@@ -2878,6 +2886,7 @@ export class IndexContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class VariableContext extends ParserRuleContext {
 	public prefix(): PrefixContext | undefined {
 		return this.tryGetRuleContext(0, PrefixContext);
@@ -2915,6 +2924,7 @@ export class VariableContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class FunctionCallContext extends ParserRuleContext {
 	public prefix(): PrefixContext {
 		return this.getRuleContext(0, PrefixContext);
@@ -2952,6 +2962,7 @@ export class FunctionCallContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class ArgsContext extends ParserRuleContext {
 	public expression(): ExpressionContext[];
 	public expression(i: number): ExpressionContext;
@@ -2988,6 +2999,7 @@ export class ArgsContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TableConstructorContext extends ParserRuleContext {
 	public fieldList(): FieldListContext | undefined {
 		return this.tryGetRuleContext(0, FieldListContext);
@@ -3012,6 +3024,7 @@ export class TableConstructorContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class FieldListContext extends ParserRuleContext {
 	public field(): FieldContext[];
 	public field(i: number): FieldContext;
@@ -3042,6 +3055,7 @@ export class FieldListContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class FieldContext extends ParserRuleContext {
 	public expression(): ExpressionContext[];
 	public expression(i: number): ExpressionContext;
@@ -3073,6 +3087,7 @@ export class FieldContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorOrContext extends ParserRuleContext {
 	public OR(): TerminalNode { return this.getToken(TspParser.OR, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3095,6 +3110,7 @@ export class OperatorOrContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorAndContext extends ParserRuleContext {
 	public AND(): TerminalNode { return this.getToken(TspParser.AND, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3117,6 +3133,7 @@ export class OperatorAndContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorComparisonContext extends ParserRuleContext {
 	public NE(): TerminalNode { return this.getToken(TspParser.NE, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3139,6 +3156,7 @@ export class OperatorComparisonContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorBitwiseOrContext extends ParserRuleContext {
 	public BIT_OR(): TerminalNode { return this.getToken(TspParser.BIT_OR, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3161,6 +3179,7 @@ export class OperatorBitwiseOrContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorBitwiseXorContext extends ParserRuleContext {
 	public BIT_XOR(): TerminalNode { return this.getToken(TspParser.BIT_XOR, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3183,6 +3202,7 @@ export class OperatorBitwiseXorContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorBitwiseAndContext extends ParserRuleContext {
 	public BIT_AND(): TerminalNode { return this.getToken(TspParser.BIT_AND, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3205,6 +3225,7 @@ export class OperatorBitwiseAndContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorBitwiseShiftContext extends ParserRuleContext {
 	public BIT_LS(): TerminalNode | undefined { return this.tryGetToken(TspParser.BIT_LS, 0); }
 	public BIT_RS(): TerminalNode | undefined { return this.tryGetToken(TspParser.BIT_RS, 0); }
@@ -3228,6 +3249,7 @@ export class OperatorBitwiseShiftContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorStrcatContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -3249,6 +3271,7 @@ export class OperatorStrcatContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorAddSubContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -3270,6 +3293,7 @@ export class OperatorAddSubContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorMulDivContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -3291,6 +3315,7 @@ export class OperatorMulDivContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorPowerContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -3312,6 +3337,7 @@ export class OperatorPowerContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class OperatorUnaryContext extends ParserRuleContext {
 	public LOGICAL_NOT(): TerminalNode { return this.getToken(TspParser.LOGICAL_NOT, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
@@ -3334,6 +3360,7 @@ export class OperatorUnaryContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class NumberContext extends ParserRuleContext {
 	public INT(): TerminalNode | undefined { return this.tryGetToken(TspParser.INT, 0); }
 	public HEX(): TerminalNode | undefined { return this.tryGetToken(TspParser.HEX, 0); }
@@ -3358,6 +3385,7 @@ export class NumberContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class StringContext extends ParserRuleContext {
 	public NORMALSTRING(): TerminalNode | undefined { return this.tryGetToken(TspParser.NORMALSTRING, 0); }
 	public CHARSTRING(): TerminalNode | undefined { return this.tryGetToken(TspParser.CHARSTRING, 0); }

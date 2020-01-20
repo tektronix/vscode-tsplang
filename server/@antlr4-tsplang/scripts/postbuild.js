@@ -40,6 +40,10 @@ const recipe = {
         {
             source: "TspDocParserListener",
             destination: "TspDocListener"
+        },
+        {
+            source: "TspShebangParserListener",
+            destination: "TspShebangListener"
         }
     ],
     edits: [
@@ -51,6 +55,10 @@ const recipe = {
             doEdit: () => process.platform === "win32",
             regexp: /\r\n/g,
             replacement: "\n"
+        },
+        {
+            regexp: /(export class .+?Context)/g,
+            replacement: "/* istanbul ignore next */\n$1"
         }
     ]
 }

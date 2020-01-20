@@ -1,5 +1,5 @@
 {
-    "name": "Evil Exclude Filter",
+    "name": "EvilExcludeEilter",
     "extends": [
         {
             "plugin": "victim",

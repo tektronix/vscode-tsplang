@@ -14,16 +14,19 @@
  *  limitations under the License.
  */
 // ANTLR4 Exports
-export { ANTLRInputStream } from "antlr4ts"
+export { ANTLRInputStream, CommonTokenStream } from "antlr4ts"
 
 // Overrides
 export { ExtendedTspDocLexer as TspDocLexer } from "./extendedTspDocLexer"
 export { ExtendedTspLexer as TspLexer } from "./extendedTspLexer"
 export { TspCommonToken as CommonToken } from "./tspCommonToken"
-export { TspCommonTokenStream as CommonTokenStream } from "./tspCommonTokenStream"
+export { TspCommonTokenStream } from "./tspCommonTokenStream"
 
 // Generated Exports
 export { TspDocListener } from "./TspDocListener.generated"
 export * from "./TspDocParser.generated"
 export { TspListener } from "./TspListener.generated"
 export * from "./TspParser.generated"
+export { TspShebangLexer } from "./TspShebangLexer.generated"
+export { TspShebangListener } from "./TspShebangListener.generated"
+export * from "./TspShebangParser.generated"

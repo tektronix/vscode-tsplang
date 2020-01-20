@@ -15,10 +15,8 @@
  */
 import { ANTLRInputStream, CommonToken, CommonTokenStream, ParserRuleContext } from "antlr4ts"
 import { ParseTree, TerminalNode } from "antlr4ts/tree"
-import { ParseTreePattern } from "antlr4ts/tree/pattern"
 import { XPath } from "antlr4ts/tree/xpath"
-import Chai = require("chai")
-const expect = Chai.expect
+import { expect } from "chai"
 import "mocha"
 
 import { TspDocLexer } from "../out/TspDocLexer.generated"
@@ -53,38 +51,31 @@ import {
     UserdataTypeContext,
 } from "../out/TspDocParser.generated"
 
-import { ERROR_THROWER } from "./errorListener.fixture"
+import {
+    contextFactoryConstructor,
+    multiItemXPathSetTestFixture,
+    singleItemXPathSetTestFixture,
+    TestContext,
+} from "./parser.fixture"
+
+declare type TspDocTestContext<N extends ParserRuleContext> = TestContext<
+    TspDocLexer,
+    CommonTokenStream,
+    TspDocParser,
+    N
+>
 
 const DOCSTRING_PATTERN = "<OPEN><docblock><CLOSE>"
 const TYPEDECLARATION_PATTERN = "<CURLY_OPEN><typeEntry><CURLY_CLOSE>"
 
-interface TestContext<N extends ParserRuleContext> {
-    inputStream: ANTLRInputStream
-    lexer: TspDocLexer
-    tokenStream: CommonTokenStream
-    parser: TspDocParser
-    root?: N
-    docstringPattern?: Promise<ParseTreePattern>
-}
 /**
  * Create a context for the given test string.
  */
-function contextFactory<N extends ParserRuleContext>(content: string): TestContext<N> {
-    const inputStream = new ANTLRInputStream(content)
-    const lexer = new TspDocLexer(inputStream)
-    lexer.addErrorListener(ERROR_THROWER)
-    const tokenStream = new CommonTokenStream(lexer)
-    const parser = new TspDocParser(tokenStream)
-    parser.removeErrorListeners()
-    parser.addErrorListener(ERROR_THROWER)
-
-    return {
-        inputStream,
-        lexer,
-        tokenStream,
-        parser,
-    }
-}
+const contextFactory = contextFactoryConstructor<TspDocLexer, CommonTokenStream, TspDocParser>(
+    (input: ANTLRInputStream) => new TspDocLexer(input),
+    (lexer: TspDocLexer) => new CommonTokenStream(lexer),
+    (tokenStream: CommonTokenStream) => new TspDocParser(tokenStream)
+)
 
 /**
  * Removes all whitespace so that a test string can be compared
@@ -94,7 +85,7 @@ function dropWhitespace(value: string): string {
     return value.replace(/[\s\r\n]+/g, "")
 }
 
-function testDocstring(context: TestContext<DocstringContext>): Promise<Chai.Assertion> {
+function testDocstring(context: TspDocTestContext<DocstringContext>): Promise<Chai.Assertion> {
     context.docstringPattern = context.parser.compileParseTreePattern(DOCSTRING_PATTERN, TspDocParser.RULE_docstring)
     context.root = context.parser.docstring()
 
@@ -104,7 +95,7 @@ function testDocstring(context: TestContext<DocstringContext>): Promise<Chai.Ass
     })
 }
 
-function testTypeDeclaration(context: TestContext<TypeDeclarationContext>): Promise<Chai.Assertion> {
+function testTypeDeclaration(context: TspDocTestContext<TypeDeclarationContext>): Promise<Chai.Assertion> {
     context.docstringPattern = context.parser.compileParseTreePattern(
         TYPEDECLARATION_PATTERN,
         TspDocParser.RULE_typeDeclaration
@@ -114,41 +105,6 @@ function testTypeDeclaration(context: TestContext<TypeDeclarationContext>): Prom
     return context.docstringPattern.then(pattern => {
         return expect(pattern.matches(context.root), `Expected the parse tree to match "${TYPEDECLARATION_PATTERN}"`).to
             .be.true
-    })
-}
-
-/**
- * Run the given test callback once and only once.
- *
- * An Error is thrown if the given set does not contain exactly one item.
- */
-function singleItemSetTestFixture(
-    set: Set<ParseTree>,
-    test: (item: ParseTree) => void | never,
-    done: Mocha.Done
-): void | never {
-    set.forEach(function(item: ParseTree): void | never {
-        test(item)
-        // Mocha throws an error if done is called more than once.
-        done()
-    })
-    // If done is called, then this error will be ignored.
-    expect.fail()
-}
-
-/**
- * Run the given test callback for each Set item.
- */
-function multiItemSetTextFixture(
-    set: Set<ParseTree>,
-    expectedSetSize: number,
-    test: (item: ParseTree) => void | never
-): void | never {
-    let paranoidLoopCounter = 0
-    set.forEach(item => {
-        test(item)
-        expect(paranoidLoopCounter).to.be.lessThan(expectedSetSize)
-        paranoidLoopCounter++
     })
 }
 
@@ -207,7 +163,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docDeprecated", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(1)
@@ -227,7 +183,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docDeprecated", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -256,7 +212,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docDescription", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -279,7 +235,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docDescription", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -315,7 +271,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docContent", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.text).to.not.contain("@returns")
@@ -335,7 +291,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docContent", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.text).to.not.contain("@returns")
@@ -356,7 +312,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docContent", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         const expectedType = DocContentContext
@@ -382,7 +338,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(4)
@@ -404,7 +360,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(4)
@@ -427,7 +383,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -485,7 +441,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docParameter", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -513,7 +469,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(5)
@@ -537,7 +493,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(5)
@@ -562,7 +518,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(2)
@@ -582,7 +538,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(4)
@@ -615,7 +571,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(4)
@@ -650,7 +606,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docReturns", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(4)
@@ -696,7 +652,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(1)
                     expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
                 })
@@ -716,7 +672,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -741,7 +697,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -770,7 +726,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -795,7 +751,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -824,7 +780,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -849,7 +805,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -878,7 +834,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -903,7 +859,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docReadonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item).to.be.an.instanceOf(DocReadonlyContext)
@@ -935,7 +891,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docWriteonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -956,7 +912,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docWriteonly", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -978,7 +934,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(1)
                     expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
                 })
@@ -996,7 +952,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docType", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(3)
@@ -1059,7 +1015,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docType", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1105,7 +1061,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(6)
@@ -1188,7 +1144,7 @@ describe("antlr4-tsplang", function() {
                             const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
                             expect(actual).to.have.lengthOf(1)
-                            singleItemSetTestFixture(
+                            singleItemXPathSetTestFixture(
                                 actual,
                                 item => {
                                     expect(item.childCount).to.equal(6)
@@ -1219,7 +1175,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(6)
@@ -1258,7 +1214,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(6)
@@ -1292,7 +1248,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(6)
@@ -1331,7 +1287,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docTypedef", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(5)
@@ -1363,7 +1319,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(4)
@@ -1386,7 +1342,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -1444,7 +1400,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docField", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1479,7 +1435,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docIndex", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(3)
@@ -1542,7 +1498,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docIndex", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1575,7 +1531,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(3)
@@ -1599,7 +1555,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -1627,7 +1583,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -1654,7 +1610,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -1687,7 +1643,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docSee", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1710,7 +1666,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docTsplink", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1730,7 +1686,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "/docstring/docblock/docTsplink", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(1)
@@ -1754,7 +1710,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1776,7 +1732,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(2)
@@ -1807,7 +1763,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(2)
@@ -1838,7 +1794,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(2)
@@ -1869,7 +1825,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(2)
@@ -1900,7 +1856,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(6)
@@ -1924,7 +1880,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docFirmware", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(7)
@@ -1953,7 +1909,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(2)
                     expect(item.getChild(0)).to.be.an.instanceOf(TerminalNode)
                     expect(item.getChild(1)).to.be.an.instanceOf(FirmwareEntryContext)
@@ -1977,7 +1933,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(1)
@@ -2004,7 +1960,7 @@ describe("antlr4-tsplang", function() {
                 const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                 expect(actual).to.have.lengthOf(1)
-                singleItemSetTestFixture(
+                singleItemXPathSetTestFixture(
                     actual,
                     item => {
                         expect(item.childCount).to.equal(1)
@@ -2033,7 +1989,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -2081,7 +2037,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -2116,7 +2072,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -2159,7 +2115,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -2207,7 +2163,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -2242,7 +2198,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "docstring/docblock/docVersion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             expect(item.childCount).to.equal(3)
@@ -2279,7 +2235,7 @@ describe("antlr4-tsplang", function() {
 
                 const expectedSize = 2
                 expect(actual).to.have.lengthOf(expectedSize)
-                multiItemSetTextFixture(actual, expectedSize, item => {
+                multiItemXPathSetTestFixture(actual, expectedSize, item => {
                     expect(item.childCount).to.equal(1)
                     const tspVersionChild = item.getChild(0)
                     expect(tspVersionChild).to.be.an.instanceOf(TerminalNode)
@@ -2333,7 +2289,7 @@ describe("antlr4-tsplang", function() {
                         const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry", context.parser)
 
                         expect(actual).to.have.lengthOf(1)
-                        singleItemSetTestFixture(
+                        singleItemXPathSetTestFixture(
                             actual,
                             item => {
                                 const expectedType = TypeEntryContext
@@ -2361,7 +2317,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/typeUnion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeUnionContext
@@ -2387,7 +2343,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/typeUnion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeUnionContext
@@ -2418,7 +2374,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/typeUnion", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeUnionContext
@@ -2463,7 +2419,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = FunctionTypeContext
@@ -2497,7 +2453,7 @@ describe("antlr4-tsplang", function() {
                     )
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeListContext
@@ -2518,7 +2474,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = FunctionTypeContext
@@ -2555,7 +2511,7 @@ describe("antlr4-tsplang", function() {
                     )
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeListContext
@@ -2578,7 +2534,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = FunctionTypeContext
@@ -2611,7 +2567,7 @@ describe("antlr4-tsplang", function() {
                     )
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeListContext
@@ -2636,7 +2592,7 @@ describe("antlr4-tsplang", function() {
                     )
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeUnionContext
@@ -2665,7 +2621,7 @@ describe("antlr4-tsplang", function() {
                     )
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeUnionContext
@@ -2688,7 +2644,7 @@ describe("antlr4-tsplang", function() {
                     const actual = XPath.findAll(context.root, "/typeDeclaration/typeEntry/type", context.parser)
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = FunctionTypeContext
@@ -2731,7 +2687,7 @@ describe("antlr4-tsplang", function() {
                     )
 
                     expect(actual).to.have.lengthOf(1)
-                    singleItemSetTestFixture(
+                    singleItemXPathSetTestFixture(
                         actual,
                         item => {
                             const expectedType = TypeListContext

@@ -13,6 +13,21 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
+/*
+ * ATTENTION!
+ *
+ * Parser "Rule Context Objects" are not subjected to unit tests!
+ *
+ * If you plan on doing anything EXCEPT adding "Rule Element Labels" to "Rule
+ * Context Objects", then you need to...
+ *
+ *  1) write unit tests for your change.
+ *  2) update the postbuild script to remove the Istanbul ignore pragma from
+ *     the applicable "Rule Context Object".
+ *
+ */
+
 parser grammar TspDocParser;
 
 options { tokenVocab=TspDocLexer; }

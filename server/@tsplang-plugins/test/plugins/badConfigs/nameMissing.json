@@ -1,7 +1,7 @@
 {
     "aliases": [
-        "invalid config",
-        "bad config"
+        "invalidConfig",
+        "badConfig"
     ],
     "keywords": [
         "break",
@@ -23,7 +23,7 @@
     "extends": [
         "blah",
         {
-            "plugin": "another plugin",
+            "plugin": "anotherPlugin",
             "include": [],
             "exclude": ["assert"]
         }

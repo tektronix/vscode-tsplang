@@ -11,6 +11,8 @@ class SynchronousTaskRunner {
             "antlr4ts -o ./.antlr -message-format gnu -listener ./Tsp.g4",
             "antlr4ts -o ./.antlr -message-format gnu -listener ./TspDocLexer.g4",
             "antlr4ts -o ./.antlr -message-format gnu -listener ./TspDocParser.g4",
+            "antlr4ts -o ./.antlr -message-format gnu -listener ./TspShebangLexer.g4",
+            "antlr4ts -o ./.antlr -message-format gnu -listener ./TspShebangParser.g4"
         ]
     }
 
