@@ -44,6 +44,21 @@
  * to the following post:
  *      http://lua-users.org/lists/lua-l/2010-12/msg00699.html
  */
+
+/*
+ * ATTENTION!
+ *
+ * Parser "Rule Context Objects" are not subjected to unit tests!
+ *
+ * If you plan on doing anything EXCEPT adding "Rule Element Labels" to "Rule
+ * Context Objects", then you need to...
+ *
+ *  1) write unit tests for your change.
+ *  2) update the postbuild script to remove the Istanbul ignore pragma from
+ *     the applicable "Rule Context Object".
+ *
+ */
+
 grammar Tsp;
 import CommonLexerRules;
 

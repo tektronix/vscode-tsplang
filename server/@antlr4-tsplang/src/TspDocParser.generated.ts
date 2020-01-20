@@ -2276,6 +2276,7 @@ export class TspDocParser extends Parser {
 
 }
 
+/* istanbul ignore next */
 export class DocstringContext extends ParserRuleContext {
 	public OPEN(): TerminalNode { return this.getToken(TspDocParser.OPEN, 0); }
 	public docblock(): DocblockContext {
@@ -2302,6 +2303,7 @@ export class DocstringContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocblockContext extends ParserRuleContext {
 	public docDeprecated(): DocDeprecatedContext[];
 	public docDeprecated(i: number): DocDeprecatedContext;
@@ -2458,6 +2460,7 @@ export class DocblockContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocDeprecatedContext extends ParserRuleContext {
 	public DEPRECATED_TAG(): TerminalNode { return this.getToken(TspDocParser.DEPRECATED_TAG, 0); }
 	public docContent(): DocContentContext | undefined {
@@ -2483,6 +2486,7 @@ export class DocDeprecatedContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocDescriptionContext extends ParserRuleContext {
 	public DESCRIPTION_TAG(): TerminalNode { return this.getToken(TspDocParser.DESCRIPTION_TAG, 0); }
 	public docContent(): DocContentContext {
@@ -2508,6 +2512,7 @@ export class DocDescriptionContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocContentContext extends ParserRuleContext {
 	public link(): LinkContext[];
 	public link(i: number): LinkContext;
@@ -2700,6 +2705,7 @@ export class DocContentContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class LinkContext extends ParserRuleContext {
 	public LINK_TAG_START(): TerminalNode { return this.getToken(TspDocParser.LINK_TAG_START, 0); }
 	public LINK_TAG_TARGET(): TerminalNode { return this.getToken(TspDocParser.LINK_TAG_TARGET, 0); }
@@ -2725,6 +2731,7 @@ export class LinkContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocParameterContext extends ParserRuleContext {
 	public PARAM_TAG(): TerminalNode { return this.getToken(TspDocParser.PARAM_TAG, 0); }
 	public nameDeclaration(): NameDeclarationContext {
@@ -2756,6 +2763,7 @@ export class DocParameterContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypeDeclarationContext extends ParserRuleContext {
 	public CURLY_OPEN(): TerminalNode { return this.getToken(TspDocParser.CURLY_OPEN, 0); }
 	public typeEntry(): TypeEntryContext {
@@ -2782,6 +2790,7 @@ export class TypeDeclarationContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypeEntryContext extends ParserRuleContext {
 	public type(): TypeContext | undefined {
 		return this.tryGetRuleContext(0, TypeContext);
@@ -2809,6 +2818,7 @@ export class TypeEntryContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypeUnionContext extends ParserRuleContext {
 	public type(): TypeContext[];
 	public type(i: number): TypeContext;
@@ -2848,6 +2858,7 @@ export class TypeUnionContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypeContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -2858,6 +2869,7 @@ export class TypeContext extends ParserRuleContext {
 		super.copyFrom(ctx);
 	}
 }
+/* istanbul ignore next */
 export class NilTypeContext extends TypeContext {
 	public NIL(): TerminalNode { return this.getToken(TspDocParser.NIL, 0); }
 	constructor(ctx: TypeContext) {
@@ -2877,6 +2889,7 @@ export class NilTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class BooleanTypeContext extends TypeContext {
 	public BOOLEAN(): TerminalNode { return this.getToken(TspDocParser.BOOLEAN, 0); }
 	constructor(ctx: TypeContext) {
@@ -2896,6 +2909,7 @@ export class BooleanTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class NumberTypeContext extends TypeContext {
 	public NUMBER(): TerminalNode { return this.getToken(TspDocParser.NUMBER, 0); }
 	constructor(ctx: TypeContext) {
@@ -2915,6 +2929,7 @@ export class NumberTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class StringTypeContext extends TypeContext {
 	public STRING(): TerminalNode { return this.getToken(TspDocParser.STRING, 0); }
 	constructor(ctx: TypeContext) {
@@ -2934,6 +2949,7 @@ export class StringTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class FunctionTypeContext extends TypeContext {
 	public FUNCTION(): TerminalNode { return this.getToken(TspDocParser.FUNCTION, 0); }
 	public PAREN_OPEN(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.PAREN_OPEN, 0); }
@@ -2962,6 +2978,7 @@ export class FunctionTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class UserdataTypeContext extends TypeContext {
 	public USERDATA(): TerminalNode { return this.getToken(TspDocParser.USERDATA, 0); }
 	constructor(ctx: TypeContext) {
@@ -2981,6 +2998,7 @@ export class UserdataTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class ThreadTypeContext extends TypeContext {
 	public THREAD(): TerminalNode { return this.getToken(TspDocParser.THREAD, 0); }
 	constructor(ctx: TypeContext) {
@@ -3000,6 +3018,7 @@ export class ThreadTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class TableTypeContext extends TypeContext {
 	public TABLE(): TerminalNode { return this.getToken(TspDocParser.TABLE, 0); }
 	constructor(ctx: TypeContext) {
@@ -3019,6 +3038,7 @@ export class TableTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class NamespaceTypeContext extends TypeContext {
 	public NAMESPACE(): TerminalNode { return this.getToken(TspDocParser.NAMESPACE, 0); }
 	constructor(ctx: TypeContext) {
@@ -3038,6 +3058,7 @@ export class NamespaceTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class AnyTypeContext extends TypeContext {
 	public ANY(): TerminalNode { return this.getToken(TspDocParser.ANY, 0); }
 	constructor(ctx: TypeContext) {
@@ -3057,6 +3078,7 @@ export class AnyTypeContext extends TypeContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class NameTypeContext extends TypeContext {
 	public NAME(): TerminalNode { return this.getToken(TspDocParser.NAME, 0); }
 	constructor(ctx: TypeContext) {
@@ -3078,6 +3100,7 @@ export class NameTypeContext extends TypeContext {
 }
 
 
+/* istanbul ignore next */
 export class TypeListContext extends ParserRuleContext {
 	public type(): TypeContext[];
 	public type(i: number): TypeContext;
@@ -3117,6 +3140,7 @@ export class TypeListContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypeReturnEntryContext extends ParserRuleContext {
 	public typeUnion(): TypeUnionContext | undefined {
 		return this.tryGetRuleContext(0, TypeUnionContext);
@@ -3162,6 +3186,7 @@ export class TypeReturnEntryContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class NameDeclarationContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -3172,6 +3197,7 @@ export class NameDeclarationContext extends ParserRuleContext {
 		super.copyFrom(ctx);
 	}
 }
+/* istanbul ignore next */
 export class NameRequiredContext extends NameDeclarationContext {
 	public NAME(): TerminalNode { return this.getToken(TspDocParser.NAME, 0); }
 	constructor(ctx: NameDeclarationContext) {
@@ -3191,6 +3217,7 @@ export class NameRequiredContext extends NameDeclarationContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class NameOptionalContext extends NameDeclarationContext {
 	public SQUARE_OPEN(): TerminalNode { return this.getToken(TspDocParser.SQUARE_OPEN, 0); }
 	public NAME(): TerminalNode { return this.getToken(TspDocParser.NAME, 0); }
@@ -3218,6 +3245,7 @@ export class NameOptionalContext extends NameDeclarationContext {
 }
 
 
+/* istanbul ignore next */
 export class NameValueContext extends ParserRuleContext {
 	public NIL(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NIL, 0); }
 	public TRUE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.TRUE, 0); }
@@ -3250,6 +3278,7 @@ export class NameValueContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class NumContext extends ParserRuleContext {
 	public INT(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.INT, 0); }
 	public HEX(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.HEX, 0); }
@@ -3274,6 +3303,7 @@ export class NumContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class StrContext extends ParserRuleContext {
 	public NORMALSTRING(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NORMALSTRING, 0); }
 	public CHARSTRING(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.CHARSTRING, 0); }
@@ -3297,6 +3327,7 @@ export class StrContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocReturnsContext extends ParserRuleContext {
 	public RETURNS_TAG(): TerminalNode { return this.getToken(TspDocParser.RETURNS_TAG, 0); }
 	public CURLY_OPEN(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.CURLY_OPEN, 0); }
@@ -3327,6 +3358,7 @@ export class DocReturnsContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocReadonlyContext extends ParserRuleContext {
 	public READONLY_TAG(): TerminalNode { return this.getToken(TspDocParser.READONLY_TAG, 0); }
 	public docContent(): DocContentContext | undefined {
@@ -3352,6 +3384,7 @@ export class DocReadonlyContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocWriteonlyContext extends ParserRuleContext {
 	public WRITEONLY_TAG(): TerminalNode { return this.getToken(TspDocParser.WRITEONLY_TAG, 0); }
 	public docContent(): DocContentContext | undefined {
@@ -3377,6 +3410,7 @@ export class DocWriteonlyContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocTypeContext extends ParserRuleContext {
 	public TYPE_TAG(): TerminalNode { return this.getToken(TspDocParser.TYPE_TAG, 0); }
 	public typeDeclaration(): TypeDeclarationContext {
@@ -3405,6 +3439,7 @@ export class DocTypeContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocTypedefContext extends ParserRuleContext {
 	public TYPEDEF_TAG(): TerminalNode { return this.getToken(TspDocParser.TYPEDEF_TAG, 0); }
 	public CURLY_OPEN(): TerminalNode { return this.getToken(TspDocParser.CURLY_OPEN, 0); }
@@ -3447,6 +3482,7 @@ export class DocTypedefContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypedefTypeUnionContext extends ParserRuleContext {
 	public type(): TypeContext[];
 	public type(i: number): TypeContext;
@@ -3495,6 +3531,7 @@ export class TypedefTypeUnionContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class TypedefTypeUnionValueContext extends ParserRuleContext {
 	public TRUE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.TRUE, 0); }
 	public FALSE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.FALSE, 0); }
@@ -3525,6 +3562,7 @@ export class TypedefTypeUnionValueContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocFieldContext extends ParserRuleContext {
 	public FIELD_TAG(): TerminalNode { return this.getToken(TspDocParser.FIELD_TAG, 0); }
 	public nameDeclaration(): NameDeclarationContext {
@@ -3556,6 +3594,7 @@ export class DocFieldContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocIndexContext extends ParserRuleContext {
 	public INDEX_TAG(): TerminalNode { return this.getToken(TspDocParser.INDEX_TAG, 0); }
 	public typeDeclaration(): TypeDeclarationContext {
@@ -3584,6 +3623,7 @@ export class DocIndexContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocSeeContext extends ParserRuleContext {
 	public SEE_TAG(): TerminalNode { return this.getToken(TspDocParser.SEE_TAG, 0); }
 	public seeTarget(): SeeTargetContext {
@@ -3612,6 +3652,7 @@ export class DocSeeContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class SeeTargetContext extends ParserRuleContext {
 	public NAME(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NAME, 0); }
 	public NAMESPACE(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.NAMESPACE, 0); }
@@ -3638,6 +3679,7 @@ export class SeeTargetContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocTsplinkContext extends ParserRuleContext {
 	public TSPLINK_TAG(): TerminalNode { return this.getToken(TspDocParser.TSPLINK_TAG, 0); }
 	public docContent(): DocContentContext | undefined {
@@ -3663,6 +3705,7 @@ export class DocTsplinkContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocFirmwareContext extends ParserRuleContext {
 	public FIRMWARE_TAG(): TerminalNode { return this.getToken(TspDocParser.FIRMWARE_TAG, 0); }
 	public firmwareEntry(): FirmwareEntryContext[];
@@ -3703,6 +3746,7 @@ export class DocFirmwareContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class FirmwareEntryContext extends ParserRuleContext {
 	public FIRMWARE(): TerminalNode { return this.getToken(TspDocParser.FIRMWARE, 0); }
 	public GT(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.GT, 0); }
@@ -3736,6 +3780,7 @@ export class FirmwareEntryContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class DocVersionContext extends ParserRuleContext {
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
 		super(parent, invokingState);
@@ -3746,6 +3791,7 @@ export class DocVersionContext extends ParserRuleContext {
 		super.copyFrom(ctx);
 	}
 }
+/* istanbul ignore next */
 export class Version1Context extends DocVersionContext {
 	public TSPV1_TAG(): TerminalNode { return this.getToken(TspDocParser.TSPV1_TAG, 0); }
 	public V2_TAG(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.V2_TAG, 0); }
@@ -3768,6 +3814,7 @@ export class Version1Context extends DocVersionContext {
 		}
 	}
 }
+/* istanbul ignore next */
 export class Version2Context extends DocVersionContext {
 	public TSPV2_TAG(): TerminalNode { return this.getToken(TspDocParser.TSPV2_TAG, 0); }
 	public V1_TAG(): TerminalNode | undefined { return this.tryGetToken(TspDocParser.V1_TAG, 0); }

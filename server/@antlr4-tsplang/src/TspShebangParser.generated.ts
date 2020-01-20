@@ -289,6 +289,7 @@ export class TspShebangParser extends Parser {
 
 }
 
+/* istanbul ignore next */
 export class ShebangContext extends ParserRuleContext {
 	public OPEN(): TerminalNode { return this.getToken(TspShebangParser.OPEN, 0); }
 	public plugin(): PluginContext | undefined {
@@ -333,6 +334,7 @@ export class ShebangContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class PluginContext extends ParserRuleContext {
 	public PLUGIN(): TerminalNode { return this.getToken(TspShebangParser.PLUGIN, 0); }
 	public PLUGIN_FIRMWARE_START(): TerminalNode | undefined { return this.tryGetToken(TspShebangParser.PLUGIN_FIRMWARE_START, 0); }
@@ -357,6 +359,7 @@ export class PluginContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class NodeContext extends ParserRuleContext {
 	public NODE(): TerminalNode { return this.getToken(TspShebangParser.NODE, 0); }
 	public NODE_INDEX_OPEN(): TerminalNode { return this.getToken(TspShebangParser.NODE_INDEX_OPEN, 0); }
@@ -388,6 +391,7 @@ export class NodeContext extends ParserRuleContext {
 }
 
 
+/* istanbul ignore next */
 export class NodeNumberContext extends ParserRuleContext {
 	public NODE_NUMBER(): TerminalNode { return this.getToken(TspShebangParser.NODE_NUMBER, 0); }
 	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
