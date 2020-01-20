@@ -192,13 +192,37 @@ describe("antlr4-tsplang", function() {
                     },
                     {
                         name: "Does not check the value of NODE_NUMBER",
-                        content: "#!,nodE[-1]=a,nODe[+65]=b",
+                        content: "#!,nodE[0]=a,nODe[65]=b",
                         tokenNames: [
                             "OPEN",
                             [
                                 "DELIMITER",
                                 ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
                                 "PLUGIN",
+                                "DELIMITER",
+                                ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
+                                "PLUGIN",
+                            ],
+                        ],
+                    },
+                    {
+                        name: "Tokenizes a positively signed NODE_NUMBER",
+                        content: "#!;NoDe[+65]=plugin-name",
+                        tokenNames: [
+                            "OPEN",
+                            [
+                                "DELIMITER",
+                                ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
+                                "PLUGIN",
+                            ],
+                        ],
+                    },
+                    {
+                        name: "Tokenizes a negatively signed NODE_NUMBER",
+                        content: "#!,NODe[-1]=leave-it-up-to-the-parser",
+                        tokenNames: [
+                            "OPEN",
+                            [
                                 "DELIMITER",
                                 ["NODE", "NODE_INDEX_OPEN", "NODE_NUMBER", "NODE_INDEX_CLOSE", "NODE_EQUALS"],
                                 "PLUGIN",
