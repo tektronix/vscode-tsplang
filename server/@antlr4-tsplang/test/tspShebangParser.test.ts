@@ -185,7 +185,13 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("node", function() {
-            it('MUST assign the plugin to an index of the "node" array')
+            it('MUST assign the plugin to an index of the "node" array', function() {
+                const context = contextFactory<ShebangContext>("#!.;node[30]=.")
+                return testPattern(
+                    context,
+                    "<OPEN><PLUGIN><DELIMITER><NODE><NODE_INDEX_OPEN><nodeNumber><NODE_INDEX_CLOSE><NODE_EQUALS><plugin>"
+                )
+            })
         })
 
         describe("nodeNumber", function() {
