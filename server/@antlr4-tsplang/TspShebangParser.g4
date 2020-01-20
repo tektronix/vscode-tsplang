@@ -15,8 +15,13 @@
  */
 parser grammar TspShebangParser;
 
+/*
+ * The strictness of the TspShebangLexer prevents partial parsing. Therefore,
+ * the only usable rule is the entry rule.
+ */
 options { tokenVocab=TspShebangLexer; }
 
+// Entry rule
 shebang
     : OPEN (plugin (DELIMITER node)*? DELIMITER?)? CLOSE?
     ;

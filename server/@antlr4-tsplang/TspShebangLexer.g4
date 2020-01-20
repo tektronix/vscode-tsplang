@@ -18,6 +18,15 @@ lexer grammar TspShebangLexer;
 /* Copied from CommonLexerRules::HORIZONTAL_WS */
 fragment HorizontalWhitespace: [ \t\u000C];
 
+/*
+ * Lexical modes are used to allow for the widest range of characters in a
+ * plugin name, without its associated rule being constantly matched. As a
+ * consequence, TSP shebang lexing and parsing is very strict.
+ *
+ * If the string to be tokenized does not start with "#!", then the lexer will
+ * most likely error.
+ */
+
 OPEN: '#!' -> pushMode(PLUGIN_MODE);
 
 CLOSE: ('\r\n'|'\r'|'\n');
