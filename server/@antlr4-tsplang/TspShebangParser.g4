@@ -37,7 +37,7 @@ node
 nodeNumber
     : NODE_NUMBER {
 // Node number must be in the interval [1, 64].
-const num = Number(this.currentToken.text);
+const num = Number(_localctx.text);
 if (num < 1) this.notifyErrorListeners("Node number must be greater than 0");
 if (num > 64) this.notifyErrorListeners("Node number must be less than 65");}
     ;
