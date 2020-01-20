@@ -173,9 +173,15 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("plugin", function() {
-            it("MUST start with a PLUGIN token")
+            it("MUST start with a PLUGIN token", function() {
+                const context = contextFactory<ShebangContext>("#!2612A")
+                return testPattern(context, "<OPEN><PLUGIN>")
+            })
 
-            it("MAY specify a firmware version")
+            it("MAY specify a firmware version", function() {
+                const context = contextFactory<ShebangContext>("#!RandomPlugin@2.7.1")
+                return testPattern(context, "<OPEN><PLUGIN><PLUGIN_FIRMWARE_START><FIRMWARE>")
+            })
         })
 
         describe("node", function() {
