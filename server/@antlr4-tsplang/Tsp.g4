@@ -169,7 +169,7 @@ operatorAnd
     : AND
     ;
 operatorComparison
-    : '<' | '>' | '<=' | '>=' | NE | '=='
+    : LT | GT | '<=' | '>=' | NE | '=='
     ;
 operatorBitwiseOr
     : BIT_OR
@@ -193,7 +193,7 @@ operatorMulDiv
     : '*' | '/'
     ;
 operatorPower
-    : '^'
+    : POW
     ;
 operatorUnary
     : 'not' | '-' | LOGICAL_NOT
@@ -214,11 +214,6 @@ OR
 AND
     : 'and';
 
-NE
-    : '~='
-    | {!this.tsp1}? '!='
-    ;
-
 BIT_OR
     : {!this.tsp1}? '|';
 BIT_XOR
@@ -229,6 +224,31 @@ BIT_LS
     : {!this.tsp1}? '<<';
 BIT_RS
     : {!this.tsp1}? '>>';
+
+POW
+    // Indentation is tabs to match generated code style.
+    : {(
+		// Previous character was not "^".
+		this._input.LA(-1) !== 94
+	)}? '^';
+
+NE
+    : '~='
+    | {!this.tsp1}? '!='
+    ;
+LT
+    // Indentation is tabs to match generated code style.
+    : {(
+		// Previous character was not "<".
+		this._input.LA(-1) !== 60
+	)}? '<';
+GT
+    // Indentation is tabs to match generated code style.
+    : {(
+		// Previous character was not ">".
+		this._input.LA(-1) !== 62
+	)}? '>';
+
 
 LOGICAL_NOT
     : {!this.tsp1}? '!';
