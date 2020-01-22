@@ -121,7 +121,7 @@ describe("antlr4-tsplang", function() {
                         tsp1: true,
                         expectFail: {
                             line: 1,
-                            charPositionInLine: 2,
+                            charPositionInLine: 3,
                             msgContains: ["token recognition", "^"],
                         },
                     },
@@ -159,7 +159,7 @@ describe("antlr4-tsplang", function() {
                         tsp1: true,
                         expectFail: {
                             line: 1,
-                            charPositionInLine: 2,
+                            charPositionInLine: 3,
                             msgContains: ["token recognition", "<"],
                         },
                     },
@@ -178,7 +178,7 @@ describe("antlr4-tsplang", function() {
                         tsp1: true,
                         expectFail: {
                             line: 1,
-                            charPositionInLine: 2,
+                            charPositionInLine: 3,
                             msgContains: ["token recognition", ">"],
                         },
                     },
