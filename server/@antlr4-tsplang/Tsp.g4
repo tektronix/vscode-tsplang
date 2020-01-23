@@ -249,7 +249,6 @@ GT
 		this._input.LA(-1) !== 62
 	)}? '>';
 
-
 LOGICAL_NOT
     : {!this.tsp1}? '!';
 
