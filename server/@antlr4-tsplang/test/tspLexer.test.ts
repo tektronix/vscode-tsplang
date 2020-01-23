@@ -19,7 +19,7 @@ import "mocha"
 
 import { TspLexer } from "../out/TspLexer.generated"
 
-import { ERROR_THROWER } from "./errorListener.fixture"
+import { ERROR_THROWER, ErrorValidator } from "./errorListener.fixture"
 import { flatten, nameExtractor, RecursiveStringArray, typeExtractor } from "./lexer.fixture"
 
 // Test Template
@@ -28,6 +28,21 @@ interface LexTest {
     content: string
     tokenNames: RecursiveStringArray
     tsp1: boolean
+    expectFail?: {
+        line: number
+        /**
+         * Position starts from zero and applies to the character immediately following.
+         *
+         * For example, the string "abcdefg" would have the following positions:
+         * ```text
+         *|0  |2  |4  |6
+         *|a|b|c|d|e|f|g
+         *  |1  |3  |5
+         * ```
+         */
+        charPositionInLine: number
+        msgContains: string[]
+    }
 }
 
 describe("antlr4-tsplang", function() {
@@ -54,6 +69,7 @@ describe("antlr4-tsplang", function() {
                         tokenNames: ["NAME", "HORIZONTAL_WS", "NE", "HORIZONTAL_WS", "NAME"],
                         tsp1: true,
                     },
+                    // #region @neq
                     {
                         name: 'Tokenizes the "!=" operator',
                         content: "x != y",
@@ -61,11 +77,37 @@ describe("antlr4-tsplang", function() {
                         tsp1: false,
                     },
                     {
+                        name: 'TSP1 does not tokenize the "!=" operator',
+                        content: "x != y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "NE", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 2,
+                            msgContains: ["token recognition", "!"],
+                        },
+                    },
+                    // #endregion @neq
+                    // #region @bitor
+                    {
                         name: 'Tokenizes the "|" (bitwise OR) operator',
                         content: "x | y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_OR", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
+                    {
+                        name: 'TSP1 does not tokenize the "|" (bitwise OR) operator',
+                        content: "x | y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_OR", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 2,
+                            msgContains: ["token recognition", "|"],
+                        },
+                    },
+                    // #endregion @bitor
+                    // #region @bitxor
                     {
                         name: 'Tokenizes the "^^" (bitwise XOR) operator',
                         content: "x ^^ y",
@@ -73,11 +115,37 @@ describe("antlr4-tsplang", function() {
                         tsp1: false,
                     },
                     {
+                        name: 'TSP1 does not tokenize the "^^" (bitwise XOR) operator',
+                        content: "x ^^ y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_XOR", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 3,
+                            msgContains: ["token recognition", "^"],
+                        },
+                    },
+                    // #endregion @bitxor
+                    // #region @bitand
+                    {
                         name: 'Tokenizes the "&" (bitwise AND) operator',
                         content: "x & y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_AND", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
+                    {
+                        name: 'TSP1 does not tokenize the "&" (bitwise AND) operator',
+                        content: "x & y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_AND", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 2,
+                            msgContains: ["token recognition", "&"],
+                        },
+                    },
+                    // #endregion @bitand
+                    // #region @bitleftshift
                     {
                         name: 'Tokenizes the "<<" (bitwise left shift) operator',
                         content: "x << y",
@@ -85,17 +153,55 @@ describe("antlr4-tsplang", function() {
                         tsp1: false,
                     },
                     {
+                        name: 'TSP1 does not tokenize the "<<" (bitwise left shift) operator',
+                        content: "x << y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_LS", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 3,
+                            msgContains: ["token recognition", "<"],
+                        },
+                    },
+                    // #endregion @bitleftshift
+                    // #region @bitrightshift
+                    {
                         name: 'Tokenizes the ">>" (bitwise right shift) operator',
                         content: "x >> y",
                         tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_RS", "HORIZONTAL_WS", "NAME"],
                         tsp1: false,
                     },
                     {
+                        name: 'TSP1 does not tokenize the ">>" (bitwise right shift) operator',
+                        content: "x >> y",
+                        tokenNames: ["NAME", "HORIZONTAL_WS", "BIT_RS", "HORIZONTAL_WS", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 3,
+                            msgContains: ["token recognition", ">"],
+                        },
+                    },
+                    // #endregion @bitrightshift
+                    // #region @logicalnot
+                    {
                         name: 'Tokenizes the "!" (logical NOT) operator',
                         content: "!x",
                         tokenNames: ["LOGICAL_NOT", "NAME"],
                         tsp1: false,
                     },
+                    {
+                        name: 'TSP1 does not tokenize the "!" (logical NOT) operator',
+                        content: "!x",
+                        tokenNames: ["LOGICAL_NOT", "NAME"],
+                        tsp1: true,
+                        expectFail: {
+                            line: 1,
+                            charPositionInLine: 0,
+                            msgContains: ["token recognition", "!"],
+                        },
+                    },
+                    // #endregion @logicalnot
                     {
                         name: 'Tokenizes boolean "true"',
                         content: "true",
@@ -150,16 +256,31 @@ describe("antlr4-tsplang", function() {
                     const inputStream = new ANTLRInputStream(test.content)
                     const lexer = new TspLexer(inputStream)
                     lexer.tsp1 = test.tsp1
-                    lexer.addErrorListener(ERROR_THROWER)
+                    if (!test.expectFail) {
+                        lexer.addErrorListener(ERROR_THROWER)
 
-                    const expected = flatten(test.tokenNames)
-                    const actual = lexer
-                        .getAllTokens()
-                        .map(typeExtractor)
-                        .map(nameExtractor.bind(lexer))
+                        const expected = flatten(test.tokenNames)
+                        const actual = lexer
+                            .getAllTokens()
+                            .map(typeExtractor)
+                            .map(nameExtractor.bind(lexer))
 
-                    expect(actual).deep.equals(expected)
-                    done()
+                        expect(actual).deep.equals(expected)
+                        done()
+                    } else {
+                        lexer.removeErrorListeners()
+                        lexer.addErrorListener(
+                            new ErrorValidator(done, (line, charPositionInLine, msg) => {
+                                expect(line).to.equal(test.expectFail.line)
+                                expect(charPositionInLine).to.equal(test.expectFail.charPositionInLine)
+                                test.expectFail.msgContains.forEach(substring => {
+                                    expect(msg).to.contain(substring)
+                                })
+                            })
+                        )
+
+                        lexer.getAllTokens()
+                    }
                 })
             })
         })
