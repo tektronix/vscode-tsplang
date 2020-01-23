@@ -42,6 +42,11 @@
                 "command": "tsplang.debug.colorizeTokens",
                 "title": "Colorize TSP Document Tokens",
                 "category": "Developer"
+            },
+            {
+                "command": "tsplang.debug.triggerOpenTextDocumentRequest",
+                "title": "Send an OpenTextDocument Request",
+                "category": "Developer"
             }
         ],
         "configuration": {
