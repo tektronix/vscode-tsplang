@@ -18,6 +18,7 @@ import { ExtensionContext, workspace } from "vscode"
 import { LanguageClient, TransportKind } from "vscode-languageclient"
 
 import { commandFeatureController } from "./command"
+import { incomingServerRequestController } from "./incomingServerRequest"
 import { initializingExtensionMessage } from "./statusBar"
 
 export const language = "tsp"
@@ -67,6 +68,9 @@ export function activate(context: ExtensionContext): void {
 
     /* Normal Features */
     commandFeatureController.register(langclient)
+
+    /* Server Requests */
+    incomingServerRequestController.register(langclient)
 
     // Push the disposable to the context's subscriptions so that the client can be
     // deactivated on extension deactivation

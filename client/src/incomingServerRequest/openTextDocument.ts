@@ -13,30 +13,27 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+import { Uri, workspace } from "vscode"
+import { RequestType } from "vscode-jsonrpc"
 import { LanguageClient } from "vscode-languageclient"
 
-import { BaseFeatureController, FeatureInterface } from "../feature"
+import { ServerRequestReceiver } from "."
 
-import { colorizeTokens } from "./colorizeTokens"
-import { triggerOpenTextDocument } from "./triggerOpenTextDocument"
+const OpenTextDocumentRequest = new RequestType<string, void, Error, void>(
+    "OpenTextDocumentRequest"
+)
 
-export interface CommandFeatureInterface extends FeatureInterface {
-    readonly ID: string
-}
-
-class CommandFeatureController extends BaseFeatureController {
-    constructor() {
-        super()
-        this._features.push(...[colorizeTokens, triggerOpenTextDocument])
-    }
-
+class OpenTextDocumentRequestReceiver
+    implements ServerRequestReceiver<string, void, Error> {
     register(client: LanguageClient): void {
-        super.register(client)
+        client.onReady().then(() => {
+            client.onRequest(OpenTextDocumentRequest, this.onRequest.bind(this))
+        })
     }
 
-    dispose(): void {
-        super.dispose()
+    async onRequest(uri: string): Promise<void> {
+        await workspace.openTextDocument(Uri.parse(uri, true))
     }
 }
 
-export const commandFeatureController = new CommandFeatureController()
+export const openTextDocumentRequestReceiver = new OpenTextDocumentRequestReceiver()
