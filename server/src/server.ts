@@ -29,6 +29,7 @@ import {
 import { NotificationType, RequestType } from "vscode-jsonrpc"
 import {
     createConnection,
+    DidOpenTextDocumentParams,
     IConnection,
     InitializeResult,
     IPCMessageReader,
@@ -55,8 +56,16 @@ const ColorizeTokensRequest = new RequestType<
     void
 >("ColorizeTokensRequest")
 
+const OpenTextDocumentRequest = new RequestType<string, void, Error, void>(
+    "OpenTextDocumentRequest"
+)
+
 const ServerReadyNotification = new NotificationType<undefined, void>(
     "ServerReadyNotification"
+)
+
+const TriggerOpenTextDocumentRequest = new NotificationType<string, void>(
+    "TriggerOpenTextDocumentRequest"
 )
 
 connection.onInitialize(
@@ -71,6 +80,12 @@ connection.onInitialize(
         }
     }
 )
+
+connection.onDidOpenTextDocument((params: DidOpenTextDocumentParams): void => {
+    connection.window.showInformationMessage(
+        `Received onDidOpenTextDocument for ${params.textDocument.uri}`
+    )
+})
 
 declare type HRTime = [number, number]
 
@@ -95,6 +110,13 @@ function printParseTime(
     }
     console.log(`${count}> ${type} elapsed time: ${seconds}s ${milli}ms`)
 }
+
+connection.onNotification(TriggerOpenTextDocumentRequest, (param: string): void => {
+    console.debug(`Received a TriggerOpenTextDocumentRequest for ${param}`)
+    connection.sendRequest(OpenTextDocumentRequest, param).then(undefined, (): void => {
+        connection.window.showErrorMessage(`Error reading file ${param}`)
+    })
+})
 
 let count = 0
 connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpans[] => {
