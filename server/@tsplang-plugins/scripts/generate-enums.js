@@ -47,9 +47,6 @@ Arguments.parse = function(argv) {
         })
     })(argv)
 
-    /** @type {Arguments} */
-    const result = {}
-
     // Verify the output directory
     let outputDir = argv.shift()
     if (outputDir === undefined) {
