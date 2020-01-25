@@ -750,9 +750,7 @@ function main() {
 
             try {
                 rawGroups.push(
-                    ...response.map(groupString =>
-                        RawEnumGroup.parse(groupString)
-                    )
+                    ...response.map(groupString => RawEnumGroup.parse(groupString))
                 )
                 enumGroups.push(...rawGroups.map(rawGroup => EnumGroup.from(rawGroup)))
             } catch (e) {
