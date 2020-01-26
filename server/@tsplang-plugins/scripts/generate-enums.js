@@ -111,67 +111,70 @@ Arguments.parse = function(argv) {
 /** @namespace */
 const InstrumentComms = {
     SCRAPER: `
-        prevprompts = localnode.prompts;
-        if prevprompts == localnode.ENABLE then
-            localnode.prompts = localnode.DISABLE;
-        end;
+        SCRAPER = {
+            prevprompts = nil,
+            __make_entry = (
+                function(enum)
+                    if enum == nil then return ""; end;
 
-        function make_entry(enum)
-            if enum == nil then return ""; end;
+                    if enum["__tostring"] ~= nil then
+                        local result = tostring(enum);
 
-            if enum["__tostring"] ~= nil then
-                local result = tostring(enum);
+                        if enum["__tonumber"] ~= nil then
+                            result = result.."\\t"..tostring(tonumber(enum));
+                        end;
 
-                if enum["__tonumber"] ~= nil then
-                    result = result.."\\t"..tostring(tonumber(enum));
-                end;
-
-                return result.."\\n";
-            end;
-
-            return "";
-        end
-
-        do
-            local mtable = getmetatable(smu.ON);
-            local consecutive_nils = 0;
-            local i = 0;
-            while (i < 16777215) do
-                local enumtable = mtable[i];
-                if enumtable ~= nil then
-                    consecutive_nils = 0;
-                    local packet = "";
-
-                    local zeroth = enumtable[0];
-                    if zeroth ~= nil then
-                        packet = make_entry(zeroth);
+                        return result.."\\n";
                     end;
 
-                    for j,enum in ipairs(enumtable) do
-                        packet = packet..make_entry(enum);
+                    return "";
+                end;
+            ),
+            __mtable = getmetatable(smu.ON),
+            __consecutive_nils = 0,
+            __i = 0,
+            next = (
+                function(self)
+                    while (self.__i < 16777215) do
+                        local enumtable = self.__mtable[self.__i];
+                        self.__i = self.__i + 1;
+
+                        if enumtable ~= nil then
+                            self.__consecutive_nils = 0;
+                            local packet = "";
+
+                            local zeroth = enumtable[0];
+                            if zeroth ~= nil then
+                                packet = self.__make_entry(zeroth);
+                            end;
+
+                            for j,enum in ipairs(enumtable) do
+                                packet = packet..self.__make_entry(enum);
+                            end;
+
+                            if packet ~= "" then
+                                return tostring(self.__i - 1).."\\n"..packet;
+                            end;
+                        else
+                            self.__consecutive_nils = self.__consecutive_nils + 1;
+                        end;
+
+                        if self.__consecutive_nils > 1000000 then
+                            break;
+                        end;
                     end;
 
-                    if packet ~= "" then
-                        print(tostring(i).."\\n"..packet);
-                        delay(0.1);
-                    end;
-                else
-                    consecutive_nils = consecutive_nils + 1;
+                    return nil;
                 end;
-
-                i = i + 1;
-
-                if consecutive_nils > 1000000 then
-                    break;
+            ),
+            done = (
+                function(self)
+                    localnode.prompts = self.prevprompts;
+                    _G["SCRAPER"] = nil;
+                    return nil;
                 end;
-            end;
-        end;
-
-        print("done");
-
-        make_entry = nil;
-        localnode.prompts = prevprompts;
-        prevprompts = nil;
+            )
+        };
     `.replace(/\s{2,}|\n/gm, " "),
 
     /**
@@ -183,6 +186,7 @@ const InstrumentComms = {
      */
     connect: function(ip, port) {
         return new Promise((resolve, reject) => {
+            let cleaned = false
             /** @type {Array<string>} */
             const received = []
 
@@ -198,10 +202,16 @@ const InstrumentComms = {
                 const str = data.toString().trim()
                 console.log(`<- ${str}`)
 
-                if (str === "done") {
-                    if (!socket.destroyed) socket.end()
+                if (str === "nil") {
+                    if (!cleaned) {
+                        socket.write("print(SCRAPER:done())")
+                        cleaned = true
+                    } else {
+                        if (!socket.destroyed) socket.end()
+                    }
                 } else {
                     received.push(str)
+                    socket.write("print(SCRAPER:next())")
                 }
             })
             socket.on("error", function(err) {
