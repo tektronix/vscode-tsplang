@@ -13,12 +13,14 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import { ANTLRInputStream, CommonToken, CommonTokenStream, ParserRuleContext } from "antlr4ts"
+/*
+ import { ANTLRInputStream, CommonToken, CommonTokenStream, ParserRuleContext } from "antlr4ts"
 import { ParseTree, TerminalNode } from "antlr4ts/tree"
 import { XPath } from "antlr4ts/tree/xpath"
 import { expect } from "chai"
+*/
 import "mocha"
-
+/*
 import { TspLexer } from "../out/TspLexer.generated"
 import {
     ArgsContext,
@@ -60,6 +62,7 @@ import {
 } from "./parser.fixture"
 
 import { ERROR_THROWER, ErrorValidator } from "./errorListener.fixture"
+*/
 
 describe("antlr4-tsplang", function() {
     describe("TspParser", function() {
