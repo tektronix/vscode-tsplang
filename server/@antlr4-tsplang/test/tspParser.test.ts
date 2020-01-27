@@ -80,51 +80,124 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("operatorUnary", function() {
-            it.skip('Parses an operatorUnary composed of a "not" string')
+            it.skip('Can be a "not" string')
 
-            it.skip('Parses an operatorUnary composed of a "-" string')
+            it.skip('Can be a "-" string')
 
-            it.skip("Parses an operatorUnary composed of a LOGICAL_NOT token")
+            it.skip("Can be a LOGICAL_NOT token")
         })
 
-        it.skip("Parses an operatorPower composed of a POW token")
+        describe("operatorPower", function() {
+            it.skip("Can be a POW token")
+        })
 
-        it.skip('Parses an operatorMulDiv composed of a "*" string')
+        describe("operatorMulDiv", function() {
+            it.skip('Can be a "*" string')
 
-        it.skip('Parses an operatorMulDiv composed of a "/" string')
+            it.skip('Can be a "/" string')
+        })
 
-        it.skip('Parses an operatorAddSub composed of a "+" string')
+        describe("operatorAddSub", function() {
+            it.skip('Can be a "+" string')
 
-        it.skip('Parses an operatorAddSub composed of a "-" string')
+            it.skip('Can be a "-" string')
+        })
 
-        it.skip('Parses an operatorStrcat composed of a ".." string')
+        describe("operatorStrcat", function() {
+            it.skip('Can be a ".." string')
+        })
 
-        it.skip("Parses an operatorBitwiseShift composed of a BIT_LS token")
+        describe("operatorBitwiseShift", function() {
+            it.skip("Can be a BIT_LS token")
+            it.skip("Can be a BIT_RS token")
+        })
 
-        it.skip("Parses an operatorBitwiseShift composed of a BIT_RS token")
+        describe("operatorBitwiseAnd", function() {
+            it.skip("Can be a BIT_AND token")
+        })
 
-        it.skip("Parses an operatorBitwiseAnd composed of a BIT_AND token")
+        describe("operatorBitwiseXor", function() {
+            it.skip("Can be a BIT_XOR token")
+        })
 
-        it.skip("Parses an operatorBitwiseXor composed of a BIT_XOR token")
+        describe("operatorBitwiseOr", function() {
+            it.skip("Can be a BIT_OR token")
+        })
 
-        it.skip("Parses an operatorBitwiseOr composed of a BIT_OR token")
+        describe("operatorComparison", function() {
+            it.skip("Can be an LT token")
+            it.skip("Can be a GT token")
+            it.skip('Can be a "<=" string')
+            it.skip('Can be a ">=" string')
+            it.skip("Can be a NE token")
+            it.skip('Can be a "==" string')
+        })
 
-        it.skip("Parses an operatorComparison composed of an LT token")
+        describe("operatorAnd", function() {
+            it.skip("Can be an AND token")
+        })
 
-        it.skip("Parses an operatorComparison composed of a GT token")
+        describe("operatorOr", function() {
+            it.skip("Can be an OR token")
+        })
 
-        it.skip('Parses an operatorComparison composed of a "<=" string')
+        describe("field", function() {
+            it.skip("Can use rule 1 of 3")
+            it.skip("Can use rule 2 of 3")
+            it.skip("Can use rule 3 of 3")
+        })
 
-        it.skip('Parses an operatorComparison composed of a ">=" string')
+        describe("fieldlist", function() {
+            it.skip("Can parse multiple fields on a single line")
+        })
 
-        it.skip("Parses an operatorComparison composed of a NE token")
+        describe("tableConstructor", function() {
+            it.skip("Can parse and empty table constructor")
+            it.skip("Can parse a table constructor containing a fieldlist")
+        })
 
-        it.skip('Parses an operatorComparison composed of a "==" string')
+        describe("args", function() {
+            it.skip("")
+        })
 
-        it.skip("Parses an operatorAnd composed of an AND token")
+        describe("functionCall", function() {
+            it.skip("")
+        })
 
-        it.skip("Parses an operatorOr composed of an OR token")
+        describe("variable", function() {
+            it.skip("")
+        })
 
-        it.skip("Parses a field using rule 1 of 3")
+        describe("index", function() {
+            it.skip("")
+        })
+
+        describe("suffix", function() {
+            it.skip("")
+        })
+
+        describe("prefix", function() {
+            it.skip("")
+        })
+
+        describe("expression", function() {
+            it.skip("")
+        })
+
+        describe("value", function() {
+            it.skip("")
+        })
+
+        describe("assignment", function() {
+            it.skip("")
+        })
+
+        describe("statement", function() {
+            it.skip("")
+        })
+
+        describe("chunk", function() {
+            it.skip("")
+        })
     })
 })
