@@ -205,14 +205,14 @@ const InstrumentComms = {
 
                 if (str === "nil") {
                     if (!cleaned) {
-                        socket.write("print(SCRAPER:done())")
+                        socket.write("print(SCRAPER:done())\n")
                         cleaned = true
                     } else {
                         if (!socket.destroyed) socket.end()
                     }
                 } else {
                     received.push(str)
-                    socket.write("print(SCRAPER:next())")
+                    socket.write("print(SCRAPER:next())\n")
                 }
             })
             socket.on("error", function(err) {
