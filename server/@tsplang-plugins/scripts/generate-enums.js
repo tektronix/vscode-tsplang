@@ -130,7 +130,7 @@ const InstrumentComms = {
                     return "";
                 end;
             ),
-            __mtable = getmetatable(smu.ON),
+            __mtable = getmetatable(localnode.ENABLE),
             __consecutive_nils = 0,
             __i = 0,
             next = (
