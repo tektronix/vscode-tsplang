@@ -3,7 +3,6 @@
 
 const colors = require("colors/safe")
 const fsExtra = require("fs-extra")
-const luamin = require("luamin")
 const net = require("net")
 const path = require("path")
 
