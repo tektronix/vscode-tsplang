@@ -112,7 +112,7 @@ Arguments.parse = function(argv) {
 const InstrumentComms = {
     SCRAPER: `
         SCRAPER = {
-            prevprompts = nil,
+            prevprompts = localnode.prompts,
             toentry = (
                 function(enum)
                     if enum == nil then return "" end
@@ -175,6 +175,7 @@ const InstrumentComms = {
                 end
             )
         }
+        localnode.prompts = localnode.DISABLE
         print(SCRAPER:next())
     `.replace(/$\s{2,}|\s{2,}/gm, " "),
 
@@ -203,7 +204,7 @@ const InstrumentComms = {
                 const str = data.toString().trim()
                 console.log(`<- ${str}`)
 
-                if (str === "nil") {
+                if (str.endsWith("nil")) {
                     if (!cleaned) {
                         socket.write("print(SCRAPER:done())\n")
                         cleaned = true
