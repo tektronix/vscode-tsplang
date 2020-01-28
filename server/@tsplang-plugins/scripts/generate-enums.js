@@ -175,6 +175,7 @@ const InstrumentComms = {
                 end;
             )
         };
+        print(SCRAPER:next());
     `.replace(/\s{2,}|\n/gm, " "),
 
     /**
