@@ -3,6 +3,7 @@
 
 const colors = require("colors/safe")
 const fsExtra = require("fs-extra")
+const luamin = require("luamin")
 const net = require("net")
 const path = require("path")
 
@@ -113,70 +114,70 @@ const InstrumentComms = {
     SCRAPER: `
         SCRAPER = {
             prevprompts = nil,
-            __make_entry = (
+            toentry = (
                 function(enum)
-                    if enum == nil then return ""; end;
+                    if enum == nil then return "" end
 
                     if enum["__tostring"] ~= nil then
-                        local result = tostring(enum);
+                        local r = tostring(enum)
 
                         if enum["__tonumber"] ~= nil then
-                            result = result.."\\t"..tostring(tonumber(enum));
-                        end;
+                            r = r.."\\t"..tostring(tonumber(enum))
+                        end
 
-                        return result.."\\n";
-                    end;
+                        return r.."\\n"
+                    end
 
-                    return "";
-                end;
+                    return ""
+                end
             ),
-            __mtable = getmetatable(localnode.ENABLE),
-            __consecutive_nils = 0,
-            __i = 0,
+            mtable = getmetatable(localnode.ENABLE),
+            nil_repeats = 0,
+            i = 0,
             next = (
                 function(self)
-                    while (self.__i < 16777215) do
-                        local enumtable = self.__mtable[self.__i];
-                        self.__i = self.__i + 1;
+                    while (self.i < 16777215) do
+                        local t = self.mtable[self.i]
+                        self.i = self.i + 1
 
-                        if enumtable ~= nil then
-                            self.__consecutive_nils = 0;
-                            local packet = "";
+                        if t ~= nil then
+                            self.nil_repeats = 0
+                            local packet = ""
 
-                            local zeroth = enumtable[0];
+                            local zeroth = t[0]
                             if zeroth ~= nil then
-                                packet = self.__make_entry(zeroth);
-                            end;
+                                packet = self.toentry(zeroth)
+                            end
 
-                            for j,enum in ipairs(enumtable) do
-                                packet = packet..self.__make_entry(enum);
-                            end;
+                            for j,enum in ipairs(t) do
+                                packet = packet..self.toentry(enum)
+                            end
 
                             if packet ~= "" then
-                                return tostring(self.__i - 1).."\\n"..packet;
-                            end;
+                                return tostring(self.i - 1).."\\n"..packet
+                            end
                         else
-                            self.__consecutive_nils = self.__consecutive_nils + 1;
-                        end;
+                            self.nil_repeats = self.nil_repeats + 1
+                        end
 
-                        if self.__consecutive_nils > 1000000 then
-                            break;
-                        end;
-                    end;
+                        if self.nil_repeats > 1000000 then
+                            break
+                        end
+                    end
 
-                    return nil;
-                end;
+                    return nil
+                end
             ),
             done = (
                 function(self)
-                    localnode.prompts = self.prevprompts;
-                    _G["SCRAPER"] = nil;
-                    return nil;
-                end;
+                    localnode.prompts = self.prevprompts
+                    _G["SCRAPER"] = nil
+                    return nil
+                end
             )
-        };
-        print(SCRAPER:next());
-    `.replace(/\s{2,}|\n/gm, " "),
+        }
+        print(SCRAPER:next())
+    `.replace(/$\s{2,}|\s{2,}/gm, " "),
 
     /**
      * @memberof InstrumentComms
