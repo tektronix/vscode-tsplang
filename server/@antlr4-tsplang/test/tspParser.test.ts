@@ -161,7 +161,16 @@ describe("antlr4-tsplang", function() {
         })
 
         describe("args", function() {
-            it.skip("")
+            // Alternative 1
+            it.skip('SHOULD parse an empty argument list ("()")')
+            it.skip('MAY parse a single argument expression ("(expression)")')
+            it.skip('MAY parse multiple argument expressions separated by "," tokens')
+
+            // Alternative 2
+            it.skip("SHOULD parse a tableConstructor")
+
+            // Alternative 3
+            it.skip("SHOULD parse a string")
         })
 
         describe("functionCall", function() {
