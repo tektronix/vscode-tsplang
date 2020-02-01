@@ -67,96 +67,97 @@ import { ERROR_THROWER, ErrorValidator } from "./errorListener.fixture"
 describe("antlr4-tsplang", function() {
     describe("TspParser", function() {
         describe("string", function() {
-            it.skip("Can be a NORMALSTRING token.")
-
-            it.skip("Can be a CHARSTRING token")
-
-            it.skip("Can be a LONGSTRING token")
+            it.skip("SHOULD parse a NORMALSTRING token.")
+            it.skip("SHOULD parse a CHARSTRING token")
+            it.skip("SHOULD parse a LONGSTRING token")
         })
 
         describe("number", function() {
-            it.skip("Can be an INT token")
-
-            it.skip("Can be a HEX token")
-
-            it.skip("Can be a FLOAT token")
+            it.skip("SHOULD parse an INT token")
+            it.skip("SHOULD parse a HEX token")
+            it.skip("SHOULD parse a FLOAT token")
         })
 
         describe("operatorUnary", function() {
-            it.skip('Can be a "not" string')
-
-            it.skip('Can be a "-" string')
-
-            it.skip("Can be a LOGICAL_NOT token")
+            it.skip('SHOULD parse a "not" token')
+            it.skip('SHOULD parse a "-" token')
+            it.skip("SHOULD parse a LOGICAL_NOT token")
         })
 
         describe("operatorPower", function() {
-            it.skip("Can be a POW token")
+            it.skip("MUST parse a POW token")
         })
 
         describe("operatorMulDiv", function() {
-            it.skip('Can be a "*" string')
-
-            it.skip('Can be a "/" string')
+            it.skip('SHOULD parse a "*" token')
+            it.skip('SHOULD parse a "/" token')
         })
 
         describe("operatorAddSub", function() {
-            it.skip('Can be a "+" string')
-
-            it.skip('Can be a "-" string')
+            it.skip('SHOULD parse a "+" token')
+            it.skip('SHOULD parse a "-" token')
         })
 
         describe("operatorStrcat", function() {
-            it.skip('Can be a ".." string')
+            it.skip('MUST parse a ".." token')
         })
 
         describe("operatorBitwiseShift", function() {
-            it.skip("Can be a BIT_LS token")
-            it.skip("Can be a BIT_RS token")
+            it.skip("SHOULD parse a BIT_LS token")
+            it.skip("SHOULD parse a BIT_RS token")
         })
 
         describe("operatorBitwiseAnd", function() {
-            it.skip("Can be a BIT_AND token")
+            it.skip("MUST parse a BIT_AND token")
         })
 
         describe("operatorBitwiseXor", function() {
-            it.skip("Can be a BIT_XOR token")
+            it.skip("MUST parse a BIT_XOR token")
         })
 
         describe("operatorBitwiseOr", function() {
-            it.skip("Can be a BIT_OR token")
+            it.skip("MUST parse a BIT_OR token")
         })
 
         describe("operatorComparison", function() {
-            it.skip("Can be an LT token")
-            it.skip("Can be a GT token")
-            it.skip('Can be a "<=" string')
-            it.skip('Can be a ">=" string')
-            it.skip("Can be a NE token")
-            it.skip('Can be a "==" string')
+            it.skip("SHOULD parse a LT token")
+            it.skip("SHOULD parse a GT token")
+            it.skip('SHOULD parse a "<=" token')
+            it.skip('SHOULD parse a ">=" token')
+            it.skip("SHOULD parse a NE token")
+            it.skip('SHOULD parse a "==" token')
         })
 
         describe("operatorAnd", function() {
-            it.skip("Can be an AND token")
+            it.skip("MUST parse an AND token")
         })
 
         describe("operatorOr", function() {
-            it.skip("Can be an OR token")
+            it.skip("MUST parse an OR token")
         })
 
         describe("field", function() {
-            it.skip("Can use rule 1 of 3")
-            it.skip("Can use rule 2 of 3")
-            it.skip("Can use rule 3 of 3")
+            // Alternative 1
+            it.skip('SHOULD parse an index assignment ("[expression]=expression")')
+
+            // Alternative 2
+            it.skip('SHOULD parse a name assignment ("NAME=expression")')
+
+            // Alternative 3
+            it.skip("SHOULD parse an expression")
         })
 
         describe("fieldlist", function() {
-            it.skip("Can parse multiple fields on a single line")
+            it.skip("MUST parse a field rule")
+            it.skip('MAY parse multiple fields separated by "," tokens')
+            it.skip('MAY parse multiple fields separated by ";" tokens')
+            it.skip('MAY parse a trailing "," token')
+            it.skip('MAY parse a trailing ";" token')
         })
 
         describe("tableConstructor", function() {
-            it.skip("Can parse and empty table constructor")
-            it.skip("Can parse a table constructor containing a fieldlist")
+            it.skip('MUST parse an empty table constructor ("{}")')
+            it.skip('MAY parse a single fieldList ("{fieldList}")')
         })
 
         describe("args", function() {
