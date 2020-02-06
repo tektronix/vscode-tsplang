@@ -6,6 +6,11 @@
             "type": "antlr-debug",
             "request": "launch",
             "name": "Pretty Parse",
+            "presentation": {
+                "hidden": false,
+                "group": "2_ANTLR",
+                "order": 1
+            },
             "input": "server/@antlr4-tsplang/sandbox.lua",
             "startRule": "chunk",
             "visualParseTree": true,
@@ -15,6 +20,11 @@
             "type": "antlr-debug",
             "request": "launch",
             "name": "Text Parse",
+            "presentation": {
+                "hidden": false,
+                "group": "2_ANTLR",
+                "order": 2
+            },
             "input": "server/@antlr4-tsplang/sandbox.lua",
             "startRule": "chunk",
             "visualParseTree": false,
@@ -26,6 +36,11 @@
             "name": "Launch Client",
             "type": "extensionHost",
             "request": "launch",
+            "presentation": {
+                "hidden": false,
+                "group": "1_Extension",
+                "order": 1
+            },
             "runtimeExecutable": "${execPath}",
             "args": [
                 "--extensionDevelopmentPath=${workspaceRoot}"
@@ -44,6 +59,11 @@
             "name": "Attach to Server",
             "type": "node",
             "request": "attach",
+            "presentation": {
+                "hidden": false,
+                "group": "1_Extension",
+                "order": 2
+            },
             "protocol": "inspector",
             "port": 6009,
             "sourceMaps": true,
