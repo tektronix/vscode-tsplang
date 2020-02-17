@@ -20,12 +20,23 @@ import { ErrorObject } from "ajv"
 import { Disposable } from "./disposable"
 
 export namespace ErrorEvents {
+    export const CIRCULAR_DEPENDENCY_ERROR = "CircularDependencyError"
     export const CONFIG_READ_ERROR = "ConfigReadError"
     export const CONFLICTING_NAME_ERROR = "ConflictingNameError"
     export const EXTENDS_UNKNOWN_PLUGIN_ERROR = "ExtendsUnknownPluginError"
     export const INVALID_CONFIG_ERROR = "InvalidConfigError"
 }
 
+const CircularDependencyError = function(
+    requestedPlugin: string,
+    dependencyChain: string[]
+): void {
+    ;(this.emitter as EventEmitter).emit(
+        ErrorEvents.CIRCULAR_DEPENDENCY_ERROR,
+        requestedPlugin,
+        dependencyChain
+    )
+}
 const ConfigReadError = function(reason: Error): void {
     ;(this.emitter as EventEmitter).emit(ErrorEvents.CONFIG_READ_ERROR, reason)
 }
@@ -63,6 +74,7 @@ const InvalidConfigError = function(reasons: ErrorObject[] | null): void {
 
 export class ProviderErrorEmitter implements Disposable {
     protected emitter: EventEmitter
+    protected readonly sendCircularDependencyError: typeof CircularDependencyError
     protected readonly sendConfigReadError: typeof ConfigReadError
     protected readonly sendConflictingNameError: typeof ConflictingNameError
     protected readonly sendExtendsUnknownPluginError: typeof ExtendsUnknownPluginError
@@ -70,6 +82,7 @@ export class ProviderErrorEmitter implements Disposable {
 
     constructor() {
         this.emitter = new EventEmitter()
+        this.sendCircularDependencyError = CircularDependencyError.bind(this)
         this.sendConfigReadError = ConfigReadError.bind(this)
         this.sendConflictingNameError = ConflictingNameError.bind(this)
         this.sendExtendsUnknownPluginError = ExtendsUnknownPluginError.bind(this)
@@ -78,6 +91,10 @@ export class ProviderErrorEmitter implements Disposable {
 
     dispose(): void {
         this.emitter.removeAllListeners()
+    }
+
+    onCircularDependencyError(listener: typeof CircularDependencyError): void {
+        this.emitter.on(ErrorEvents.CIRCULAR_DEPENDENCY_ERROR, listener)
     }
 
     onConfigReadError(listener: typeof ConfigReadError): void {

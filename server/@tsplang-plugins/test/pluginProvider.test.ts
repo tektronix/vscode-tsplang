@@ -1143,6 +1143,33 @@ describe("tsplang-plugins", function() {
                     expect(actual.licenses).to.deep.equal(expectedLicenses)
                 })
 
+                it("Emits a CircularDependencyError when a circular dependency is detected", function(done: Mocha.Done) {
+                    const rootKey = "2450"
+                    const circularKey = "2461"
+                    const expectedDependencyChain = [rootKey, "lua", circularKey]
+
+                    const provider = new PluginProvider()
+                    provider["loadAllPluginConfigs"]()
+
+                    for (let i = 0; i < expectedDependencyChain.length; i++) {
+                        const plugin = provider["plugins"].get(expectedDependencyChain[i])
+                        expect(plugin).to.exist
+                        plugin.settings.extends =
+                            i + 1 < expectedDependencyChain.length
+                                ? [expectedDependencyChain[i + 1]]
+                                : [expectedDependencyChain[0]]
+                    }
+
+                    provider.onCircularDependencyError((requestedPlugin: string, dependencyChain: string[]) => {
+                        // expect(requestedPlugin).to.equal(circularKey)
+                        expect(dependencyChain).to.deep.equal(expectedDependencyChain)
+                        done()
+                    })
+
+                    // Trigger the circular dependency
+                    provider.get(rootKey)
+                })
+
                 it("Emits an ExtendsUnknownPluginError when a dependency is unavailable", function(done: Mocha.Done) {
                     const targetKey = "2450"
                     const expectedUnknown = "unknown"
