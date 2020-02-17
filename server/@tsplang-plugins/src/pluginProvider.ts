@@ -78,6 +78,20 @@ export class PluginProvider extends ProviderErrorEmitter {
      * requested plugin and any plugin it extends.
      */
     get(plugin: string): TsplangPlugin | undefined {
+        return this._get(plugin, new Set())
+    }
+
+    /**
+     * Recursive backing method for `PluginProvider#get`.
+     *
+     * @param plugin The plugin to resolve.
+     * @param dependencyChain Names of plugins that have already been resolved.
+     * @returns See {@link PluginProvider.get}
+     */
+    protected _get(
+        plugin: string,
+        dependencyChain: Set<string>
+    ): TsplangPlugin | undefined {
         if (this.plugins === undefined) {
             this.loadAllPluginConfigs()
         }
@@ -110,8 +124,21 @@ export class PluginProvider extends ProviderErrorEmitter {
             extensionObject.include = extensionObject.include ?? []
             extensionObject.exclude = extensionObject.exclude ?? []
 
+            // Check for circular dependencies.
+            if (dependencyChain.has(extensionObject.plugin)) {
+                this.sendCircularDependencyError(extensionObject.plugin, [
+                    ...dependencyChain,
+                    plugin,
+                ])
+                // Do not attempt to load a partial plugin.
+                return
+            }
+
             // Recurse to request this plugin's extension dependency.
-            const extendedPlugin = this.get(extensionObject.plugin)
+            const extendedPlugin = this._get(
+                extensionObject.plugin,
+                new Set([...dependencyChain, plugin])
+            )
 
             // Emit an error if we were unable to resolve a plugin name.
             if (extendedPlugin === undefined) {
