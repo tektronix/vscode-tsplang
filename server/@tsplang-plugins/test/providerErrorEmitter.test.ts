@@ -19,6 +19,11 @@ import "mocha"
 
 import { ErrorEvents, ProviderErrorEmitter } from "../out/providerErrorEmitter"
 
+interface CircularDependencyErrorArgs {
+    requestedPlugin: string
+    dependencyChain: string[]
+}
+
 interface ConfigReadErrorArgs {
     reason: Error
 }
@@ -41,6 +46,53 @@ interface InvalidConfigErrorArgs {
 
 describe("tsplang-plugins", function() {
     describe("ProviderErrorEmitter", function() {
+        describe("CircularDependencyError", function() {
+            it("Accepts callback subscriptions", function() {
+                let listenerCount: number
+                const Emitter = new ProviderErrorEmitter()
+
+                Emitter.onCircularDependencyError((...args: unknown[]) => expect(args))
+                listenerCount = Emitter["emitter"].listenerCount(ErrorEvents.CIRCULAR_DEPENDENCY_ERROR)
+                expect(listenerCount).to.equal(1)
+
+                Emitter.onCircularDependencyError((...args: unknown[]) => expect(args))
+                listenerCount = Emitter["emitter"].listenerCount(ErrorEvents.CIRCULAR_DEPENDENCY_ERROR)
+                expect(listenerCount).to.equal(2)
+
+                Emitter.onCircularDependencyError((...args: unknown[]) => expect(args))
+                listenerCount = Emitter["emitter"].listenerCount(ErrorEvents.CIRCULAR_DEPENDENCY_ERROR)
+                expect(listenerCount).to.equal(3)
+            })
+
+            it("Emits on the correct channel", function() {
+                let expected: CircularDependencyErrorArgs
+                let actual: CircularDependencyErrorArgs | undefined
+
+                const Emitter = new ProviderErrorEmitter()
+                Emitter.onCircularDependencyError((requestedPlugin, dependencyChain) => {
+                    actual = { requestedPlugin, dependencyChain }
+                })
+
+                expected = {
+                    requestedPlugin: "Test1_RequestedPlugin_Arg",
+                    dependencyChain: ["Test1_Depend1", "Test1_Depend2"],
+                }
+                actual = undefined
+
+                Emitter["sendCircularDependencyError"](expected.requestedPlugin, expected.dependencyChain)
+                expect(actual).to.deep.equal(expected)
+
+                expected = {
+                    requestedPlugin: "Test2_RequestedPlugin_Arg",
+                    dependencyChain: ["Test2_Depend1", "Test2_Depend2", "Test2_Depend3"],
+                }
+                actual = undefined
+
+                Emitter["sendCircularDependencyError"](expected.requestedPlugin, expected.dependencyChain)
+                expect(actual).to.deep.equal(expected)
+            })
+        })
+
         describe("ConfigReadError", function() {
             it("Accepts callback subscriptions", function() {
                 let listenerCount: number
@@ -274,6 +326,7 @@ describe("tsplang-plugins", function() {
                 const Emitter = new ProviderErrorEmitter()
 
                 // Add some event listeners.
+                Emitter.onCircularDependencyError((...args: unknown[]) => expect(args))
                 Emitter.onConfigReadError((...args: unknown[]) => expect(args))
                 Emitter.onConflictingNameError((...args: unknown[]) => expect(args))
                 Emitter.onExtendsUnknownPluginError((...args: unknown[]) => expect(args))
