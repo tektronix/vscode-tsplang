@@ -40,6 +40,7 @@ import {
     TableConstructorContext,
     FieldListContext,
     FieldContext,
+    AnonymousFunctionExpressionContext,
 } from "antlr4-tsplang"
 
 export interface TspSymbol {
@@ -103,6 +104,34 @@ export class ScopeMaker implements TspListener {
 
     enterLocalAssignment(ctx: LocalAssignmentContext): void {
         ctx.scope = this.initScope(ctx)
+    }
+
+    enterValueExpression(): void {
+        // TODO resolve and tag the resulting Lua type.
+    }
+
+    enterAnonymousFunctionExpression(ctx: AnonymousFunctionExpressionContext): void {
+        // TODO locals
+    }
+
+    enterPowerExpression(): void {
+        // TODO resolve and tag the resulting Lua type.
+    }
+
+    enterUnaryExpression(): void {
+        // TODO resolve and tag the resulting Lua type.
+    }
+
+    enterNumericExpression(): void {
+        // TODO resolve and tag the resulting Lua type.
+    }
+
+    enterStringExpression(): void {
+        // TODO resolve and tag the resulting Lua type.
+    }
+
+    enterBooleanExpression(): void {
+        // TODO resolve and tag the resulting Lua type.
     }
 
     enterChunk(ctx: ChunkContext): void {
