@@ -157,13 +157,6 @@ export class ScopeMaker implements TspListener {
         this.initScope(ctx)
     }
 
-    exitChunk(ctx: ChunkContext): void {
-        // Expose all symbols of the ... TODO
-        for (let i = ctx.childCount - 1; i > ctx.childCount; i--) {
-
-        }
-    }
-
     // NOTE: We aren't listening for operator contexts on purpose.
 
     private initScope(ctx: ParserRuleContext): void {
