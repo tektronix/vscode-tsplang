@@ -34,10 +34,13 @@ import {
     IPCMessageReader,
     IPCMessageWriter,
     Range,
+    TextDocumentChangeEvent,
     TextDocumentItem,
+    TextDocuments,
     TextDocumentSyncKind,
 } from "vscode-languageserver"
 
+import { ScopeMaker } from "./symbols"
 import "./augments"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
@@ -45,6 +48,8 @@ const connection: IConnection = createConnection(
     new IPCMessageReader(process),
     new IPCMessageWriter(process)
 )
+
+const TextDocumentManager = new TextDocuments()
 
 interface TokenSpans {
     fullSpan: Range
@@ -66,8 +71,11 @@ connection.onInitialize(
         return {
             capabilities: {
                 textDocumentSync: {
-                    change: TextDocumentSyncKind.None,
+                    change: TextDocumentSyncKind.Full,
                     openClose: true,
+                    save: {
+                        includeText: true,
+                    },
                 },
             },
         }
@@ -173,7 +181,24 @@ connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpan
     return ranges
 })
 
-// Listen on the connection
+TextDocumentManager.onDidOpen((param: TextDocumentChangeEvent): void => {
+    const inputStream = new ANTLRInputStream(param.document.getText())
+    inputStream.name = param.document.uri
+    const lexer = new TspLexer(inputStream)
+    const tokenStream = new TspCommonTokenStream(lexer)
+    const parser = new TspParser(tokenStream)
+
+    parser.buildParseTree = true
+    parser.addParseListener(new ScopeMaker())
+
+    const chunk = parser.chunk()
+
+    console.log(chunk.depth())
+})
+
+// Listen on the connection.
 connection.listen()
+// Listen for document events.
+TextDocumentManager.listen(connection)
 
 connection.sendNotification(ServerReadyNotification, undefined)
