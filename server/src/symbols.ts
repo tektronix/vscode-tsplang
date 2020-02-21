@@ -66,101 +66,107 @@ export class ScopeMaker implements TspListener {
     }
 
     enterGlobalAssignment(ctx: GlobalAssignmentContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterBlock(ctx: BlockContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterWhileLoop(ctx: WhileLoopContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterRepeatLoop(ctx: RepeatLoopContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterIfStatement(ctx: IfStatementContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterNumericFor(ctx: NumericForContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterGenericFor(ctx: GenericForContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterGlobalFunction(ctx: GlobalFunctionContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterLocalFunction(ctx: LocalFunctionContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterLocalAssignment(ctx: LocalAssignmentContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterChunk(ctx: ChunkContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterStatement(ctx: StatementContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterValue(ctx: ValueContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterExpression(ctx: ExpressionContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterPrefix(ctx: PrefixContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterSuffix(ctx: SuffixContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterIndex(ctx: IndexContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterVariable(ctx: VariableContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterFunctionCall(ctx: FunctionCallContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterArgs(ctx: ArgsContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterTableConstructor(ctx: TableConstructorContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterFieldList(ctx: FieldListContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     enterField(ctx: FieldContext): void {
-        this.initScope(ctx)
+        ctx.scope = this.initScope(ctx)
     }
 
     // NOTE: We aren't listening for operator contexts on purpose.
+    //       Same goes for string and number contexts.
 
-    private initScope(ctx: ParserRuleContext): void {
+    private initScope(ctx: ParserRuleContext): Scope {
         // TODO scope inheritance needs validation!
+
+        let result: Scope = {
+            global: [],
+            local: [],
+        }
 
         // Decrement through available siblings until we can inherit a scope.
         for (let index = (ctx.parent?.childCount ?? 0) - 2; index >= 0; index--) {
@@ -173,35 +179,42 @@ export class ScopeMaker implements TspListener {
                     // We only want to inherit from functions when they're called.
                     continue
                 } else {
-                    ctx.scope = {
-                        // Inherit sibling globals.
+                    result = {
+                        // Always inherit globals from the last sibling.
                         global:
                             sibling.scope?.global !== undefined
                                 ? [...sibling.scope.global]
                                 : [],
-                        // Inherit parent locals.
-                        local:
-                            ctx.parent?.scope?.local !== undefined
-                                ? [...ctx.parent.scope.local]
-                                : [],
+                        // Default value. Special inheritance cases resolved below.
+                        local: [],
                     }
+
+                    const inherit: Partial<Scope> = {}
+
+                    // Resolve special local symbol inheritance cases.
+                    if (
+                        sibling instanceof LocalAssignmentContext &&
+                        sibling.scope?.local !== undefined
+                    ) {
+                        inherit.local = [...sibling.scope.local]
+                    } else if (ctx.parent?.scope?.local !== undefined) {
+                        inherit.local = [...ctx.parent.scope.local]
+                    }
+
+                    result = { ...result, ...inherit }
                 }
 
-                return
+                return result
             }
         }
         if (ctx.parent?.scope !== undefined) {
             // Inherit from the parent context.
-            ctx.scope = {
+            result = {
                 global: [...ctx.parent.scope.global],
                 local: [...ctx.parent.scope.local],
             }
-        } else {
-            // Give up and initialize an empty scope.
-            ctx.scope = {
-                global: [],
-                local: [],
-            }
         }
+
+        return result
     }
 }
