@@ -71,23 +71,19 @@ chunk
     ;
 
 statement
-    : assignment
-    | functionCall
-    | 'do' (statement ';'?)* 'end'
-    | 'while' expression 'do' (statement ';'?)* 'end'
-    | 'repeat' (statement ';'?)* 'until' expression
-    | 'if' expression 'then' (statement ';'?)* ('elseif' expression 'then' (statement ';'?)*)* ('else' (statement ';'?)*)? 'end'
-    | 'return' (expression (',' expression)*)?
-    | 'break'
-    | 'for' NAME '=' expression ',' expression (',' expression)? 'do' (statement ';'?)* 'end'
-    | 'for' NAME (',' NAME)* 'in' expression (',' expression)* 'do' (statement ';'?)* 'end'
-    | 'function' NAME ('.' NAME)* (':' NAME)? '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end'
-    | LOCAL 'function' NAME '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end'
-    | LOCAL NAME (',' NAME)* ('=' expression (',' expression)*)?
-    ;
-
-assignment
-    : variable (',' variable)* '=' expression (',' expression)*
+    : variable (',' variable)* '=' expression (',' expression)* #GlobalAssignment
+    | functionCall #CallFunction
+    | 'do' (statement ';'?)* 'end' #Block
+    | 'while' expression 'do' (statement ';'?)* 'end' #WhileLoop
+    | 'repeat' (statement ';'?)* 'until' expression #RepeatLoop
+    | 'if' expression 'then' (statement ';'?)* ('elseif' expression 'then' (statement ';'?)*)* ('else' (statement ';'?)*)? 'end' #IfStatement
+    | 'return' (expression (',' expression)*)? #Return
+    | 'break' #Break
+    | 'for' NAME '=' expression ',' expression (',' expression)? 'do' (statement ';'?)* 'end' #NumericFor
+    | 'for' NAME (',' NAME)* 'in' expression (',' expression)* 'do' (statement ';'?)* 'end' #GenericFor
+    | 'function' NAME ('.' NAME)* (':' NAME)? '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end' #GlobalFunction
+    | LOCAL 'function' NAME '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end' #LocalFunction
+    | LOCAL NAME (',' NAME)* ('=' expression (',' expression)*)? #LocalAssignment
     ;
 
 value

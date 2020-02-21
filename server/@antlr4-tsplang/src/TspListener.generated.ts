@@ -3,9 +3,21 @@
 
 import { ParseTreeListener } from "antlr4ts/tree/ParseTreeListener";
 
+import { GlobalAssignmentContext } from "./TspParser.generated";
+import { CallFunctionContext } from "./TspParser.generated";
+import { BlockContext } from "./TspParser.generated";
+import { WhileLoopContext } from "./TspParser.generated";
+import { RepeatLoopContext } from "./TspParser.generated";
+import { IfStatementContext } from "./TspParser.generated";
+import { ReturnContext } from "./TspParser.generated";
+import { BreakContext } from "./TspParser.generated";
+import { NumericForContext } from "./TspParser.generated";
+import { GenericForContext } from "./TspParser.generated";
+import { GlobalFunctionContext } from "./TspParser.generated";
+import { LocalFunctionContext } from "./TspParser.generated";
+import { LocalAssignmentContext } from "./TspParser.generated";
 import { ChunkContext } from "./TspParser.generated";
 import { StatementContext } from "./TspParser.generated";
-import { AssignmentContext } from "./TspParser.generated";
 import { ValueContext } from "./TspParser.generated";
 import { ExpressionContext } from "./TspParser.generated";
 import { PrefixContext } from "./TspParser.generated";
@@ -39,6 +51,175 @@ import { StringContext } from "./TspParser.generated";
  */
 export interface TspListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by the `GlobalAssignment`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterGlobalAssignment?: (ctx: GlobalAssignmentContext) => void;
+	/**
+	 * Exit a parse tree produced by the `GlobalAssignment`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitGlobalAssignment?: (ctx: GlobalAssignmentContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `CallFunction`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterCallFunction?: (ctx: CallFunctionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `CallFunction`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitCallFunction?: (ctx: CallFunctionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `Block`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterBlock?: (ctx: BlockContext) => void;
+	/**
+	 * Exit a parse tree produced by the `Block`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitBlock?: (ctx: BlockContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `WhileLoop`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterWhileLoop?: (ctx: WhileLoopContext) => void;
+	/**
+	 * Exit a parse tree produced by the `WhileLoop`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitWhileLoop?: (ctx: WhileLoopContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `RepeatLoop`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterRepeatLoop?: (ctx: RepeatLoopContext) => void;
+	/**
+	 * Exit a parse tree produced by the `RepeatLoop`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitRepeatLoop?: (ctx: RepeatLoopContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `IfStatement`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterIfStatement?: (ctx: IfStatementContext) => void;
+	/**
+	 * Exit a parse tree produced by the `IfStatement`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitIfStatement?: (ctx: IfStatementContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `Return`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterReturn?: (ctx: ReturnContext) => void;
+	/**
+	 * Exit a parse tree produced by the `Return`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitReturn?: (ctx: ReturnContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `Break`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterBreak?: (ctx: BreakContext) => void;
+	/**
+	 * Exit a parse tree produced by the `Break`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitBreak?: (ctx: BreakContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `NumericFor`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterNumericFor?: (ctx: NumericForContext) => void;
+	/**
+	 * Exit a parse tree produced by the `NumericFor`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitNumericFor?: (ctx: NumericForContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `GenericFor`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterGenericFor?: (ctx: GenericForContext) => void;
+	/**
+	 * Exit a parse tree produced by the `GenericFor`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitGenericFor?: (ctx: GenericForContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `GlobalFunction`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterGlobalFunction?: (ctx: GlobalFunctionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `GlobalFunction`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitGlobalFunction?: (ctx: GlobalFunctionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `LocalFunction`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterLocalFunction?: (ctx: LocalFunctionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `LocalFunction`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitLocalFunction?: (ctx: LocalFunctionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `LocalAssignment`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	enterLocalAssignment?: (ctx: LocalAssignmentContext) => void;
+	/**
+	 * Exit a parse tree produced by the `LocalAssignment`
+	 * labeled alternative in `TspParser.statement`.
+	 * @param ctx the parse tree
+	 */
+	exitLocalAssignment?: (ctx: LocalAssignmentContext) => void;
+
+	/**
 	 * Enter a parse tree produced by `TspParser.chunk`.
 	 * @param ctx the parse tree
 	 */
@@ -59,17 +240,6 @@ export interface TspListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitStatement?: (ctx: StatementContext) => void;
-
-	/**
-	 * Enter a parse tree produced by `TspParser.assignment`.
-	 * @param ctx the parse tree
-	 */
-	enterAssignment?: (ctx: AssignmentContext) => void;
-	/**
-	 * Exit a parse tree produced by `TspParser.assignment`.
-	 * @param ctx the parse tree
-	 */
-	exitAssignment?: (ctx: AssignmentContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspParser.value`.
