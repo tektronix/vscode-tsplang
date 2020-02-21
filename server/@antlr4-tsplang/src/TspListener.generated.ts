@@ -16,6 +16,13 @@ import { GenericForContext } from "./TspParser.generated";
 import { GlobalFunctionContext } from "./TspParser.generated";
 import { LocalFunctionContext } from "./TspParser.generated";
 import { LocalAssignmentContext } from "./TspParser.generated";
+import { ValueExpressionContext } from "./TspParser.generated";
+import { AnonymousFunctionExpressionContext } from "./TspParser.generated";
+import { PowerExpressionContext } from "./TspParser.generated";
+import { UnaryExpressionContext } from "./TspParser.generated";
+import { NumericExpressionContext } from "./TspParser.generated";
+import { StringExpressionContext } from "./TspParser.generated";
+import { BooleanExpressionContext } from "./TspParser.generated";
 import { ChunkContext } from "./TspParser.generated";
 import { StatementContext } from "./TspParser.generated";
 import { ValueContext } from "./TspParser.generated";
@@ -218,6 +225,97 @@ export interface TspListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	exitLocalAssignment?: (ctx: LocalAssignmentContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `ValueExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterValueExpression?: (ctx: ValueExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `ValueExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitValueExpression?: (ctx: ValueExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `AnonymousFunctionExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterAnonymousFunctionExpression?: (ctx: AnonymousFunctionExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `AnonymousFunctionExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitAnonymousFunctionExpression?: (ctx: AnonymousFunctionExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `PowerExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterPowerExpression?: (ctx: PowerExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `PowerExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitPowerExpression?: (ctx: PowerExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `UnaryExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterUnaryExpression?: (ctx: UnaryExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `UnaryExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitUnaryExpression?: (ctx: UnaryExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `NumericExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterNumericExpression?: (ctx: NumericExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `NumericExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitNumericExpression?: (ctx: NumericExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `StringExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterStringExpression?: (ctx: StringExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `StringExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitStringExpression?: (ctx: StringExpressionContext) => void;
+
+	/**
+	 * Enter a parse tree produced by the `BooleanExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	enterBooleanExpression?: (ctx: BooleanExpressionContext) => void;
+	/**
+	 * Exit a parse tree produced by the `BooleanExpression`
+	 * labeled alternative in `TspParser.expression`.
+	 * @param ctx the parse tree
+	 */
+	exitBooleanExpression?: (ctx: BooleanExpressionContext) => void;
 
 	/**
 	 * Enter a parse tree produced by `TspParser.chunk`.

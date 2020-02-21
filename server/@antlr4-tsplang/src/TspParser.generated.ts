@@ -1071,6 +1071,7 @@ export class TspParser extends Parser {
 			this._errHandler.sync(this);
 			switch ( this.interpreter.adaptivePredict(this._input, 51, this._ctx) ) {
 			case 1:
+				_localctx = new ValueExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 1);
 				{
 				this.state = 332;
@@ -1079,6 +1080,7 @@ export class TspParser extends Parser {
 				break;
 
 			case 2:
+				_localctx = new AnonymousFunctionExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 2);
 				{
 				this.state = 333;
@@ -1167,6 +1169,7 @@ export class TspParser extends Parser {
 				break;
 
 			case 3:
+				_localctx = new PowerExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 3);
 				{
 				this.state = 361;
@@ -1179,6 +1182,7 @@ export class TspParser extends Parser {
 				break;
 
 			case 4:
+				_localctx = new UnaryExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 4);
 				{
 				this.state = 365;
@@ -1189,6 +1193,7 @@ export class TspParser extends Parser {
 				break;
 
 			case 5:
+				_localctx = new NumericExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 5);
 				{
 				this.state = 368;
@@ -1244,6 +1249,7 @@ export class TspParser extends Parser {
 				break;
 
 			case 6:
+				_localctx = new StringExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 6);
 				{
 				this.state = 379;
@@ -1256,6 +1262,7 @@ export class TspParser extends Parser {
 				break;
 
 			case 7:
+				_localctx = new BooleanExpressionContext(_localctx);
 				this.enterOuterAlt(_localctx, 7);
 				{
 				this.state = 383;
@@ -3056,9 +3063,39 @@ export class ValueContext extends ParserRuleContext {
 
 /* istanbul ignore next */
 export class ExpressionContext extends ParserRuleContext {
-	public value(): ValueContext | undefined {
-		return this.tryGetRuleContext(0, ValueContext);
+	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
+		super(parent, invokingState);
 	}
+	// @Override
+	public get ruleIndex(): number { return TspParser.RULE_expression; }
+	public copyFrom(ctx: ExpressionContext): void {
+		super.copyFrom(ctx);
+	}
+}
+/* istanbul ignore next */
+export class ValueExpressionContext extends ExpressionContext {
+	public value(): ValueContext {
+		return this.getRuleContext(0, ValueContext);
+	}
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
+	}
+	// @Override
+	public enterRule(listener: TspListener): void {
+		if (listener.enterValueExpression) {
+			listener.enterValueExpression(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspListener): void {
+		if (listener.exitValueExpression) {
+			listener.exitValueExpression(this);
+		}
+	}
+}
+/* istanbul ignore next */
+export class AnonymousFunctionExpressionContext extends ExpressionContext {
 	public NAME(): TerminalNode[];
 	public NAME(i: number): TerminalNode;
 	public NAME(i?: number): TerminalNode | TerminalNode[] {
@@ -3078,14 +3115,83 @@ export class ExpressionContext extends ParserRuleContext {
 			return this.getRuleContext(i, StatementContext);
 		}
 	}
-	public operatorPower(): OperatorPowerContext | undefined {
-		return this.tryGetRuleContext(0, OperatorPowerContext);
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
 	}
-	public expression(): ExpressionContext | undefined {
-		return this.tryGetRuleContext(0, ExpressionContext);
+	// @Override
+	public enterRule(listener: TspListener): void {
+		if (listener.enterAnonymousFunctionExpression) {
+			listener.enterAnonymousFunctionExpression(this);
+		}
 	}
-	public operatorUnary(): OperatorUnaryContext | undefined {
-		return this.tryGetRuleContext(0, OperatorUnaryContext);
+	// @Override
+	public exitRule(listener: TspListener): void {
+		if (listener.exitAnonymousFunctionExpression) {
+			listener.exitAnonymousFunctionExpression(this);
+		}
+	}
+}
+/* istanbul ignore next */
+export class PowerExpressionContext extends ExpressionContext {
+	public value(): ValueContext {
+		return this.getRuleContext(0, ValueContext);
+	}
+	public operatorPower(): OperatorPowerContext {
+		return this.getRuleContext(0, OperatorPowerContext);
+	}
+	public expression(): ExpressionContext {
+		return this.getRuleContext(0, ExpressionContext);
+	}
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
+	}
+	// @Override
+	public enterRule(listener: TspListener): void {
+		if (listener.enterPowerExpression) {
+			listener.enterPowerExpression(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspListener): void {
+		if (listener.exitPowerExpression) {
+			listener.exitPowerExpression(this);
+		}
+	}
+}
+/* istanbul ignore next */
+export class UnaryExpressionContext extends ExpressionContext {
+	public operatorUnary(): OperatorUnaryContext {
+		return this.getRuleContext(0, OperatorUnaryContext);
+	}
+	public expression(): ExpressionContext {
+		return this.getRuleContext(0, ExpressionContext);
+	}
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
+	}
+	// @Override
+	public enterRule(listener: TspListener): void {
+		if (listener.enterUnaryExpression) {
+			listener.enterUnaryExpression(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspListener): void {
+		if (listener.exitUnaryExpression) {
+			listener.exitUnaryExpression(this);
+		}
+	}
+}
+/* istanbul ignore next */
+export class NumericExpressionContext extends ExpressionContext {
+	public value(): ValueContext {
+		return this.getRuleContext(0, ValueContext);
+	}
+	public expression(): ExpressionContext {
+		return this.getRuleContext(0, ExpressionContext);
 	}
 	public operatorMulDiv(): OperatorMulDivContext | undefined {
 		return this.tryGetRuleContext(0, OperatorMulDivContext);
@@ -3105,8 +3211,58 @@ export class ExpressionContext extends ParserRuleContext {
 	public operatorBitwiseXor(): OperatorBitwiseXorContext | undefined {
 		return this.tryGetRuleContext(0, OperatorBitwiseXorContext);
 	}
-	public operatorStrcat(): OperatorStrcatContext | undefined {
-		return this.tryGetRuleContext(0, OperatorStrcatContext);
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
+	}
+	// @Override
+	public enterRule(listener: TspListener): void {
+		if (listener.enterNumericExpression) {
+			listener.enterNumericExpression(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspListener): void {
+		if (listener.exitNumericExpression) {
+			listener.exitNumericExpression(this);
+		}
+	}
+}
+/* istanbul ignore next */
+export class StringExpressionContext extends ExpressionContext {
+	public value(): ValueContext {
+		return this.getRuleContext(0, ValueContext);
+	}
+	public operatorStrcat(): OperatorStrcatContext {
+		return this.getRuleContext(0, OperatorStrcatContext);
+	}
+	public expression(): ExpressionContext {
+		return this.getRuleContext(0, ExpressionContext);
+	}
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
+	}
+	// @Override
+	public enterRule(listener: TspListener): void {
+		if (listener.enterStringExpression) {
+			listener.enterStringExpression(this);
+		}
+	}
+	// @Override
+	public exitRule(listener: TspListener): void {
+		if (listener.exitStringExpression) {
+			listener.exitStringExpression(this);
+		}
+	}
+}
+/* istanbul ignore next */
+export class BooleanExpressionContext extends ExpressionContext {
+	public value(): ValueContext {
+		return this.getRuleContext(0, ValueContext);
+	}
+	public expression(): ExpressionContext {
+		return this.getRuleContext(0, ExpressionContext);
 	}
 	public operatorComparison(): OperatorComparisonContext | undefined {
 		return this.tryGetRuleContext(0, OperatorComparisonContext);
@@ -3117,21 +3273,20 @@ export class ExpressionContext extends ParserRuleContext {
 	public operatorOr(): OperatorOrContext | undefined {
 		return this.tryGetRuleContext(0, OperatorOrContext);
 	}
-	constructor(parent: ParserRuleContext | undefined, invokingState: number) {
-		super(parent, invokingState);
+	constructor(ctx: ExpressionContext) {
+		super(ctx.parent, ctx.invokingState);
+		this.copyFrom(ctx);
 	}
 	// @Override
-	public get ruleIndex(): number { return TspParser.RULE_expression; }
-	// @Override
 	public enterRule(listener: TspListener): void {
-		if (listener.enterExpression) {
-			listener.enterExpression(this);
+		if (listener.enterBooleanExpression) {
+			listener.enterBooleanExpression(this);
 		}
 	}
 	// @Override
 	public exitRule(listener: TspListener): void {
-		if (listener.exitExpression) {
-			listener.exitExpression(this);
+		if (listener.exitBooleanExpression) {
+			listener.exitBooleanExpression(this);
 		}
 	}
 }

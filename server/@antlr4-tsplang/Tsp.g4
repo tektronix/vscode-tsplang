@@ -98,20 +98,20 @@ value
     ;
 
 expression
-    : value
-    | 'function' '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end'
-    | <assoc=right> value operatorPower expression
-    | operatorUnary expression
+    : value #ValueExpression
+    | 'function' '(' (NAME (',' NAME)* (',' VARARG)? | VARARG)? ')' (statement ';'?)* 'end' #AnonymousFunctionExpression
+    | <assoc=right> value operatorPower expression #PowerExpression
+    | operatorUnary expression #UnaryExpression
     | value (operatorMulDiv
         | operatorBitwiseShift
         | operatorAddSub
         | operatorBitwiseAnd
         | operatorBitwiseOr
-        | operatorBitwiseXor) expression
-    | <assoc=right> value operatorStrcat expression
+        | operatorBitwiseXor) expression #NumericExpression
+    | <assoc=right> value operatorStrcat expression #StringExpression
     | value (operatorComparison
         | operatorAnd
-        | operatorOr) expression
+        | operatorOr) expression #BooleanExpression
     ;
 
 prefix
