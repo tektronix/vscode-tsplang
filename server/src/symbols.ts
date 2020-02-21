@@ -88,10 +88,22 @@ export class ScopeMaker implements TspListener {
 
     enterNumericFor(ctx: NumericForContext): void {
         ctx.scope = this.initScope(ctx)
+
+        ctx.scope.local.push({
+            container: ctx,
+            name: ctx.NAME().text,
+        })
     }
 
     enterGenericFor(ctx: GenericForContext): void {
         ctx.scope = this.initScope(ctx)
+
+        for (const name of ctx.NAME()) {
+            ctx.scope.local.push({
+                container: ctx,
+                name: name.text,
+            })
+        }
     }
 
     enterGlobalFunction(ctx: GlobalFunctionContext): void {
