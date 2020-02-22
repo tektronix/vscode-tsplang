@@ -460,7 +460,11 @@ export class ScopeMaker implements TspListener {
         }
 
         // Decrement through available siblings until we can inherit a scope.
-        for (let index = (ctx.parent?.childCount ?? 0) - 2; index >= 0; index--) {
+        for (
+            let index = (ctx.parent?.children?.indexOf(ctx) ?? 0) - 1;
+            index >= 0;
+            index--
+        ) {
             const sibling = ctx.parent?.children?.[index]
             if (sibling instanceof ParserRuleContext) {
                 if (
