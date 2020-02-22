@@ -41,13 +41,38 @@ import {
     FieldListContext,
     FieldContext,
     AnonymousFunctionExpressionContext,
+    TerminalNode,
+    TspParser,
 } from "antlr4-tsplang"
+
+export enum LuaType {
+    NIL = "nil",
+    BOOLEAN = "boolean",
+    NUMBER = "number",
+    STRING = "string",
+    FUNCTION = "function",
+    USERDATA = "userdata",
+    THREAD = "thread",
+    TABLE = "table",
+}
 
 export interface TspSymbol {
     container: ParserRuleContext
     name: string
+    /**
+     * Inclusive zero-based index of the first container child that helped
+     * create this symbol name.
+     */
+    nameStart: number
+    /**
+     * Inclusive zero-based index of the last container child that helped
+     * create this symbol name.
+     */
+    nameEnd: number
     declaration?: ParserRuleContext
+    fields?: TspSymbol[]
     like?: ParserRuleContext[]
+    type?: LuaType
 }
 
 export interface Scope {
@@ -92,30 +117,151 @@ export class ScopeMaker implements TspListener {
         ctx.scope.local.push({
             container: ctx,
             name: ctx.NAME().text,
+            nameStart: 1,
+            nameEnd: 1,
         })
     }
 
     enterGenericFor(ctx: GenericForContext): void {
         ctx.scope = this.initScope(ctx)
 
+        let nameIndex = 1
         for (const name of ctx.NAME()) {
             ctx.scope.local.push({
                 container: ctx,
                 name: name.text,
+                nameStart: nameIndex,
+                nameEnd: nameIndex,
             })
+            nameIndex += 2
         }
     }
 
     enterGlobalFunction(ctx: GlobalFunctionContext): void {
         ctx.scope = this.initScope(ctx)
+
+        for (let i = 1; i < ctx.childCount; i++) {
+            const child = ctx.children?.[i]
+
+            if (child instanceof TerminalNode) {
+                if (i === 1) {
+                    const funcSymbol: Omit<TspSymbol, "nameEnd"> = {
+                        container: ctx,
+                        name: child.text,
+                        nameStart: i,
+                        type: LuaType.FUNCTION,
+                    }
+                    // Consume children to make the symbol name.
+                    // ('.' NAME)*
+                    while (ctx.children?.[i + 1]?.text === ".") {
+                        funcSymbol.name += "."
+                        i += 2
+                        funcSymbol.name += ctx.children[i]?.text ?? ""
+                    }
+                    // (':' NAME)?
+                    if (ctx.children?.[i + 1]?.text === ":") {
+                        funcSymbol.name += ":"
+                        i += 2
+                        funcSymbol.name += ctx.children[i]?.text ?? ""
+                    }
+                    ctx.scope.global.push({
+                        ...funcSymbol,
+                        nameEnd: i,
+                    })
+                } else if (child.symbol.type === TspParser.NAME) {
+                    ctx.scope.local.push({
+                        container: ctx,
+                        name: child.text,
+                        nameStart: i,
+                        nameEnd: i,
+                    })
+                } else if (child.symbol.type === TspParser.VARARG) {
+                    ctx.scope.local.push({
+                        container: ctx,
+                        name: "arg",
+                        nameStart: i,
+                        nameEnd: i,
+                        type: LuaType.TABLE,
+                        fields: [
+                            {
+                                container: ctx,
+                                name: "n",
+                                nameStart: i,
+                                nameEnd: i,
+                                type: LuaType.NUMBER,
+                            },
+                        ],
+                    })
+                    // Varargs are always the last argument, so we're done parsing symbols.
+                    break
+                }
+            }
+        }
     }
 
     enterLocalFunction(ctx: LocalFunctionContext): void {
         ctx.scope = this.initScope(ctx)
+
+        for (let i = 2; i < ctx.childCount; i++) {
+            const child = ctx.children?.[i]
+
+            if (child instanceof TerminalNode) {
+                if (i === 2) {
+                    const funcSymbol: TspSymbol = {
+                        container: ctx,
+                        name: child.text,
+                        nameStart: i,
+                        nameEnd: i,
+                        type: LuaType.FUNCTION,
+                    }
+                    // Make available to later siblings.
+                    ctx.parent?.scope?.local.push(funcSymbol)
+                    // Make availble inside itself.
+                    ctx.scope.global.push(funcSymbol)
+                } else if (child.symbol.type === TspParser.NAME) {
+                    ctx.scope.local.push({
+                        container: ctx,
+                        name: child.text,
+                        nameStart: i,
+                        nameEnd: i,
+                    })
+                } else if (child.symbol.type === TspParser.VARARG) {
+                    ctx.scope.local.push({
+                        container: ctx,
+                        name: "arg",
+                        nameStart: i,
+                        nameEnd: i,
+                        type: LuaType.TABLE,
+                        fields: [
+                            {
+                                container: ctx,
+                                name: "n",
+                                nameStart: i,
+                                nameEnd: i,
+                                type: LuaType.NUMBER,
+                            },
+                        ],
+                    })
+                    // Varargs are always the last argument, so we're done parsing symbols.
+                    break
+                }
+            }
+        }
     }
 
     enterLocalAssignment(ctx: LocalAssignmentContext): void {
         ctx.scope = this.initScope(ctx)
+
+        let nameIndex = 1
+        for (const name of ctx.NAME()) {
+            ctx.scope.local.push({
+                container: ctx,
+                name: name.text,
+                nameStart: nameIndex,
+                nameEnd: nameIndex,
+            })
+            nameIndex += 2
+        }
     }
 
     enterValueExpression(): void {
@@ -123,7 +269,41 @@ export class ScopeMaker implements TspListener {
     }
 
     enterAnonymousFunctionExpression(ctx: AnonymousFunctionExpressionContext): void {
-        // TODO locals
+        ctx.scope = this.initScope(ctx)
+
+        for (let i = 2; i < ctx.childCount; i++) {
+            const child = ctx.children?.[i]
+
+            if (child instanceof TerminalNode) {
+                if (child.symbol.type === TspParser.NAME) {
+                    ctx.scope.local.push({
+                        container: ctx,
+                        name: child.text,
+                        nameStart: i,
+                        nameEnd: i,
+                    })
+                } else if (child.symbol.type === TspParser.VARARG) {
+                    ctx.scope.local.push({
+                        container: ctx,
+                        name: "arg",
+                        nameStart: i,
+                        nameEnd: i,
+                        type: LuaType.TABLE,
+                        fields: [
+                            {
+                                container: ctx,
+                                name: "n",
+                                nameStart: i,
+                                nameEnd: i,
+                                type: LuaType.NUMBER,
+                            },
+                        ],
+                    })
+                    // Varargs are always the last argument, so we're done parsing symbols.
+                    break
+                }
+            }
+        }
     }
 
     enterPowerExpression(): void {
@@ -164,22 +344,82 @@ export class ScopeMaker implements TspListener {
 
     enterPrefix(ctx: PrefixContext): void {
         ctx.scope = this.initScope(ctx)
+
+        // NAME
+        const name = ctx.NAME()
+        if (name !== undefined) {
+            ctx.scope.global.push({
+                container: ctx,
+                name: name.text,
+                nameStart: 0,
+                nameEnd: 0,
+            })
+        }
     }
 
     enterSuffix(ctx: SuffixContext): void {
         ctx.scope = this.initScope(ctx)
+
+        // (':' NAME)? args
+        const name = ctx.NAME()
+        if (name !== undefined) {
+            ctx.scope.local.push({
+                container: ctx,
+                name: name.text,
+                nameStart: 1,
+                nameEnd: 1,
+                type: LuaType.FUNCTION,
+            })
+        }
     }
 
     enterIndex(ctx: IndexContext): void {
         ctx.scope = this.initScope(ctx)
+
+        // '.' NAME
+        const name = ctx.NAME()
+        if (name !== undefined) {
+            ctx.scope.local.push({
+                container: ctx,
+                name: name.text,
+                nameStart: 1,
+                nameEnd: 1,
+            })
+        }
     }
 
     enterVariable(ctx: VariableContext): void {
         ctx.scope = this.initScope(ctx)
+
+        // NAME
+        const name = ctx.NAME()
+        if (name !== undefined) {
+            ctx.scope.global.push({
+                container: ctx,
+                name: name.text,
+                nameStart: 0,
+                nameEnd: 0,
+            })
+        }
     }
 
     enterFunctionCall(ctx: FunctionCallContext): void {
         ctx.scope = this.initScope(ctx)
+
+        // 3 is the first possible index of a NAME child.
+        for (let i = 3; i < ctx.childCount; i++) {
+            const child = ctx.children?.[i]
+
+            if (child instanceof TerminalNode && child.symbol.type === TspParser.NAME) {
+                ctx.scope.local.push({
+                    container: ctx,
+                    name: child.text,
+                    nameStart: i,
+                    nameEnd: i,
+                    type: LuaType.FUNCTION,
+                })
+            }
+        }
     }
 
     enterArgs(ctx: ArgsContext): void {
@@ -196,6 +436,16 @@ export class ScopeMaker implements TspListener {
 
     enterField(ctx: FieldContext): void {
         ctx.scope = this.initScope(ctx)
+
+        const name = ctx.NAME()
+        if (name !== undefined) {
+            ctx.scope.local.push({
+                container: ctx,
+                name: name.text,
+                nameStart: 0,
+                nameEnd: 0,
+            })
+        }
     }
 
     // NOTE: We aren't listening for operator contexts on purpose.
