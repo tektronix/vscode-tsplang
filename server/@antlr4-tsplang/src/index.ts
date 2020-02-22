@@ -15,7 +15,7 @@
  */
 // ANTLR4 Exports
 export { ANTLRInputStream, CommonTokenStream, ParserRuleContext } from "antlr4ts"
-export { ParseTree, TerminalNode } from "antlr4ts/tree"
+export { ParseTree, ParseTreeWalker, TerminalNode } from "antlr4ts/tree"
 
 // Overrides
 export { ExtendedTspDocLexer as TspDocLexer } from "./extendedTspDocLexer"
