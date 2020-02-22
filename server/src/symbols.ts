@@ -467,39 +467,29 @@ export class ScopeMaker implements TspListener {
         ) {
             const sibling = ctx.parent?.children?.[index]
             if (sibling instanceof ParserRuleContext) {
-                if (
-                    sibling instanceof GlobalFunctionContext ||
-                    sibling instanceof LocalFunctionContext
-                ) {
-                    // We only want to inherit from functions when they're called.
-                    continue
-                } else {
-                    result = {
-                        // Always inherit globals from the last sibling.
-                        global:
-                            sibling.scope?.global !== undefined
-                                ? [...sibling.scope.global]
-                                : [],
-                        // Default value. Special inheritance cases resolved below.
-                        local: [],
-                    }
-
-                    const inherit: Partial<Scope> = {}
-
-                    // Resolve special local symbol inheritance cases.
-                    if (
-                        sibling instanceof LocalAssignmentContext &&
-                        sibling.scope?.local !== undefined
-                    ) {
-                        inherit.local = [...sibling.scope.local]
-                    } else if (ctx.parent?.scope?.local !== undefined) {
-                        inherit.local = [...ctx.parent.scope.local]
-                    }
-
-                    result = { ...result, ...inherit }
+                result = {
+                    // Always inherit globals from the last sibling.
+                    global:
+                        sibling.scope?.global !== undefined
+                            ? [...sibling.scope.global]
+                            : [],
+                    // Default value. Special inheritance cases resolved below.
+                    local: [],
                 }
 
-                return result
+                const inherit: Partial<Scope> = {}
+
+                // Resolve special local symbol inheritance cases.
+                if (
+                    sibling instanceof LocalAssignmentContext &&
+                    sibling.scope?.local !== undefined
+                ) {
+                    inherit.local = [...sibling.scope.local]
+                } else if (ctx.parent?.scope?.local !== undefined) {
+                    inherit.local = [...ctx.parent.scope.local]
+                }
+
+                return { ...result, ...inherit }
             }
         }
         if (ctx.parent?.scope !== undefined) {
