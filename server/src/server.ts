@@ -20,6 +20,7 @@ import {
     ChunkContext,
     CommonToken,
     CommonTokenStream,
+    ParseTreeWalker,
     TspCommonTokenStream,
     TspLexer,
     TspParser,
@@ -189,9 +190,9 @@ TextDocumentManager.onDidOpen((param: TextDocumentChangeEvent): void => {
     const parser = new TspParser(tokenStream)
 
     parser.buildParseTree = true
-    parser.addParseListener(new ScopeMaker())
 
     const chunk = parser.chunk()
+    ParseTreeWalker.DEFAULT.walk(new ScopeMaker(), chunk)
 
     console.log(chunk.depth())
 })
