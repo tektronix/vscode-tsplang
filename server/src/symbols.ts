@@ -69,10 +69,23 @@ export interface TspSymbol {
      * create this symbol name.
      */
     nameEnd: number
-    declaration?: ParserRuleContext
+    declaration?: TspSymbol
     fields?: TspSymbol[]
-    like?: ParserRuleContext[]
+    like?: TspSymbol[]
     type?: LuaType
+}
+export namespace TspSymbol {
+    export const copy = function(symbol: TspSymbol): TspSymbol {
+        // Create new arrays containing all the same objects.
+        const copies: Pick<TspSymbol, "fields" | "like"> = {
+            fields: symbol.fields !== undefined ? [...symbol.fields] : undefined,
+            like: symbol.like !== undefined ? [...symbol.like] : undefined,
+        }
+        return {
+            ...symbol,
+            ...copies,
+        }
+    }
 }
 
 export interface Scope {
@@ -471,7 +484,7 @@ export class ScopeMaker implements TspListener {
                     // Always inherit globals from the last sibling.
                     global:
                         sibling.scope?.global !== undefined
-                            ? [...sibling.scope.global]
+                            ? sibling.scope.global.map(v => TspSymbol.copy(v))
                             : [],
                     // Default value. Special inheritance cases resolved below.
                     local: [],
@@ -484,9 +497,9 @@ export class ScopeMaker implements TspListener {
                     sibling instanceof LocalAssignmentContext &&
                     sibling.scope?.local !== undefined
                 ) {
-                    inherit.local = [...sibling.scope.local]
+                    inherit.local = sibling.scope.local.map(v => TspSymbol.copy(v))
                 } else if (ctx.parent?.scope?.local !== undefined) {
-                    inherit.local = [...ctx.parent.scope.local]
+                    inherit.local = ctx.parent.scope.local.map(v => TspSymbol.copy(v))
                 }
 
                 return { ...result, ...inherit }
@@ -495,11 +508,93 @@ export class ScopeMaker implements TspListener {
         if (ctx.parent?.scope !== undefined) {
             // Inherit from the parent context.
             result = {
-                global: [...ctx.parent.scope.global],
-                local: [...ctx.parent.scope.local],
+                global: ctx.parent.scope.global.map(v => TspSymbol.copy(v)),
+                local: ctx.parent.scope.local.map(v => TspSymbol.copy(v)),
             }
         }
 
         return result
+    }
+}
+
+// NOTE: attach to each node of the AST
+export class SymbolTable {
+    private global: Map<string, TspSymbol>
+    private local: Map<string, TspSymbol[]>
+
+    constructor() {
+        this.global = new Map()
+        this.local = new Map()
+    }
+
+    addGlobals(...globals: TspSymbol[]): void {
+        for (const symbol of globals) {
+            this.global[symbol.name] = symbol
+        }
+    }
+
+    addLocals(...locals: TspSymbol[]): void {
+        for (const symbol of locals) {
+            if (!this.local.has(symbol.name)) {
+                this.local[symbol.name] = [symbol]
+            } else {
+                if (symbol.declaration === undefined) {
+                    symbol.declaration = this.local[symbol.name][0]
+                }
+
+                const lastIndex = this.local[symbol.name].length - 1
+                const lastFields: TspSymbol[] | undefined = this.local[symbol.name][
+                    lastIndex - 1
+                ].fields
+                if (lastFields !== undefined) {
+                    if (symbol.fields === undefined) {
+                        symbol.fields = [...lastFields]
+                    } else {
+                        symbol.fields.push(...lastFields)
+                    }
+                }
+
+                if (symbol.like === undefined) {
+                    symbol.like = [...this.local[symbol.name]]
+                } else {
+                    symbol.like.push(...this.local[symbol.name])
+                }
+
+                this.local[symbol.name].push(symbol)
+            }
+        }
+    }
+
+    /**
+     * Create a new SymbolTable from this object.
+     *
+     * Contained symbols are not copied.
+     */
+    copy(locals: boolean): SymbolTable {
+        const result = new SymbolTable()
+        result.global = new Map(this.global.entries())
+        if (locals) {
+            this.local.forEach((value: TspSymbol[], key: string) => {
+                result.local.set(key, [...value])
+            })
+        }
+        return result
+    }
+
+    extend(table: SymbolTable): void {
+        table.global.forEach((v, k) => {
+            this.global[k] = v
+        })
+        table.local.forEach((v, k) => {
+            this.local[k] = [...v]
+        })
+    }
+
+    get(name: string): TspSymbol | undefined {
+        if (this.local.has(name)) {
+            const lastIndex = this.local[name].length - 1
+            return this.local[name][lastIndex]
+        }
+        return this.global.get(name)
     }
 }
