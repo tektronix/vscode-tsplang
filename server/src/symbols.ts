@@ -581,13 +581,17 @@ export class SymbolTable {
         return result
     }
 
-    extend(table: SymbolTable): void {
-        table.global.forEach((v, k) => {
-            this.global.set(k, v)
-        })
-        table.local.forEach((v, k) => {
-            this.local.set(k, [...v])
-        })
+    extend(table: SymbolTable, which: "globals" | "locals" | "both"): void {
+        if (which === "globals" || which == "both") {
+            table.global.forEach((v, k) => {
+                this.global.set(k, v)
+            })
+        }
+        if (which === "locals" || which === "both") {
+            table.local.forEach((v, k) => {
+                this.local.set(k, [...v])
+            })
+        }
     }
 
     get(name: string): TspSymbol | undefined {
