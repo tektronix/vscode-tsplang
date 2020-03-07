@@ -544,7 +544,7 @@ export class SymbolTable {
                 }
 
                 const lastIndex = existing.length - 1
-                const lastFields = existing[lastIndex - 1].fields
+                const lastFields = existing[lastIndex].fields
                 if (lastFields !== undefined) {
                     if (symbol.fields === undefined) {
                         symbol.fields = [...lastFields]
