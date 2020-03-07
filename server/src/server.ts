@@ -41,7 +41,7 @@ import {
     TextDocumentSyncKind,
 } from "vscode-languageserver"
 
-import { ScopeMaker } from "./symbols"
+import { SymbolTableMaker } from "./symbols"
 import "./augments"
 
 // Create a connection for the server. The connection uses Node's IPC as a transport
@@ -192,7 +192,7 @@ TextDocumentManager.onDidOpen((param: TextDocumentChangeEvent): void => {
     parser.buildParseTree = true
 
     const chunk = parser.chunk()
-    ParseTreeWalker.DEFAULT.walk(new ScopeMaker(), chunk)
+    ParseTreeWalker.DEFAULT.walk(new SymbolTableMaker(), chunk)
 
     console.log(chunk.depth())
 })
