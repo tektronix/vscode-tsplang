@@ -529,23 +529,22 @@ export class SymbolTable {
 
     addGlobals(...globals: TspSymbol[]): void {
         for (const symbol of globals) {
-            this.global[symbol.name] = symbol
+            this.global.set(symbol.name, symbol)
         }
     }
 
     addLocals(...locals: TspSymbol[]): void {
         for (const symbol of locals) {
-            if (!this.local.has(symbol.name)) {
-                this.local[symbol.name] = [symbol]
+            const existing = this.local.get(symbol.name)
+            if (existing === undefined) {
+                this.local.set(symbol.name, [symbol])
             } else {
                 if (symbol.declaration === undefined) {
-                    symbol.declaration = this.local[symbol.name][0]
+                    symbol.declaration = existing[0]
                 }
 
-                const lastIndex = this.local[symbol.name].length - 1
-                const lastFields: TspSymbol[] | undefined = this.local[symbol.name][
-                    lastIndex - 1
-                ].fields
+                const lastIndex = existing.length - 1
+                const lastFields = existing[lastIndex - 1].fields
                 if (lastFields !== undefined) {
                     if (symbol.fields === undefined) {
                         symbol.fields = [...lastFields]
@@ -555,12 +554,13 @@ export class SymbolTable {
                 }
 
                 if (symbol.like === undefined) {
-                    symbol.like = [...this.local[symbol.name]]
+                    symbol.like = [...existing]
                 } else {
-                    symbol.like.push(...this.local[symbol.name])
+                    symbol.like.push(...existing)
                 }
 
-                this.local[symbol.name].push(symbol)
+                existing.push(symbol)
+                this.local.set(symbol.name, existing)
             }
         }
     }
@@ -583,17 +583,18 @@ export class SymbolTable {
 
     extend(table: SymbolTable): void {
         table.global.forEach((v, k) => {
-            this.global[k] = v
+            this.global.set(k, v)
         })
         table.local.forEach((v, k) => {
-            this.local[k] = [...v]
+            this.local.set(k, [...v])
         })
     }
 
     get(name: string): TspSymbol | undefined {
-        if (this.local.has(name)) {
-            const lastIndex = this.local[name].length - 1
-            return this.local[name][lastIndex]
+        const locals = this.local.get(name)
+        if (locals !== undefined) {
+            const lastIndex = locals.length - 1
+            return locals[lastIndex]
         }
         return this.global.get(name)
     }
