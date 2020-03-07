@@ -568,7 +568,7 @@ export class SymbolTable {
     /**
      * Create a new SymbolTable from this object.
      *
-     * Contained symbols are not copied.
+     * Contained symbols are copied by reference.
      */
     copy(locals: boolean): SymbolTable {
         const result = new SymbolTable()
