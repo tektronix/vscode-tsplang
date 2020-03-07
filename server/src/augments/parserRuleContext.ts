@@ -15,11 +15,13 @@
  */
 import { ParserRuleContext } from "antlr4-tsplang"
 
-import { Scope } from "../symbols"
+import { Scope, SymbolTable } from "../symbols"
 
 declare module "antlr4-tsplang" {
     interface ParserRuleContext {
         scope?: Scope
+        symbolTable?: SymbolTable
     }
 }
 ParserRuleContext.prototype.scope = undefined
+ParserRuleContext.prototype.symbolTable = undefined
