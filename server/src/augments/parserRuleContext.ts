@@ -19,9 +19,41 @@ import { Scope, SymbolTable } from "../symbols"
 
 declare module "antlr4-tsplang" {
     interface ParserRuleContext {
+        getLastChildRuleContext: () => ParserRuleContext | undefined
+        getPreviousSiblingRuleContext: () => ParserRuleContext | undefined
         scope?: Scope
         symbolTable?: SymbolTable
     }
 }
 ParserRuleContext.prototype.scope = undefined
 ParserRuleContext.prototype.symbolTable = undefined
+ParserRuleContext.prototype.getLastChildRuleContext = function():
+    | ParserRuleContext
+    | undefined {
+    if (this.children === undefined) {
+        return undefined
+    }
+
+    for (let i = this.childCount - 1; i >= 0; i--) {
+        if (this.children[i] instanceof ParserRuleContext) {
+            return this.children[i]
+        }
+    }
+
+    return undefined
+}
+ParserRuleContext.prototype.getPreviousSiblingRuleContext = function():
+    | ParserRuleContext
+    | undefined {
+    if (this.parent?.children === undefined) {
+        return
+    }
+
+    for (let i = (this.parent.children.indexOf(this) ?? 0) - 1; i >= 0; i--) {
+        if (this.parent.children[i] instanceof ParserRuleContext) {
+            return this.parent.children[i]
+        }
+    }
+
+    return undefined
+}
