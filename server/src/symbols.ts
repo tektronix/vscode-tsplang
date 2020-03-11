@@ -16,6 +16,7 @@
  */
 import {
     AnonymousFunctionExpressionContext,
+    ChunkContext,
     FieldContext,
     FunctionCallContext,
     GenericForContext,
@@ -32,6 +33,7 @@ import {
     TspParser,
     VariableContext,
 } from "antlr4-tsplang"
+import { DocumentSymbol, SymbolKind, Position } from "vscode-languageserver"
 
 export enum LuaType {
     NIL = "nil",
@@ -42,6 +44,28 @@ export enum LuaType {
     USERDATA = "userdata",
     THREAD = "thread",
     TABLE = "table",
+}
+
+export function toSymbolKind(object: LuaType | TspSymbol): SymbolKind {
+    const type = object["type"] !== undefined ? object["type"] : object
+
+    if (type === LuaType.NIL) {
+        return SymbolKind.Null
+    } else if (
+        type === LuaType.BOOLEAN ||
+        type === LuaType.NUMBER ||
+        type === LuaType.STRING
+    ) {
+        return SymbolKind.Variable
+    } else if (type === LuaType.FUNCTION) {
+        return SymbolKind.Function
+    } else if (type === LuaType.USERDATA || type === LuaType.THREAD) {
+        return SymbolKind.Object
+    } else if (type === LuaType.TABLE) {
+        return SymbolKind.Struct
+    } else {
+        return SymbolKind.TypeParameter
+    }
 }
 
 export interface TspSymbol {
@@ -72,6 +96,74 @@ export namespace TspSymbol {
         return {
             ...symbol,
             ...copies,
+        }
+    }
+    export const toDocumentSymbol = function(
+        symbol: TspSymbol
+    ): DocumentSymbol | undefined {
+        const node = symbol.container
+        if (node.children === undefined) {
+            return undefined
+        }
+
+        // Get the starting Position of any attached comment.
+        let symbolStart: Position | undefined = undefined
+        const leadingTrivia = node.leadingTrivia
+        for (let i = leadingTrivia.length - 1; i >= 0; i--) {
+            const trivia = leadingTrivia[i]
+            if (trivia.text === undefined) {
+                break
+            } else if (trivia.text.trim().length === 0) {
+                break
+            } else {
+                symbolStart = trivia.span.start
+            }
+        }
+        // If the starting Position of the symbol is still undefined,
+        // then get the starting Position of the symbol container.
+        if (symbolStart === undefined) {
+            symbolStart = node.span.start
+        }
+
+        // Get the Range of the name.
+        const firstNameSymbol = node.children?.[symbol.nameStart]
+        let firstNameSymbolSpanStart: Position | undefined
+        if (
+            firstNameSymbol instanceof ParserRuleContext ||
+            firstNameSymbol instanceof TerminalNode
+        ) {
+            firstNameSymbolSpanStart = firstNameSymbol.span?.start
+        } else {
+            return undefined
+        }
+        if (firstNameSymbolSpanStart === undefined) {
+            return undefined
+        }
+        const lastNameSymbol = node.children[symbol.nameEnd]
+        let lastNameSymbolSpanEnd: Position | undefined
+        if (
+            lastNameSymbol instanceof ParserRuleContext ||
+            lastNameSymbol instanceof TerminalNode
+        ) {
+            lastNameSymbolSpanEnd = lastNameSymbol.span?.end
+        } else {
+            return undefined
+        }
+        if (lastNameSymbolSpanEnd === undefined) {
+            return undefined
+        }
+
+        return {
+            kind: toSymbolKind(symbol),
+            name: symbol.name,
+            range: {
+                end: { ...node.span.end },
+                start: symbolStart,
+            },
+            selectionRange: {
+                end: lastNameSymbolSpanEnd,
+                start: firstNameSymbolSpanStart,
+            },
         }
     }
 }
@@ -177,11 +269,102 @@ export class SymbolTable {
     }
 }
 
+export class DocumentSymbolTree {
+    private root: DocumentSymbol[]
+    private stack: DocumentSymbol[][]
+    private frameOwner: ParserRuleContext[]
+
+    /**
+     * NOTE: A "frame" is the top-most stack value.
+     */
+    constructor(ctx: ChunkContext) {
+        this.root = []
+        this.stack = [this.root]
+        this.frameOwner = [ctx]
+    }
+
+    add(symbol?: DocumentSymbol, ...rest: DocumentSymbol[]): void {
+        if (symbol === undefined) {
+            return
+        }
+        rest.unshift(symbol)
+        this.stack[this.stack.length - 1].push(...rest)
+    }
+
+    addScope(
+        scope: Scope,
+        push?: { nextFrame: string; owner: ParserRuleContext }
+    ): void {
+        let frame: DocumentSymbol[] | undefined = undefined
+        this.add(
+            ...[...scope.global, ...scope.local]
+                .map(TspSymbol.toDocumentSymbol)
+                .filter(function(s: DocumentSymbol | undefined): s is DocumentSymbol {
+                    if (s !== undefined) {
+                        if (push !== undefined && s.name === push.nextFrame) {
+                            frame = []
+                            s.children = frame
+                        }
+                        return true
+                    }
+                    return false
+                })
+        )
+        if (push !== undefined) {
+            if (frame !== undefined) {
+                this.push(frame, push.owner)
+            } else {
+                const i = this.stack.length - 1
+                for (let j = this.stack[i].length - 1; j >= 0; j--) {
+                    if (this.stack[i]?.[j]?.name === push.nextFrame) {
+                        frame = []
+                        this.stack[i][j].children = frame
+                        this.push(frame, push.owner)
+                        break
+                    }
+                }
+            }
+        }
+    }
+
+    get(): DocumentSymbol[] {
+        return this.root
+    }
+
+    peek(): DocumentSymbol[] {
+        return this.stack[this.stack.length - 1]
+    }
+
+    pop(ctx: ParserRuleContext): DocumentSymbol[] | undefined {
+        if (ctx === this.frameOwner[this.frameOwner.length - 1]) {
+            const frame = this.stack.pop()
+            this.frameOwner.pop()
+            if (frame === undefined) {
+                return undefined
+            }
+            return [...frame]
+        }
+        return undefined
+    }
+
+    push(frame: DocumentSymbol[], owner: ParserRuleContext): void {
+        this.stack.push(frame)
+        this.frameOwner.push(owner)
+    }
+}
+
+interface ContextSymbolInfo {
+    scope: Scope
+    /** TspSymbol name whose child array will be the next frame. */
+    nextFrame?: string
+}
+
 export class SymbolTableMaker implements TspListener {
     // ParseTreeListener interface members
     readonly visitTerminal = undefined
     readonly visitErrorNode = undefined
-    readonly exitEveryRule = undefined
+
+    private tree: DocumentSymbolTree
 
     constructor() {
         // blank
@@ -218,13 +401,37 @@ export class SymbolTableMaker implements TspListener {
             }
         }
 
-        this.inheritDeferred(ctx, indexInParent)
+        const deferred = this.inheritDeferred(ctx, indexInParent)
+        if (deferred !== undefined) {
+            this.tree.addScope(deferred)
+        }
 
         // Extract symbols from this scope.
-        ctx.symbolTable.add(this.getScope(ctx))
+        const info = this.getContextScopeInfo(ctx)
+        ctx.symbolTable.add(info.scope)
+        this.tree?.addScope(
+            info.scope,
+            info.nextFrame === undefined
+                ? undefined
+                : { nextFrame: info.nextFrame, owner: ctx }
+        )
+        if (this.tree !== undefined) {
+            ctx.documentSymbols = this.tree.peek()
+        }
     }
 
-    private getScope(ctx: ParserRuleContext): Scope {
+    exitEveryRule(ctx: ParserRuleContext): void {
+        this.tree?.pop(ctx)
+        if (ctx instanceof ChunkContext) {
+            ctx.documentSymbols = this.tree.get()
+        }
+    }
+
+    enterChunk(ctx: ChunkContext): void {
+        this.tree = new DocumentSymbolTree(ctx)
+    }
+
+    private getContextScopeInfo(ctx: ParserRuleContext): ContextSymbolInfo {
         if (ctx instanceof NumericForContext) {
             return this.parseNumericFor(ctx)
         } else if (ctx instanceof GenericForContext) {
@@ -250,21 +457,23 @@ export class SymbolTableMaker implements TspListener {
         } else if (ctx instanceof FieldContext) {
             return this.parseField(ctx)
         } else {
-            return Scope.make()
+            return {
+                scope: Scope.make(),
+            }
         }
     }
 
     private inheritDeferred(
         ctx: ParserRuleContext,
         indexInParent: number | undefined
-    ): void {
+    ): Scope | undefined {
         if (indexInParent === undefined) {
-            return
+            return undefined
         }
 
         const deferred = ctx.parent?.deferred
         if (deferred === undefined) {
-            return
+            return undefined
         }
 
         const lastSibling = (ctx.parent as ParserRuleContext).children?.[
@@ -285,9 +494,10 @@ export class SymbolTableMaker implements TspListener {
                 ;(ctx.symbolTable as SymbolTable).add(deferred)
             }
         }
+        return deferred
     }
 
-    private parseNumericFor(ctx: NumericForContext): Scope {
+    private parseNumericFor(ctx: NumericForContext): ContextSymbolInfo {
         if (ctx.deferred === undefined) {
             ctx.deferred = Scope.make()
         }
@@ -298,10 +508,12 @@ export class SymbolTableMaker implements TspListener {
             nameStart: 1,
             nameEnd: 1,
         })
-        return Scope.make()
+        return {
+            scope: Scope.make(),
+        }
     }
 
-    private parseGenericFor(ctx: GenericForContext): Scope {
+    private parseGenericFor(ctx: GenericForContext): ContextSymbolInfo {
         if (ctx.deferred === undefined) {
             ctx.deferred = Scope.make()
         }
@@ -316,15 +528,18 @@ export class SymbolTableMaker implements TspListener {
             })
             nameIndex += 2
         }
-        return Scope.make()
+        return {
+            scope: Scope.make(),
+        }
     }
 
-    private parseGlobalFunction(ctx: GlobalFunctionContext): Scope {
+    private parseGlobalFunction(ctx: GlobalFunctionContext): ContextSymbolInfo {
         if (ctx.deferred === undefined) {
             ctx.deferred = Scope.make()
         }
 
-        const result = Scope.make()
+        const scope = Scope.make()
+        let nextFrame: string | undefined = undefined
         for (let i = 1; i < ctx.childCount; i++) {
             const child = ctx.children?.[i]
 
@@ -349,10 +564,11 @@ export class SymbolTableMaker implements TspListener {
                         i += 2
                         funcSymbol.name += ctx.children[i]?.text ?? ""
                     }
-                    result.global.push({
+                    scope.global.push({
                         ...funcSymbol,
                         nameEnd: i,
                     })
+                    nextFrame = funcSymbol.name
                 } else if (child.symbol.type === TspParser.NAME) {
                     ctx.deferred.local.push({
                         container: ctx,
@@ -382,23 +598,28 @@ export class SymbolTableMaker implements TspListener {
                 }
             }
         }
-        return result
+        return {
+            scope,
+            nextFrame,
+        }
     }
 
-    private parseLocalFunction(ctx: LocalFunctionContext): Scope {
+    private parseLocalFunction(ctx: LocalFunctionContext): ContextSymbolInfo {
         if (ctx.deferred === undefined) {
             ctx.deferred = Scope.make()
         }
 
-        const result = Scope.make()
+        const scope = Scope.make()
+        let nextFrame: string | undefined = undefined
         for (let i = 2; i < ctx.childCount; i++) {
             const child = ctx.children?.[i]
 
             if (child instanceof TerminalNode) {
                 if (i === 2) {
-                    result.local.push({
+                    nextFrame = child.text
+                    scope.local.push({
                         container: ctx,
-                        name: child.text,
+                        name: nextFrame,
                         nameStart: i,
                         nameEnd: i,
                         type: LuaType.FUNCTION,
@@ -432,10 +653,13 @@ export class SymbolTableMaker implements TspListener {
                 }
             }
         }
-        return result
+        return {
+            scope,
+            nextFrame,
+        }
     }
 
-    private parseLocalAssignment(ctx: LocalAssignmentContext): Scope {
+    private parseLocalAssignment(ctx: LocalAssignmentContext): ContextSymbolInfo {
         if (ctx.deferred === undefined) {
             ctx.deferred = Scope.make()
         }
@@ -450,12 +674,14 @@ export class SymbolTableMaker implements TspListener {
             })
             nameIndex += 2
         }
-        return Scope.make()
+        return {
+            scope: Scope.make(),
+        }
     }
 
     private parseAnonymousFunctionExpression(
         ctx: AnonymousFunctionExpressionContext
-    ): Scope {
+    ): ContextSymbolInfo {
         if (ctx.deferred === undefined) {
             ctx.deferred = Scope.make()
         }
@@ -494,16 +720,31 @@ export class SymbolTableMaker implements TspListener {
             }
         }
 
-        return Scope.make()
+        // Create a unique DocumentSymbol for this callback
+        const nextFrame = "<unknown> callback"
+        const symbol: DocumentSymbol = {
+            kind: SymbolKind.Function,
+            name: nextFrame,
+            range: ctx.span,
+            selectionRange: ctx.span,
+            children: [],
+        }
+        this.tree.add(symbol)
+
+        return {
+            nextFrame,
+            scope: Scope.make(),
+        }
     }
 
-    private parsePrefix(ctx: PrefixContext): Scope {
+    private parsePrefix(ctx: PrefixContext): ContextSymbolInfo {
+        let scope: Scope
         // Alternative ` NAME ` of rule "prefix".
         const name = ctx.NAME()
         if (name === undefined) {
-            return Scope.make()
+            scope = Scope.make()
         } else {
-            return {
+            scope = {
                 global: [
                     {
                         container: ctx,
@@ -515,15 +756,17 @@ export class SymbolTableMaker implements TspListener {
                 local: [],
             }
         }
+        return { scope }
     }
 
-    private parseSuffix(ctx: SuffixContext): Scope {
+    private parseSuffix(ctx: SuffixContext): ContextSymbolInfo {
+        let scope: Scope
         // Alternative ` (':' NAME)? args ` of rule "suffix".
         const name = ctx.NAME()
         if (name === undefined) {
-            return Scope.make()
+            scope = Scope.make()
         } else {
-            return {
+            scope = {
                 global: [],
                 local: [
                     {
@@ -536,15 +779,17 @@ export class SymbolTableMaker implements TspListener {
                 ],
             }
         }
+        return { scope }
     }
 
-    private parseIndex(ctx: IndexContext): Scope {
+    private parseIndex(ctx: IndexContext): ContextSymbolInfo {
+        let scope: Scope
         // Alternative ` '.' NAME ` of rule "index".
         const name = ctx.NAME()
         if (name === undefined) {
-            return Scope.make()
+            scope = Scope.make()
         } else {
-            return {
+            scope = {
                 global: [],
                 local: [
                     {
@@ -556,15 +801,17 @@ export class SymbolTableMaker implements TspListener {
                 ],
             }
         }
+        return { scope }
     }
 
-    private parseVariable(ctx: VariableContext): Scope {
+    private parseVariable(ctx: VariableContext): ContextSymbolInfo {
+        let scope: Scope
         // Alternative ` NAME ` of rule "variable".
         const name = ctx.NAME()
         if (name === undefined) {
-            return Scope.make()
+            scope = Scope.make()
         } else {
-            return {
+            scope = {
                 global: [
                     {
                         container: ctx,
@@ -576,17 +823,18 @@ export class SymbolTableMaker implements TspListener {
                 local: [],
             }
         }
+        return { scope }
     }
 
-    private parseFunctionCall(ctx: FunctionCallContext): Scope {
-        const result = Scope.make()
+    private parseFunctionCall(ctx: FunctionCallContext): ContextSymbolInfo {
+        const scope = Scope.make()
 
         // 3 is the first possible index of a NAME child.
         for (let i = 3; i < ctx.childCount; i++) {
             const child = ctx.children?.[i]
 
             if (child instanceof TerminalNode && child.symbol.type === TspParser.NAME) {
-                result.local.push({
+                scope.local.push({
                     container: ctx,
                     name: child.text,
                     nameStart: i,
@@ -595,15 +843,16 @@ export class SymbolTableMaker implements TspListener {
                 })
             }
         }
-        return result
+        return { scope }
     }
 
-    private parseField(ctx: FieldContext): Scope {
+    private parseField(ctx: FieldContext): ContextSymbolInfo {
+        let scope: Scope
         const name = ctx.NAME()
         if (name === undefined) {
-            return Scope.make()
+            scope = Scope.make()
         } else {
-            return {
+            scope = {
                 global: [],
                 local: [
                     {
@@ -615,5 +864,6 @@ export class SymbolTableMaker implements TspListener {
                 ],
             }
         }
+        return { scope }
     }
 }

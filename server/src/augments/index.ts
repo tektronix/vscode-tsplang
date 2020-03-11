@@ -16,4 +16,7 @@
 import { ParserRuleContext } from "antlr4-tsplang"
 import "./parserRuleContext"
 
-export { ParserRuleContext }
+import { TerminalNode } from "antlr4-tsplang"
+import "./terminalNode"
+
+export { ParserRuleContext, TerminalNode }
