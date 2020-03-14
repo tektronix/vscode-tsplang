@@ -30,6 +30,7 @@ import {
 import { NotificationType, RequestType } from "vscode-jsonrpc"
 import {
     createConnection,
+    DocumentSymbolParams,
     IConnection,
     InitializeResult,
     IPCMessageReader,
@@ -78,6 +79,7 @@ connection.onInitialize(
                         includeText: true,
                     },
                 },
+                documentSymbolProvider: true,
             },
         }
     }
@@ -182,7 +184,9 @@ connection.onRequest(ColorizeTokensRequest, (param: TextDocumentItem): TokenSpan
     return ranges
 })
 
-TextDocumentManager.onDidOpen((param: TextDocumentChangeEvent): void => {
+const chunks: Map<string, ChunkContext> = new Map()
+
+function makeSymbols(param: TextDocumentChangeEvent): void {
     const inputStream = new ANTLRInputStream(param.document.getText())
     inputStream.name = param.document.uri
     const lexer = new TspLexer(inputStream)
@@ -194,7 +198,14 @@ TextDocumentManager.onDidOpen((param: TextDocumentChangeEvent): void => {
     const chunk = parser.chunk()
     ParseTreeWalker.DEFAULT.walk(new SymbolTableMaker(), chunk)
 
-    console.log(chunk.depth())
+    chunks.set(param.document.uri, chunk)
+}
+
+TextDocumentManager.onDidOpen(makeSymbols)
+TextDocumentManager.onDidSave(makeSymbols)
+
+connection.onDocumentSymbol((param: DocumentSymbolParams) => {
+    return chunks.get(param.textDocument.uri)?.documentSymbols
 })
 
 // Listen on the connection.
