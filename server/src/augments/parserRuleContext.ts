@@ -25,6 +25,7 @@ declare module "antlr4-tsplang" {
         fullSpan: Range
         getLastChildRuleContext: () => ParserRuleContext | undefined
         getPreviousSiblingRuleContext: (start?: number) => ParserRuleContext | undefined
+        hasParentOf: <T extends new (...args) => T>(type: InstanceType<T>) => boolean
         leadingTrivia: CommonToken[]
         span: Range
         symbolTable?: SymbolTable
@@ -84,6 +85,18 @@ ParserRuleContext.prototype.getPreviousSiblingRuleContext = function(
     }
 
     return undefined
+}
+ParserRuleContext.prototype.hasParentOf = function<T extends new (...args) => T>(
+    type: InstanceType<T>
+): boolean {
+    let parent: ParserRuleContext | undefined = this.parent
+    while (parent !== undefined) {
+        if (parent instanceof type) {
+            return true
+        }
+        parent = parent.parent
+    }
+    return false
 }
 Object.defineProperty(ParserRuleContext.prototype, "leadingTrivia", {
     get: function(): CommonToken[] {

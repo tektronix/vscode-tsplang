@@ -397,8 +397,13 @@ export class SymbolTableMaker implements TspListener {
             ctx.symbolTable.extend(sibling.symbolTable, "both")
 
             // Inherit deferred symbols from a local assignment sibling.
-            if (sibling instanceof LocalAssignmentContext) {
-                ctx.symbolTable.add(sibling.deferred as Scope)
+            if (
+                sibling instanceof LocalAssignmentContext &&
+                sibling.deferred !== undefined
+            ) {
+                ctx.symbolTable.add(sibling.deferred)
+                this.tree?.addScope(sibling.deferred)
+                sibling.deferred = undefined
             }
 
             // Inherit globals from the last rule context of our sibling.
@@ -483,6 +488,12 @@ export class SymbolTableMaker implements TspListener {
             return undefined
         }
 
+        /**
+         * Prevent expression nodes within a local assignment from inheriting
+         * symbols that were created on the left-hand side of the assignment
+         * operator.
+         */
+        if (ctx.hasParentOf(LocalAssignmentContext)) {
             return undefined
         }
 
@@ -504,7 +515,13 @@ export class SymbolTableMaker implements TspListener {
                 ;(ctx.symbolTable as SymbolTable).add(deferred)
             }
         }
-        return deferred
+
+        const result: Scope = {
+            global: [...deferred.global],
+            local: [...deferred.local],
+        }
+        ;(ctx.parent as ParserRuleContext).deferred = undefined
+        return result
     }
 
     private parseNumericFor(ctx: NumericForContext): ContextSymbolInfo {
