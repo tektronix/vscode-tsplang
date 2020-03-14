@@ -62,7 +62,7 @@ export function toSymbolKind(object: LuaType | TspSymbol): SymbolKind {
     } else if (type === LuaType.USERDATA || type === LuaType.THREAD) {
         return SymbolKind.Object
     } else if (type === LuaType.TABLE) {
-        return SymbolKind.Struct
+        return SymbolKind.Namespace
     } else {
         return SymbolKind.TypeParameter
     }
