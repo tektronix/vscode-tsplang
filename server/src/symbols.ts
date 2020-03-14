@@ -64,6 +64,15 @@ export function toSymbolKind(object: LuaType | TspSymbol): SymbolKind {
     } else if (type === LuaType.TABLE) {
         return SymbolKind.Namespace
     } else {
+        if (
+            (type as TspSymbol).container instanceof LocalAssignmentContext ||
+            (type as TspSymbol).container instanceof VariableContext
+        ) {
+            return SymbolKind.Variable
+        } else if ((type as TspSymbol).container instanceof FieldContext) {
+            return SymbolKind.Property
+        }
+
         return SymbolKind.TypeParameter
     }
 }
