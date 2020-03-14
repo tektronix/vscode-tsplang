@@ -410,9 +410,11 @@ export class SymbolTableMaker implements TspListener {
             }
         }
 
-        const deferred = this.inheritDeferred(ctx, indexInParent)
-        if (deferred !== undefined) {
-            this.tree.addScope(deferred)
+        if (indexInParent !== undefined) {
+            const deferred = this.inheritDeferred(ctx, indexInParent)
+            if (deferred !== undefined) {
+                this.tree.addScope(deferred)
+            }
         }
 
         // Extract symbols from this scope.
@@ -474,14 +476,13 @@ export class SymbolTableMaker implements TspListener {
 
     private inheritDeferred(
         ctx: ParserRuleContext,
-        indexInParent: number | undefined
+        indexInParent: number
     ): Scope | undefined {
-        if (indexInParent === undefined) {
+        const deferred = ctx.parent?.deferred
+        if (deferred === undefined) {
             return undefined
         }
 
-        const deferred = ctx.parent?.deferred
-        if (deferred === undefined) {
             return undefined
         }
 
