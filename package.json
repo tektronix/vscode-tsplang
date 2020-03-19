@@ -69,7 +69,7 @@
         "@types/node": "^7.0.69",
         "chai": "^4.1.2",
         "istanbul": "^0.4.5",
-        "license-compatibility-checker": "^0.3.3",
+        "license-compatibility-checker": "^0.3.4",
         "lodash.isequal": "^4.5.0",
         "mocha": "^6.2.0",
         "mocha-typescript": "^1.1.17",
