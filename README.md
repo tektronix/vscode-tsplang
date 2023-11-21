@@ -39,5 +39,4 @@ This is not an officially supported Tektronix product. It is maintained by a sma
 Licensed under Apache 2.0
 <br/>
 <br/>
-<br/>
 Made with :heart: at Keithley Instruments
